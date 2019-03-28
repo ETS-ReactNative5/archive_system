@@ -1,0 +1,29 @@
+//////////////////// hides spin on input type=number
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+.flex {
+  display: flex;
+}
+.center-with-ant-input {
+  padding-top: 4px;
+  font-size: 16px;
+}
+
+.profileScreen {
+
+  .signup-container > form {
+    background-color: #e0f2f1!important;
+    width: 100%;
+  }
+
+  .buttons {
+    button {
+      margin-right: 5px;
+    }
+  }
+}

@@ -1,0 +1,40 @@
+.ant-modal-footer {
+  display: flex;
+  justify-content: flex-end; }
+  .ant-modal-footer.ant-btn-primary {
+    order: -1;
+    margin-right: 8px; }
+
+.Modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.3);
+  justify-content: center;
+  align-items: center; }
+
+.ModalBox {
+  background-color: #fff;
+  position: relative; }
+  .ModalBox__header {
+    padding: 14px;
+    background-color: #0671bb;
+    color: #fff; }
+    .ModalBox__header__text {
+      font-size: 24px;
+      font-weight: 400; }
+    .ModalBox__header__closeBtn {
+      position: absolute;
+      top: 12px;
+      right: 20px;
+      background-color: transparent;
+      border: none;
+      font-size: 26px;
+      cursor: pointer; }
+  .ModalBox__body {
+    margin: 30px;
+    display: flex;
+    justify-content: center; }

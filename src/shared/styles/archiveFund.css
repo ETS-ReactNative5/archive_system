@@ -1,0 +1,756 @@
+.ant-tabs-nav-wrap {
+  padding-left: 20px; }
+  .ant-tabs-nav-wrap .ant-tabs-tab {
+    margin-right: 7px !important; }
+
+.ant-form-item-label {
+  padding-right: 4px; }
+
+.antForm-spaceBetween .ant-form-item-label {
+  text-align: left;
+  font-weight: 400; }
+
+.with-colon .ant-form-item-label label {
+  position: unset; }
+  .with-colon .ant-form-item-label label:after {
+    position: absolute !important;
+    display: inline-block !important;
+    margin-right: 4px !important;
+    content: "*" !important;
+    font-family: SimSun !important;
+    line-height: 1 !important;
+    font-size: 12px !important;
+    color: #f5222d !important;
+    right: 5px !important;
+    top: -3px !important; }
+
+.ant-table-title {
+  top: 0;
+  padding: 0;
+  border-radius: 0; }
+
+.ant-tabs {
+  flex: 1;
+  display: flex;
+  flex-direction: column; }
+  .ant-tabs-content {
+    flex: 1; }
+  .ant-tabs-content-no-animated {
+    height: calc( 100% - 50px); }
+  .ant-tabs-tabpane {
+    height: 100%; }
+
+.ant-table-wrapper {
+  height: 100%;
+  min-height: 250px; }
+  .ant-table-wrapper .ant-spin-nested-loading {
+    height: 100%; }
+  .ant-table-wrapper .ant-spin-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column; }
+
+.ant-table {
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+  .ant-table-content {
+    height: 100%; }
+  .ant-table-body {
+    flex: 1; }
+  .ant-table-scroll {
+    height: 100%;
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column; }
+  .ant-table .table-footer {
+    display: flex;
+    justify-content: space-between; }
+    .ant-table .table-footer .label {
+      display: flex; }
+      .ant-table .table-footer .label input {
+        margin-left: 8px;
+        flex-basis: 80px; }
+  .ant-table .row-selected {
+    background-color: #e0f2f1;
+    cursor: pointer;
+    color: #009688; }
+  .ant-table .ant-table-thead th {
+    font-weight: 600;
+    font-size: 12px; }
+  .ant-table .ant-table-tbody td {
+    padding: 8px; }
+  .ant-table .ant-table-tbody > tr:hover > td {
+    background: #e0f2f1; }
+
+.ant-tabs-ink-bar {
+  background-color: #009688 !important; }
+
+.ant-input-group-addon {
+  cursor: pointer;
+  font-size: 14px; }
+  .ant-input-group-addon:hover {
+    color: #108ee9; }
+
+.ant-table-small .ant-table-thead table {
+  background-color: #f3f3f3; }
+
+.ant-table-small .ant-table-thead th {
+  font-weight: 600;
+  background-color: #f3f3f3; }
+
+.ant-form-item-control .ant-calendar-picker {
+  width: 100%; }
+
+.ant-form-item.with-lang .ant-form-item-control {
+  display: flex;
+  flex-wrap: wrap; }
+  .ant-form-item.with-lang .ant-form-item-control .ant-input {
+    flex-basis: 75%; }
+  .ant-form-item.with-lang .ant-form-item-control .ant-radio-group {
+    flex-basis: 25%;
+    text-align: right; }
+  .ant-form-item.with-lang .ant-form-item-control .ant-radio-button-wrapper {
+    padding: 0 6px; }
+
+.ant-form-item.with-lang--column .ant-form-item-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center; }
+  .ant-form-item.with-lang--column .ant-form-item-control .ant-radio-group {
+    text-align: right; }
+  .ant-form-item.with-lang--column .ant-form-item-control .ant-radio-button-wrapper {
+    padding: 0 6px; }
+
+@keyframes animateRight {
+  from {
+    right: -600px;
+    opacity: 0; }
+  to {
+    right: 0;
+    opacity: 1; } }
+
+.animate-right {
+  position: relative;
+  animation: animateRight .4s; }
+
+.modal-table-header button {
+  margin-right: 5px; }
+
+.flex-column {
+  display: flex;
+  flex-direction: column; }
+
+.flex-center {
+  display: flex;
+  justify-content: center; }
+
+.archiveFund {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 5px 0; }
+  .archiveFund .ant-table-wrapper th span {
+    display: -ms-flexbox;
+    display: flex;
+    align-items: center; }
+  .archiveFund__heading {
+    margin: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; }
+    .archiveFund__heading h1 {
+      margin-right: 30px; }
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  background-color: #e6e6e6;
+  align-items: center; }
+  .table-header h3 {
+    flex: 1; }
+  .table-header__btns button {
+    margin-right: 10px; }
+
+.ant-cascader-menu-item:hover {
+  background-color: #E0F2F1; }
+
+.ant-cascader-menu-item-expand:after {
+  font-size: 16px;
+  font-weight: 600;
+  top: 4px; }
+
+.fundsList {
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+  .fundsList__heading {
+    display: flex;
+    align-items: center;
+    padding: 3px;
+    background-color: #e6e6e6; }
+    .fundsList__heading-buttons {
+      flex: 0 0 25%;
+      align-items: center;
+      display: flex;
+      justify-content: flex-start; }
+      .fundsList__heading-buttons button {
+        margin-right: 5px; }
+    .fundsList__heading .label-select {
+      flex: 1; }
+      .fundsList__heading .label-select .ant-cascader-picker {
+        width: 100%; }
+        .fundsList__heading .label-select .ant-cascader-picker:focus input {
+          border-color: #009688; }
+        .fundsList__heading .label-select .ant-cascader-picker input:hover, .fundsList__heading .label-select .ant-cascader-picker input:focus {
+          border-color: #009688; }
+        .fundsList__heading .label-select .ant-cascader-picker input::placeholder {
+          color: #808080; }
+        .fundsList__heading .label-select .ant-cascader-picker > i.ant-cascader-picker-clear {
+          right: 20px; }
+        .fundsList__heading .label-select .ant-cascader-picker > i.ant-cascader-picker-arrow {
+          color: #ccc;
+          font-size: 20px;
+          font-weight: 600; }
+    .fundsList__heading .ant-input-search {
+      flex: 0 0 30%; }
+  .fundsList__body {
+    display: flex;
+    flex: 1;
+    overflow: hidden; }
+    .fundsList__body .ant-table-wrapper {
+      flex: 1; }
+    .fundsList__body .card {
+      width: 600px;
+      display: flex;
+      flex-direction: column;
+      position: relative; }
+      .fundsList__body .card > button {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: -30px;
+        top: 3px;
+        z-index: 10;
+        display: none; }
+      .fundsList__body .card form {
+        display: none; }
+      .fundsList__body .card-enter {
+        width: 0px !important; }
+        .fundsList__body .card-enter-active {
+          width: 600px !important;
+          transition: width 0.3s; }
+        .fundsList__body .card-enter-done form {
+          display: block; }
+        .fundsList__body .card-enter-done > button {
+          display: flex; }
+      .fundsList__body .card-exit {
+        width: 600px; }
+        .fundsList__body .card-exit-active {
+          width: 0 !important;
+          transition: width 0.3s; }
+      .fundsList__body .card .ant-form {
+        height: 100%;
+        overflow-y: auto;
+        padding: 20px 15px 0; }
+        .fundsList__body .card .ant-form-btns {
+          z-index: 99;
+          position: absolute;
+          left: 0;
+          width: 100%;
+          bottom: 0;
+          box-shadow: 0 -1px 5px 0;
+          background: #fff;
+          margin-bottom: 0;
+          padding: 5px; }
+      .fundsList__body .card .work-description {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 5px 0;
+        overflow: auto; }
+
+.movementsRecord__heading {
+  display: flex;
+  align-items: center;
+  padding: 10px 30px;
+  background-color: #f4f4f4; }
+  .movementsRecord__heading-buttons {
+    flex: 0 0 50%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center; }
+  .movementsRecord__heading-checkboxes {
+    display: flex;
+    flex: 0 0 20%;
+    justify-content: flex-end;
+    padding-right: 20px; }
+  .movementsRecord__heading .ant-input-search {
+    flex: 0 0 30%; }
+
+.EditFundCardPage {
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+  .EditFundCardPage h2 {
+    font-size: 12px;
+    margin-top: 5px; }
+    .EditFundCardPage h2 a {
+      color: #009688; }
+      .EditFundCardPage h2 a:hover {
+        color: #4db6ac; }
+  .EditFundCardPage form {
+    padding: 8px 0;
+    height: 100%;
+    overflow: auto; }
+  .EditFundCardPage .ant-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    width: 200px; }
+  .EditFundCardPage .editCard {
+    display: flex;
+    justify-content: flex-end; }
+    .EditFundCardPage .editCard button {
+      margin-right: 6px; }
+
+.EditCardFundMaker {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+  height: 100%; }
+  .EditCardFundMaker__list {
+    flex: 0 0 29.5%;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    margin-right: 10px; }
+    .EditCardFundMaker__list h3 {
+      padding: 8px 15px;
+      background-color: #e6e6e6; }
+  .EditCardFundMaker__versions {
+    flex: 0 0 69.5%;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); }
+    .EditCardFundMaker__versions h3 {
+      padding: 8px 15px;
+      background-color: #e6e6e6; }
+
+.EditCardAnnotations {
+  height: 100%; }
+  .EditCardAnnotations__body {
+    height: 100%;
+    overflow: auto; }
+    .EditCardAnnotations__body h3 {
+      font-size: 20px;
+      margin: 10px; }
+    .EditCardAnnotations__body textarea {
+      resize: none;
+      width: 90%;
+      height: 300px; }
+    .EditCardAnnotations__body input[type='text'] {
+      width: 90%; }
+  .EditCardAnnotations__footer {
+    margin: 20px;
+    text-align: right; }
+    .EditCardAnnotations__footer button {
+      margin-right: 10px; }
+
+.EditCardFundsize {
+  height: 100%;
+  overflow: auto; }
+  .EditCardFundsize__table {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); }
+  .EditCardFundsize__data {
+    margin-top: 20px;
+    width: 600px;
+    padding: 10px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); }
+    .EditCardFundsize__data__row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px; }
+      .EditCardFundsize__data__row label {
+        flex: 0 0 60%;
+        font-size: 16px; }
+      .EditCardFundsize__data__row input {
+        flex: 0 0 25%; }
+
+.EditCardChangesFixingActs {
+  height: 100%;
+  overflow: auto; }
+  .EditCardChangesFixingActs__heading {
+    display: flex;
+    align-items: center;
+    padding: 10px 30px;
+    background-color: #f4f4f4; }
+    .EditCardChangesFixingActs__heading-buttons {
+      flex: 0 0 40%;
+      display: flex;
+      justify-content: space-around; }
+    .EditCardChangesFixingActs__heading-checkboxes {
+      display: flex;
+      flex: 0 0 30%;
+      justify-content: flex-end;
+      padding-right: 20px; }
+
+.EditCardInventories {
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+  .EditCardInventories .table-header {
+    justify-content: flex-start;
+    padding: 3px; }
+    .EditCardInventories .table-header .label-select {
+      flex: 1; }
+    .EditCardInventories .table-header button {
+      margin-right: 5px; }
+  .EditCardInventories__body {
+    display: flex;
+    flex: 1;
+    overflow: hidden; }
+    .EditCardInventories__body .ant-table-wrapper {
+      flex: 1; }
+    .EditCardInventories__body .card {
+      width: 600px;
+      display: flex;
+      flex-direction: column;
+      position: relative; }
+      .EditCardInventories__body .card > button {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: -30px;
+        top: 3px;
+        z-index: 10;
+        display: none; }
+      .EditCardInventories__body .card form {
+        display: none; }
+      .EditCardInventories__body .card-enter {
+        width: 0px !important; }
+        .EditCardInventories__body .card-enter-active {
+          width: 600px !important;
+          transition: width 0.3s; }
+        .EditCardInventories__body .card-enter-done form {
+          display: block; }
+        .EditCardInventories__body .card-enter-done > button {
+          display: flex; }
+      .EditCardInventories__body .card-exit {
+        width: 600px; }
+        .EditCardInventories__body .card-exit-active {
+          width: 0 !important;
+          transition: width 0.3s; }
+      .EditCardInventories__body .card .ant-form {
+        height: 100%;
+        overflow-y: auto;
+        padding: 20px 15px 0; }
+        .EditCardInventories__body .card .ant-form-btns {
+          z-index: 99;
+          position: absolute;
+          left: 0;
+          width: 100%;
+          bottom: 0;
+          box-shadow: 0 -1px 5px 0;
+          background: #fff;
+          margin-bottom: 0;
+          padding: 5px; }
+      .EditCardInventories__body .card .work-description {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 5px 0;
+        overflow: auto; }
+
+.ViewInventCardPage {
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+  .ViewInventCardPage h2 {
+    font-size: 12px;
+    margin-top: 5px; }
+    .ViewInventCardPage h2 a {
+      color: #009688; }
+      .ViewInventCardPage h2 a:hover {
+        color: #4db6ac; }
+
+#ViewInventCardMainForm {
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  padding: 8px 0; }
+  #ViewInventCardMainForm .general-form {
+    flex: 0 0 600px; }
+  #ViewInventCardMainForm .image-viewer {
+    flex: 1;
+    flex-direction: row;
+    display: flex;
+    padding: 0 20px; }
+    #ViewInventCardMainForm .image-viewer-list {
+      flex: 0 0 300px; }
+    #ViewInventCardMainForm .image-viewer-show {
+      flex: 1;
+      background-color: #45515B;
+      text-align: center; }
+
+@media (max-width: 1300px) {
+  #ViewInventCardMainForm .image-viewer {
+    flex-direction: column; }
+    #ViewInventCardMainForm .image-viewer-list {
+      flex: 0 0 200px; }
+      #ViewInventCardMainForm .image-viewer-list .ant-form-item-control {
+        max-height: 180px;
+        overflow-x: auto; }
+    #ViewInventCardMainForm .image-viewer-show {
+      flex: 0 0 100%; } }
+
+.ViewInventCardCases {
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+  .ViewInventCardCases .table-header {
+    justify-content: flex-start;
+    padding: 3px; }
+    .ViewInventCardCases .table-header button {
+      margin-right: 5px; }
+  .ViewInventCardCases__heading {
+    display: flex;
+    align-items: center;
+    padding: 10px 30px;
+    background-color: #f4f4f4; }
+    .ViewInventCardCases__heading-buttons {
+      flex: 0 0 40%;
+      display: flex;
+      justify-content: space-around; }
+    .ViewInventCardCases__heading-checkboxes {
+      display: flex;
+      flex: 0 0 30%;
+      justify-content: flex-end;
+      padding-right: 20px; }
+    .ViewInventCardCases__heading .ant-input-search {
+      flex: 0 0 30%; }
+  .ViewInventCardCases__body {
+    flex: 1;
+    overflow: auto; }
+
+.ViewInventCardSize {
+  height: 100%;
+  overflow: auto; }
+  .ViewInventCardSize__table {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); }
+  .ViewInventCardSize__data {
+    margin-top: 20px;
+    width: 600px;
+    padding: 10px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); }
+    .ViewInventCardSize__data__row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px; }
+      .ViewInventCardSize__data__row label {
+        flex: 0 0 60%;
+        font-size: 16px; }
+      .ViewInventCardSize__data__row input {
+        flex: 0 0 25%; }
+
+#ViewInventCardStorage {
+  display: flex;
+  justify-content: space-between;
+  height: 100%;
+  overflow: auto; }
+
+.viewInventCardStorage__display {
+  flex-basis: 60%;
+  border: 3px solid #898989; }
+
+.ViewCardCases {
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+  .ViewCardCases .ant-form {
+    height: 100%;
+    overflow: auto; }
+  .ViewCardCases .ant-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    width: 300px; }
+  .ViewCardCases .checkbox-input .ant-input {
+    width: auto; }
+
+.ViewCardCasesDocumentsList__heading {
+  display: flex;
+  align-items: center;
+  padding: 10px 30px;
+  background-color: #f4f4f4; }
+  .ViewCardCasesDocumentsList__heading-buttons {
+    flex: 0 0 40%;
+    display: flex;
+    justify-content: space-around; }
+  .ViewCardCasesDocumentsList__heading-checkboxes {
+    display: flex;
+    flex: 0 0 30%;
+    justify-content: flex-end;
+    padding-right: 20px; }
+  .ViewCardCasesDocumentsList__heading .ant-input-search {
+    flex: 0 0 30%; }
+
+.viewCardCasesTheCase {
+  display: flex; }
+  .viewCardCasesTheCase__nav {
+    flex: 0 0 250px;
+    padding-right: 10px; }
+    .viewCardCasesTheCase__nav aside {
+      height: 100%;
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+      border: 1px solid rgba(0, 0, 0, 0.16); }
+    .viewCardCasesTheCase__nav__header {
+      background-color: #f1f1f1;
+      padding: 5px; }
+  .viewCardCasesTheCase__viewer {
+    flex: 1; }
+    .viewCardCasesTheCase__viewer iframe {
+      width: 100%;
+      height: 600px; }
+
+.ArchiveDocsReceiving {
+  height: 100%;
+  overflow-y: auto; }
+  .ArchiveDocsReceiving h2 {
+    font-size: 24px;
+    margin: 10px; }
+  .ArchiveDocsReceiving .table-header {
+    background-color: unset; }
+    .ArchiveDocsReceiving .table-header .label-select .ant-calendar-picker {
+      margin-left: 10px; }
+  .ArchiveDocsReceiving .ant-table-wrapper {
+    height: auto; }
+    .ArchiveDocsReceiving .ant-table-wrapper .ant-table-title {
+      background-color: #eee; }
+
+.WorksChecking {
+  height: 100%; }
+  .WorksChecking .table-footer {
+    display: flex;
+    justify-content: flex-end; }
+    .WorksChecking .table-footer button {
+      margin-left: 8px; }
+
+.EditCardCases {
+  flex: 1;
+  display: flex;
+  flex-direction: column; }
+  .EditCardCases .table-header {
+    justify-content: flex-start;
+    padding: 3px; }
+    .EditCardCases .table-header .label-select {
+      flex: 0 0 20%; }
+    .EditCardCases .table-header button {
+      margin-right: 5px; }
+  .EditCardCases__body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative; }
+    .EditCardCases__body .double-table {
+      width: 100%;
+      display: flex; }
+    .EditCardCases__body .ant-table-wrapper {
+      flex: 1; }
+      .EditCardCases__body .ant-table-wrapper .ant-table-title {
+        background-color: #eee; }
+        .EditCardCases__body .ant-table-wrapper .ant-table-title h3 {
+          font-weight: 600;
+          color: #37474F; }
+    .EditCardCases__body .card {
+      width: 600px;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      height: 100%;
+      background-color: #fff;
+      padding: 0 10px; }
+      .EditCardCases__body .card.right {
+        right: 0;
+        border-left: 3px solid #eee; }
+      .EditCardCases__body .card.left {
+        left: 0;
+        border-right: 3px solid #eee; }
+      .EditCardCases__body .card > button {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 3px;
+        z-index: 10;
+        display: none; }
+        .EditCardCases__body .card > button.right {
+          left: -30px; }
+        .EditCardCases__body .card > button.left {
+          right: -30px; }
+      .EditCardCases__body .card .ant-form {
+        display: none;
+        padding: 5px;
+        height: calc(100% - 40px);
+        overflow-y: auto; }
+      .EditCardCases__body .card-enter {
+        width: 0 !important; }
+        .EditCardCases__body .card-enter-active {
+          width: 600px !important;
+          transition: width 0.3s; }
+        .EditCardCases__body .card-enter-done > button {
+          display: flex; }
+        .EditCardCases__body .card-enter-done .ant-form {
+          display: block; }
+      .EditCardCases__body .card-exit {
+        width: 600px !important; }
+        .EditCardCases__body .card-exit-active {
+          width: 0 !important;
+          transition: width 0.3s; }
+
+@media screen and (max-width: 1366px) {
+  .ant-table-body {
+    max-height: 60vh !important;
+    overflow-y: scroll; } }
+
+@media screen and (max-width: 1600px) {
+  .ant-table-body {
+    max-height: 63vh !important;
+    overflow-y: scroll; } }
+
+@media screen and (max-width: 1920px) {
+  .ant-table-body {
+    max-height: 70vh !important;
+    overflow-y: scroll; } }
+
+@media print {
+  header, footer, .Sider2, button, .label-select, .ant-table-pagination.ant-pagination {
+    display: none !important; }
+  .ant-table-body, .ant-table, .content, .collections__content, #root, .main-layout {
+    overflow: visible !important;
+    overflow-y: visible !important;
+    height: 100% !important; }
+  *, body {
+    font-size: 10px !important; }
+  .ant-table-body {
+    max-height: 100% !important; }
+  .ant-table-scroll {
+    overflow: visible !important; }
+  .ant-table-header {
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important; }
+  .Works__body .ant-table-wrapper th {
+    padding: 0px 5px;
+    font-size: 8px !important; }
+  html {
+    overflow: auto; }
+  body {
+    overflow: visible !important; }
+  .ant-table .ant-table-tbody td {
+    padding: 3px 9px; } }

@@ -1,0 +1,37 @@
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden; }
+
+.ant-form-item-label {
+  white-space: normal;
+  text-align: left;
+  line-height: 17px; }
+
+.main-content {
+  display: flex; }
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-image: linear-gradient(to bottom, #0a88b7, #066fbc) !important;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.24), 0 0 2px 0 rgba(0, 0, 0, 0.12);
+  height: calc(100vh - 65px - footer);
+  max-width: 250px;
+  flex: 0 0 250px;
+  padding: 5px; }
+
+.sider-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 0; }
+
+.sider-menu__item {
+  display: flex;
+  padding: 10px 20px; }
+  .sider-menu__item a {
+    color: #fff;
+    text-decoration: none; }
+    .sider-menu__item a:hover {
+      text-decoration: none; }

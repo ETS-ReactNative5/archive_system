@@ -1,0 +1,63 @@
+.hidden {
+  visibility: hidden !important; }
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  width: 620px;
+  box-shadow: #2a2a2a 1px 1px 5px 0;
+  padding: 30px 50px 5px; }
+  .signup-form .flex > label {
+    width: 300px;
+    overflow: hidden; }
+  .signup-form .flex > .ant-row {
+    flex: 1;
+    margin-left: 10px; }
+  .signup-form .signup-form__btn {
+    width: 100%; }
+  .signup-form .signup-form__title {
+    display: flex;
+    justify-content: center;
+    font-size: 20px;
+    text-transform: uppercase; }
+  .signup-form .signup-form__link {
+    float: right;
+    font-size: 16px; }
+
+.wrap-normal .ant-form-item-label {
+  white-space: normal; }
+
+.unset-lh .ant-form-item-label {
+  line-height: unset; }
+
+/*.signup-form__input .ant-form-item-label label:after {
+  left: -12px;
+  right: unset;
+}*/
+.signup-container > form {
+  margin: 0 auto;
+  width: 90%;
+  border-radius: 3px; }
+  .signup-container > form .card {
+    margin-bottom: 5px;
+    height: calc(100% - 5px); }
+  .signup-container > form .flex {
+    margin: 10px 0; }
+    .signup-container > form .flex .checkbox-group {
+      flex: 70%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-end; }
+    .signup-container > form .flex .file-upload {
+      flex: 30%; }
+  .signup-container > form .buttons {
+    text-align: right; }
+
+.ECP_Form {
+  width: 50%;
+  margin: 0 auto;
+  height: 100%;
+  min-width: 800px; }
+  .ECP_Form button {
+    width: 100%; }

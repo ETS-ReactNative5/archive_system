@@ -1,0 +1,1656 @@
+//Not sure if it should be global
+.tableHeader__btns {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  background-color: #f7f7f7;
+
+  button {
+    margin: 0 20px;
+  }
+
+
+
+  .Select {
+    width: 140px;
+    margin-right: 20px;
+  }
+
+  .ant-input-search {
+    width: 400px;
+  }
+}
+
+.disabled {
+  filter: contrast(70%);
+}
+
+.full-screen {
+  .ant-modal {
+    top: 0 !important;
+    width: 100% !important;
+    height: 100vh !important;
+    padding-bottom: 0 !important;
+
+    &-content {
+      height: 100% !important;
+      display: flex;
+      flex-direction: column;
+    }
+
+    &-body {
+      flex: 1;
+      padding: 0;
+      overflow-y: hidden;
+      > * {
+        height: 100%!important;
+      }
+    }
+
+    &-footer {
+      padding: 5px 16px;
+    }
+  }
+}
+
+.ant-popover-title {
+  min-height: 25px;
+  padding: 3px 8px;
+}
+.green-bg {
+  background-color: #e0f2f1;
+  color: #009688;
+}
+.red-bg {
+  background-color: #ffebee;
+  color: #f44336;
+}
+
+.ant-tree li .ant-tree-node-content-wrapper {
+  width: 93%;
+  background-color: #E0F2F1;
+  .ant-tree-title {
+    display: block;
+
+    a {
+      position: absolute;
+      background-color: #fff;
+      right: 5px;
+    }
+  }
+}
+
+a {
+  color: #009688;
+
+  &:hover {
+    color: #4db6ac;
+  }
+}
+
+.ant-form-btns.absolute-bottom {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
+  margin-bottom: 0!important;
+  padding-bottom: 10px;
+}
+
+.ant-table-body table {
+  overflow-y: overlay;
+}
+
+.ant-tabs-bar {
+  margin-bottom: 0 !important;
+
+  .ant-tabs-tab {
+    font-size: 12px;
+    padding-bottom: 7px !important;
+
+    &-active {
+      font-weight: 600;
+      color: #009688 !important;
+    }
+
+    &:hover {
+      color: #009688 !important;
+    }
+  }
+}
+
+.react-select {
+
+  &__menu {
+    z-index: 11!important;
+  }
+
+  &-container {
+    //height: 30px;
+    width: 100%;
+  }
+
+  &__option {
+
+    &--is-focused {
+      background-color: #E0F2F1!important;
+    }
+
+    &--is-selected {
+      background-color: #009688!important;
+    }
+  }
+
+  &__multi-value__remove {
+    padding: 0!important;
+  }
+
+  &__control {
+    //height: 30px;
+    min-height: 28px!important;
+
+    &--is-focused {
+      box-shadow: 0 0 0 1px #009688!important;
+      border-color: #009688!important;
+    }
+
+    &:hover {
+      border-color: #009688!important;
+    }
+
+    .react-select__value {
+      line-height: 28px !important;
+      //overflow-y: auto;
+      //display: flex;
+      height: 28px;
+      min-height: 28px;
+      margin-top: 0;
+      color: #009688;
+      background-color: #e0f2f1;
+
+      &-container {
+        :not(.react-select__placeholder) {
+          height: 20px!important;
+        }
+      }
+      &-icon {
+        height: 100%;
+        line-height: 20px;
+      }
+    }
+
+    .react-select__input {
+      //height: 28px;
+      min-height: 28px;
+    }
+  }
+
+  &__indicators {
+    & > div {
+      padding: 2px!important;
+    }
+  }
+}
+
+.long-selected-menu {
+  .react-select__menu {
+    min-width: 300px;
+
+    .ReactVirtualized__Grid {
+      min-width: 300px;
+      width: 100%!important;
+
+      &__innerScrollContainer {
+        max-width: unset!important;
+      }
+    }
+  }
+}
+
+.ant-pagination-next:hover,
+.ant-pagination-prev:hover {
+  a {
+    border-color: #009688 !important;
+  }
+}
+
+.ant-btn-primary {
+  background-color: #009688;
+  border-color: #009688;
+}
+
+.ant-btn:hover,
+.ant-btn:focus {
+  color: #009688;
+  border-color: #009688;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background-color: #4db6ac;
+  border-color: #4db6ac;
+}
+
+.ant-btn-danger:hover,
+.ant-btn-danger:focus {
+  color: #fff;
+  border-color: #fff;
+}
+
+/*.ant-input:hover {
+  border-color: #009688;
+}*/
+
+.ant-pagination-item {
+  &:hover {
+    border-color: #009688;
+
+    a {
+      color: #009688;
+    }
+  }
+
+  &-active {
+    background-color: #ff9800;
+    border-color: #ff9800;
+
+    &:focus {
+      background-color: #ff9800;
+      border-color: #ff9800;
+    }
+    &:hover {
+      background-color: #ff9800;
+      border-color: #ff9800;
+    }
+  }
+}
+
+.ant-checkbox-checked .ant-checkbox-inner,
+.ant-checkbox-indeterminate .ant-checkbox-inner {
+  background-color: #009688;
+  border-color: #009688;
+}
+
+.ant-form-item {
+  margin-bottom: 12px!important;
+}
+
+.ant-form-item-control {
+  line-height: 18px!important;
+}
+
+.Sourcing .ant-form-item {
+  display: flex;
+  align-items: center;
+
+  &-label {
+    line-height: 18px;
+    white-space: normal;
+  }
+  margin-bottom: 9px;
+}
+
+.Select-menu-outer {
+  z-index: 11;
+}
+
+.label-select {
+  display: flex;
+  align-items: center;
+
+  .Select {
+    width: 100%;
+    min-width: 100px;
+    margin-left: 10px;
+  }
+}
+
+.ant-table-small .ant-table-title,
+.ant-table-small .ant-table-footer,
+.ant-table-small .ant-table-thead > tr > th {
+  padding: 6px;
+}
+.ant-table-small .ant-table-tbody > tr > td {
+  padding: 8px 3px;
+}
+
+.ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+  padding: 4px;
+}
+
+.ant-table-thead {
+  .rotated-90 {
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+
+    span {
+      position: absolute;
+      display: inline-block;
+      transform-origin: top left;
+      top: 95%;
+      width: 180px;
+      transform: rotateZ(-90deg);
+    }
+  }
+}
+
+.no-hover-tr {
+  background-color: #fff !important;
+}
+
+.td-center {
+  text-align: center;
+}
+
+.td-btn-half {
+  button {
+    width: 50%;
+    min-width: 28px;
+  }
+}
+
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  h2 {
+    font-size: 13px;
+    margin-bottom: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+}
+
+.ant-breadcrumb {
+  display: flex;
+  & > span:last-of-type .ant-breadcrumb-link{
+    overflow-x: unset;
+  }
+
+  &-separator {
+    vertical-align: super;
+  }
+}
+
+.ant-breadcrumb-link {
+  display: inline-block;
+  max-width: 200px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
+
+  a {
+    color: #009688;
+
+    &:hover {
+      color: #4db6ac;
+    }
+  }
+}
+
+.VirtualizedSelectOption {
+  line-height: 40px;
+  overflow: hidden;
+  display: block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  align-items: center;
+}
+
+.Sourcing {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 5px 0;
+
+  .SourcesMaintenancePage,
+  .FundMakerPage {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .ant-breadcrumb {
+      margin: 10px 5px;
+      font-size: 13px;
+    }
+  }
+
+  .DocsStorageConditions {
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px 15px 0;
+  }
+
+  .LegalEntitiesInventories {
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .passport {
+    .editable-cell {
+      position: relative;
+    }
+
+    .editable-cell-input-wrapper,
+    .editable-cell-text-wrapper {
+      padding-right: 24px;
+    }
+
+    .editable-cell-text-wrapper {
+      padding: 5px 24px 5px 5px;
+    }
+
+    .editable-cell-icon,
+    .editable-cell-icon-check {
+      position: absolute;
+      right: 0;
+      width: 20px;
+      cursor: pointer;
+    }
+
+    .editable-cell-icon {
+      line-height: 18px;
+      display: none;
+    }
+
+    .editable-cell-icon-check {
+      line-height: 28px;
+    }
+
+    .ant-table-row td:hover .editable-cell-icon {
+      display: inline-block;
+    }
+
+    .editable-cell-icon:hover,
+    .editable-cell-icon-check:hover {
+      color: #108ee9;
+    }
+
+    .editable-add-btn {
+      margin-bottom: 8px;
+    }
+  }
+}
+
+.passport {
+  .editable-cell {
+    position: relative;
+  }
+
+  .editable-cell-input-wrapper,
+  .editable-cell-text-wrapper {
+    padding-right: 24px;
+  }
+
+  .editable-cell-text-wrapper {
+    padding: 5px 24px 5px 5px;
+  }
+
+  .editable-cell-icon,
+  .editable-cell-icon-check {
+    position: absolute;
+    right: 0;
+    width: 20px;
+    cursor: pointer;
+  }
+
+  .editable-cell-icon {
+    line-height: 18px;
+    display: none;
+  }
+
+  .editable-cell-icon-check {
+    line-height: 28px;
+  }
+
+  .ant-table-row td:hover .editable-cell-icon {
+    display: inline-block;
+  }
+
+  .editable-cell-icon:hover,
+  .editable-cell-icon-check:hover {
+    color: #108ee9;
+  }
+
+  .editable-add-btn {
+    margin-bottom: 8px;
+  }
+}
+
+.EditSourcingPage {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  form {
+    height: 100%;
+    overflow: auto;
+  }
+}
+
+//========================WORKS======================
+
+.Works {
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  &__heading {
+    .table-header {
+      padding: 3px 5px;
+      flex-wrap: wrap;
+
+      & > button {
+        flex-basis: 5%;
+      }
+
+      .ant-radio-group {
+        flex-basis: 10%;
+      }
+
+      .label-select {
+        flex-grow: 1;
+        margin-right: 5px;
+
+        .Select {
+          flex-grow: 1;
+        }
+      }
+
+      .ant-input-search {
+        flex-basis: 25%;
+      }
+    }
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+
+    .ant-table-wrapper {
+      flex: 1;
+
+      th {
+        padding: 12px 5px;
+
+        span {
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+
+    .card {
+      width: 600px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+
+      & > button {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: -30px;
+        top: 3px;
+        z-index: 10;
+        display: none;
+      }
+
+      form {
+        display: none;
+      }
+
+      &-enter {
+        width: 0px !important;
+        &-active {
+          width: 600px !important;
+          transition: width 0.3s;
+        }
+        &-done {
+          form {
+            display: block;
+          }
+
+          & > button {
+            display: flex;
+          }
+        }
+      }
+
+      &-exit {
+        width: 600px;
+        &-active {
+          width: 0 !important;
+          transition: width 0.3s;
+        }
+      }
+
+      .ant-form {
+        height: 100%;
+        overflow-y: auto;
+        padding: 5px 10px 0;
+
+        &-btns {
+          z-index: 99;
+          position: absolute;
+          left: 0;
+          width: 100%;
+          bottom: 0;
+          box-shadow: 0 -1px 5px 0;
+          background: #fff;
+          margin-bottom: 0;
+          padding: 5px;
+        }
+      }
+
+      .work-description {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 5px 0;
+        overflow: auto;
+      }
+    }
+  }
+
+  .editable-cell {
+    &-text-wrapper {
+      position: relative;
+      padding: 5px 24px 5px 5px;
+    }
+
+    &-icon {
+      line-height: 18px;
+      display: none;
+      position: absolute;
+      right: 0;
+      width: 20px;
+      cursor: pointer;
+
+      &:hover {
+        color: #009688;
+      }
+    }
+  }
+
+  .ant-table-row td:hover .editable-cell-icon {
+    display: inline-block;
+  }
+
+  .editable-add-btn {
+    margin-bottom: 8px;
+  }
+
+  .editable-row-operations {
+    & > button {
+      margin-right: 7px;
+    }
+
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+
+      /*button:not(.ant-btn-danger) {
+        color: #009688;
+      }*/
+
+      /*button.green-btn {
+        color: #009688;
+
+        &:hover {
+          border-color: #009688;
+        }
+
+        &.yellow-bg:hover {
+          background-color: #fdd835;
+        }
+      }*/
+    }
+  }
+
+  &Checking {
+    .table-header {
+      background-color: unset;
+    }
+
+    .editable-cell {
+      position: relative;
+    }
+
+    .editable-cell-input-wrapper,
+    .editable-cell-text-wrapper {
+      padding-right: 24px;
+    }
+
+    .editable-cell-text-wrapper {
+      padding: 5px 24px 5px 5px;
+    }
+
+    .editable-cell-icon,
+    .editable-cell-icon-check {
+      position: absolute;
+      right: 0;
+      width: 20px;
+      cursor: pointer;
+    }
+
+    .editable-cell-icon {
+      line-height: 18px;
+      display: none;
+    }
+
+    .editable-cell-icon-check {
+      line-height: 28px;
+    }
+
+    .ant-table-row td:hover .editable-cell-icon {
+      display: inline-block;
+    }
+
+    .editable-cell-icon:hover,
+    .editable-cell-icon-check:hover {
+      color: #108ee9;
+    }
+
+    .editable-add-btn {
+      margin-bottom: 8px;
+    }
+  }
+}
+
+button.green-btn {
+  color: #009688;
+
+  &:hover {
+    border-color: #009688;
+    color: #009688;
+  }
+
+  &:focus {
+    border-color: #009688;
+    color: #009688;
+  }
+
+  &.yellow-bg:hover {
+    background-color: #fdd835;
+  }
+}
+
+//========================WORKS======================
+//========================CHECKING======================
+
+.Checking {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  &__heading {
+    .table-header {
+      padding: 3px 5px;
+      justify-content: flex-start;
+
+      &-btns {
+        flex-basis: 10%;
+
+        button {
+          margin-right: 5px;
+        }
+      }
+
+      .label-select {
+        flex-basis: 20%;
+        margin-right: 5px;
+      }
+    }
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+
+    .ant-table-wrapper {
+      flex: 1;
+    }
+
+    .card {
+      width: 600px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+
+      & > button {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: -30px;
+        top: 3px;
+        z-index: 10;
+        display: none;
+      }
+
+      form {
+        display: none;
+      }
+
+      &-enter {
+        width: 0;
+        &-active {
+          width: 600px;
+          transition: width 0.3s;
+        }
+        &-done {
+          form {
+            display: block;
+          }
+
+          & > button {
+            display: flex;
+          }
+        }
+      }
+
+      &-exit {
+        width: 600px;
+        &-active {
+          width: 0;
+          transition: width 0.3s;
+        }
+      }
+
+      .ant-form {
+        height: 100%;
+        overflow-y: auto;
+        padding: 20px 15px 0;
+
+        &-btns {
+          z-index: 99;
+          position: absolute;
+          left: 0;
+          width: 100%;
+          bottom: 0;
+          box-shadow: 0 -1px 5px 0;
+          background: #fff;
+          margin-bottom: 0;
+          padding: 5px;
+        }
+      }
+
+      .work-description {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0 5px;
+        overflow: auto;
+      }
+    }
+  }
+}
+
+.CheckingPlan {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .ant-table-wrapper {
+    height: 100%;
+  }
+
+  .table-header {
+    background-color: unset;
+    justify-content: flex-start;
+
+    .label-select {
+      flex-basis: 20%;
+    }
+  }
+}
+
+//========================CHECKING======================
+//========================FundMaker======================
+
+.FundMaker {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__heading {
+    .table-header {
+      padding: 3px 5px;
+
+      & > button {
+        flex-basis: 5%;
+      }
+
+      .ant-radio-group {
+        flex-basis: 10%;
+      }
+
+      .label-select {
+        flex-basis: 20%;
+        margin-right: 5px;
+      }
+
+      .ant-input-search {
+        flex-basis: 20%;
+      }
+    }
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+
+    .ant-table-wrapper {
+      flex: 1;
+    }
+
+    .card {
+      width: 600px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+
+      & > button {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: -30px;
+        top: 3px;
+        z-index: 10;
+        display: none;
+      }
+
+      form,
+      .FundMakerContent {
+        display: none;
+      }
+
+      &-enter {
+        width: 0;
+        &-active {
+          width: 600px;
+          transition: width 0.3s;
+        }
+        &-done {
+          form,
+          .FundMakerContent {
+            display: block;
+          }
+
+          & > button {
+            display: flex;
+          }
+        }
+      }
+
+      &-exit {
+        width: 600px;
+        &-active {
+          width: 0;
+          transition: width 0.3s;
+        }
+      }
+
+      .ant-form {
+        height: 100%;
+        overflow-y: auto;
+        padding: 20px 15px 0;
+
+        &-btns {
+          z-index: 99;
+          position: absolute;
+          left: 0;
+          width: 100%;
+          bottom: 0;
+          box-shadow: 0 -1px 5px 0;
+          background: #fff;
+          margin-bottom: 0;
+          padding: 5px;
+        }
+      }
+
+      .work-description {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0 5px;
+        overflow: auto;
+      }
+    }
+  }
+
+  &Content {
+    .table-header {
+      background-color: unset;
+    }
+  }
+}
+
+.FMIndividuals {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__heading {
+    .table-header {
+      padding: 3px 5px;
+      justify-content: flex-start;
+
+      .label-select {
+        flex-basis: 20%;
+      }
+
+      &-btns {
+        margin-right: 5px;
+      }
+
+      .ant-input-search {
+        flex-basis: 25%;
+        min-width: 200px;
+      }
+    }
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+
+    .ant-table-wrapper {
+      flex: 1;
+    }
+
+    .card {
+      //width: 600px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+
+      & > button {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: -30px;
+        top: 3px;
+        z-index: 10;
+        display: none;
+      }
+
+      form,
+      .ant-table-wrapper {
+        display: none;
+      }
+
+      &-enter {
+        max-width: 0;
+        &-active {
+          max-width: 1200px;
+          transition: max-width 0.6s;
+        }
+        &-done {
+          form,
+          .ant-table-wrapper {
+            display: block;
+          }
+
+          & > button {
+            display: flex;
+          }
+        }
+      }
+
+      &-exit {
+        max-width: 1200px;
+        &-active {
+          max-width: 0;
+          transition: max-width 0.6s;
+        }
+      }
+
+      .ant-form {
+        height: 100%;
+        overflow-y: auto;
+        padding: 20px 15px 0;
+
+        &-btns {
+          z-index: 99;
+          position: absolute;
+          left: 0;
+          width: 100%;
+          bottom: 0;
+          box-shadow: 0 -1px 5px 0;
+          background: #fff;
+          margin-bottom: 0;
+          padding: 5px;
+        }
+      }
+
+      .work-description {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0 5px;
+        overflow: auto;
+      }
+    }
+  }
+}
+
+.handleBar {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  height: 100%;
+  width: 10px;
+  z-index: 9;
+  cursor: e-resize;
+  background-color: rgba(255, 255, 255, 0.3);
+
+  &.mouse-down {
+    width: 400px;
+
+    .handleBar-bar {
+      background-color: #f1f1f1;
+    }
+  }
+
+  &-bar {
+    height: 100%;
+    width: 10px;
+  }
+}
+
+//========================FundMaker======================
+//========================LegalEntities======================
+
+.overflow-unset-table {
+  table:last-of-type {
+    overflow: unset;
+  }
+}
+
+.LegalEntities {
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  &__heading {
+    .table-header {
+      padding: 3px 5px;
+      justify-content: flex-start;
+
+      &-checkboxes {
+        display: flex;
+        align-items: center;
+        flex-basis: 13%;
+        justify-content: flex-end;
+
+        &-label {
+          margin-right: 20px;
+        }
+
+        &-input {
+          display: flex;
+          flex-direction: column;
+
+          & > label {
+            display: flex;
+          }
+        }
+      }
+
+      .ant-radio-group {
+        flex-basis: 10%;
+      }
+
+      .label-select {
+        flex-basis: 20%;
+        margin-right: 5px;
+      }
+
+      .ant-input-search {
+        flex-basis: 20%;
+      }
+    }
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+
+    .ant-table-wrapper {
+      flex: 1;
+    }
+
+    .card {
+      width: 600px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+
+      & > button {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: -30px;
+        top: 3px;
+        z-index: 10;
+        display: none;
+      }
+
+      form,
+      .LegalEntitiesInventoriesSmall,
+      .ant-table-wrapper {
+        display: none;
+      }
+
+      &-enter {
+        width: 0 !important;
+        &-active {
+          width: 600px !important;
+          transition: width 0.3s;
+        }
+        &-done {
+          form,
+          .LegalEntitiesInventoriesSmall,
+          .ant-table-wrapper {
+            display: block;
+            height: 100%;
+          }
+
+          & > button {
+            display: flex;
+          }
+        }
+      }
+
+      &-exit {
+        width: 600px !important;
+        &-active {
+          width: 0 !important;
+          transition: width 0.3s;
+        }
+      }
+
+      /*.ant-form {
+        height: 100%;
+        overflow-y: auto;
+        padding: 20px 15px 0;
+
+        &-btns {
+          z-index: 99;
+          position: absolute;
+          left: 0;
+          width: 100%;
+          bottom: 0;
+          box-shadow: 0 -1px 5px 0;
+          background: #fff;
+          margin-bottom: 0;
+          padding: 5px;
+        }
+      }*/
+    }
+    .ant-scroll-number {
+      height: 14px;
+      min-width: 16px;
+      background: #ff9800;
+      line-height: 14px;
+    }
+
+  }
+
+  &Card {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+    a {
+      flex: 0 0 250px;
+      height: 250px;
+      margin: 0 25px;
+    }
+
+    &_card {
+      position: relative;
+      display: flex;
+      height: 100%;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16),
+        0 2px 10px 0 rgba(0, 0, 0, 0.12);
+      justify-content: center;
+      font-size: 22px;
+      font-weight: bold;
+      padding: 20px;
+      text-align: center;
+      line-height: 24px;
+      transition: 0.3s;
+      color: rgba(0, 0, 0, 0.65);
+
+      &:hover {
+        box-shadow: 0 9px 7px 0 rgba(0, 0, 0, 0.3),
+          0 4px 12px 0 rgba(0, 0, 0, 0.36);
+
+        &::before {
+          opacity: 1;
+        }
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: url("../assets/img/book-bg.png") no-repeat;
+        background-size: contain;
+        background-position-y: bottom;
+        opacity: 0.7;
+      }
+    }
+  }
+
+  &InventoriesMain {
+    height: 100%;
+    display: flex;
+
+    &__property {
+      overflow-y: auto;
+      box-sizing: unset;
+      overflow-x: hidden;
+      flex: 0 0 320px;
+      padding: 10px;
+      margin: 2px;
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16),
+        0 2px 10px 0 rgba(0, 0, 0, 0.12);
+      transition: flex 0.3s;
+      &.card {
+        &-enter {
+          flex: 0 !important;
+          display: block;
+          transition: flex 0.3s;
+          &-active {
+            flex: 0 0 320px !important;
+          }
+          &-done {
+            flex: 0 0 320px !important;
+            padding: 10px;
+          }
+        }
+
+        &-exit {
+          &-active {
+            overflow: hidden;
+            flex-basis: 0 !important;
+          }
+          &-done {
+            display: none;
+          }
+        }
+      }
+
+      form {
+        width: 300px;
+      }
+    }
+
+    &__table {
+      flex: 1;
+      display: flex;
+      width: 100%;
+      flex-direction: column;
+      margin: 2px;
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16),
+        0 2px 10px 0 rgba(0, 0, 0, 0.12);
+      position: relative;
+
+      #trigger {
+        position: absolute;
+        left: -10px;
+        bottom: 6px;
+        z-index: 10;
+        background: #FF9800;
+        color: #fff;
+        transition: transform 0.3s;
+
+        &:hover {
+          transform: scale(1.2);
+        }
+      }
+
+      &__heading {
+        .table-header {
+          justify-content: flex-start;
+          padding: 3px;
+
+          button {
+            margin-right: 5px;
+          }
+        }
+      }
+
+      &__body {
+        display: flex;
+        flex: 1;
+        position: relative;
+
+        &--main {
+          width: 100%;
+          overflow-x: auto;
+        }
+
+        .ant-table-wrapper {
+          flex: 1;
+          width: 150%;
+        }
+
+        &-tree {
+          flex: 0 0 320px;
+          overflow-x: hidden;
+          overflow-y: auto;
+          background-color: #f7f7f7;
+          border: 3px solid #eee;
+
+          .ant-tree {
+            height: 100%;
+            li {
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+        }
+
+        &-form {
+          flex: 1;
+          padding: 10px 5px;
+          overflow-y: auto;
+        }
+
+        .card {
+          width: 600px;
+          display: flex;
+          flex-direction: column;
+          position: absolute;
+          right: 0;
+          height: 100%;
+          background-color: #f7f7f7;
+          border-left: 3px solid #eee;
+
+          & > button {
+            width: 40px;
+            height: 40px;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            left: -30px;
+            top: 3px;
+            z-index: 10;
+            display: none;
+          }
+
+          .ant-tree {
+            display: none;
+            height: calc(100% - 40px);
+            overflow-y: auto;
+          }
+
+          &-enter {
+            width: 0 !important;
+            &-active {
+              width: 600px !important;
+              transition: width 0.3s;
+            }
+            &-done {
+              .ant-tree {
+                display: block;
+                padding-left: 20px;
+
+                li {
+                  white-space: normal;
+
+                  span.ant-tree-node-content-wrapper {
+                    width: 80%;
+                  }
+                }
+              }
+
+              & > button {
+                display: flex;
+              }
+            }
+          }
+
+          &-exit {
+            width: 600px !important;
+            &-active {
+              width: 0 !important;
+              transition: width 0.3s;
+            }
+          }
+        }
+      }
+    }
+
+    .ant-table-tbody td:first-child .editable-cell {
+      display: inline-block;
+      width: calc(100% - 85px);
+      min-width: 45px;
+    }
+  }
+}
+
+//========================LegalEntities======================
+//========================CaseNomenclatureCard======================
+
+.CaseNomenclatureCard {
+  .ant-table-tbody td:first-child .editable-cell {
+    display: inline-block;
+    width: calc(100% - 85px);
+    min-width: 45px;
+  }
+
+  .label-select {
+    margin: 5px;
+    justify-content: flex-end;
+  }
+
+  .ant-table-title {
+    padding: 0 !important;
+
+    .table-header {
+      padding: 3px 5px;
+
+      &-btns {
+        button {
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+}
+
+//========================CaseNomenclatureCard======================
+//========================Individuals======================
+
+.Individuals {
+  height: 100%;
+
+  .table-header {
+    padding: 3px 5px;
+    justify-content: flex-end;
+
+    .ant-input-search {
+      flex: 0 0 300px;
+    }
+  }
+}
+
+//========================Individuals======================
+
+.ProviderInfo {
+  padding: 0 25px;
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  overflow-y: auto;
+  flex-wrap: wrap;
+
+  form {
+    flex: 0 0 700px;
+    margin-right: 40px;
+  }
+
+  .ant-table-wrapper {
+    height: auto;
+    flex: 0 0 700px;
+
+    .ant-spin-nested-loading {
+      height: auto;
+    }
+  }
+}
+
+//==========================SCHEDULE=======================
+
+.Schedule {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  .title {
+    margin: 3px;
+  }
+
+  .table-header {
+    justify-content: flex-start;
+    padding: 3px;
+    .label-select {
+      flex-basis: 20%;
+      margin-right: 5px;
+    }
+  }
+}
+
+//==========================SCHEDULE=======================

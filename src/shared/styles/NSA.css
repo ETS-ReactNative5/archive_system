@@ -1,0 +1,355 @@
+.link-btn {
+  position: absolute;
+  right: 30px;
+  z-index: 1; }
+
+.appointed {
+  background-color: #f7df97;
+  color: rgba(0, 0, 0, 0.65); }
+
+.completed {
+  background-color: #b0f7c2;
+  color: rgba(0, 0, 0, 0.65); }
+
+.danger {
+  color: #721c24;
+  background-color: #f8d7da; }
+
+.NSA {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 5px 0; }
+  .NSA .CreateDocument {
+    display: flex;
+    flex-direction: column;
+    flex: 1; }
+    .NSA .CreateDocument__heading .table-header {
+      padding: 3px 5px;
+      justify-content: flex-start; }
+      .NSA .CreateDocument__heading .table-header .label-select-10 {
+        flex-basis: 10%; }
+      .NSA .CreateDocument__heading .table-header .label-select-15 {
+        flex-basis: 10%; }
+      .NSA .CreateDocument__heading .table-header .label-select-20 {
+        flex-basis: 20%; }
+      .NSA .CreateDocument__heading .table-header .label-select-30 {
+        flex-basis: 20%; }
+      .NSA .CreateDocument__heading .table-header .label-select-40 {
+        flex-basis: 40%; }
+      .NSA .CreateDocument__heading .table-header .label-select-60 {
+        flex-basis: 60%; }
+      .NSA .CreateDocument__heading .table-header .label-select {
+        flex: 0 0 15%; }
+    .NSA .CreateDocument__body {
+      display: flex;
+      flex: 1 1; }
+      .NSA .CreateDocument__body .ant-table-wrapper {
+        flex: 1 1; }
+      .NSA .CreateDocument__body .card {
+        width: 55%;
+        display: flex;
+        flex-direction: column;
+        position: relative; }
+        .NSA .CreateDocument__body .card > button {
+          width: 40px;
+          height: 40px;
+          justify-content: center;
+          align-items: center;
+          position: absolute;
+          left: -30px;
+          top: 3px;
+          z-index: 10;
+          display: none; }
+        .NSA .CreateDocument__body .card form {
+          display: none; }
+        .NSA .CreateDocument__body .card-enter {
+          width: 0; }
+          .NSA .CreateDocument__body .card-enter-active {
+            width: 600px;
+            transition: width .3s; }
+          .NSA .CreateDocument__body .card-enter-done form {
+            display: block; }
+          .NSA .CreateDocument__body .card-enter-done > button {
+            display: flex; }
+        .NSA .CreateDocument__body .card-exit {
+          width: 600px; }
+          .NSA .CreateDocument__body .card-exit-active {
+            width: 0;
+            transition: width .3s; }
+        .NSA .CreateDocument__body .card .ant-form {
+          height: 100%;
+          overflow-y: auto;
+          padding: 20px 15px 0; }
+          .NSA .CreateDocument__body .card .ant-form-btns {
+            z-index: 99;
+            position: absolute;
+            left: 0;
+            width: 100%;
+            bottom: 0;
+            box-shadow: 0 -1px 5px 0;
+            background: #fff;
+            margin-bottom: 0;
+            padding: 5px; }
+        .NSA .CreateDocument__body .card .work-description {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 20px 5px 0;
+          overflow: auto; }
+    .NSA .CreateDocument .classificationInfo_uploadBtn .ant-upload.ant-upload-select-picture-card {
+      width: 40px;
+      height: 40px; }
+    .NSA .CreateDocument .classificationInfo_uploadBtn .ant-upload.ant-upload-select-picture-card > .ant-upload {
+      padding: 7px 0; }
+  .NSA .descriptionCases {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; }
+    .NSA .descriptionCases .table-header .label-select {
+      flex: 0 0 15%; }
+    .NSA .descriptionCases-body {
+      flex: 1;
+      overflow: hidden; }
+    .NSA .descriptionCases .Modal .label-select-modal {
+      width: 40px;
+      padding-bottom: 10px; }
+    .NSA .descriptionCases .Modal .title-select {
+      padding: 20px 5px 0; }
+  .NSA .EditNSAPage {
+    flex: 1;
+    display: flex;
+    flex-direction: column; }
+    .NSA .EditNSAPage h3 {
+      font-size: 18px; }
+    .NSA .EditNSAPage__heading {
+      display: flex;
+      justify-content: space-between; }
+  .NSA .SearchNSA {
+    flex: 1;
+    display: flex;
+    flex-direction: column; }
+  .NSA .searchNSAReferenceByTypeMainDiv {
+    overflow-y: auto;
+    height: 100%; }
+    .NSA .searchNSAReferenceByTypeMainDiv .ant-table-wrapper {
+      overflow-y: auto;
+      height: auto; }
+  .NSA .newTable {
+    height: 100%;
+    display: flex;
+    flex-direction: column; }
+    .NSA .newTable__header {
+      background-color: #f7f7f7;
+      padding: 5px; }
+  .NSA .newTable-enter {
+    opacity: 0.01;
+    transform: scale(0.9) translateX(100%); }
+  .NSA .newTable-enter-active {
+    opacity: 1;
+    transform: scale(1) translateX(0%);
+    transition: all 200ms ease-out; }
+  .NSA .newTable-exit {
+    opacity: 1;
+    transform: scale(1) translateX(0%); }
+  .NSA .newTable-exit-active {
+    opacity: 0.01;
+    transform: scale(0.9) translateX(100%);
+    transition: all 200ms ease-out; }
+  .NSA .classifier-list-enter {
+    opacity: 0.01;
+    transform: scale(0.9) translateX(-100%); }
+  .NSA .classifier-list-enter-active {
+    opacity: 1;
+    transform: scale(1) translateX(0%);
+    transition: all 200ms ease-out; }
+  .NSA .classifier-list-exit {
+    opacity: 1;
+    transform: scale(1) translateX(0%); }
+  .NSA .classifier-list-exit-active {
+    opacity: 0.01;
+    transform: scale(0.9) translateX(-100%);
+    transition: all 200ms ease-out; }
+  .NSA h2 {
+    font-size: 24px;
+    margin-bottom: 10px; }
+  .NSA .LinearReference, .NSA .HierarchyReference, .NSA .Classifier {
+    display: flex;
+    height: 100%;
+    padding: 5px; }
+  .NSA__list {
+    flex: 0 0 300px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 10px 0 rgba(0, 0, 0, 0.22);
+    height: 100%;
+    padding: 10px 10px;
+    display: flex;
+    flex-direction: column; }
+    .NSA__list ul {
+      margin-top: 10px;
+      flex: 1;
+      overflow: auto; }
+      .NSA__list ul li {
+        font-size: 16px;
+        min-height: 32px;
+        border-bottom: 1px solid #f1f1f1;
+        display: flex;
+        align-items: flex-end; }
+        .NSA__list ul li span {
+          padding: 4px 8px;
+          color: rgba(0, 0, 0, 0.65);
+          cursor: pointer; }
+          .NSA__list ul li span:hover {
+            color: #1890ff; }
+  .NSA__content {
+    flex: 1;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 10px 0 rgba(0, 0, 0, 0.22);
+    margin-left: 10px; }
+  .NSA .factorView, .NSA .objectView {
+    height: 100%;
+    display: flex;
+    flex-direction: column; }
+    .NSA .factorView__heading, .NSA .objectView__heading {
+      display: flex;
+      padding: 10px;
+      background-color: #f7f7f7; }
+      .NSA .factorView__heading button, .NSA .objectView__heading button {
+        margin: 0 8px; }
+      .NSA .factorView__heading .ant-input-search, .NSA .objectView__heading .ant-input-search {
+        width: 300px;
+        margin-left: 8px; }
+    .NSA .factorView__body, .NSA .objectView__body {
+      height: 100%;
+      flex: 1;
+      padding: 10px; }
+  .NSA .factorView .category-list {
+    width: 200px;
+    box-shadow: rgba(0, 0, 0, 0.14) -2px 0 2px, rgba(0, 0, 0, 0.14) 2px 1px 3px; }
+    .NSA .factorView .category-list li {
+      padding: 5px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.44); }
+  .NSA-modal .addForm input {
+    margin-right: 20px; }
+  .NSA-modal .addForm__row {
+    display: flex;
+    align-items: center;
+    padding: 5px 0; }
+    .NSA-modal .addForm__row > label {
+      flex: 0 0 130px; }
+    .NSA-modal .addForm__row > input, .NSA-modal .addForm__row .Select {
+      flex: 0 0 240px; }
+  .NSA-modal .addForm .ant-radio-group {
+    flex-basis: 200px; }
+  .NSA-modal .addForm .ant-radio-button-wrapper {
+    padding: 0 6px; }
+
+.EditNSAViewDoc {
+  height: 100%;
+  display: flex;
+  padding: 7px; }
+  .EditNSAViewDoc .NSA__list {
+    padding: 0; }
+    .EditNSAViewDoc .NSA__list ul {
+      padding: 7px; }
+  .EditNSAViewDoc__list__heading {
+    padding: 5px;
+    background-color: #f7f7f7; }
+    .EditNSAViewDoc__list__heading button {
+      margin-right: 10px; }
+
+.EditNSADocCard {
+  height: 100%;
+  overflow: auto; }
+
+.IndividualsMainInfo {
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column; }
+
+.Classification-Schemas {
+  display: flex;
+  flex-direction: column;
+  flex: 1; }
+  .Classification-Schemas__heading .table-header {
+    padding: 3px 5px;
+    justify-content: flex-start; }
+    .Classification-Schemas__heading .table-header .label-select {
+      flex-basis: 20%; }
+  .Classification-Schemas__body {
+    display: flex;
+    flex: 1 1; }
+    .Classification-Schemas__body .ant-table-wrapper {
+      flex: 1 1; }
+    .Classification-Schemas__body .card {
+      width: 600px;
+      display: flex;
+      flex-direction: column;
+      position: relative; }
+      .Classification-Schemas__body .card > button {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: -30px;
+        top: 3px;
+        z-index: 10;
+        display: none; }
+      .Classification-Schemas__body .card form {
+        display: none; }
+      .Classification-Schemas__body .card-enter {
+        width: 0; }
+        .Classification-Schemas__body .card-enter-active {
+          width: 600px;
+          transition: width .3s; }
+        .Classification-Schemas__body .card-enter-done form {
+          display: block; }
+        .Classification-Schemas__body .card-enter-done > button {
+          display: flex; }
+      .Classification-Schemas__body .card-exit {
+        width: 600px; }
+        .Classification-Schemas__body .card-exit-active {
+          width: 0;
+          transition: width .3s; }
+      .Classification-Schemas__body .card .ant-form {
+        height: 100%;
+        overflow-y: auto;
+        padding: 20px 15px 0; }
+        .Classification-Schemas__body .card .ant-form-btns {
+          z-index: 99;
+          position: absolute;
+          left: 0;
+          width: 100%;
+          bottom: 0;
+          box-shadow: 0 -1px 5px 0;
+          background: #fff;
+          margin-bottom: 0;
+          padding: 5px; }
+      .Classification-Schemas__body .card .work-description {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 5px 0;
+        overflow: auto; }
+  .Classification-Schemas .classificationInfo_uploadBtn .ant-upload.ant-upload-select-picture-card {
+    width: 40px;
+    height: 40px; }
+  .Classification-Schemas .classificationInfo_uploadBtn .ant-upload.ant-upload-select-picture-card > .ant-upload {
+    padding: 7px 0; }
+
+.Classification-Schemas-Hierarchy {
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+
+.alignLeft {
+  text-align: left; }
+
+.alignCenter {
+  text-align: center; }
+
+.alignRight {
+  text-align: right; }

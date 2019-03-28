@@ -1,0 +1,23 @@
+@import '../../shared/styles/shared.scss';
+
+footer {
+  position: fixed;
+  bottom: 0;
+  height: $footer;
+  background-color: #009688;
+  font-size: 11px;
+  padding: 2px 40px;
+  color: #e0f2f1;
+  width: 100%;
+  transition: .3s;
+
+  a {
+    color: #fafafa;
+  }
+
+  &:hover {
+    height: 30px;
+    padding-top: 5px;
+    font-size: 12px;
+  }
+}

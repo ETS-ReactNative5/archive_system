@@ -1,0 +1,233 @@
+.content {
+  height: calc(100vh - 65px - 20px);
+  overflow-y: auto; }
+
+hr {
+  margin: 2px 0;
+  border-top: .5px solid #009688; }
+
+.ant-spin-dot i {
+  background-color: #009688; }
+
+.collections {
+  background-color: #E0F2F1;
+  width: 100vw;
+  display: flex;
+  flex: 1; }
+  .collections__content-noUser {
+    background-color: #fff;
+    margin: 3px 3px 0 3px;
+    padding: 3px;
+    height: calc(100% - 6px);
+    overflow: auto;
+    transition: margin-left .3s;
+    width: 100%; }
+  .collections__content {
+    background-color: #fff;
+    margin: 3px 3px 0 0;
+    width: 100%;
+    padding: 0 3px;
+    height: calc(100% - 6px);
+    overflow: auto;
+    transition: margin-left .3s; }
+    .collections__content-pushed {
+      margin: 3px 3px 0 340px;
+      padding: 0 3px;
+      height: calc(100% - 20px);
+      overflow: auto;
+      transition: margin-left .3s;
+      background-color: #fff; }
+
+.Sider2 {
+  background: transparent;
+  height: calc(100vh - 65px - footer);
+  padding: 3px; }
+
+.SiderMenu {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  height: 100%;
+  background-color: #fff;
+  width: 250px;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: width .3s; }
+  .SiderMenu-collapsed {
+    width: 50px;
+    /*a {
+      padding: 8px 16px!important;
+    }*/ }
+    .SiderMenu-collapsed .sider-nav i {
+      font-size: 24px !important;
+      width: 30px !important;
+      transition: all .3s; }
+  .SiderMenu__header {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 18px;
+    border-bottom: 3px solid #e0f2f1; }
+  .SiderMenu__collectionsList {
+    margin-top: 5px;
+    width: 250px;
+    height: calc(100% - 60px);
+    overflow: auto; }
+    .SiderMenu__collectionsList li {
+      font-size: 16px;
+      white-space: normal;
+      border-bottom: 1px solid #e1e1e1; }
+      .SiderMenu__collectionsList li .sider-nav {
+        color: rgba(0, 0, 0, 0.65);
+        display: flex;
+        align-items: center;
+        user-select: none; }
+        .SiderMenu__collectionsList li .sider-nav > i {
+          padding: 12px;
+          margin-right: 15px;
+          width: 24px; }
+          .SiderMenu__collectionsList li .sider-nav > i.active {
+            color: #009688; }
+          .SiderMenu__collectionsList li .sider-nav > i::before {
+            width: 24px; }
+        .SiderMenu__collectionsList li .sider-nav:hover {
+          color: #009688; }
+      .SiderMenu__collectionsList li span {
+        padding: 12px;
+        display: block;
+        line-height: 18px; }
+  .SiderMenu .submenu {
+    display: flex;
+    flex-direction: column; }
+    .SiderMenu .submenu .sider-nav {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      font-size: 12px; }
+      .SiderMenu .submenu .sider-nav span {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        align-items: center;
+        font-weight: 600; }
+        .SiderMenu .submenu .sider-nav span i {
+          margin-right: 0; }
+    .SiderMenu .submenu ul {
+      display: none;
+      width: 100%;
+      animation: antSlideUpIn .3s; }
+      .SiderMenu .submenu ul.open {
+        display: block; }
+      .SiderMenu .submenu ul li {
+        border-bottom: none;
+        border-top: 1px solid #e1e1e1;
+        background-color: #fcfcfc; }
+      .SiderMenu .submenu ul a.sider-nav {
+        padding: 4px 10px 4px 30px; }
+
+.tooltip-navs li {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3); }
+  .tooltip-navs li a {
+    display: inline-block;
+    padding: 5px 30px 2px 10px;
+    width: 100%;
+    color: rgba(0, 0, 0, 0.65); }
+    .tooltip-navs li a:hover {
+      color: #009688;
+      background-color: #e0f2f1; }
+
+.SiderToggle__btn {
+  position: fixed;
+  background-color: #fff;
+  width: 50px;
+  height: 40px;
+  border: none;
+  cursor: pointer;
+  outline: none; }
+  .SiderToggle__btn:hover {
+    background-color: #e6e6e6; }
+
+.SiderMenu__item {
+  display: flex;
+  padding: 10px 20px; }
+  .SiderMenu__item a {
+    color: #fff;
+    text-decoration: none; }
+    .SiderMenu__item a:hover {
+      text-decoration: none; }
+
+.ant-tooltip-white .ant-tooltip-arrow {
+  border-right-color: #009688; }
+
+.ant-tooltip-white .ant-tooltip-inner {
+  background-color: rgba(255, 255, 255, 0.95); }
+
+.sider-item {
+  white-space: normal;
+  line-height: 20px !important;
+  height: auto !important;
+  padding: 10px 16px !important;
+  font-size: 16px !important; }
+
+span.ant-btn {
+  line-height: 26px; }
+
+.Viewer {
+  height: 100%;
+  display: flex; }
+  .Viewer-list {
+    flex: 0 0 260px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 10px 0 rgba(0, 0, 0, 0.32);
+    display: flex;
+    flex-direction: column;
+    margin: 3px; }
+    .Viewer-list-header {
+      flex: 0 0 36px;
+      padding: 4px;
+      background-color: #eee; }
+    .Viewer-list ul {
+      flex: 1;
+      overflow-y: auto; }
+      .Viewer-list ul li {
+        padding: 5px;
+        position: relative;
+        border-bottom: .5px solid #bbb;
+        cursor: pointer;
+        outline: none;
+        transition: background-color .3s; }
+        .Viewer-list ul li:hover {
+          background-color: #e0f2f1; }
+        .Viewer-list ul li:focus, .Viewer-list ul li:active {
+          background-color: #b2dfdb; }
+        .Viewer-list ul li > span {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: absolute;
+          top: 2px;
+          right: 2px;
+          width: 26px;
+          height: calc(100% - 4px);
+          background-color: #f5f5f5; }
+  .Viewer-window {
+    flex: 1;
+    margin: 3px;
+    padding: 3px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26), 0 2px 10px 0 rgba(0, 0, 0, 0.32);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-y: auto; }
+    .Viewer-window .placeholder {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 100%;
+      font-weight: 600;
+      font-size: 16px;
+      background: radial-gradient(#ffffff 64%, #E0F2F1 97%); }
+    .Viewer-window > * {
+      max-width: 100%; }
+    .Viewer-window > iframe {
+      width: 100%;
+      height: 100%; }

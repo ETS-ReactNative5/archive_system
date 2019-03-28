@@ -1,0 +1,6 @@
+.indicators-body {
+  display: flex; }
+  .indicators-body__table {
+    flex: 0 0 60%; }
+  .indicators-body__chart {
+    flex: 0 0 40%; }

@@ -1,0 +1,464 @@
+.ant-table-thead > tr > th,
+.ant-table-tbody > tr > td {
+  padding: 16px; }
+
+.ant-table-pagination {
+  margin: 16px; }
+
+.ant-table-selection {
+  display: none; }
+
+.double-table.column {
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+
+.extraModal {
+  width: 980px !important; }
+
+.extraModal p {
+  margin-bottom: 10px; }
+
+.disabledColorLight .ant-input-disabled {
+  color: #000 !important; }
+
+.extraModal .row-selected {
+  background-color: #fff !important;
+  color: #595959 !important; }
+
+.extraModal .ant-table-wrapper {
+  min-height: 50px !important;
+  margin-bottom: 20px; }
+
+.extraModal .ant-tabs-content {
+  padding-top: 15px; }
+
+.readingRoom {
+  height: 100%;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column; }
+  .readingRoom__head {
+    margin-bottom: 20px;
+    flex-direction: column; }
+  .readingRoom__heading {
+    text-transform: uppercase; }
+  .readingRoom__globalSearch {
+    padding: 5px;
+    text-align: center; }
+    .readingRoom__globalSearch input {
+      width: 350px !important;
+      height: 26px;
+      transition: width .3s; }
+      .readingRoom__globalSearch input:focus {
+        width: 420px !important; }
+  .readingRoom__content {
+    display: flex;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    min-width: 1010px;
+    flex: 1; }
+    .readingRoom__content_card {
+      display: flex;
+      overflow-y: auto;
+      box-sizing: unset;
+      overflow-x: hidden;
+      flex: 0 0 420px;
+      margin: 2px;
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+      transition: flex 0.3s; }
+      .readingRoom__content_card.card-enter {
+        flex: 0 !important;
+        display: block;
+        transition: flex 0.3s; }
+        .readingRoom__content_card.card-enter-active {
+          flex: 0 0 420px !important; }
+        .readingRoom__content_card.card-enter-done {
+          flex: 0 0 420px !important; }
+      .readingRoom__content_card.card-exit-active {
+        overflow: hidden;
+        flex-basis: 0 !important; }
+      .readingRoom__content_card.card-exit-done {
+        display: none; }
+    .readingRoom__content_table {
+      flex: 1;
+      display: flex;
+      width: 100%;
+      flex-direction: column;
+      margin: 2px;
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+      position: relative; }
+      .readingRoom__content_table #trigger {
+        position: absolute;
+        left: -10px;
+        bottom: 6px;
+        z-index: 10;
+        background: #FF9800;
+        color: #fff;
+        transition: transform 0.3s; }
+        .readingRoom__content_table #trigger:hover {
+          transform: scale(1.2); }
+
+.readingRoom__content_table {
+  flex: 1;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  margin: 2px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  position: relative; }
+
+.ant-table-row-level-1 td {
+  padding-left: 20px !important; }
+
+.ant-table-row-level-2 td {
+  padding-left: 30px !important; }
+
+.readingRoom__content_table #trigger {
+  position: absolute;
+  left: -3px;
+  height: 90px;
+  bottom: 45%;
+  margin-top: 10px;
+  z-index: 10;
+  background: #017167;
+  color: #fff;
+  -webkit-transition: -webkit-transform 0.3s;
+  transition: -webkit-transform 0.3s;
+  -o-transition: transform 0.3s;
+  transition: transform 0.3s;
+  transition: transform 0.3s, -webkit-transform 0.3s;
+  width: 11px;
+  border-radius: 0;
+  border-radius: 0 5px 5px 0; }
+
+.active #trigger {
+  left: -10px;
+  border-radius: 5px 0 0 5px; }
+
+.readingRoom__content_table #trigger:hover {
+  background-color: #01bfae; }
+
+#trigger i {
+  position: relative;
+  left: -2px; }
+
+.active #trigger i {
+  position: relative;
+  left: 0px; }
+
+.Breadcrumbs {
+  border-bottom: 1px solid rgba(50, 50, 50, 0.13); }
+  .Breadcrumbs li {
+    float: left; }
+    .Breadcrumbs li .tabBtn {
+      height: 50px;
+      padding: 0 25px;
+      line-height: 50px;
+      font-size: 15px;
+      text-transform: uppercase;
+      background-color: transparent;
+      outline: none;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s; }
+      .Breadcrumbs li .tabBtn-active {
+        border-bottom: 2px solid #64b5f6; }
+      .Breadcrumbs li .tabBtn:hover {
+        background-color: rgba(106, 147, 200, 0.25); }
+      .Breadcrumbs li .tabBtn:disabled {
+        background-color: #e1e1e1;
+        color: #999;
+        cursor: default; }
+
+.clickable-tableRow {
+  height: 50px !important;
+  line-height: 50px !important;
+  cursor: pointer;
+  transition: background-color 0.3s; }
+  .clickable-tableRow:hover {
+    background-color: #d5e5ff; }
+
+.Funds {
+  flex: 1;
+  display: flex;
+  flex-direction: column; }
+  .Funds__header {
+    display: flex; }
+    .Funds__header .ant-input-search {
+      width: 30%;
+      margin-right: 30px;
+      margin-left: 50%; }
+  .Funds__heading {
+    margin-left: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase; }
+  .Funds__extraInfo {
+    float: right;
+    cursor: pointer;
+    right: 100px;
+    position: absolute; }
+  .Funds__body {
+    margin-top: 5px;
+    flex: 1;
+    overflow: hidden; }
+    .Funds__body .ant-table-wrapper {
+      min-height: 200px; }
+    .Funds__body .row-selected {
+      background-color: #dbecfd;
+      cursor: pointer; }
+      .Funds__body .row-selected:hover {
+        background-color: #dbecfd; }
+
+.Guides {
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+  .Guides__body {
+    height: 100%; }
+  .Guides__info-modal .info-modal-row {
+    display: flex;
+    flex: 1;
+    margin-bottom: 10px; }
+  .Guides__info-modal .info-modal-row-label {
+    width: 50%; }
+  .Guides__info-modal .info-modal-row-value,
+  .Guides__info-modal .info-modal-row-value input,
+  .Guides__info-modal .info-modal-row-value textarea {
+    width: 100%; }
+
+.Inventories {
+  flex: 1;
+  display: flex;
+  flex-direction: column; }
+  .Inventories__header {
+    display: flex;
+    flex-direction: column; }
+  .Inventories__heading {
+    margin-left: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase; }
+  .Inventories .ant-breadcrumb {
+    margin-left: 5px; }
+  .Inventories__body {
+    flex: 1;
+    display: flex; }
+    .Inventories__body .ant-table-wrapper {
+      flex: 1; }
+    .Inventories__body .card {
+      width: 600px;
+      display: flex;
+      flex-direction: column;
+      position: relative; }
+      .Inventories__body .card > button {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: -30px;
+        top: 3px;
+        z-index: 10;
+        display: none; }
+      .Inventories__body .card form {
+        display: none; }
+      .Inventories__body .card-enter {
+        width: 0; }
+        .Inventories__body .card-enter-active {
+          width: 600px;
+          transition: width 0.3s; }
+        .Inventories__body .card-enter-done form {
+          display: block; }
+        .Inventories__body .card-enter-done > button {
+          display: flex; }
+      .Inventories__body .card-exit {
+        width: 600px; }
+        .Inventories__body .card-exit-active {
+          width: 0;
+          transition: width 0.3s; }
+      .Inventories__body .card .ant-form {
+        height: 100%;
+        overflow-y: auto;
+        padding: 20px 15px 0; }
+        .Inventories__body .card .ant-form-btns {
+          z-index: 99;
+          position: absolute;
+          left: 0;
+          width: 100%;
+          bottom: 0;
+          box-shadow: 0 -1px 5px 0;
+          background: #fff;
+          margin-bottom: 0;
+          padding: 5px; }
+      .Inventories__body .card .work-description {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 5px 0;
+        overflow: auto; }
+    .Inventories__body .row-selected {
+      background-color: #dbecfd;
+      cursor: pointer; }
+      .Inventories__body .row-selected:hover {
+        background-color: #dbecfd; }
+
+.Cases {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  flex: 1; }
+  .Cases__header {
+    display: flex;
+    flex-direction: column; }
+    .Cases__header .make-order {
+      width: 20%;
+      padding: 0 20px;
+      text-align: right; }
+  .Cases__heading {
+    margin-left: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase; }
+  .Cases .ant-breadcrumb {
+    margin-left: 5px; }
+  .Cases__body {
+    flex: 1;
+    overflow: hidden; }
+    .Cases__body .row-selected {
+      background-color: #dbecfd;
+      cursor: pointer; }
+      .Cases__body .row-selected:hover {
+        background-color: #dbecfd; }
+
+.researchersActive__heading {
+  display: flex;
+  align-items: center;
+  padding: 10px 30px;
+  background-color: #f4f4f4; }
+  .researchersActive__heading-buttons {
+    flex: 0 0 40%;
+    display: flex;
+    justify-content: space-around; }
+  .researchersActive__heading-radio {
+    display: flex;
+    flex: 0 0 30%;
+    justify-content: flex-end;
+    padding-right: 20px; }
+  .researchersActive__heading .ant-input-search {
+    flex: 0 0 30%; }
+
+.researchersTemporary__heading {
+  display: flex;
+  align-items: center;
+  padding: 10px 30px;
+  background-color: #f4f4f4; }
+  .researchersTemporary__heading-buttons {
+    flex: 0 0 40%;
+    display: flex;
+    justify-content: space-around; }
+  .researchersTemporary__heading .ant-input-search {
+    flex: 0 0 30%; }
+
+.editResearchersTheResearcherTopics__heading {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: #f4f4f4; }
+  .editResearchersTheResearcherTopics__heading button {
+    margin-right: 10px; }
+
+.editResearchersMain__heading {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: #f4f4f4; }
+  .editResearchersMain__heading button {
+    margin-right: 10px; }
+
+.editResearchersMain__body {
+  padding: 20px; }
+
+.Reports__heading {
+  display: flex;
+  align-items: center;
+  background-color: #f1f1f1;
+  padding: 10px; }
+  .Reports__heading button {
+    margin-left: 10px; }
+
+.Reports__chart__heading {
+  padding: 10px;
+  background-color: #f1f1f1; }
+
+.Requests__table-heading {
+  display: flex;
+  padding: 10px;
+  background-color: #f1f1f1; }
+  .Requests__table-heading__buttons {
+    flex: 0 0 40%; }
+  .Requests__table-heading .ant-input-search {
+    flex: 0 0 30%; }
+
+.Requests__C_table-heading {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #f1f1f1; }
+  .Requests__C_table-heading__buttons {
+    flex: 0 0 40%; }
+    .Requests__C_table-heading__buttons button {
+      margin-right: 15px; }
+  .Requests__C_table-heading__access-btns button {
+    margin-left: 15px; }
+
+.Requests__content__heading {
+  padding: 10px; }
+
+.CabinetCard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1; }
+  .CabinetCard__body {
+    flex: 1;
+    height: 100%;
+    display: flex; }
+    .CabinetCard__body .ant-table-wrapper {
+      flex: 1; }
+    .CabinetCard__body .card {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: .3s; }
+      .CabinetCard__body .card > button {
+        width: 40px;
+        height: 40px;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: -30px;
+        top: 3px;
+        z-index: 10;
+        display: none; }
+      .CabinetCard__body .card form {
+        display: none;
+        padding: 5px 10px;
+        height: 100%;
+        overflow-y: auto; }
+      .CabinetCard__body .card-enter {
+        width: 0 !important; }
+        .CabinetCard__body .card-enter-active {
+          width: 600px !important;
+          transition: width 0.3s; }
+        .CabinetCard__body .card-enter-done form {
+          display: block; }
+        .CabinetCard__body .card-enter-done > button {
+          display: flex; }
+      .CabinetCard__body .card-exit {
+        width: 600px; }
+        .CabinetCard__body .card-exit-active {
+          width: 0 !important;
+          transition: width 0.3s; }

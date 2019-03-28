@@ -1,0 +1,51 @@
+@import "../../../auth/styles/loginForm.css";
+@import "../../../auth/styles/loginScreen.css";
+@import "../../../auth/styles/signupForm.css";
+// @import '../../../auth/styles/signupScreen.css';
+@import "../../styles/header.css";
+@import "../../styles/heroScreen.css";
+//@import './swiper.css';
+@import "../../styles/homeScreen.css";
+@import "../../styles/mainLayout.css";
+@import "./form_styles.css";
+@import "../../styles/modal.css";
+@import "../../styles/collectionsLayout.css";
+@import "../../styles/profileScreen.css";
+@import "../../styles/helpScreen.css";
+@import "../../styles/readingRoom.css";
+@import "../../styles/footer.css";
+@import "../../styles/archiveFund.css";
+@import "../../styles/leaderWorkplace.css";
+@import "../../styles/NSA.css";
+@import "../../styles/sourcing.css";
+
+/*@font-face {
+  font-family: 'Avenir-Book';
+  font-style: normal;
+  font-weight: normal;
+  src: local("Avenir LT Std 45 Book"), url("fonts/avenir/AvenirLTStd-Book.woff") format("woff");
+}
+
+@font-face {
+  font-family: 'Avenir';
+  font-style: normal;
+  font-weight: normal;
+  src: local("Avenir LT Std 35 Light"), url("fonts/avenir/AvenirLTStd-Light.woff") format("woff");
+}*/
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "small Arial", sans-serif;
+  overflow: hidden;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-width: 900px;
+  overflow: hidden;
+}

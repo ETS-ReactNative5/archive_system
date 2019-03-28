@@ -1,0 +1,15 @@
+// shared variables here
+
+
+$min-width: 1900px;
+$header: 65px;
+$footer: 20px;
+$book-height: 200px;
+$book-width: calc(0.2*#{$book-height});
+$basic: 80px;
+$book-spine: 12px;
+$book-margin: 1px;
+$siderMenuWidth: 250px;
+
+$sidebar: calc(100vh - #{$header} - #{footer});
+$bk-list-width: calc(10*#{$book-spine} + 10*2*#{$book-margin}); //10 books

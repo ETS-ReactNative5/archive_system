@@ -1,0 +1,17 @@
+@import '../../shared/styles/shared.scss';
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+
+.login-form__error {
+  display: flex;
+  align-items: center;
+  color: #f04134;
+}

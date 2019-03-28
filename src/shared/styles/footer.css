@@ -1,0 +1,16 @@
+footer {
+  position: fixed;
+  bottom: 0;
+  height: 20px;
+  background-color: #009688;
+  font-size: 11px;
+  padding: 2px 40px;
+  color: #e0f2f1;
+  width: 100%;
+  transition: .3s; }
+  footer a {
+    color: #fafafa; }
+  footer:hover {
+    height: 30px;
+    padding-top: 5px;
+    font-size: 12px; }
