@@ -112,14 +112,12 @@ class CasesInInventory extends React.Component {
                 return index === self.findIndex((t) => (
                     t.value === elem.value
                 ))
-
             })
             this.setState({
                 sortData: bunchCases,
                 newSprtData: this.state.data
             })
         })
-
     }
 
     renderTableData = item => {

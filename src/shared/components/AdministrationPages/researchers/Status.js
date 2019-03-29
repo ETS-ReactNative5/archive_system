@@ -107,6 +107,7 @@ const Status = props => {
         data={staffRoleOptions ? staffRoleOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : []}
         isLoading={staffRoleLoading}
       />}
+
       {<Field
         name="roles"
         formItemClass="signup-form__input"

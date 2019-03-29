@@ -101,6 +101,7 @@ class ResearchersCard extends React.PureComponent {
   loadUserRoles = () => {
     const key = this.props.initialValues.key;
     if (key) {
+
       getRolesUser(key.split('_')[1])
         .then(res => this.setState({roles: res.data.map(o => ({ value: o.id, label: o.name[this.lng] }))}))
         .catch(err => console.warn(err))
