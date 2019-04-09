@@ -51,9 +51,11 @@ class MainInfoCaseForm extends Component {
     });
   };
 
-  onSubmit = ({caseTitle, ...values}) => {
-    if (!this.props.initialValues.caseKey) {
-      return this.props.save({
+  onSubmit = (values) => {
+
+      let caseTitle =values.name
+      if (!this.props.initialValues.key) {
+        return this.props.saveProps({
         objData: {caseTitle: caseTitle, parent: this.props.initialValues.parent},
         props: {
           ...pickBy(
@@ -62,7 +64,7 @@ class MainInfoCaseForm extends Component {
           fundIndex: values.fundIndex,
           caseNomenItem: values.caseNomenItem,
           caseStructuralSubdivision: this.props.initialValues.parent.split('_')[1],
-          caseInventory: this.props.initialValues.caseInventory.split('_')[1]
+          caseInventory: this.props.initialValues.caseInventory.value
         }
       });
     } else {
@@ -73,16 +75,24 @@ class MainInfoCaseForm extends Component {
       };
       const objData = {};
       const props = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
+
       if (caseTitle) {
         objData.name = {};
         SYSTEM_LANG_ARRAY.forEach(lang => {
-          objData.name[lang] = caseTitle
+          objData.name[lang] = caseTitle[lang]
         });
+      }
+      let obj={
+          doItem:values.key
+      }
+      let val={
+        values:props
       }
       return this.props.saveProps({
         cube,
-        caseNomenItemValue: values.caseNomenItem.value
-      }, props, this.props.initialValues.caseKey, objData);
+          obj
+        //caseNomenItemValue: values.caseNomenItem.value
+      }, val, this.props.tofiConstants, objData);
     }
   };
 

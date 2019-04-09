@@ -202,7 +202,7 @@ class FundMaker extends React.PureComponent {
             'isActive', 'orgAddress', 'orgPhone', 'orgFax', 'orgEmail', 'orgFormationDoc', 'orgReorganizationDoc', 'orgLiquidationDoc',
             'leaderFIO', 'leaderPosition', 'leaderPhone', 'depLeaderFIO', 'depLeaderPosition', 'depLeaderPhone', 'responsibleFIO', 'responsiblePosition', 'responsiblePhone',
             'responsibleAppointmentDate', 'archiveLeaderFIO', 'archiveLeaderPosition', 'archiveLeaderPhone', 'archiveLeaderAppointmentDate', 'subordination', 'jurisdiction',
-            'commissionLeaderFIO', 'commissionLeaderPosition', 'commissionLeaderPhone', 'contractNumber', 'orgDocType', 'orgFunction', 'structure', 'fundNumber'];
+            'commissionLeaderFIO', 'commissionLeaderPosition', 'commissionLeaderPhone', 'contractNumber', 'orgDocType', 'orgFunction', 'structure', 'fundNumber','corresOrg','corresOrgFile','letterDetails'];
         const accessLevelObj = this.props.accessLevelOptions.find(al => al.id === item.accessLevel);
 
         const result = {
@@ -222,10 +222,11 @@ class FundMaker extends React.PureComponent {
 
         ['orgFormationDoc', 'orgReorganizationDoc', 'orgLiquidationDoc', 'leaderFIO', 'leaderPosition', 'depLeaderFIO',
             'depLeaderPosition', 'responsibleFIO', 'responsiblePosition', 'archiveLeaderFIO', 'orgAddress',
-            'archiveLeaderPosition', 'commissionLeaderFIO', 'commissionLeaderPosition', 'fundNumber']
+            'archiveLeaderPosition', 'commissionLeaderFIO', 'commissionLeaderPosition', 'fundNumber','letterDetails','corresOrg','corresOrgFile']
             .forEach(c => {
                 result[c] = result[c + 'Lng']
             });
+        //console.log('parseForTable', result);
         return result;
     };
 
@@ -384,7 +385,6 @@ class FundMaker extends React.PureComponent {
         if (this.newObj) {
             this.newObjIdx = this.filteredData.findIndex(obj => obj.key === this.newObj);
         }
-
         return (
             <div className="FundMaker">
                 <div className="FundMaker__heading">

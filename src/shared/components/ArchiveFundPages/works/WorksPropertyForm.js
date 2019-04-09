@@ -53,7 +53,6 @@ class WorksPropertyForm extends Component {
             return this.props.onCreateObj(
                 {
                     ...pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key])),
-                    workAuthor: String(this.props.user.obj),
                     workStatusReg: values.workStatusReg,
                     workDate: values.workDate
                 })
@@ -71,7 +70,7 @@ class WorksPropertyForm extends Component {
                 workType: values.workType,
                 workStatusReg,
                 workDate: moment().format('YYYY-MM-DD'),
-                workAuthor: String(this.props.user.obj)
+
             });
         }
     };

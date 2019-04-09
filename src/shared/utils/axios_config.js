@@ -2,6 +2,7 @@ import axios from 'axios';
 import {forEach} from 'lodash';
 import {CUBE_FOR_AF_FUND, CUBE_FOR_RR} from '../constants/tofiConstants';
 import moment from 'moment';
+import { getFile } from "../actions/actions";
 
 axios.defaults.baseURL = `/${process.env.REACT_APP_APP_NAME}/a/archive/default`;
 

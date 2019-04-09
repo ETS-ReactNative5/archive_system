@@ -18,6 +18,7 @@ import {getPropMeta, parseCube_new} from '../../utils/cubeParser';
 
 const EditableCell = ({editable, value, onChange}) => (
 <div>
+    <p>BBBBBBBBBBBBBBBBBBBBBB</p>
     {editable
     ? <Input style={{margin: '-5px 0'}} value={value}
              onChange={e => onChange(e.target.value)}/>
@@ -27,6 +28,7 @@ const EditableCell = ({editable, value, onChange}) => (
 );
 const EditableSelect = ({editable, value, onChange, options}) => (
 <div>
+    <p>AAAAAAAAAAAAAAAAAAAAAAAA</p>
     {editable
     ? <Select
     style={{margin: '-5px 0'}}

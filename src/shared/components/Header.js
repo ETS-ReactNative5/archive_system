@@ -258,13 +258,25 @@ class Header extends React.Component{
 
 
     }
+
+    serMaxVal=()=>{
+        let maxVal = Math.max.apply(Math, this.state.propStudyOptions.map((el)=>{
+            return el.value
+        }))
+        let arrVal = this.state.propStudyOptions.filter((el ,i)=>{
+            if (el.value === maxVal)return el
+
+        })
+        let rezulObj = arrVal.find((el)=>el.value === maxVal)
+        return rezulObj
+    };
   showBasket = () => {
       this.getPropsOptions()
       setTimeout(()=>{
           if (this.props.basket.length > 0){
               const newBaskets = this.props.basket
               for (let i=0; i < newBaskets.length; i++){
-                  newBaskets[i].propStudy=this.state.propStudyOptions[Math.max.apply(Math, this.state.propStudyOptions.map((o,i)=> { return i-1; }))]
+                  newBaskets[i].propStudy=this.serMaxVal()
               }
               this.props.autoAddCase(newBaskets)
           }

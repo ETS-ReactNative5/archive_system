@@ -516,7 +516,7 @@ class ArchiveFundWorks extends React.PureComponent {
         })
     };
 
-    addSpecialDate = (key, name) => {
+    addSpecialDate = (key,  name ,stateRecord) => {
         return e => {
             e.stopPropagation();
             const newData = this.state.data.slice();
@@ -558,7 +558,8 @@ class ArchiveFundWorks extends React.PureComponent {
                                                 pathname: `/archiveFund/works/checking/${target.workRegFund.value}_${target.workRegInv.value}`,
                                                 state: {
                                                     workId: key,
-                                                    data: res.data
+                                                    data: res.data,
+                                                    stateRecord
                                                 }
                                             })
                                         }
@@ -624,7 +625,8 @@ class ArchiveFundWorks extends React.PureComponent {
                                     state: {
                                         workId: key,
                                         data: res.data,
-                                        workIndexNumber: target.workIndexNumber
+                                        workIndexNumber: target.workIndexNumber,
+                                        stateRecord
                                     }
                                 })
                             }
@@ -1356,7 +1358,7 @@ class ArchiveFundWorks extends React.PureComponent {
                                 { record.intermediateResultDate ?
                                 <Button title={t('CONTINUE')}
                                         icon="forward"
-                                        onClick={this.addSpecialDate(record.key, 'workActualStartDateContinue')}
+                                        onClick={this.addSpecialDate(record.key,  'workActualStartDateContinue', record)}
                                         className='green-btn'
                                 /> :
                                 text.format('DD-MM-YYYY') || ' ' }
@@ -1376,7 +1378,7 @@ class ArchiveFundWorks extends React.PureComponent {
                                 title={record.workType.workTypeClass === 'casesForTemporaryUse' ? t("ISSUED") : t("START")}
                                 disabled={!record.workAssignedTo}
                                 icon={record.workType.workTypeClass === 'casesForTemporaryUse' ? "reload" : "play-circle"}
-                                onClick={this.addSpecialDate(record.key, 'workActualStartDate')}
+                                onClick={this.addSpecialDate(record.key,'workActualStartDate',record)}
                                 className='green-btn'
                                 />
                                 {/*<Button title="CANCEL" icon="close" onClick={this.addSpecialDate(record.key, 'workActualStartDate', 'red')} className='green-btn'/>*/}

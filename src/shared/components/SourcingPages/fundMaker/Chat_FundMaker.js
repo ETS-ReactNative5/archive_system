@@ -1,0 +1,462 @@
+import React from 'react';
+import {
+    Table, message, Input, Popconfirm, Button, Icon, Badge, Modal, Upload,
+    Col, Spin
+} from 'antd';
+import {Cube as axios} from "../../../utils/axios_config";
+import ButtonGroup from "antd/es/button/button-group";
+import {getFile, updateCubeData2} from "../../../actions/actions";
+import * as uuid from "uuid";
+import moment from "moment/moment";
+import {isEmpty} from "lodash";
+
+class Chat_FundMaker extends React.PureComponent {
+
+    state = {
+        withIdDPV: this.props.withIdDPV,
+        initialValues: this.props.initialValues,
+        id: this.props.id,
+        data: [],
+        cubeChat: '',
+        modalOpen: false,
+        newFile: '',
+        newLetter: '',
+        newFileArr: '',
+        loading: false
+    };
+
+
+    onChangeFile = (e) => {
+        this.setState({
+            newFileArr: e.target.files,
+            newFile: e.target.files[0]
+        })
+    };
+
+
+    showFile = (key) => {
+        getFile(key).then(blob => {
+            const url = URL.createObjectURL(new Blob([blob.data], {type: 'application/pdf'}));
+            this.setState({
+                modalOpen: true,
+                file: <iframe src={`${url}#toolbar=0`} frameBorder="0"/>
+            })
+        })
+    };
+
+    showFileBefore = (blob) => {
+        const url = URL.createObjectURL(new Blob([blob.data], {type: 'application/pdf'}));
+        this.setState({
+            modalOpen: true,
+            file: <iframe src={`${url}#toolbar=0`} frameBorder="0"/>
+        })
+    };
+
+
+    onChangeNewLetter = (event) => {
+        this.setState({newLetter: event.target.value});
+    };
+
+
+    handleOk = (e) => {
+        this.setState({
+            modalOpen: false
+        })
+    };
+
+    handleCancel = (e) => {
+        this.setState({
+            modalOpen: false
+        })
+    };
+
+    componentDidMount() {
+        this.getListChat(this.props.initialValues.key);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.initialValues !== this.props.initialValues) {
+            this.getListChat(this.props.initialValues.key);
+        }
+    }
+
+
+    getListChat = (ids) => {
+        this.setState({
+            newLetter: '',
+            newFileArr: '',
+            loading: true
+        });
+        const filters = {
+            filterDOAnd: [
+                {
+                    dimConst: 'doForOrgFundmakers',
+                    concatType: "and",
+                    conds: [
+                        {
+                            ids: String(ids)
+                        }
+                    ]
+                }
+            ],
+            filterDPAnd: [
+                {
+                    dimConst: 'dpForOrgFundmakers',
+                    concatType: "and",
+                    conds: [
+                        {
+                            consts: "letterDetails,corresOrg,corresOrgFile"
+                        }
+                    ]
+                }
+            ],
+        };
+        this.setState({
+            loading: true
+        });
+
+        axios.getCube('cubeForOrgFundmaker', JSON.stringify(filters), '', '').then(res => {
+            this.setState({
+                cubeChat: res.data,
+                loading: false
+            });
+            var dpForOrgFM = this.props.tofiConstants['dpForOrgFundmakers'].id;
+            var doForOrgFM = this.props.tofiConstants['doForOrgFundmakers'].id;
+            var corresOrgId = this.state.cubeChat['dp_' + dpForOrgFM].find(obj => obj.prop == this.props.tofiConstants['corresOrg'].id).id;
+            var cubeChat = this.state.cubeChat;
+            var cpxCorresID = cubeChat.cube.filter(el => el['dp_' + dpForOrgFM] == corresOrgId);
+            var newData = cpxCorresID.map(el => {
+                var corresOrgFileProp = this.state.cubeChat['dp_' + dpForOrgFM].find(obj => obj.prop == this.props.tofiConstants['corresOrgFile'].id).id;
+                var letterDetailsProp = this.state.cubeChat['dp_' + dpForOrgFM].find(obj => obj.prop == this.props.tofiConstants['letterDetails'].id).id;
+                return {
+                    key: el.idDataPropVal,
+                    doObj: el['do_' + doForOrgFM],
+                    corresOrgFile: !!this.state.cubeChat.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == corresOrgFileProp) &&
+                    !!this.state.cubeChat.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == corresOrgFileProp).valueFile &&
+                    this.state.cubeChat.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == corresOrgFileProp).valueFile['ru'],
+                    letterDetails: !!this.state.cubeChat.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == letterDetailsProp).valueStr &&
+                    this.state.cubeChat.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == letterDetailsProp).valueStr['ru'],
+                    idName: !!el.valueStr && el.valueStr['ru']
+                }
+            });
+            if (newData[0].key == undefined) {
+                this.setState({
+                    data: '',
+                })
+            } else {
+                this.setState({
+                    data: newData,
+                })
+            }
+
+        });
+    };
+
+    renderTableHeader = () => {
+        const {t} = this.props;
+        return (
+        <div>
+
+
+            <Col span={12}>
+                <Input value={this.state.newLetter} onChange={this.onChangeNewLetter}
+                       type="text"/>
+            </Col>
+            <Col span={8}>
+                {
+
+                    <label>
+                        <input
+                        type="file"
+                        style={{display: 'none'}}
+                        onChange={this.onChangeFile}/>
+                        <span className='ant-btn ant-btn-primary'><Icon
+                        type='upload'/>
+                        <Badge className="badgeInputFile"
+                               count={this.state.newFileArr.length}>
+                    </Badge>
+                        <span>{this.props.t('UPLOAD_FILE')}</span></span>
+                    </label>}
+            </Col>
+            <Col span={2}>
+                <Button
+                disabled={!this.state.newFile || !this.state.newLetter}
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginRight: '10px'
+                }}
+                type="primary"
+                shape='circle'
+                icon='plus'
+                onClick={() => this.addChatRow()
+
+                }/>
+            </Col>
+
+
+        </div>
+        )
+    };
+
+
+    deleteRow = (rec) => {
+        var data = [
+            {
+                own: [{
+                    doConst: 'doForOrgFundmakers',
+                    doItem: String(rec.doObj),
+                    isRel: "0",
+                    objData: {}
+                }
+                ],
+                props: [{
+                    propConst: "corresOrg",
+                    idDataPropVal: rec.key,
+                    val: {
+                        kz: String(rec.idName),
+                        ru: String(rec.idName),
+                        en: String(rec.idName)
+                    },
+                    typeProp: "71",
+                    periodDepend: "2",
+                    isUniq: "2",
+                    mode: "del",
+                },
+                ],
+                periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
+            }
+        ];
+
+        updateCubeData2(
+        'cubeForOrgFundmaker',
+        moment().format('YYYY-MM-DD'),
+        JSON.stringify(data),
+        {},
+        {}).then(res => {
+            if (res.success) {
+                message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+            } else {
+                message.error(this.props.t('PROPS_UPDATING_ERROR'));
+                if (res.errors) {
+                    res.errors.forEach(err => {
+                        message.error(err.text);
+                    });
+                    return {success: false}
+                }
+            }
+            this.getListChat(this.props.initialValues.key)
+        });
+    };
+
+    addChatRow = () => {
+        console.log(this.props.initialValues.key)
+        var data = [
+            {
+                own: [{
+                    doConst: 'doForOrgFundmakers',
+                    doItem: String(this.props.initialValues.key),
+                    isRel: "0",
+                    objData: {}
+                }
+                ],
+                props: [{
+                    propConst: "corresOrg",
+                    val: {
+                        kz: `${this.state.initialValues.key}_${uuid()}`,
+                        ru: `${this.state.initialValues.key}_${uuid()}`,
+                        en: `${this.state.initialValues.key}_${uuid()}`
+                    },
+                    typeProp: "71",
+                    periodDepend: "2",
+                    isUniq: "2",
+                    mode: "ins",
+                    child: [{
+                        propConst: "letterDetails",
+                        val: {
+                            kz: this.state.newLetter,
+                            ru: this.state.newLetter,
+                            en: this.state.newLetter
+                        },
+                        typeProp: "315",
+                        periodDepend: "2",
+                        isUniq: "1"
+                    }, {
+                        propConst: "corresOrgFile",
+                        isUniq: "2",
+                        typeProp: "317",
+                        periodDepend: "2"
+                    }]
+                },
+                ],
+                periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
+            }
+        ];
+
+        updateCubeData2(
+        'cubeForOrgFundmaker',
+        moment().format('YYYY-MM-DD'),
+        JSON.stringify(data),
+        {},
+        {
+            ['__Q__corresOrgFile']: Array.from(this.state.newFileArr)
+        }).then(res => {
+            if (res.success) {
+                message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+            } else {
+                message.error(this.props.t('PROPS_UPDATING_ERROR'));
+                if (res.errors) {
+                    res.errors.forEach(err => {
+                        message.error(err.text);
+                    });
+                    return {success: false}
+                }
+            }
+            this.getListChat(this.props.initialValues.key)
+        });
+
+
+    };
+    onRowClick = record => {
+        this.setState({selectedRow: record})
+    };
+
+
+    handleChange(value, key, column) {
+        const newData = [...this.state.data];
+        const target = newData.find(item => key === item.key)[0];
+        if (target) {
+            target[column] = value;
+            this.setState({data: newData});
+        }
+    }
+
+    edit(key) {
+        const newData = [...this.state.data];
+        const target = newData.filter(item => key === item.key)[0];
+        if (target) {
+            target.editable = true;
+            this.setState({data: newData});
+        }
+    }
+
+    save(key) {
+        const newData = [...this.state.data];
+        const target = newData.filter(item => key === item.key)[0];
+        if (target) {
+            delete target.editable;
+            this.setState({data: newData});
+            this.cacheData = newData.map(item => ({...item}));
+        }
+    }
+
+    cancel(key) {
+        const newData = [...this.state.data];
+        const target = newData.filter(item => key === item.key)[0];
+        if (target) {
+            Object.assign(target, this.cacheData.filter(item => key === item.key)[0]);
+            delete target.editable;
+            this.setState({data: newData});
+        }
+    }
+
+
+    render() {
+        const {tofiConstants: {corresOrgFile, letterDetails}} = this.props;
+        this.lng = localStorage.getItem('i18nextLng');
+        return (
+        <div>
+
+            <Spin spinning={this.state.loading}>
+                <Table
+                bordered
+                columns={[
+                    {
+                        key: 'letterDetails',
+                        title: letterDetails.name[this.lng],
+                        dataIndex: 'letterDetails',
+                        width: '40%',
+                        render: (obj, record) => obj,
+                        editable: true,
+                        sorter: (a, b) => {
+                            a.key - b.key
+                        },
+                        sortOrder: 'ascend'
+                    },
+                    {
+                        key: 'corresOrgFile',
+                        title: corresOrgFile.name[this.lng],
+                        dataIndex: 'corresOrgFile',
+                        width: '40%',
+                        render: (text, record) => {
+                            return (
+                            !!text ?
+                            <Button type="primary"
+                                    className="centerIcon"
+                                    icon="eye"
+                                    shape='circle'
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        marginRight: '10px'
+                                    }}
+                                    onClick={() => this.showFile(text)}> </Button>
+                            : ''
+                            )
+
+                        },
+                        editable: true,
+                    },
+                    {
+                        key: 'action',
+                        title: '',
+                        dataIndex: '',
+                        width: '20%',
+                        render: (text, record) => {
+                            return (
+                            <div className="editable-row-operations">
+                                {
+                                    <span>
+                                    <Popconfirm title={this.props.t('CONFIRM_REMOVE')}
+                                                onConfirm={() => this.deleteRow(record)}>
+                        <a style={{
+                            color: '#f14c34',
+                            marginLeft: '10px',
+                            fontSize: '14px'
+                        }}><Icon type="delete" className="editable-cell-icon"/></a>
+                      </Popconfirm>
+                    </span>
+                                }
+                            </div>
+                            );
+                        },
+                    }
+                ]}
+                dataSource={this.state.data}
+                size='small'
+                footer={this.renderTableHeader}
+                pagination={false}
+                scroll={{y: '100%'}}
+                onRowClick={this.onRowClick}
+                rowClassName={record => this.state.selectedRow && this.state.selectedRow.key === record.key ? 'row-selected' : ''}
+                style={{marginLeft: '5px'}}
+                />;
+            </Spin>
+
+            <Modal visible={this.state.modalOpen}
+                   onOk={this.handleOk}
+                   onCancel={this.handleCancel}
+                   cancelText="Закрыть"
+                   className="w80">
+                <div className="Viewer-window h70vh">
+                    {this.state.file}
+                </div>
+            </Modal>
+        </div>
+        )
+    }
+}
+
+export default Chat_FundMaker;

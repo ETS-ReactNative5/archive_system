@@ -48,40 +48,50 @@ class MainInfoCaseForm extends Component {
     });
   };
 
-  onSubmit = ({caseTitle, ...values}) => {
-    if (!this.props.initialValues.caseKey) {
-      return this.props.save({
-        objData: {caseTitle: caseTitle, parent: this.props.initialValues.parent},
-        props: {
-          ...pickBy(
-            values, (val, key) => !isEqual(val, this.props.initialValues[key])
-          ),
-          fundIndex: values.fundIndex,
-          caseNomenItem: values.caseNomenItem,
-          caseStructuralSubdivision: this.props.initialValues.parent.split('_')[1],
-          caseInventory: this.props.initialValues.caseInventory.split('_')[1]
+    onSubmit = (values) => {
+
+        let caseTitle =values.name
+        if (!this.props.initialValues.key) {
+            return this.props.saveProps({
+                objData: {caseTitle: caseTitle, parent: this.props.initialValues.parent},
+                props: {
+                    ...pickBy(
+                        values, (val, key) => !isEqual(val, this.props.initialValues[key])
+                    ),
+                    fundIndex: values.fundIndex,
+                    caseNomenItem: values.caseNomenItem,
+                    caseStructuralSubdivision: this.props.initialValues.parent.split('_')[1],
+                    caseInventory: this.props.initialValues.caseInventory.value
+                }
+            });
+        } else {
+            const cube = {
+                cubeSConst: CUBE_FOR_AF_CASE,
+                doConst: DO_FOR_CASE,
+                dpConst: DP_FOR_CASE
+            };
+            const objData = {};
+            const props = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
+
+            if (caseTitle) {
+                objData.name = {};
+                SYSTEM_LANG_ARRAY.forEach(lang => {
+                    objData.name[lang] = caseTitle[lang]
+                });
+            }
+            let obj={
+                doItem:values.key
+            }
+            let val={
+                values:props
+            }
+            return this.props.saveProps({
+                cube,
+                obj
+                //caseNomenItemValue: values.caseNomenItem.value
+            }, val, this.props.tofiConstants, objData);
         }
-      });
-    } else {
-      const cube = {
-        cubeSConst: CUBE_FOR_AF_CASE,
-        doConst: DO_FOR_CASE,
-        dpConst: DP_FOR_CASE
-      };
-      const objData = {};
-      const props = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
-      if (caseTitle) {
-        objData.name = {};
-        SYSTEM_LANG_ARRAY.forEach(lang => {
-          objData.name[lang] = caseTitle
-        });
-      }
-      return this.props.saveProps({
-        cube,
-        caseNomenItemValue: values.caseNomenItem.value
-      }, props, this.props.initialValues.caseKey, objData);
-    }
-  };
+    };
 
   loadClsObj = (cArr, propConsts, dte = moment().format("YYYY-MM-DD")) => {
     return () => {

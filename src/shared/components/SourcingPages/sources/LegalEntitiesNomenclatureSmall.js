@@ -16,6 +16,7 @@ import {
 } from '../../../constants/tofiConstants';
 const ButtonGroup = Button.Group;
 
+
 const EditableCell = ({ editable, value, onChange }) => (
     <div style={{ flex: 1 }}>
         {editable

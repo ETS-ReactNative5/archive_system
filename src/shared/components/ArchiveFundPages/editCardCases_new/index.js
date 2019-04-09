@@ -5,7 +5,7 @@ import {isEmpty, isEqual, map} from "lodash";
 import {CSSTransition} from "react-transition-group";
 
 import {getCube, getObjListNew, getPropVal} from '../../../actions/actions';
-import {onSaveCubeData, parseCube_new, parseForTable} from '../../../utils/cubeParser';
+import {onSaveCubeData,onSaveCubeData2, parseCube_new, parseForTable} from '../../../utils/cubeParser';
 import {
   CUBE_FOR_AF_CASE,
   DO_FOR_CASE,
@@ -109,10 +109,27 @@ class EditCardCases extends React.Component {
   }
 
   renderTableData = item => {
-    const constArr = ['fundNumber', 'fundIndex', 'caseDbeg', 'caseDend', 'caseStructuralSubdivision', 'caseNotes', 'documentFile'];
+    const constArr = ['fundNumber', 'fundIndex', 'caseDbeg', 'caseDend', 'caseStructuralSubdivision', 'caseNomenItem','caseNotes',"caseInventory", 'documentFile','caseNumberOfPages',
+        'caseStructuralSubdivision',
+        "caseNotes",
+        'caseDocsLang',
+        'caseDateOfDeposit',
+        "irreparablyDamaged",
+        "caseOCD",
+        "caseInsurance",
+        "caseFundOfUse",
+        'caseStorage',
+        "rack",
+        "shelf",
+        "typeOfPaperCarrier",
+        "numberOfOriginals",
+
+
+    ];
     const result = {
       key: item.id,
-      name: item.name
+      name: item.name,
+        parent:item.parent
     };
     parseForTable(item.props, this.props.tofiConstants, result, constArr);
     return result;
@@ -195,8 +212,8 @@ class EditCardCases extends React.Component {
         return Promise.reject(resSave);
       }
       message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
-      /*this.setState({loading: true, openCard: false});
-       await this.getCubeAct();*/
+      this.setState({loading: true, openCard: false});
+      await this.getCubeAct();
       return resSave;
     }
     catch (e) {
@@ -205,6 +222,7 @@ class EditCardCases extends React.Component {
       console.warn(e);
     }
   };
+
 
   getRespCard(invType, docType) {
     const {
@@ -262,7 +280,7 @@ class EditCardCases extends React.Component {
     const {
       t, fundFeatureOptions, tofiConstants: {
         structuralSubdivisionList, fundFeature, documentFile,
-        fundNumber, fundIndex, caseDbeg, caseDend, caseNotes, caseStructuralSubdivision
+        fundNumber, fundIndex, caseDbeg, caseDend,  caseNotes, caseStructuralSubdivision
       }
     } = this.props;
     const {structuralSubdivisionListOptions, filter, data, selectedRow} = this.state;
@@ -291,6 +309,7 @@ class EditCardCases extends React.Component {
                 key: selectedRow.key,
                 name: selectedRow.name,
               },
+
               title: t('DOCUMENTS')
             }
           }}>

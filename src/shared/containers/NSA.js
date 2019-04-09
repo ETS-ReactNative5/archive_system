@@ -15,6 +15,7 @@ class NSA extends Component {
     const { t, tofiConstants } = this.props;
 
     return (
+
       <div className="NSA">
         <Switch>
           {/*<Route exact path="/sra/works" render={props => <NSAWorks t={t} {...props}/>} />*/}

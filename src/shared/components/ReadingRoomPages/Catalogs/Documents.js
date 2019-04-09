@@ -1,7 +1,7 @@
 import React from "react";
 import {connect} from "react-redux";
 import {isEmpty, isEqual} from "lodash";
-import {Icon, Input, Modal, Tabs, Form } from "antd";
+import {Icon, Input, Modal, Tabs, Form, Spin} from "antd";
 import DocumentInfoModal from "./DocumentInfoModal";
 import axios from 'axios';
 
@@ -58,7 +58,8 @@ class Documents extends React.Component {
             modalPeopleMentioned: '',
             modalDocumentKeywords: '',
             modalVersionsName: {},
-            modalLegalStatus:''
+            modalLegalStatus:'',
+            loader: false
         };
     }
 
@@ -188,12 +189,13 @@ class Documents extends React.Component {
                 this.setState({loading: false});
 
             },
-            onSelectAll: (selected, selectedRows, changeRows) => {
+            onSelectAll: async (selected, selectedRows, changeRows) => {
                 const {t} = this.props;
 
+                this.setState({loader: true});
                 for (let record of changeRows) {
                     if (selected) {
-                        this.setState({loading: true});
+                        // this.setState({loading: true});
                         if (this.props.basket.length < 100) {
                             const fd = new FormData();
                             fd.append(
@@ -201,7 +203,7 @@ class Documents extends React.Component {
                                 record.key.split('_')[1]
                             );
                             fd.append("propConst", "documentCase");
-                            getObjFromProp(fd).then(res => {
+                            await getObjFromProp(fd).then(res => {
                                 if (res.success) {
                                     const caseId = res.data[0].id;
                                     const fd = new FormData();
@@ -239,21 +241,21 @@ class Documents extends React.Component {
                                                                 fundId,
                                                                 archiveId
                                                             });
-                                                            this.setState({loading: false});
+                                                            // this.setState({loader: false});
                                                         } else {
-                                                            this.setState({loading: false});
+                                                            // this.setState({loader: false});
                                                         }
                                                     });
                                                 } else {
-                                                    this.setState({loading: false});
+                                                    // this.setState({loader: false});
                                                 }
                                             });
                                         } else {
-                                            this.setState({loading: false});
+                                            // this.setState({loader: false});
                                         }
                                     });
                                 } else {
-                                    this.setState({loading: false});
+                                    // this.setState({loading: false});
                                 }
                             });
                         } else {
@@ -270,13 +272,13 @@ class Documents extends React.Component {
                     }
 
                 }
-                this.setState({loading: false});
+                this.setState({loader: false});
 
             },
             selections: [{
                 key: 'all-data',
                 text: 'Выбрать все',
-                onSelect: (select) => {
+                onSelect: async (select) => {
                     this.setState({
                         selectedRowKeys: this.state.data.map((el) => {
                             return el.key
@@ -284,9 +286,10 @@ class Documents extends React.Component {
                     });
                     const {t} = this.props;
 
+                    this.setState({loader: true});
                     for (let record of this.state.data) {
                         if (true) {
-                            this.setState({loading: true});
+                            // this.setState({loading: true});
                             if (this.props.basket.length < 100) {
                                 const fd = new FormData();
                                 fd.append(
@@ -294,7 +297,7 @@ class Documents extends React.Component {
                                     record.key.split('_')[1]
                                 );
                                 fd.append("propConst", "documentCase");
-                                getObjFromProp(fd).then(res => {
+                               await getObjFromProp(fd).then(res => {
                                     if (res.success) {
                                         const caseId = res.data[0].id;
                                         const fd = new FormData();
@@ -332,21 +335,21 @@ class Documents extends React.Component {
                                                                     fundId,
                                                                     archiveId
                                                                 });
-                                                                this.setState({loading: false});
+                                                                // this.setState({loader: false});
                                                             } else {
-                                                                this.setState({loading: false});
+                                                                // this.setState({loader: false});
                                                             }
                                                         });
                                                     } else {
-                                                        this.setState({loading: false});
+                                                        // this.setState({loader: false});
                                                     }
                                                 });
                                             } else {
-                                                this.setState({loading: false});
+                                                // this.setState({loader: false});
                                             }
                                         });
                                     } else {
-                                        this.setState({loading: false});
+                                        // this.setState({loader: false});
                                     }
                                 });
                             } else {
@@ -362,7 +365,7 @@ class Documents extends React.Component {
                             this.props.removeCaseFromBasket(record);
                         }
                     }
-                    this.setState({loading: false});
+                    this.setState({loader: false});
 
                 },
             },
@@ -373,10 +376,12 @@ class Documents extends React.Component {
                         this.setState({
                             selectedRowKeys: [],
                         });
+                        this.setState({loader: true});
                         for (let record of this.state.data) {
                             this.props.removeCaseFromBasket(record);
 
                         }
+                        this.setState({loader: false});
                     },
                 }
 
@@ -677,6 +682,7 @@ render()
             }
         </div>
         <div className="Cases__body">
+            <Spin spinning={this.state.loader}>
             <AntTable
             openedBy="Cases"
             loading={this.props.loadingTable}
@@ -762,6 +768,7 @@ render()
                 this.setState({selectedRow: rec})
             }}
             />
+            </Spin>
             {modalShow && (
             <DocumentInfoModal
             modalShow={modalShow}

@@ -287,19 +287,19 @@ export const dFundMaker = id =>
     axios.Cube.dFundMaker(id);
 
 export const insPropVal = fd =>
-    axios.General.insPropVal(fd);
+    axios.General.insPropVal(fd)
 
 export const addObjVer = fd =>
-    axios.General.addObjVer(fd);
+    axios.General.addObjVer(fd)
 
 export const updObjVer = fd =>
-  axios.General.updObjVer(fd);
+  axios.General.updObjVer(fd)
 
 export const getObjList = fd =>
-    axios.General.getObjList(fd);
+    axios.General.getObjList(fd)
 
 export const getObjListNew = fd =>
-    axios.General.getObjListNew(fd);
+    axios.General.getObjListNew(fd)
 
 export const onAppLoad = () => dispatch => {
     return axios.Auth.getUser()
@@ -330,7 +330,7 @@ export const changeInvOC = (invFrom, invTo) => {
 export const loginSesion = (user)=>dispatch=>{
     dispatch(loginSuccess(user))
 
-};
+}
 
 export const logout = () => dispatch => {
     return axios.Auth.logout()
@@ -375,7 +375,7 @@ export const autoAddCase = baskets => dispatch=>{
         type:AUTO_ADD_CASE,
         baskets
     })
-};
+}
 
 export const changeCaseInBasket = selectedCase => dispatch => {
     dispatch({

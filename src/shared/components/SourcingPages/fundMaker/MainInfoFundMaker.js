@@ -109,13 +109,14 @@ class MainInfoFundMaker extends Component {
 
   componentDidUpdate(prevProps) {
     if(prevProps.initialValues !== this.props.initialValues) {
-      this.fundNumber = {...this.props.initialValues.fundNumber} || '';
+      this.fundNumber = {...this.props.initialValues.fundNumber.value} || '';
       this.shortNameValue = {...this.props.initialValues.shortName} || {kz: '', ru: '', en: ''};
       this.nameValue = {...this.props.initialValues.name} || {kz: '', ru: '', en: ''};
       this.orgAddressValue = {...this.props.initialValues.orgAddress} || {kz: '', ru: '', en: ''};
       this.orgFormationDocValue = {...this.props.initialValues.orgFormationDoc} || {kz: '', ru: '', en: ''};
       this.orgReorganizationDocValue = {...this.props.initialValues.orgReorganizationDoc} || {kz: '', ru: '', en: ''};
       this.orgLiquidationDocValue = {...this.props.initialValues.orgLiquidationDoc} || {kz: '', ru: '', en: ''};
+      debugger;
     }
   }
 
@@ -233,7 +234,7 @@ class MainInfoFundMaker extends Component {
       formOfAdmissionOptions, orgIndustryOptions, isActiveOptions, fundmakerArchiveOptions, cubeSConst,
       objSubordinationOptions } = this.props;
     const { lang, loading } = this.state;
-    //console.log('orgFormationDocValue ', this.orgFormationDocValue);
+    console.log(this.props);
     return (
       <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)} style={dirty ? {paddingBottom: '43px'} : {}}>
         <Field
@@ -332,6 +333,7 @@ class MainInfoFundMaker extends Component {
           component={ renderInput }
           placeholder={contractNumber.name[lng]}
           label={contractNumber.name[lng]}
+          parse={this.props.initialValues.contractNumber ? this.props.initialValues.contractNumber.value : ''}
           formItemLayout={
             {
               labelCol: { span: 10 },

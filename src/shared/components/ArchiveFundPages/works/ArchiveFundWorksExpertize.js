@@ -101,7 +101,7 @@ class ArchiveFundWorksExpertize extends React.PureComponent {
           updateCubeData(CUBE_FOR_WORKS, moment().format('YYYY-MM-DD'), JSON.stringify(datas))
             .then(res => {
               if(res.success) {
-                this.props.history.push('/archiveFund/works')
+                this.props.history.push('/works/storageWorks')
               }
             });
         }
@@ -137,7 +137,7 @@ class ArchiveFundWorksExpertize extends React.PureComponent {
     return (
       <div className="table-footer">
         <Button onClick={this.openModal}>{this.props.t('SAVE_TEMPORARY_STATE')}</Button>
-        <Link to="/archiveFund/works"><Button>{this.props.t('CANCEL')}</Button></Link>
+        <Link to="/works/storageWorks"><Button>{this.props.t('CANCEL')}</Button></Link>
         <Button onClick={() => this.sendAddedWorks('complete')}>{this.props.t('COMPLETE')}</Button>
       </div>
     )

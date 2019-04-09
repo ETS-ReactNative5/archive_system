@@ -165,6 +165,7 @@ class EditCardInventories extends Component {
         const cube = {
             cubeSConst: CUBE_FOR_AF_INV
         };
+
         const obj = {
             name: name,
             fullName: name,

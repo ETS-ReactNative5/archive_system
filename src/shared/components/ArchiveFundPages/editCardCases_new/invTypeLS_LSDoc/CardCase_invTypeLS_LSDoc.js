@@ -7,7 +7,7 @@ class CardCase_invTypeLS_LSDoc extends Component {
 
   render() {
 
-    const { t, tofiConstants, onSaveCubeData, initialValues } = this.props;
+    const { t, tofiConstants, saveProps, initialValues } = this.props;
     return <AntTabs
       tabs={[
         {
@@ -15,7 +15,7 @@ class CardCase_invTypeLS_LSDoc extends Component {
           tabName: t('MAIN_INFO'),
           tabContent: <MainInfoCaseForm
             tofiConstants={tofiConstants}
-            onSaveCubeData={onSaveCubeData}
+            saveProps={saveProps}
             t={t}
             initialValues={initialValues}
           />

@@ -4,7 +4,7 @@
   padding-left: 20px;
 
   .ant-tabs-tab {
-    margin-right: 7px!important;
+    margin-right: 7px !important;
   }
 }
 
@@ -12,24 +12,33 @@
   padding-right: 4px
 }
 
+.h70vh {
+  height: 70vh;
+}
+
+.w80 {
+  width: 80% !important;
+}
+
 .antForm-spaceBetween .ant-form-item-label {
   text-align: left;
   font-weight: 400;
 }
+
 .with-colon .ant-form-item-label label {
   position: unset;
 
   &:after {
-    position: absolute!important;
-    display: inline-block!important;
-    margin-right: 4px!important;
+    position: absolute !important;
+    display: inline-block !important;
+    margin-right: 4px !important;
     content: "*" !important;
     font-family: SimSun !important;
-    line-height: 1!important;
-    font-size: 12px!important;
-    color: #f5222d!important;
-    right: 5px!important;
-    top: -3px!important;
+    line-height: 1 !important;
+    font-size: 12px !important;
+    color: #f5222d !important;
+    right: 5px !important;
+    top: -3px !important;
   }
 }
 
@@ -49,7 +58,7 @@
   }
 
   &-content-no-animated {
-    height: calc( 100% - 50px );
+    height: calc(100% - 50px);
   }
 
   &-tabpane {
@@ -57,6 +66,23 @@
   }
 }
 
+
+.badgeInputFile{
+  position: absolute;
+  top: -7px;
+  right: -4px;
+}
+.fakeInput{
+  position: absolute;
+  opacity: 0;
+  z-index: 2;
+}
+
+.fakeIcon{
+  position: relative;
+  left: 10%;
+  top: 6px;
+}
 .ant-table-wrapper {
   height: 100%;
   min-height: 250px;
@@ -70,6 +96,11 @@
     display: flex;
     flex-direction: column;
   }
+}
+
+.centerIcon i{
+  position: relative;
+  left: 3px;
 }
 
 .ant-table {
@@ -87,7 +118,7 @@
 
   &-scroll {
     height: 100%;
-    overflow: hidden!important;
+    overflow: hidden !important;
     display: flex;
     flex-direction: column;
   }
@@ -129,7 +160,7 @@
 }
 
 .ant-tabs-ink-bar {
-    background-color: #009688!important;
+  background-color: #009688 !important;
 }
 
 .ant-input-group-addon {
@@ -189,14 +220,14 @@
 
 //////////////////DialogBox//////////////////////////
 
-@keyframes animateRight{
+@keyframes animateRight {
   from {
-    right:-600px;
-    opacity:0;
+    right: -600px;
+    opacity: 0;
   }
   to {
-    right:0;
-    opacity:1;
+    right: 0;
+    opacity: 1;
   }
 }
 
@@ -212,7 +243,6 @@
 }
 
 //////////////////DialogBox//////////////////////////
-
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -427,8 +457,6 @@
   }
 }
 
-
-
 /////////////////////////////MovementsRecord/////////////////////////////////
 
 .movementsRecord {
@@ -639,7 +667,6 @@
   }
 }
 
-
 /////////////////////////////////////////////////////////////////////////////////
 
 .EditCardInventories {
@@ -747,7 +774,6 @@
   }
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 
 .ViewInventCardPage {
@@ -785,15 +811,15 @@
     display: flex;
     padding: 0 20px;
 
-      &-list {
-        flex: 0 0 300px;
-      }
+    &-list {
+      flex: 0 0 300px;
+    }
 
-      &-show {
-        flex: 1;
-        background-color: #45515B;
-        text-align: center;
-      }
+    &-show {
+      flex: 1;
+      background-color: #45515B;
+      text-align: center;
+    }
   }
 }
 
@@ -918,8 +944,6 @@
     border: 3px solid #898989;
   }
 }
-
-
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1171,13 +1195,13 @@
   }
 }
 
-
-@media screen and (max-width: 1366px){
-  .ant-table-body{
+@media screen and (max-width: 1366px) {
+  .ant-table-body {
     max-height: 60vh !important;
-    overflow-y:scroll;
+    overflow-y: scroll;
   }
 }
+
 @media screen and (max-width: 1600px) {
   .ant-table-body {
     max-height: 63vh !important;;
@@ -1185,37 +1209,36 @@
   }
 }
 
-  @media screen and (max-width: 1920px){
-    .ant-table-body{
-      max-height: 70vh !important;;
-      overflow-y:scroll;
-    }
+@media screen and (max-width: 1920px) {
+  .ant-table-body {
+    max-height: 70vh !important;;
+    overflow-y: scroll;
+  }
 }
 
-
-
 @media print {
-  header,footer,.Sider2,button,.label-select,.ant-table-pagination.ant-pagination{
+  header, footer, .Sider2, button, .label-select, .ant-table-pagination.ant-pagination {
     display: none !important;
   }
 
-  .ant-table-body,.ant-table,.content,.collections__content,#root,.main-layout{
-    overflow:visible !important;
-    overflow-y:visible !important;
+  .ant-table-body, .ant-table, .content, .collections__content, #root, .main-layout {
+    overflow: visible !important;
+    overflow-y: visible !important;
     height: 100% !important;
   }
 
-  *,body{font-size: 10px !important;}
-  .ant-table-body{
+  *, body {
+    font-size: 10px !important;
+  }
+  .ant-table-body {
     max-height: 100% !important;
   }
 
-  .ant-table-scroll{
+  .ant-table-scroll {
     overflow: visible !important;
   }
 
-
-  .ant-table-header{
+  .ant-table-header {
     overflow: visible !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -1225,12 +1248,11 @@
     font-size: 8px !important;
   }
 
-
-  html{
+  html {
     overflow: auto;
   }
 
-  body{
+  body {
     overflow: visible !important;
   }
 

@@ -1,7 +1,7 @@
 import React from "react";
 import {connect} from "react-redux";
 import {isEmpty, isEqual} from "lodash";
-import {Icon, Input, Modal, Tabs, Form} from "antd";
+import {Icon, Input, Modal, Tabs, Form, Spin} from "antd";
 import axios from 'axios';
 
 
@@ -58,7 +58,8 @@ class StorageUnits extends React.Component {
             modalOrganizationsMentioned: '',
             modalPeopleMentioned: '',
             modalDocumentKeywords: '',
-            modalVersionsName:''
+            modalVersionsName:'',
+            loader: false
         };
     }
 
@@ -105,7 +106,7 @@ class StorageUnits extends React.Component {
             onChange: this.onSelectTable,
 
             hideDefaultSelections: true,
-            onSelect: (record, selected) => {
+            onSelect: async (record, selected) => {
 
                 const {t} = this.props;
                 if (selected) {
@@ -114,14 +115,14 @@ class StorageUnits extends React.Component {
                         this.setState({
                             loading: true
                         })
-                        this.setState({loading: true});
+                        this.setState({loader: true});
                         const fd = new FormData();
                         fd.append(
                             "objId",
                             record.key
                         );
                         fd.append("propConst", "caseInventory");
-                        getObjFromProp(fd).then(res => {
+                         await getObjFromProp(fd).then(res => {
                             if (res.success) {
                                 const inventoryId = res.data[0].id;
                                 const fd = new FormData();
@@ -150,21 +151,26 @@ class StorageUnits extends React.Component {
                                                     archiveId
                                                 });
                                                 this.setState({loading: false});
+                                                // this.setState({loader: false});
                                             } else {
                                                 this.setState({loading: false});
+                                                // this.setState({loader: false});
                                             }
                                         });
                                     } else {
                                         this.setState({loading: false});
+                                        // this.setState({loader: false});
                                     }
                                 });
                             } else {
                                 this.setState({loading: false});
+                                // this.setState({loader: false});
                             }
                         });
 
                     } else {
                         this.setState({loading: false});
+                        // this.setState({loader: false});
 
                         Modal.info({
                             title: t("ABOVE_20_CASES_TITLE"),
@@ -177,23 +183,23 @@ class StorageUnits extends React.Component {
                 } else {
                     this.props.removeCaseFromBasket(record);
                 }
-                this.setState({loading: false});
+                this.setState({loader: false});
 
             },
-            onSelectAll: (selected, selectedRows, changeRows) => {
+            onSelectAll: async (selected, selectedRows, changeRows) => {
                 const {t} = this.props;
 
+                this.setState({loader: true});
                 for (let record of changeRows) {
                     if (selected) {
                         if (this.props.basket.length < 100) {
-                            this.setState({loading: true});
                             const fd = new FormData();
                             fd.append(
                                 "objId",
                                 record.key
                             );
                             fd.append("propConst", "caseInventory");
-                            getObjFromProp(fd).then(res => {
+                             await getObjFromProp(fd).then(res => {
                                 if (res.success) {
                                     const inventoryId = res.data[0].id;
                                     const fd = new FormData();
@@ -221,22 +227,21 @@ class StorageUnits extends React.Component {
                                                         fundId,
                                                         archiveId
                                                     });
-                                                    this.setState({loading: false});
                                                 } else {
-                                                    this.setState({loading: false});
+                                                    this.setState({loader: false});
                                                 }
                                             });
                                         } else {
-                                            this.setState({loading: false});
+                                             this.setState({loader: false});
                                         }
                                     });
                                 } else {
-                                    this.setState({loading: false});
+                                     this.setState({loader: false});
                                 }
                             });
 
                         } else {
-                            this.setState({loading: false});
+                            this.setState({loader: false});
 
                             Modal.info({
                                 title: t("ABOVE_20_CASES_TITLE"),
@@ -251,31 +256,32 @@ class StorageUnits extends React.Component {
                     }
 
                 }
-                this.setState({loading: false});
+                this.setState({loader: false});
 
             },
             selections: [{
                 key: 'all-data',
                 text: 'Выбрать все',
-                onSelect: (select) => {
+                onSelect: async (select) => {
                     this.setState({
+                        loader:true,
                         selectedRowKeys: this.state.data.map((el) => {
                             return el.key
                         }),
                     });
                     const {t} = this.props;
 
+                    this.setState({loader: true});
                     for (let record of this.state.data) {
                         if (true) {
                             if (this.props.basket.length < 100) {
-                                this.setState({loading: true});
                                 const fd = new FormData();
                                 fd.append(
                                     "objId",
                                     record.key
                                 );
                                 fd.append("propConst", "caseInventory");
-                                getObjFromProp(fd).then(res => {
+                                await getObjFromProp(fd).then(res => {
                                     if (res.success) {
                                         const inventoryId = res.data[0].id;
                                         const fd = new FormData();
@@ -303,22 +309,22 @@ class StorageUnits extends React.Component {
                                                             fundId,
                                                             archiveId
                                                         });
-                                                        this.setState({loading: false});
+                                                        this.setState({loader: false});
                                                     } else {
-                                                        this.setState({loading: false});
+                                                        this.setState({loader: false});
                                                     }
                                                 });
                                             } else {
-                                                this.setState({loading: false});
+                                                this.setState({loader: false});
                                             }
                                         });
                                     } else {
-                                        this.setState({loading: false});
+                                        this.setState({loader: false});
                                     }
                                 });
 
                             } else {
-                                this.setState({loading: false});
+                                this.setState({loader: false});
 
                                 Modal.info({
                                     title: t("ABOVE_20_CASES_TITLE"),
@@ -332,7 +338,7 @@ class StorageUnits extends React.Component {
                             this.props.removeCaseFromBasket(record);
                         }
                     }
-                    this.setState({loading: false});
+                    this.setState({loader: false});
 
                 },
             },
@@ -400,13 +406,13 @@ class StorageUnits extends React.Component {
                                                     fundId,
                                                     archiveId
                                                 });
-                                                this.setState({loading: false});
+                                                // this.setState({loading: false});
                                             } else {
-                                                this.setState({loading: false});
+                                                // this.setState({loading: false});
                                             }
                                         });
                                     } else {
-                                        this.setState({loading: false});
+                                        // this.setState({loading: false});
                                     }
                                 });
                             } else {
@@ -591,6 +597,7 @@ class StorageUnits extends React.Component {
                 }
             </div>
             <div className="Cases__body">
+                <Spin spinning={this.state.loader}>
                 <AntTable
                 loading={this.props.loadingTable}
                 columns={[
@@ -673,6 +680,7 @@ class StorageUnits extends React.Component {
                 rowSelection={this.rowSelection2()}
                 dataSource={this.filteredData}
                 />
+                </Spin>
                 {modalShow && (
                 <StorageUnitInfoModal
                 modalShow={modalShow}

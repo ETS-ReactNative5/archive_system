@@ -6,6 +6,10 @@ import ManagingFormFundMaker from './ManagingFormFundMaker';
 import FundMakerContent from './FundMakerContent';
 //import {getObjVer_new} from '../../../actions/actions';
 import {parseCube_new, parseForTable} from '../../../utils/cubeParser.js';
+import Chat_FundMaker from "./Chat_FundMaker";
+import Viewer from "../../Viewer";
+
+
 
 class SiderCard_FundMaker extends React.PureComponent {
 
@@ -95,7 +99,7 @@ class SiderCard_FundMaker extends React.PureComponent {
       'orgFunction', 'structure', 'orgAddress', 'orgPhone', 'orgFax', 'orgEmail', 'orgFormationDoc', 'orgReorganizationDoc', 'orgLiquidationDoc',
       'leaderFIO', 'leaderPosition', 'leaderPhone', 'depLeaderFIO', 'depLeaderPosition', 'depLeaderPhone', 'responsibleFIO', 'responsiblePosition',
       'responsiblePhone', 'responsibleAppointmentDate', 'archiveLeaderFIO', 'archiveLeaderPosition', 'archiveLeaderPhone', 'archiveLeaderAppointmentDate',
-      'commissionLeaderFIO', 'commissionLeaderPosition', 'commissionLeaderPhone'];
+      'commissionLeaderFIO', 'commissionLeaderPosition', 'commissionLeaderPhone','corresOrg','corresOrgFile','letterDetails'];
 
     const accessLevelObj = this.props.accessLevelOptions.find(al => al.id == item.accessLevel);
     const result = {
@@ -106,7 +110,8 @@ class SiderCard_FundMaker extends React.PureComponent {
       dend: moment(item.dend, 'YYYY-MM-DD'),
       accessLevel: {value: item.accessLevel, label: accessLevelObj.name[this.lng]}
     };
-    this.withIdDPV = parseForTable(item.props, this.props.tofiConstants, result, constArr);
+    //this.withIdDPV = parseForTable(item.props, this.props.tofiConstants, result, constArr);
+    parseForTable(item.props, this.props.tofiConstants, result, constArr);
     result.orgAddress = result.orgAddressLng;
     result.orgFormationDoc = result.orgFormationDocLng;
     result.orgReorganizationDoc = result.orgReorganizationDocLng;
@@ -128,6 +133,7 @@ class SiderCard_FundMaker extends React.PureComponent {
     this.lng = localStorage.getItem('i18nextLng');
     const {t, tofiConstants, saveProps, saveIKProps, onCreateObj} = this.props;
     const {initialValues} = this.state;
+    console.log('initialValues', initialValues);
     return (
       <div className="card">
         {this.props.closer}
@@ -142,7 +148,7 @@ class SiderCard_FundMaker extends React.PureComponent {
                 saveProps={saveProps}
                 saveIKProps={saveIKProps}
                 onCreateObj={onCreateObj}
-                withIdDPV={this.withIdDPV}
+                //withIdDPV={this.withIdDPV}
                 initialValues={initialValues}
               />
             },
@@ -154,7 +160,7 @@ class SiderCard_FundMaker extends React.PureComponent {
                 tofiConstants={tofiConstants}
                 saveProps={saveProps}
                 t={t}
-                withIdDPV={this.withIdDPV}
+                //withIdDPV={this.withIdDPV}
                 initialValues={initialValues}/>
             },
             {
@@ -165,7 +171,18 @@ class SiderCard_FundMaker extends React.PureComponent {
                 tofiConstants={tofiConstants}
                 t={t}
                 id={initialValues.key}/>
-            }
+            },
+              {
+                  tabKey: 'chat',
+                  disabled: !initialValues.key,
+                  tabName: t('CHAT'),
+                  id: initialValues.key,
+                  tabContent: <Chat_FundMaker
+                  tofiConstants={tofiConstants}
+                  t={t}
+                  //withIdDPV={this.withIdDPV}
+                  initialValues={initialValues} />,
+              }
           ]}
           //onChange={this.handleTabChange}
         />

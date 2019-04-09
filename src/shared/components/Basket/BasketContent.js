@@ -77,9 +77,15 @@ class BasketContent extends React.PureComponent {
             this.setState({
                 objCube:res.data.cube
             })
-            var worksIds = (res.data['cube'].map(el => el.idRef!=undefined ? el.idRef : '')).join(',');
-            worksIds=worksIds.replace(',,', ',');
-            var fd = new FormData();
+            let worksIds = (res.data['cube'].map(el => {
+
+                if(el.idRef!==undefined ){
+                    return el.idRef
+                }else{
+                    return undefined
+                }
+            }).filter(el=>el!==undefined )).join(',')
+            let fd = new FormData();
             fd.append('ids', worksIds);
             fd.append('propConsts', 'personLastName,nameOfOrganizationDeveloper');
             getObjListNew(fd).then(res=>{
@@ -88,34 +94,39 @@ class BasketContent extends React.PureComponent {
                 })
             });
 
-        });
-
-
+        })
+    setTimeout(()=>{
+            this.getOption()
+    },1000)
+    }
+    getOption=()=>{
+        const {
+            basket, basketState, user, t, tofiConstants,
+            tofiConstants: {archiveCipher, caseDbeg, caseDend, propStudy, doForWorks}
+        } = this.props;
         const isOuterUser = ['clsResearchers', 'clsTempUsers']
-        .some(c => tofiConstants[c].id == user.cls);
-
-
+            .some(c => tofiConstants[c].id == user.cls);
         this.setState({propStudyLoading: true});
         const fd = new FormData();
         if (isOuterUser) {
             fd.append("objId", user.obj);
             fd.append("propConst", 'propStudy');
             getObjFromProp(fd)
-            .then(res => {
-                this.setState({propStudyLoading: false});
-                if (!res.success) {
-                    res.errors.forEach(err => {
-                        message.error(err.text);
-                        return;
+                .then(res => {
+                    this.setState({propStudyLoading: false});
+                    if (!res.success) {
+                        res.errors.forEach(err => {
+                            message.error(err.text);
+                            return;
+                        })
+                    }
+                    this.setState({
+                        propStudyOptions: res.data.map(opt => ({
+                            value: opt.id,
+                            label: opt.name[this.lng]
+                        }))
                     })
-                }
-                this.setState({
-                    propStudyOptions: res.data.map(opt => ({
-                        value: opt.id,
-                        label: opt.name[this.lng]
-                    }))
                 })
-            })
         } else {
 
             const idClassNameMap = {};
@@ -128,51 +139,76 @@ class BasketContent extends React.PureComponent {
             fd.append('propConst', 'workAssignedTo');
             fd.append('value', user.obj);
             getObjByProp(fd)
-            .then(res => {
-                this.setState({propStudyLoading: false});
-                if (!res.success) {
-                    res.errors.forEach(err => {
-                        message.error(err.text);
-                        return;
-                    })
-                }
-                this.setState({
-                    propStudyOptions: res.data
-                    .map(opt => ({
-                        value: opt.id,
-                        label: `${opt.id}-${idClassNameMap[opt.cls]}`
-                    }))
-                })
-                return res.data;
-            })
-            .then(data => {
-                if (!data.length) {
-                    const fd = new FormData();
-                    fd.append("objId", user.obj);
-                    fd.append("propConst", 'propStudy');
-                    getObjFromProp(fd)
-                    .then(res => {
-                        this.setState({propStudyLoading: false});
-                        if (!res.success) {
-                            res.errors.forEach(err => {
-                                message.error(err.text);
-                                return;
-                            })
-                        }
-                        this.setState({
-                            propStudyOptions: res.data
-                            .map(opt => ({
-                                value: opt.id,
-                                label: opt.name[this.lng],
-                                type: 'theme'
-                            }))
+                .then(res => {
+                    this.setState({propStudyLoading: false});
+                    if (!res.success) {
+                        res.errors.forEach(err => {
+                            message.error(err.text);
+                            return;
                         })
+                    }
+                    let idRefData=[]
+                    for (let itemid of res.data){
+                        this.state.objCube.map((el)=>{
+                            if (Number(itemid.id) === Number(el.do_1005.split("_")[1])){
+                                idRefData.push({idWorks:itemid.id, idRef:el.idRef})
+                            }
+                        })
+
+                    }
+                    this.setState({
+                        propStudyOptions: res.data
+                            .map(opt =>{
+                                let str=""
+                                for (let val of idRefData){
+                                    if (opt.id === val.idWorks){
+                                        if (val.idRef !== undefined){
+                                            for (let idref of this.state.objId){
+                                                if (val.idRef === Number(idref.id)){
+                                                    str = `- ${idref.personLastName.ru}-${idref.nameOfOrganizationDeveloper.ru}`
+                                                    break
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                return({
+                                    value: opt.id,
+                                    label: `${opt.id}-${str}-${idClassNameMap[opt.cls]}`
+                                })
+                            } )
+                    },()=>{
+
                     })
-                }
-            })
+                    return res.data;
+                })
+                .then(data => {
+                    if (!data.length) {
+                        const fd = new FormData();
+                        fd.append("objId", user.obj);
+                        fd.append("propConst", 'propStudy');
+                        getObjFromProp(fd)
+                            .then(res => {
+                                this.setState({propStudyLoading: false});
+                                if (!res.success) {
+                                    res.errors.forEach(err => {
+                                        message.error(err.text);
+                                        return;
+                                    })
+                                }
+                                this.setState({
+                                    propStudyOptions: res.data
+                                        .map(opt => ({
+                                            value: opt.id,
+                                            label: opt.name[this.lng],
+                                            type: 'theme'
+                                        }))
+                                })
+                            })
+                    }
+                })
         }
     }
-
     render() {
         const {
             basket, basketState, user, t, tofiConstants,
@@ -334,7 +370,7 @@ class BasketContent extends React.PureComponent {
                                                     }
                                                     return({
                                                         value: opt.id,
-                                                        label: `${opt.id}-${idClassNameMap[opt.cls]}${str}`
+                                                        label: `${opt.id}-${str}-${idClassNameMap[opt.cls]}`
                                                     })
                                                 } )
                                             })

@@ -117,5 +117,6 @@
   "NO_SHELF_LIFE": "No shelf life of perechen",
   "EXISTS_FUND_1": "It is impossible to remove a fundmaker, because it has been created on the basis of",
   "REASONS_FOR_REFUSAL": "Reasons for refusal",
-  "NO_FUND_OF_IK": "No found og fund"
+  "NO_FUND_OF_IK": "No found og fund",
+  "CHAT":"Переписка с организацией"
   }

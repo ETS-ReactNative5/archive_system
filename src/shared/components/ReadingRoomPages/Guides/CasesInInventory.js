@@ -13,7 +13,7 @@ import {
     removeCaseFromBasket,
     getObjFromProp,
 } from "../../../actions/actions";
-import {Modal, Form} from "antd/lib/index";
+import {Modal, Form, Spin} from "antd/lib/index";
 import {
     CASE_NUMB,
     CASES_DBEG,
@@ -76,7 +76,8 @@ class CasesInInventory extends React.Component {
             modalOrganizationsMentioned: '',
             modalPeopleMentioned: '',
             modalDocumentKeywords: '',
-            modalVersionsName: ''
+            modalVersionsName: '',
+            loader: false
         };
     }
 
@@ -103,20 +104,28 @@ class CasesInInventory extends React.Component {
 
     updateState = () => {
         setTimeout(() => {
+            try {
+                let newData = this.state.data.map((el) => {
+                    return el.bunchCases
+                })
 
-            let newData = this.state.data.map((el) => {
-                return el.bunchCases
-            })
-            let bunchCases = newData.filter((elem, index, self) => {
+                let bunchCases = newData.filter((elem, index, self) => {
+                    if (elem === null)return false
 
-                return index === self.findIndex((t) => (
-                    t.value === elem.value
-                ))
-            })
-            this.setState({
-                sortData: bunchCases,
-                newSprtData: this.state.data
-            })
+                    return index === self.findIndex((t) => (
+                        t.value === elem.value
+                    ))
+                })
+                this.setState({
+                    sortData: bunchCases,
+                    newSprtData: this.state.data
+                })
+
+            }catch (e){
+                this.setState({
+                    newSprtData: this.state.data
+                })
+            }
         })
     }
 
@@ -196,23 +205,21 @@ class CasesInInventory extends React.Component {
             onChange: this.onSelectTable,
 
             hideDefaultSelections: true,
-            onSelect: (record, selected) => {
+            onSelect: async (record, selected) => {
 
                 const {t} = this.props;
                 if (selected) {
 
                     if (this.props.basket.length < 100) {
-                        this.setState({
-                            loading: true
-                        })
-                        this.setState({loading: true});
+                        console.log("1");
+                        this.setState({loader: true});
                         const fd = new FormData();
                         fd.append(
                             "objId",
                             record.key
                         );
                         fd.append("propConst", "caseInventory");
-                        getObjFromProp(fd).then(res => {
+                        await getObjFromProp(fd).then(res => {
                             if (res.success) {
                                 const inventoryId = res.data[0].id;
                                 const fd = new FormData();
@@ -240,22 +247,22 @@ class CasesInInventory extends React.Component {
                                                     fundId,
                                                     archiveId
                                                 });
-                                                this.setState({loading: false});
+                                                // this.setState({loader: false});
                                             } else {
-                                                this.setState({loading: false});
+                                                // this.setState({loader: false});
                                             }
                                         });
                                     } else {
-                                        this.setState({loading: false});
+                                        // this.setState({loader: false});
                                     }
                                 });
                             } else {
-                                this.setState({loading: false});
+                                // this.setState({loader: false});
                             }
                         });
 
                     } else {
-                        this.setState({loading: false});
+                        // this.setState({loader: false});
 
                         Modal.info({
                             title: t("ABOVE_20_CASES_TITLE"),
@@ -268,23 +275,23 @@ class CasesInInventory extends React.Component {
                 } else {
                     this.props.removeCaseFromBasket(record);
                 }
-                this.setState({loading: false});
+                this.setState({loader: false});
 
             },
-            onSelectAll: (selected, selectedRows, changeRows) => {
+            onSelectAll: async (selected, selectedRows, changeRows) => {
                 const {t} = this.props;
 
+                this.setState({loader: true});
                 for (let record of changeRows) {
                     if (selected) {
                         if (this.props.basket.length < 100) {
-                            this.setState({loading: true});
                             const fd = new FormData();
                             fd.append(
                                 "objId",
                                 record.key
                             );
                             fd.append("propConst", "caseInventory");
-                            getObjFromProp(fd).then(res => {
+                            await getObjFromProp(fd).then(res => {
                                 if (res.success) {
                                     const inventoryId = res.data[0].id;
                                     const fd = new FormData();
@@ -312,22 +319,22 @@ class CasesInInventory extends React.Component {
                                                         fundId,
                                                         archiveId
                                                     });
-                                                    this.setState({loading: false});
+                                                    // this.setState({loader: false});
                                                 } else {
-                                                    this.setState({loading: false});
+                                                    // this.setState({loader: false});
                                                 }
                                             });
                                         } else {
-                                            this.setState({loading: false});
+                                            // this.setState({loader: false});
                                         }
                                     });
                                 } else {
-                                    this.setState({loading: false});
+                                    // this.setState({loader: false});
                                 }
                             });
 
                         } else {
-                            this.setState({loading: false});
+                            // this.setState({loader: false});
 
                             Modal.info({
                                 title: t("ABOVE_20_CASES_TITLE"),
@@ -340,15 +347,14 @@ class CasesInInventory extends React.Component {
                     } else {
                         this.props.removeCaseFromBasket(record);
                     }
-
                 }
-                this.setState({loading: false});
+                this.setState({loader: false});
 
             },
             selections: [{
                 key: 'all-data',
                 text: 'Выбрать все',
-                onSelect: (select) => {
+                onSelect: async (select) => {
                     this.setState({
                         selectedRowKeys: this.state.newSprtData.map((el) => {
                             return el.key
@@ -356,17 +362,17 @@ class CasesInInventory extends React.Component {
                     });
                     const {t} = this.props;
 
+                    this.setState({loader: true});
                     for (let record of this.state.newSprtData) {
                         if (true) {
                             if (this.props.basket.length < 100) {
-                                this.setState({loading: true});
                                 const fd = new FormData();
                                 fd.append(
                                     "objId",
                                     record.key
                                 );
                                 fd.append("propConst", "caseInventory");
-                                getObjFromProp(fd).then(res => {
+                                await getObjFromProp(fd).then(res => {
                                     if (res.success) {
                                         const inventoryId = res.data[0].id;
                                         const fd = new FormData();
@@ -394,22 +400,22 @@ class CasesInInventory extends React.Component {
                                                             fundId,
                                                             archiveId
                                                         });
-                                                        this.setState({loading: false});
+                                                        // this.setState({loader: false});
                                                     } else {
-                                                        this.setState({loading: false});
+                                                        // this.setState({loader: false});
                                                     }
                                                 });
                                             } else {
-                                                this.setState({loading: false});
+                                                // this.setState({loader: false});
                                             }
                                         });
                                     } else {
-                                        this.setState({loading: false});
+                                        // this.setState({loader: false});
                                     }
                                 });
 
                             } else {
-                                this.setState({loading: false});
+                                // this.setState({loader: false});
 
                                 Modal.info({
                                     title: t("ABOVE_20_CASES_TITLE"),
@@ -423,8 +429,7 @@ class CasesInInventory extends React.Component {
                             this.props.removeCaseFromBasket(record);
                         }
                     }
-                    this.setState({loading: false});
-
+                    this.setState({loader: false});
                 },
             },
                 {
@@ -434,10 +439,11 @@ class CasesInInventory extends React.Component {
                         this.setState({
                             selectedRowKeys: [],
                         });
+                        this.setState({loader: true});
                         for (let record of this.state.newSprtData) {
                             this.props.removeCaseFromBasket(record);
-
                         }
+                        this.setState({loader: false});
                     },
                 }
 
@@ -618,6 +624,7 @@ class CasesInInventory extends React.Component {
 
         //  console.log(data, this.filteredData);
         const {t, selectedFund, selectedInventory, tofiConstants: {legalStatus, fundDbeg, fundDend, fundHistoricalNoteMulti, archiveCipher, dateEvent, dateForming, addressee, caseNumb, eventLocation, caseDocsLang, caseDbeg, caseDend}} = this.props;
+        console.log(this.props.loadingTable, this.state.loading);
         return (
             <div className="Cases">
                 <div className="Cases__header">
@@ -657,153 +664,156 @@ class CasesInInventory extends React.Component {
                     </Breadcrumb>
                 </div>
                 <div className="Cases__body">
-                    <AntTable
-                        loading={this.props.loadingTable}
-                        columns={[
-                            {
-                                key: "fundNumber",
-                                title: t('CASE_NUMB'),
-                                dataIndex: "fundNumber",
-                                filterDropdown: (
-                                    <div className="custom-filter-dropdown">
-                                        <Input
-                                            name="fundNumber"
-                                            suffix={search.fundNumber ? <Icon type="close-circle" data-name="fundNumber"
-                                                                              onClick={this.emitEmpty}/> : null}
-                                            ref={ele => this.fundNumber = ele}
-                                            placeholder="Поиск"
-                                            value={search.fundNumber}
-                                            onChange={this.onInputChange}
-                                        />
-                                    </div>
-                                ),
-                                filterIcon: <Icon type="filter"
-                                                  style={{color: search.fundNumber ? '#ff9800' : '#aaa'}}/>,
-                                onFilterDropdownVisibleChange: (visible) => {
-                                    this.setState({
-                                        filterDropdownVisible: visible,
-                                    }, () => this.fundNumber.focus());
-                                },
-                                sorter: (a, b) => ((a.fundNumber).replace(/[^0-9]/g, '')) - ((b.fundNumber).replace(/[^0-9]/g, '')),
-                                width: "7%"
-                            },
-                            {
-                                key: "archiveCipher",
-                                title: t('ARCHIVALCIPHER'),
-                                dataIndex: "archiveCipher",
-                                width: "13%"
-                            },
-                            {
-                                key: "name",
-                                title: t("TITLE"),
-                                dataIndex: "name",
-                                filterDropdown: (
-                                    <div className="custom-filter-dropdown">
-                                        <Input
-                                            name="name"
-                                            suffix={search.name ? <Icon type="close-circle" data-name="name"
-                                                                        onClick={this.emitEmpty}/> : null}
-                                            ref={ele => this.name = ele}
-                                            placeholder="Поиск"
-                                            value={search.name}
-                                            onChange={this.onInputChange}
-                                        />
-                                    </div>
-                                ),
-                                filterIcon: <Icon type="filter" style={{color: search.name ? '#ff9800' : '#aaa'}}/>,
-                                onFilterDropdownVisibleChange: (visible) => {
-                                    this.setState({
-                                        filterDropdownVisible: visible,
-                                    }, () => this.name.focus());
-                                },
-                                width: "60%",
-                                render: (obj, rec) => {
-                                    if (parseFloat(rec.parent) === 0) return (
-                                        <span>
-                      {obj && obj[this.lng]}
-                                            <Icon type="question-circle"
-                                                  style={{color: '#009688', float: 'right', cursor: 'pointer'}}
-                                                  onClick={this.showCasesInfo}/>
-                    </span>
-                                    );
-                                    return obj && obj[this.lng];
-                                }
-                            },
-                            {
-                                key: "caseDbeg",
-                                title: caseDbeg.name[this.lng],
-                                dataIndex: "caseDbeg",
-                                width: "6%",
-                                render: (obj) => {
-                                    return obj && obj.format('DD-MM-YYYY')
-                                },
-                                filterDropdown: (
-                                    <div className="custom-filter-dropdown">
-                                        <Input
-                                            name="caseDbeg"
-                                            suffix={search.caseDbeg ? <Icon type="close-circle" data-name="caseDbeg"
-                                                                            onClick={this.emitEmpty}/> : null}
-                                            ref={ele => this.caseDbeg = ele}
-                                            placeholder="Поиск"
-                                            value={search.caseDbeg}
-                                            onChange={this.onInputChange}
-                                        />
-                                    </div>
-                                ),
-                                filterIcon: <Icon type="filter" style={{color: search.caseDbeg ? '#ff9800' : '#aaa'}}/>,
-                                onFilterDropdownVisibleChange: (visible) => {
-                                    this.setState({
-                                        filterDropdownVisible: visible,
-                                    }, () => this.caseDbeg.focus());
-                                },
-                            },
-                            {
-                                key: "caseDend",
-                                title: caseDend.name[this.lng],
-                                dataIndex: "caseDend",
-                                width: "6%",
-                                render: obj => obj && obj.format('DD-MM-YYYY'),
-                                filterDropdown: (
-                                    <div className="custom-filter-dropdown">
-                                        <Input
-                                            name="caseDend"
-                                            suffix={search.caseDend ? <Icon type="close-circle" data-name="caseDend"
-                                                                            onClick={this.emitEmpty}/> : null}
-                                            ref={ele => this.caseDend = ele}
-                                            placeholder="Поиск"
-                                            value={search.caseDend}
-                                            onChange={this.onInputChange}
-                                        />
-                                    </div>
-                                ),
-                                filterIcon: <Icon type="filter" style={{color: search.caseDend ? '#ff9800' : '#aaa'}}/>,
-                                onFilterDropdownVisibleChange: (visible) => {
-                                    this.setState({
-                                        filterDropdownVisible: visible,
-                                    }, () => this.caseDend.focus());
-                                },
-                            },
-                            {
-                                key: "recId",
-                                title: '?',
-                                dataIndex: "recId",
-                                width: "8%",
-                                onCellClick: (obj) => {
+                    <Spin spinning={this.state.loader}>
+                        <AntTable
+                            loading={this.props.loadingTable || this.state.loading}
 
-                                    obj ? this.getExtraInfoDocInInv(obj.recId) : ''
-                                },
-                                render: (text, record) => {
-                                    return (
-                                        <div>
-                                            <Icon type="question-circle" style={{color: '#009688'}}/>
+                            columns={[
+                                {
+                                    key: "fundNumber",
+                                    title: t('CASE_NUMB'),
+                                    dataIndex: "fundNumber",
+                                    filterDropdown: (
+                                        <div className="custom-filter-dropdown">
+                                            <Input
+                                                name="fundNumber"
+                                                suffix={search.fundNumber ? <Icon type="close-circle" data-name="fundNumber"
+                                                                                  onClick={this.emitEmpty}/> : null}
+                                                ref={ele => this.fundNumber = ele}
+                                                placeholder="Поиск"
+                                                value={search.fundNumber}
+                                                onChange={this.onInputChange}
+                                            />
                                         </div>
-                                    )
+                                    ),
+                                    filterIcon: <Icon type="filter"
+                                                      style={{color: search.fundNumber ? '#ff9800' : '#aaa'}}/>,
+                                    onFilterDropdownVisibleChange: (visible) => {
+                                        this.setState({
+                                            filterDropdownVisible: visible,
+                                        }, () => this.fundNumber.focus());
+                                    },
+                                    sorter: (a, b) => ((a.fundNumber).replace(/[^0-9]/g, '')) - ((b.fundNumber).replace(/[^0-9]/g, '')),
+                                    width: "7%"
+                                },
+                                {
+                                    key: "archiveCipher",
+                                    title: t('ARCHIVALCIPHER'),
+                                    dataIndex: "archiveCipher",
+                                    width: "13%"
+                                },
+                                {
+                                    key: "name",
+                                    title: t("TITLE"),
+                                    dataIndex: "name",
+                                    filterDropdown: (
+                                        <div className="custom-filter-dropdown">
+                                            <Input
+                                                name="name"
+                                                suffix={search.name ? <Icon type="close-circle" data-name="name"
+                                                                            onClick={this.emitEmpty}/> : null}
+                                                ref={ele => this.name = ele}
+                                                placeholder="Поиск"
+                                                value={search.name}
+                                                onChange={this.onInputChange}
+                                            />
+                                        </div>
+                                    ),
+                                    filterIcon: <Icon type="filter" style={{color: search.name ? '#ff9800' : '#aaa'}}/>,
+                                    onFilterDropdownVisibleChange: (visible) => {
+                                        this.setState({
+                                            filterDropdownVisible: visible,
+                                        }, () => this.name.focus());
+                                    },
+                                    width: "60%",
+                                    render: (obj, rec) => {
+                                        if (parseFloat(rec.parent) === 0) return (
+                                            <span>
+                          {obj && obj[this.lng]}
+                                                <Icon type="question-circle"
+                                                      style={{color: '#009688', float: 'right', cursor: 'pointer'}}
+                                                      onClick={this.showCasesInfo}/>
+                        </span>
+                                        );
+                                        return obj && obj[this.lng];
+                                    }
+                                },
+                                {
+                                    key: "caseDbeg",
+                                    title: caseDbeg.name[this.lng],
+                                    dataIndex: "caseDbeg",
+                                    width: "6%",
+                                    render: (obj) => {
+                                        return obj && obj.format('DD-MM-YYYY')
+                                    },
+                                    filterDropdown: (
+                                        <div className="custom-filter-dropdown">
+                                            <Input
+                                                name="caseDbeg"
+                                                suffix={search.caseDbeg ? <Icon type="close-circle" data-name="caseDbeg"
+                                                                                onClick={this.emitEmpty}/> : null}
+                                                ref={ele => this.caseDbeg = ele}
+                                                placeholder="Поиск"
+                                                value={search.caseDbeg}
+                                                onChange={this.onInputChange}
+                                            />
+                                        </div>
+                                    ),
+                                    filterIcon: <Icon type="filter" style={{color: search.caseDbeg ? '#ff9800' : '#aaa'}}/>,
+                                    onFilterDropdownVisibleChange: (visible) => {
+                                        this.setState({
+                                            filterDropdownVisible: visible,
+                                        }, () => this.caseDbeg.focus());
+                                    },
+                                },
+                                {
+                                    key: "caseDend",
+                                    title: caseDend.name[this.lng],
+                                    dataIndex: "caseDend",
+                                    width: "6%",
+                                    render: obj => obj && obj.format('DD-MM-YYYY'),
+                                    filterDropdown: (
+                                        <div className="custom-filter-dropdown">
+                                            <Input
+                                                name="caseDend"
+                                                suffix={search.caseDend ? <Icon type="close-circle" data-name="caseDend"
+                                                                                onClick={this.emitEmpty}/> : null}
+                                                ref={ele => this.caseDend = ele}
+                                                placeholder="Поиск"
+                                                value={search.caseDend}
+                                                onChange={this.onInputChange}
+                                            />
+                                        </div>
+                                    ),
+                                    filterIcon: <Icon type="filter" style={{color: search.caseDend ? '#ff9800' : '#aaa'}}/>,
+                                    onFilterDropdownVisibleChange: (visible) => {
+                                        this.setState({
+                                            filterDropdownVisible: visible,
+                                        }, () => this.caseDend.focus());
+                                    },
+                                },
+                                {
+                                    key: "recId",
+                                    title: '?',
+                                    dataIndex: "recId",
+                                    width: "8%",
+                                    onCellClick: (obj) => {
+
+                                        obj ? this.getExtraInfoDocInInv(obj.recId) : ''
+                                    },
+                                    render: (text, record) => {
+                                        return (
+                                            <div>
+                                                <Icon type="question-circle" style={{color: '#009688'}}/>
+                                            </div>
+                                        )
+                                    }
                                 }
-                            }
-                        ]}
-                        dataSource={this.filteredData}
-                        rowSelection={this.rowSelection()}
-                    />
+                            ]}
+                            dataSource={this.filteredData}
+                            rowSelection={this.rowSelection()}
+                        />
+                    </Spin>
                 </div>
 
 
