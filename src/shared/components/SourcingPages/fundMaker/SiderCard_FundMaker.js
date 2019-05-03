@@ -94,7 +94,6 @@ class SiderCard_FundMaker extends React.PureComponent {
   }
 
   renderTableData = (item) => {
-
     const constArr = ['fundNumber', 'contractNumber', 'legalStatus', 'formOfAdmission', 'orgDocType', 'orgIndustry', 'isActive', 'fundmakerArchive',
       'orgFunction', 'structure', 'orgAddress', 'orgPhone', 'orgFax', 'orgEmail', 'orgFormationDoc', 'orgReorganizationDoc', 'orgLiquidationDoc',
       'leaderFIO', 'leaderPosition', 'leaderPhone', 'depLeaderFIO', 'depLeaderPosition', 'depLeaderPhone', 'responsibleFIO', 'responsiblePosition',
@@ -111,29 +110,20 @@ class SiderCard_FundMaker extends React.PureComponent {
       accessLevel: {value: item.accessLevel, label: accessLevelObj.name[this.lng]}
     };
     //this.withIdDPV = parseForTable(item.props, this.props.tofiConstants, result, constArr);
-    parseForTable(item.props, this.props.tofiConstants, result, constArr);
-    result.orgAddress = result.orgAddressLng;
-    result.orgFormationDoc = result.orgFormationDocLng;
-    result.orgReorganizationDoc = result.orgReorganizationDocLng;
-    result.orgLiquidationDoc = result.orgLiquidationDocLng;
-    result.leaderFIO = result.leaderFIOLng;
-    result.leaderPosition = result.leaderPositionLng;
-    result.depLeaderFIO = result.depLeaderFIOLng;
-    result.depLeaderPosition = result.depLeaderPositionLng;
-    result.responsibleFIO = result.responsibleFIOLng;
-    result.responsiblePosition = result.responsiblePositionLng;
-    result.archiveLeaderFIO = result.archiveLeaderFIOLng;
-    result.archiveLeaderPosition = result.archiveLeaderPositionLng;
-    result.commissionLeaderFIO = result.commissionLeaderFIOLng;
-    result.commissionLeaderPosition = result.commissionLeaderPositionLng;
-    return result;
+      console.log('data:',result)
+   var newInit= parseForTable(item.props, this.props.tofiConstants, this.state.initialValues, constArr);
+      this.setState({
+          initialValues:newInit
+      }) ;
+
+    return this.state.initialValues;
+
   };
 
   render() {
     this.lng = localStorage.getItem('i18nextLng');
     const {t, tofiConstants, saveProps, saveIKProps, onCreateObj} = this.props;
     const {initialValues} = this.state;
-    console.log('initialValues', initialValues);
     return (
       <div className="card">
         {this.props.closer}
@@ -154,7 +144,7 @@ class SiderCard_FundMaker extends React.PureComponent {
             },
             {
               tabKey: 'Description',
-              disabled: !initialValues.key,
+              disabled: initialValues && !initialValues.key,
               tabName: t('MANAGING'),
               tabContent: <ManagingFormFundMaker
                 tofiConstants={tofiConstants}
@@ -165,18 +155,18 @@ class SiderCard_FundMaker extends React.PureComponent {
             },
             {
               tabKey: 'versions',
-              disabled: !initialValues.key,
+              disabled: initialValues && !initialValues.key,
               tabName: t('VERSIONS'),
               tabContent: <FundMakerContent
                 tofiConstants={tofiConstants}
                 t={t}
-                id={initialValues.key}/>
+                id={initialValues && initialValues.key}/>
             },
               {
                   tabKey: 'chat',
-                  disabled: !initialValues.key,
+                  disabled: initialValues && !initialValues.key,
                   tabName: t('CHAT'),
-                  id: initialValues.key,
+                  id: initialValues && initialValues.key,
                   tabContent: <Chat_FundMaker
                   tofiConstants={tofiConstants}
                   t={t}

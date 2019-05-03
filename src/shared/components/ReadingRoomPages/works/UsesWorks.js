@@ -382,7 +382,7 @@ class Works extends React.PureComponent {
                 if (name === 'workActualStartDate') {
                     this.saveProps({obj}, {
                         values: {
-                            [mappedStatus]: {value: this.props.tofiConstants.appointed.id},
+                            [mappedStatus]: {value: this.props.tofiConstants.appointed.id, idDataPropVal:target[mappedStatus].idDataPropVal},
                             [name]: moment().format('YYYY-MM-DD')
                         }
                     })
@@ -400,7 +400,7 @@ class Works extends React.PureComponent {
                     }
                     this.saveProps({obj}, {
                         values: {
-                            [mappedStatus]: {value: this.props.tofiConstants.returned.id},
+                            [mappedStatus]: {value: this.props.tofiConstants.returned.id,idDataPropVal:target[mappedStatus].idDataPropVal},
                             [name]: moment().format('YYYY-MM-DD')
                         }
                     })
@@ -421,7 +421,7 @@ class Works extends React.PureComponent {
                     };
                     this.saveProps({obj}, {
                         values: {
-                            [mappedStatus]: {value: this.props.tofiConstants.allowed.id},
+                            [mappedStatus]: {value: this.props.tofiConstants.allowed.id, idDataPropVal:target[mappedStatus].idDataPropVal},
                             [name]: moment().format('YYYY-MM-DD')
                         }
                     }).then (() => {
@@ -486,14 +486,14 @@ class Works extends React.PureComponent {
                 } else if (name === 'notAccepted') {
                     this.saveProps({obj}, {
                         values: {
-                            [mappedStatus]: {value: this.props.tofiConstants.denied.id},
+                            [mappedStatus]: {value: this.props.tofiConstants.denied.id,idDataPropVal:target[mappedStatus].idDataPropVal},
                             acceptanceDate: moment().format('YYYY-MM-DD')
                         }
                     })
                 } else if (name === 'permitionDate') {
                     this.saveProps({obj}, {
                         values: {
-                            [mappedStatus]: {value: this.props.tofiConstants.issued.id},
+                            [mappedStatus]: {value: this.props.tofiConstants.issued.id,idDataPropVal:target[mappedStatus].idDataPropVal},
                             permitionDate: moment().format('YYYY-MM-DD')
                         }
                     })
@@ -612,8 +612,8 @@ class Works extends React.PureComponent {
                 ( priority.length === 0 || priority.some(p => (item.workPriority && p.value == item.workPriority.value)) ) &&
                 ( status.length === 0 || status.some(p => (item.workStatusUses && p.value == item.workStatusUses.value)) ) &&
                 ( performer.length === 0 || performer.some(p => (item.workAssignedTo && p.value == item.workAssignedTo.value)) ) &&
-                ( !search.workDate.dbeg || moment(item.workDate, 'DD-MM-YYYY').isSameOrAfter(search.workDate.dbeg, 'day') ) &&
-                ( !search.workDate.dend || moment(item.workDate, 'DD-MM-YYYY').isSameOrBefore(search.workDate.dend, 'day') ) &&
+                ( !search.workDate.dbeg || moment(item.workDate.value, 'DD-MM-YYYY').isSameOrAfter(search.workDate.dbeg, 'day') ) &&
+                ( !search.workDate.dend || moment(item.workDate.value, 'DD-MM-YYYY').isSameOrBefore(search.workDate.dend, 'day') ) &&
                 ( !search.permitionDate.dbeg || moment(item.permitionDate, 'DD-MM-YYYY').isSameOrAfter(search.permitionDate.dbeg, 'day') ) &&
                 ( !search.permitionDate.dend || moment(item.permitionDate, 'DD-MM-YYYY').isSameOrBefore(search.permitionDate.dend, 'day') ) &&
                 ( !search.workActualStartDate.dbeg || moment(item.workActualStartDate, 'DD-MM-YYYY').isSameOrAfter(search.workActualStartDate.dbeg, 'day') ) &&
@@ -697,7 +697,7 @@ class Works extends React.PureComponent {
                 ),
                 filterIcon: <Icon type="filter"
                                   style={{color: (search.workDate.dbeg || search.workDate.dend) ? '#ff9800' : '#aaa'}}/>,
-                render: obj => obj && obj.format('DD-MM-YYYY')
+                render: obj => obj && obj.value
             },
             {
                 key: 'workActualStartDate',
@@ -732,13 +732,13 @@ class Works extends React.PureComponent {
                                 {/*<Popover placement="bottomLeft" title='COMMENTARY' content={this.content} trigger="click" defaultVisible destroyPopupOnHide>
                                  <span onClick={this.stopPropagation}>{text || ' '}</span>
                                  </Popover>*/}
-                                {text.format('DD-MM-YYYY') || ' '}
+                                {text.value || ' '}
                                 {!(!record.workAssignedTo || user.obj != record.workAssignedTo.value) &&
                                 <Popconfirm title={this.props.t('CONFIRM_REMOVE')} onConfirm={() =>
                                     this.saveProps({obj: {doItem: record.key}}, {
                                         values: {
-                                            workStatusUses: {value: this.props.tofiConstants.appointed.id},
-                                            workActualStartDate: {mode: "del"}
+                                            workStatusUses: {value: this.props.tofiConstants.appointed.id,idDataPropVal:record.workStatusUses.idDataPropVal},
+                                            workActualStartDate: {value:'',mode: "del",idDataPropVal:record.workActualStartDate.idDataPropVal}
                                         }
                                     })
                                 }>
@@ -793,14 +793,14 @@ class Works extends React.PureComponent {
                             <div className="editable-cell-text-wrapper">
                                 <span
                                     style={record.workStatusUses && record.workStatusUses.value == this.props.tofiConstants.denied.id ?
-                                    {color: 'red'} : {color: 'green'}}>{text.format('DD-MM-YYYY') || ' '}</span>
+                                    {color: 'red'} : {color: 'green'}}>{text.value || ' '}</span>
                                 {record.tookUser && record.tookUser.value === user.obj &&
                                 <Popconfirm title={this.props.t('CONFIRM_REMOVE')} onConfirm={() => {
                                     const mappedStatus = this.clsStatusMap[record.workType.value];
                                     this.saveProps({obj: {doItem: record.key}}, {
                                         values: {
-                                            [mappedStatus]: {value: this.props.tofiConstants.appointed.id},
-                                            acceptanceDate: {mode: "del"}
+                                            [mappedStatus]: {value: this.props.tofiConstants.appointed.id,idDataPropVal:record.workStatusUses.idDataPropVal},
+                                            acceptanceDate: {value:'',mode: "del",idDataPropVal:record.acceptanceDate.idDataPropVal}
                                         }
                                     }).then(() => {
 
@@ -874,13 +874,13 @@ class Works extends React.PureComponent {
                     return (
                         text ?
                             <div className="editable-cell-text-wrapper">
-                                {text.format('DD-MM-YYYY') || ' '}
+                                {text.value|| ' '}
                                 <Popconfirm title={this.props.t('CONFIRM_REMOVE')} onConfirm={() => {
                                     const mappedStatus = this.clsStatusMap[record.workType.value];
                                     this.saveProps({obj: {doItem: record.key}}, {
                                         values: {
-                                            [mappedStatus]: {value: this.props.tofiConstants.allowed.id},
-                                            workActualEndDate: {mode: "del"}
+                                            [mappedStatus]: {value: this.props.tofiConstants.allowed.id,idDataPropVal:record[mappedStatus].idDataPropVal},
+                                            permitionDate: {value:'',mode: "del",idDataPropVal:record.permitionDate.idDataPropVal}
                                         }
                                     })
                                 }
@@ -939,9 +939,25 @@ class Works extends React.PureComponent {
                 render: (text, record) => {
                     return (
                         text ?
-                            <div className="editable-cell-text-wrapper">
-                                {text.format('DD-MM-YYYY') || ' '}
-                            </div>
+                        <div className="editable-cell-text-wrapper">
+                            {text.value|| ' '}
+                            <Popconfirm title={this.props.t('CONFIRM_REMOVE')} onConfirm={() => {
+                                const mappedStatus = this.clsStatusMap[record.workType.value];
+                                this.saveProps({obj: {doItem: record.key}}, {
+                                    values: {
+                                        [mappedStatus]: {value: this.props.tofiConstants.allowed.id,idDataPropVal:record[mappedStatus].idDataPropVal},
+                                        workActualEndDate: {value:'',mode: "del",idDataPropVal:record.workActualEndDate.idDataPropVal}
+                                    }
+                                })
+                            }
+                            }>
+                                <Icon
+                                type="close-circle"
+                                className="editable-cell-icon"
+                                onClick={this.stopPropagation}
+                                />
+                            </Popconfirm>
+                        </div>
                             :
                             <div className="editable-row-operations">
                                 <Button title="Завершить" icon="poweroff"

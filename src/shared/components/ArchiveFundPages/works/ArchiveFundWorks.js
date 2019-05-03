@@ -27,7 +27,7 @@ import {
     rabotaExp,
     updateCubeData
 } from '../../../actions/actions';
-import {getPropMeta, parseCube_new} from '../../../utils/cubeParser';
+import {getPropMeta, onSaveCubeData, parseCube_new} from '../../../utils/cubeParser';
 import AntModal from '../../AntModal';
 
 /*eslint eqeqeq:0*/
@@ -180,7 +180,15 @@ class ArchiveFundWorks extends React.PureComponent {
         if ((isEmpty(this.state.selectedRow) && !this.state.openCard) || (!isEqual(this.state.selectedRow, rec) && !this.state.openCard)) {
             this.setState({selectedRow: rec})
         } else {
-            this.setState({initialValues: rec, openCard: true, selectedRow: rec})
+            let initialValues={...rec}
+            initialValues.workPlannedStartDate = rec.workPlannedStartDateObject
+            initialValues.workPlannedEndDate= rec.workPlannedEndDateOject
+            initialValues.workDate = rec.workDateObject
+            initialValues.workActualStartDate = rec.workActualStartDateObject
+            initialValues.workActualEndDate = rec.workActualEndDateObject
+            initialValues.acceptanceDate = rec.acceptanceDateObject
+            initialValues.intermediateResultDate = rec.intermediateResultDateObject
+            this.setState({initialValues: initialValues, openCard: true, selectedRow: rec})
         }
     };
 
@@ -189,7 +197,10 @@ class ArchiveFundWorks extends React.PureComponent {
             openCard: true,
             selectedRow: null,
             initialValues: {
-                workAuthor: this.props.user.name,
+                workAuthor:{
+                    label:this.props.user.name,
+                    value:this.props.user.obj
+                } ,
                 workDate: moment().startOf('day'),
                 // workStatusReg: {value: this.props.tofiConstants.appointed.id, label: this.props.tofiConstants.appointed.name[this.lng]}
             }
@@ -408,7 +419,7 @@ class ArchiveFundWorks extends React.PureComponent {
         .then(res => {
             hideCreateObj();
             if (res.success) {
-                return this.onSaveCubeData({
+                return this.onSaveCubeData2({
                     ...values,
                     childWorkFeature: String(this.props.tofiConstants.isActiveTrue.id)
                 }, res.data.idItemDO, {})
@@ -423,7 +434,54 @@ class ArchiveFundWorks extends React.PureComponent {
             console.error(err)
         })
     };
+    onSaveCubeData2 = async(values, doItemProp, objDataProp)=>{
 
+        let hideLoading
+        try {
+            const c ={
+                cube:{
+                    cubeSConst: CUBE_FOR_WORKS,
+                    doConst: DO_FOR_WORKS,
+                    dpConst: DP_FOR_WORKS,
+                    data:this.props.works
+                },
+                obj:{
+                    doItem:doItemProp
+                }
+            }
+            const v ={
+                values:values,
+                complex:"",
+                oFiles:{}
+            }
+            const objData = objDataProp
+            const  t = this.props.tofiConstants
+            this.setState({loading: true, });
+
+            hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
+            const resSave = await onSaveCubeData(c, v, t, objData);
+            hideLoading();
+            if(!resSave.success) {
+                message.error(this.props.t('PROPS_UPDATING_ERROR'));
+                resSave.errors.forEach(err => {
+                    message.error(err.text)
+                });
+                return Promise.reject(resSave);
+            }
+            message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+            return this.props.getCube(CUBE_FOR_WORKS, JSON.stringify(this.filters))
+                .then(() => {
+                    this.setState({loading: false, openCard: false});
+                    return {success: true}
+                })
+
+
+        } catch (e) {
+            typeof hideLoading === 'function' && hideLoading();
+            this.setState({ loading: false });
+            console.warn(e);
+        }
+    }
     onSaveCubeData = ({workStatusReg, workType, ...values}, doItemProp, objDataProp) => {
         if (workStatusReg) {
             values[this.clsStatusMap[workType.value]] = workStatusReg;
@@ -804,56 +862,33 @@ class ArchiveFundWorks extends React.PureComponent {
                 label: this.props.tofiConstants[workTypeClass].name[this.lng],
                 workTypeClass
             } : null,
-            workPlannedStartDate: !!workPlannedStartDateObj && workPlannedStartDateObj.value ? moment(workPlannedStartDateObj.value, 'DD-MM-YYYY') : null,
-            workPlannedEndDate: !!workPlannedEndDateObj && workPlannedEndDateObj.value ? moment(workPlannedEndDateObj.value, 'DD-MM-YYYY') : null,
-            workStatusReg: workStatusRegObj && workStatusRegObj.refId ? {
-                value: workStatusRegObj.refId,
-                label: workStatusRegObj.value
-            } : null,
-            checkingType: checkingTypeObj && checkingTypeObj.refId ? {
-                value: checkingTypeObj.refId,
-                label: checkingTypeObj.value
-            } : null,
-            retirementReason: retirementReasonObj && retirementReasonObj.refId ? {
-                value: retirementReasonObj.refId,
-                label: retirementReasonObj.value
-            } : null,
-            deliveryPurpose: deliveryPurposeObj && deliveryPurposeObj.refId ? {
-                value: deliveryPurposeObj.refId,
-                label: deliveryPurposeObj.value
-            } : null,
+            workPlannedStartDate: !!workPlannedStartDateObj && workPlannedStartDateObj.values ? moment(workPlannedStartDateObj.values.value, 'DD-MM-YYYY') : null,
+            workPlannedStartDateObject: !!workPlannedStartDateObj && workPlannedStartDateObj.values ? workPlannedStartDateObj.values : null,
+            workPlannedEndDate: !!workPlannedEndDateObj && workPlannedEndDateObj.values ? moment(workPlannedEndDateObj.values.value, 'DD-MM-YYYY') : null,
+            workPlannedEndDateOject: !!workPlannedEndDateObj && workPlannedEndDateObj.values ? workPlannedEndDateObj.values  : null,
+            workStatusReg: workStatusRegObj && workStatusRegObj.values ? workStatusRegObj.values  : null,
+            checkingType: checkingTypeObj && checkingTypeObj.values ? checkingTypeObj.values : null,
+            retirementReason: retirementReasonObj && retirementReasonObj.values ? retirementReasonObj.values   : null,
+            deliveryPurpose: deliveryPurposeObj && deliveryPurposeObj.values ? deliveryPurposeObj.values : null,
             workListName: item.name,
-            workPriority: workPriorityObj && workPriorityObj.refId ? {
-                value: workPriorityObj.refId,
-                label: workPriorityObj.value
-            } : null,
-            workRegFund: !!workRegFundObj && workRegFundObj.cube && workRegFundObj.cube.idRef ? {
-                value: workRegFundObj.cube.idRef,
-                label: workRegFundObj.cube.name[this.lng]
-            } : null,
-            workRegInv: !!workRegInvObj && workRegInvObj.cube && workRegInvObj.cube.idRef ? {
-                value: workRegInvObj.cube.idRef,
-                label: workRegInvObj.cube.name[this.lng]
-            } : null,
-            workRegCase: !!workRegCaseObj && workRegCaseObj.cube && workRegCaseObj.cube.idRef ? {
-                value: workRegCaseObj.cube.idRef,
-                label: workRegCaseObj.cube.name[this.lng]
-            } : null,
-            workAuthor: !!workAuthorObj ? workAuthorObj.value || '' : '',
-            workIndexNumber: !!workIndexNumberObj ? String(workIndexNumberObj.value) : '',
-            workDate: !!workDateObj && workDateObj.value ? moment(workDateObj.value, 'DD-MM-YYYY') : null,
-            workAssignedTo: !!workAssignedToObj && workAssignedToObj.cube.idRef ? {
-                value: workAssignedToObj.cube.idRef,
-                label: workAssignedToObj.cube.name[this.lng]
-            } : null,
-            workRecipient: !!workRecipientObj && workRecipientObj.cube.idRef ? {
-                value: workRecipientObj.cube.idRef,
-                label: workRecipientObj.cube.name[this.lng]
-            } : null,
-            workActualStartDate: !!workActualStartDateObj && workActualStartDateObj.value ? moment(workActualStartDateObj.value, 'DD-MM-YYYY') : null,
-            workActualEndDate: !!workActualEndDateObj && workActualEndDateObj.value ? moment(workActualEndDateObj.value, 'DD-MM-YYYY') : null,
-            acceptanceDate: !!acceptanceDateObj && acceptanceDateObj.value ? moment(acceptanceDateObj.value, 'DD-MM-YYYY') : null,
-            intermediateResultDate: !!intermediateResultDateObj && intermediateResultDateObj.value ? moment(intermediateResultDateObj.value, 'DD-MM-YYYY') : null
+            workPriority: workPriorityObj && workPriorityObj.values ? workPriorityObj.values : null,
+            workRegFund: !!workRegFundObj && workRegFundObj.values  ? workRegFundObj.values : null,
+            workRegInv: !!workRegInvObj && workRegInvObj.values  ? workRegInvObj.values  : null,
+            workRegCase: !!workRegCaseObj && workRegCaseObj.values  ? workRegCaseObj.values : null,
+            workAuthor: !!workAuthorObj && workAuthorObj.values  ? workAuthorObj.values || '' : '',
+            workIndexNumber: !!workIndexNumberObj && workIndexNumberObj.values ? String(workIndexNumberObj.values.value) : '',
+            workDate: !!workDateObj && workDateObj.values ? moment(workDateObj.values.value, 'DD-MM-YYYY') : null,
+            workDateObject: !!workDateObj && workDateObj.values ? workDateObj.values  : null,
+            workAssignedTo: !!workAssignedToObj && workAssignedToObj.values ? workAssignedToObj.values : null,
+            workRecipient: !!workRecipientObj && workRecipientObj.values ? workRecipientObj.values   : null,
+            workActualStartDate: !!workActualStartDateObj && workActualStartDateObj.values ? moment(workActualStartDateObj.values.value, 'DD-MM-YYYY') : null,
+            workActualStartDateObject: !!workActualStartDateObj && workActualStartDateObj.values ? workActualStartDateObj.values : null,
+            workActualEndDate: !!workActualEndDateObj && workActualEndDateObj.values ? moment(workActualEndDateObj.values.value, 'DD-MM-YYYY') : null,
+            workActualEndDateObject: !!workActualEndDateObj && workActualEndDateObj.values ? workActualEndDateObj.values : null,
+            acceptanceDate: !!acceptanceDateObj && acceptanceDateObj.values ? moment(acceptanceDateObj.values.value, 'DD-MM-YYYY') : null,
+            acceptanceDateObject: !!acceptanceDateObj && acceptanceDateObj.values ? acceptanceDateObj.values : null,
+            intermediateResultDate: !!intermediateResultDateObj && intermediateResultDateObj.values ? moment(intermediateResultDateObj.values.value, 'DD-MM-YYYY') : null,
+            intermediateResultDateObject: !!intermediateResultDateObj && intermediateResultDateObj.values ? intermediateResultDateObj.values : null
         }
     };
     onWorkRegInvChange = data => {
@@ -1262,11 +1297,12 @@ class ArchiveFundWorks extends React.PureComponent {
                         dataIndex: 'key',
                         width: '10',
                         render: key => {
+
                            let finds=  this.state.data.find((item)=>{
                                 return item.key === key
 
                             })
-                           return finds.workAuthor
+                           return finds.workAuthor.label
                         }
                     },
                     {
@@ -1567,7 +1603,7 @@ class ArchiveFundWorks extends React.PureComponent {
                         tofiConstants={tofiConstants}
                         initialValues={this.state.initialValues}
                         onCreateObj={this.onCreateObj}
-                        onSaveCubeData={this.onSaveCubeData}
+                        onSaveCubeData={this.onSaveCubeData2}
                         clsFirstStatusMap={this.clsFirstStatusMap}
                         />
                     </SiderCard>

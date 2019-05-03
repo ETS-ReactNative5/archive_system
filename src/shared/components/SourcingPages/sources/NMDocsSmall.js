@@ -373,17 +373,21 @@ class NMDocsSmall extends React.Component {
       </div>
     )
   };
-  renderTableData = ({id}) => {
-    const { archiveInfoDate1, archiveInfoDate2, archiveInfoDate3, normativeDocType, file1, file2, file3, docFile } = this.props.tofiConstants;
-    const archiveInfoDate1Obj = this.record.props.find(element => element.prop == archiveInfoDate1.id),
-      archiveInfoDate2Obj = this.record.props.find(element => element.prop == archiveInfoDate2.id),
-      archiveInfoDate3Obj = this.record.props.find(element => element.prop == archiveInfoDate3.id),
-      normativeDocTypeObj = this.record.props.find(element => element.prop == normativeDocType.id),
-      file1Obj = this.record.props.find(element => element.prop == file1.id),
-      file2Obj = this.record.props.find(element => element.prop == file2.id),
-      file3Obj = this.record.props.find(element => element.prop == file3.id),
-      docFileObj = this.record.props.find(element => element.prop == docFile.id);
 
+  renderTableData = (itemObj,arr) => {
+
+    const { archiveInfoDate1, archiveInfoDate2, archiveInfoDate3, normativeDocType, file1, file2, file3, docFile } = this.props.tofiConstants;
+    const archiveInfoDate1Obj = this.record.props.find(element => ((element.prop == archiveInfoDate1.id) &&(element.complexChildValues && element.complexChildValues.parentDataPropVal==itemObj.idDataPropVal))),
+      archiveInfoDate2Obj = this.record.props.find(element => ((element.prop == archiveInfoDate2.id) &&(element.complexChildValues && element.complexChildValues.parentDataPropVal==itemObj.idDataPropVal))),
+      archiveInfoDate3Obj = this.record.props.find(element => {
+          if(element.prop == archiveInfoDate3.id){}return((element.prop == archiveInfoDate3.id)
+      &&( element.complexChildValues
+      && element.complexChildValues.parentDataPropVal==itemObj.idDataPropVal))}),
+      normativeDocTypeObj = this.record.props.find(element => ((element.prop == normativeDocType.id) &&(element.complexChildValues && element.complexChildValues.parentDataPropVal==itemObj.idDataPropVal))),
+      file1Obj = this.record.props.find(element => ((element.prop == file1.id) &&(element.complexChildValues && element.complexChildValues.parentDataPropVal==itemObj.idDataPropVal))),
+      file2Obj = this.record.props.find(element => ((element.prop == file2.id) &&(element.complexChildValues && element.complexChildValues.parentDataPropVal==itemObj.idDataPropVal))),
+      file3Obj = this.record.props.find(element => ((element.prop == file3.id) &&(element.complexChildValues && element.complexChildValues.parentDataPropVal==itemObj.idDataPropVal))),
+      docFileObj = this.record.props.find(element => ((element.prop == docFile.id) &&(element.complexChildValues && element.complexChildValues.parentDataPropVal==itemObj.idDataPropVal)));
     const temp = {
       archiveInfoDate1: archiveInfoDate1Obj && archiveInfoDate1Obj.complexChildValues ? archiveInfoDate1Obj.complexChildValues : {},
       archiveInfoDate2: archiveInfoDate2Obj && archiveInfoDate2Obj.complexChildValues ? archiveInfoDate2Obj.complexChildValues : {},
@@ -402,28 +406,28 @@ class NMDocsSmall extends React.Component {
       file3IdDataPropVal: file3Obj && file3Obj.idDataPropVal ? file3Obj.idDataPropVal : '',
       docFileIdDataPropVal: docFileObj && docFileObj.idDataPropVal ? docFileObj.idDataPropVal : ''
     };
+    
     return {
-      key: id,
-      archiveInfoDate1: temp.archiveInfoDate1[id] ? temp.archiveInfoDate1[id].value[this.lng] : '',
-      archiveInfoDate2: temp.archiveInfoDate2[id] ? temp.archiveInfoDate2[id].value[this.lng] : '',
-      archiveInfoDate3: temp.archiveInfoDate3[id] ? temp.archiveInfoDate3[id].value[this.lng] : '',
-      normativeDocType: temp.normativeDocType[id] ? {value: temp.normativeDocType[id].refId, label: temp.normativeDocType[id].value} : {},
-      file1: temp.file1[id] ? temp.file1[id].values : [],
-      file2: temp.file2[id] ? temp.file2[id].values : [],
-      file3: temp.file3[id] ? temp.file3[id].values : [],
-      docFile: temp.docFile[id] ? temp.docFile[id].values : [],
+      key: itemObj.idDataPropVal,
+      archiveInfoDate1: temp.archiveInfoDate1.value ? temp.archiveInfoDate1.valueLng[this.lng] : '',
+      archiveInfoDate2: temp.archiveInfoDate2.value ? temp.archiveInfoDate2.valueLng[this.lng] : '',
+      archiveInfoDate3: temp.archiveInfoDate3.value ? temp.archiveInfoDate3.valueLng[this.lng] : '',
+      normativeDocType: temp.normativeDocType.value ? {value: temp.normativeDocType.value, label: temp.normativeDocType.label} : {},
+      file1: temp.file1 ? temp.file1.values : [],
+      file2: temp.file2 ? temp.file2.values : [],
+      file3: temp.file3 ? temp.file3.values : [],
+      docFile: temp.docFile ? temp.docFile.values : [],
       archiveInfoDate1IdDataPropVal: temp.archiveInfoDate1IdDataPropVal ? temp.archiveInfoDate1IdDataPropVal : '',
       archiveInfoDate2IdDataPropVal: temp.archiveInfoDate2IdDataPropVal ? temp.archiveInfoDate2IdDataPropVal : '',
       archiveInfoDate3IdDataPropVal: temp.archiveInfoDate3IdDataPropVal ? temp.archiveInfoDate3IdDataPropVal : '',
       normativeDocTypeIdDataPropVal: temp.normativeDocTypeIdDataPropVal ? temp.normativeDocTypeIdDataPropVal : '',
-      file1IdDataPropVal: temp.file1IdDataPropVal ? temp.file1IdDataPropVal : '',
-      file2IdDataPropVal: temp.file2IdDataPropVal ? temp.file2IdDataPropVal : '',
-      file3IdDataPropVal: temp.file3IdDataPropVal ? temp.file3IdDataPropVal : '',
+      file1IdDataPropVal: temp.file1.values ? temp.file1.values[0].idDataPropVal : '',
+      file2IdDataPropVal: temp.file2.values ? temp.file2.values[0].idDataPropVal : '',
+      file3IdDataPropVal: temp.file3.values ? temp.file3.values[0].idDataPropVal : '',
       docFileIdDataPropVal: temp.docFileIdDataPropVal ? temp.docFileIdDataPropVal : ''
     }
   };
   render() {
-
     if(isEmpty(this.props.tofiConstants)) return null;
     const { tofiConstants: {archiveInfoDate1, archiveInfoDate2, archiveInfoDate3, normativeDocType} } = this.props;
     this.lng = localStorage.getItem('i18nextLng');
@@ -435,7 +439,7 @@ class NMDocsSmall extends React.Component {
           title: normativeDocType.name[this.lng],
           dataIndex: 'normativeDocType',
           width: '15%',
-          render: (obj, record) => this.renderSelectColumns(obj, record, 'normativeDocType'),
+          render: (obj, record) => {      return this.renderSelectColumns(obj, record, 'normativeDocType')},
         },
         {
           key: 'archiveInfoDate1',

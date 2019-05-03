@@ -361,13 +361,15 @@ class InquiryReqs extends React.Component {
         title: t('RESEARCH_CLASS'),
         dataIndex: 'researchType',
         width: '10%',
-        render: obj => obj && obj.label
+        render: obj =>  obj && obj.label
       },
       {
         key: 'regNumber',
         title: regNumber.name[this.lng],
         dataIndex: 'regNumber',
+        render: (key, obj) => {return key.value},
         width: '10%'
+
       },
       {
         key: 'workDate',
@@ -394,15 +396,18 @@ class InquiryReqs extends React.Component {
           </div>
         ),
         filterIcon: <Icon type="filter" style={{ color: (filter.workDate.dbeg || filter.workDate.dend) ? '#ff9800' : '#aaa' }} />,
-        render: obj => obj && acceptedTOFIDate(obj) && obj.format('DD-MM-YYYY')
+        // render: obj => obj && acceptedTOFIDate(obj) && obj.format('DD-MM-YYYY')
+        render: (key, obj) => { return key.value},
       },
       {
         key: 'applicant',
         title: t('APPLICANT'),
         dataIndex: 'applicant',
         width: '10%',
-        render: (obj, rec) => (rec.nameOfOrganizationDeveloper || '') + ' ' + (rec.personLastName || '') + ' ' +
-          (rec.personName || '') + ' ' + (rec.personPatronymic || '')
+        // render: (obj, rec) =>(rec.nameOfOrganizationDeveloper || '').value + ' ' + (rec.personLastName || '').value
+
+        render: (obj, rec) =>(rec.nameOfOrganizationDeveloper ? rec.nameOfOrganizationDeveloper.value : '') + ' ' + (rec.personLastName ? rec.personLastName.value : '') + ' ' +
+        (rec.personName ? rec.personName.value : '') + ' ' + (rec.personPatronymic ? rec.personPatronymic.value : '')
       },
       {
         key: 'workPlannedEndDate',
@@ -429,7 +434,7 @@ class InquiryReqs extends React.Component {
           </div>
         ),
         filterIcon: <Icon type="filter" style={{ color: (filter.workPlannedEndDate.dbeg || filter.workPlannedEndDate.dend) ? '#ff9800' : '#aaa' }} />,
-        render: obj => obj && acceptedTOFIDate(obj) && obj.format('DD-MM-YYYY')
+        render: obj =>obj && acceptedTOFIDate(obj) && obj.value
       },
       {
         key: 'researchTheme',

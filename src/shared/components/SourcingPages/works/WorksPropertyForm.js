@@ -95,7 +95,73 @@ class WorksPropertyForm extends Component {
     }
   };
 
+
+    dateToRedux=(val , prev)=>{{
+        let coppyPrev = {...prev}
+
+        if (!!val){
+            let newDate = moment(val).format("DD-MM-YYYY")
+            if (!!coppyPrev.idDataPropVal){
+                coppyPrev.value = newDate
+                return coppyPrev
+            }else {
+                return {
+                    value:newDate
+                }
+            }
+        }else{
+            if (!!coppyPrev.value){
+                coppyPrev.value=""
+                return coppyPrev
+            }else{
+                return {}
+            }
+
+        }
+
+    }}
+    strToRedux = (val, prevVal, obj, prevObj) => {
+        var newVal = {...prevVal};
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: {kz: val},
+                valueLng: {ru: val},
+                valueLng: {en: val}
+            }
+            return objVal
+        } else {
+            newVal.value = val;
+            newVal['valueLng']={kz:val,ru:val,en:val}
+            return (newVal)
+
+        }
+    };
+
+    selectToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val === null) {
+                let newValNull = {...prevVal};
+                newValNull.label = null;
+                newValNull.labelFull = null;
+                newValNull.value = null;
+                return newValNull
+            } else {
+                let newVal = {...prevVal};
+                newVal.value = val.value;
+                newVal.label = val.label;
+                newVal.workTypeClass= val.workTypeClass ? val.workTypeClass :''
+                newVal.labelFull = val.label;
+                return (newVal)
+            }
+
+        }
+    };
+
+
+
   render() {
+
     if(!this.props.tofiConstants) return null;
 
     const lng = localStorage.getItem('i18nextLng');
@@ -143,6 +209,8 @@ class WorksPropertyForm extends Component {
           component={ renderSelect }
           disabled={!!this.props.initialValues.key}
           isSearchable={false}
+          normalize={this.selectToRedux}
+
           label={t('WORK_TYPE')}
           formItemLayout={
             {
@@ -158,6 +226,8 @@ class WorksPropertyForm extends Component {
         {workSource && <Field
           name="workSource"
           component={ renderSelectVirt }
+          normalize={this.selectToRedux}
+
           label={workSource.name[lng]}
           optionHeight={40}
           formItemLayout={
@@ -187,6 +257,8 @@ class WorksPropertyForm extends Component {
         {workPlannedStartDate && <Field
           name="workPlannedStartDate"
           component={renderDatePicker}
+          normalize={this.dateToRedux}
+
           format={null}
           label={workPlannedStartDate.name[lng]}
           formItemLayout={
@@ -199,6 +271,8 @@ class WorksPropertyForm extends Component {
         {workPlannedEndDate && <Field
           name="workPlannedEndDate"
           component={ renderDatePicker }
+          normalize={this.dateToRedux}
+
           format={null}
           isSearchable={false}
           label={workPlannedEndDate.name[lng]}
@@ -212,6 +286,8 @@ class WorksPropertyForm extends Component {
         {workAssignedTo && <Field
           name="workAssignedTo"
           component={renderSelect}
+          normalize={this.selectToRedux}
+
           label={workAssignedTo.name[lng]}
           formItemLayout={
             {
@@ -228,6 +304,8 @@ class WorksPropertyForm extends Component {
         {workPriority && <Field
           name="workPriority"
           component={ renderSelect }
+          normalize={this.selectToRedux}
+
           isSearchable={false}
           label={workPriority.name[lng]}
           formItemLayout={
@@ -281,6 +359,7 @@ class WorksPropertyForm extends Component {
         {workTypeValue && workTypeValue.value == check.id && checkingType && <Field //eslint-disable-line
           name="checkingType"
           component={ renderSelect }
+          normalize={this.selectToRedux}
           isSearchable={false}
           label={checkingType.name[lng]}
           formItemLayout={
@@ -329,8 +408,8 @@ class WorksPropertyForm extends Component {
         />}
         {workAuthor && <Field
           name="workAuthor"
-          component={ renderInput }
-          readOnly
+          component={ renderSelect }
+          disabled
           placeholder={t('USER_FIO_PLACEHOLDER')}
           label={workAuthor.name[lng]}
           formItemLayout={

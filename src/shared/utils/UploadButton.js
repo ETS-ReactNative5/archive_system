@@ -8,7 +8,8 @@ class UploadButton extends React.Component {
   state = {
     modal: {
       visible: false,
-      result: ''
+      result: '',
+        newFile:[]
     }
   };
 
@@ -21,7 +22,29 @@ class UploadButton extends React.Component {
     ru: 'Выберите файл',
     kz: 'Файлды таңдаңыз'
   };
+  editStateNewgFile=()=>{
+      this.setState({newFile:[]})
+      let newFile =[]
+      if (this.props.value.length){
+          for(let i = 0; i<this.props.value.length; i++){
+              newFile.push(this.props.value[i].value)
+          }
+          this.setState({
+              newFile:newFile
+          })
+      }
+  }
+    componentDidMount(){
+      console.log(this.props.cubeSConst)
+      this.editStateNewgFile()
+    }
 
+    componentDidUpdate(prevProps) {
+        // Typical usage (don't forget to compare props):
+        if (this.props !== prevProps) {
+            this.editStateNewgFile()
+        }
+    }
   handleImgError = () => {
     this.onClose();
     const instance = axios.create({baseURL: ''});
@@ -38,6 +61,7 @@ class UploadButton extends React.Component {
   };
 
   render() {
+
     const props = {
       action: '//file/set',
       accept: 'image/*, application/pdf',
@@ -53,9 +77,14 @@ class UploadButton extends React.Component {
             return;
           }
         }
+      
+
         const index = this.props.value.indexOf(file);
         const newFileList = this.props.value.slice();
         newFileList.splice(index, 1);
+         this.setState({
+             newFile:[]
+         });
         this.props.onChange(newFileList);
       },
       onPreview: (file) => {
@@ -90,8 +119,8 @@ class UploadButton extends React.Component {
         this.props.onChange([...this.props.value, ...fileList]);
         return false;
       },
-      fileList: this.props.value,
-      multiple: true
+      fileList:this.state.newFile ,
+          multiple: true
     };
 
     return (

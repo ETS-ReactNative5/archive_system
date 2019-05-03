@@ -258,6 +258,7 @@ class FundsInGuide extends React.Component {
     };
 
     renderTableData = item => {
+
         const constArr = ['fundDbeg', 'fundDend', 'fundNumber', 'fundIndex', 'fundCategory', 'fundNumberOfCases',
             'fundArchive', 'locationOfSupplementaryMaterials', 'accessDocument'];
         const result = {
@@ -266,9 +267,11 @@ class FundsInGuide extends React.Component {
         };
         parseForTable(item.props, this.props.tofiConstants, result, constArr);
         // deadline need to be computed
-        result.deadline = result.fundDbeg + '-' + result.fundDend;
+        result.deadline = result.fundDbeg && result.fundDend ? (result.fundDbeg.value + '-' + result.fundDend.value) : null
         return result
     };
+
+
 
     changeSelectedFund = rec => {
         if (isEmpty(this.state.selectedFund) || !isEqual(this.state.selectedFund, rec)) {
@@ -336,11 +339,8 @@ class FundsInGuide extends React.Component {
         this.filteredData = data.filter(item => {
             return (
                 item.name[this.lng].toLowerCase().includes(search.name.toLowerCase()) &&
-                item.fundNumber.toLowerCase().includes(search.fundNumber.toLowerCase()) &&
+                item.fundNumber.value.toLowerCase().includes(search.fundNumber.toLowerCase()) &&
                 String(item.deadline).toLowerCase().includes(String(search.deadline).toLowerCase())
-
-
-
             )
         });
 
@@ -360,13 +360,14 @@ class FundsInGuide extends React.Component {
                         title: t('FUNDNUMB'),
                         dataIndex: "fundNumber",
                         width: "10%",
+                          render: (key, obj) => { return key.value},
                         sortBy:'ascend',
-                        sorter: (a, b) =>((a.fundNumber).replace(/[^0-9]/g,'')) - ((b.fundNumber).replace(/[^0-9]/g,'')),
+                        sorter: (a, b) =>((a.fundNumber.value).replace(/[^0-9]/g,'')) - ((b.fundNumber.value).replace(/[^0-9]/g,'')),
                         filterDropdown: (
                           <div className="custom-filter-dropdown">
                             <Input
                               name="fundNumber"
-                              suffix={search.fundNumber ? <Icon type="close-circle" data-name="fundNumber"
+                              suffix={search.fundNumber.value ? <Icon type="close-circle" data-name="fundNumber"
                               onClick={this.emitEmpty}/> : null}
                               ref={ele => this.fundNumber = ele}
                               placeholder="Поиск"
@@ -421,6 +422,7 @@ class FundsInGuide extends React.Component {
                         title: t("DEADLINES"),
                         dataIndex: "deadline",
                         width: "14%",
+                          render: (key, obj) => { return key},
                         filterDropdown: (
                           <div className="custom-filter-dropdown">
                             <Input

@@ -294,21 +294,20 @@ class LegalEntitiesNomenclatureSmall extends React.Component {
   }
   renderTableData = (item, id) => {
     const { nomenNumber, nomenAgreementDate, nomenPerechen, fileNomen } = this.props.tofiConstants;
-
     const nomenNumberObj = item.props.find(element => element.prop == nomenNumber.id),
       nomenAgreementDateObj = item.props.find(element => element.prop == nomenAgreementDate.id),
       nomenPerechenObj = item.props.find(element => element.prop == nomenPerechen.id);
 
     const file = item.props.find(element => element.prop == fileNomen.id);
     const temp ={
-        fileNomen : file && file.value ? file.value : {},
+        fileNomen : file && file.values && file.values.value ? file.values.value : {},
 
-    }
+    };
     return {
       key: item.id,
-      nomenNumber: nomenNumberObj ? nomenNumberObj.value || '' : '',
-      nomenAgreementDate: nomenAgreementDateObj && nomenAgreementDateObj.value ? nomenAgreementDateObj.value : '',
-      nomenPerechen: nomenPerechenObj && nomenPerechenObj.cube && nomenPerechenObj.cube.idRef ? { value: nomenPerechenObj.cube.idRef, label: nomenPerechenObj.cube.name[this.lng] } : null,
+      nomenNumber: nomenNumberObj ? nomenNumberObj.values && nomenNumberObj.values.value || '' : '',
+      nomenAgreementDate: nomenAgreementDateObj && nomenAgreementDateObj.values && nomenAgreementDateObj.values.value && {idDataPropVal:nomenAgreementDateObj.values.idDataPropVal,value: nomenAgreementDateObj.values.value} || '',
+      nomenPerechen: nomenPerechenObj && nomenPerechenObj.values && nomenPerechenObj.values.value ? {idDataPropVal:nomenPerechenObj.values.idDataPropVal, value: nomenPerechenObj.values.value, label: nomenPerechenObj.values.label } : null,
       fileNomen: isEmpty(temp.fileNomen) === false  ? [temp.fileNomen] : null
     }
   };
@@ -332,12 +331,13 @@ class LegalEntitiesNomenclatureSmall extends React.Component {
             title: nomenAgreementDate.name[this.lng],
             dataIndex: 'nomenAgreementDate',
             width: '25%',
+                render:(key,obj)=>{return key.value}
           }, {
             key: 'nomenPerechen',
             title: nomenPerechen.name[this.lng],
             dataIndex: 'nomenPerechen',
             width: '42%',
-            render: value => value ? value.label : ''
+            render: (key,obj) => { return key ? key.label : ''}
           },
           {
             key: 'action',

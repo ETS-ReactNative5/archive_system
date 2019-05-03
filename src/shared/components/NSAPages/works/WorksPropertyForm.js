@@ -38,6 +38,123 @@ class WorksPropertyForm extends Component {
     };
   }
 
+    strToRedux = (val, prevVal, obj, prevObj) => {
+        var newVal = {...prevVal};
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: {kz: val},
+                valueLng: {ru: val},
+                valueLng: {en: val}
+            };
+            return objVal
+        } else {
+            newVal.value = val;
+            newVal['valueLng']={kz:val,ru:val,en:val}
+            return (newVal)
+
+        }
+    };
+    fileToRedux = (val, prevVal, file, str) => {
+        let newFile = val.filter(el => el instanceof File);
+        if (newFile.length > 0) {
+            var copyVal = prevVal?[...prevVal]:[]
+            newFile.map(el => {
+                copyVal.push({
+                    value: el
+                })
+            });
+            return copyVal
+        } else {
+            return val.length == 0 ? [] : val
+        }
+    };
+    selectToRedux = (val, prevVal, obj, prevObj) => {
+      
+        if (val !== undefined) {
+            if (val === null) {
+                let newValNull = {...prevVal};
+                newValNull.label = null;
+                newValNull.labelFull = null;
+                newValNull.value = null;
+                return newValNull
+            } else {
+                let newVal = {...prevVal};
+                newVal.value = val.value;
+                newVal.label = val.label;
+                newVal.labelFull = val.label;
+                newVal.workTypeClass=val.workTypeClass;
+                return (newVal)
+            }
+
+        }
+    };
+    selectMultiToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val.length > 0){
+                let coppyPrevVal = prevVal?[...prevVal]:[]
+                let coppyVal = [...val]
+                if (coppyPrevVal.length > 0 ) {
+                    for (let i = 0; i < coppyPrevVal.length; i++) {
+                        if (coppyPrevVal[i].idDataPropVal == undefined) continue
+                        if (coppyPrevVal[i].idDataPropVal !== undefined) {
+                            let findePrevVal = this.state.optionMultiSelect.find((el) => el.idDataPropVal === coppyPrevVal[i].idDataPropVal)
+
+                            if (findePrevVal === undefined) {
+                                setTimeout(() => {
+                                    this.setState({
+                                        optionMultiSelect: this.state.optionMultiSelect.concat(coppyPrevVal[i])
+                                    })
+                                })
+
+                            }
+                        }
+
+                    }
+                }
+
+                for (let i = 0; i < coppyVal.length; i++) {
+                    if (coppyVal[i].idDataPropVal === undefined) {
+                        let findVal = this.state.optionMultiSelect.find((el) => el.value === coppyVal[i].value)
+                        if (findVal !== undefined) {
+                            coppyVal.splice(i, 1)
+                            coppyVal.push(findVal)
+                        }
+                    }
+                }
+                return coppyVal
+            } else {
+                return []
+            }
+        }
+    };
+    dateToRedux=(val , prev)=>{{
+        let coppyPrev = {...prev}
+
+        if (!!val){
+            let newDate = moment(val).format("DD-MM-YYYY")
+            if (!!coppyPrev.idDataPropVal){
+                coppyPrev.value = newDate
+                return coppyPrev
+            }else {
+                return {
+                    value:newDate
+                }
+            }
+        }else{
+            if (!!coppyPrev.value){
+                coppyPrev.value=""
+                return coppyPrev
+            }else{
+                return {}
+            }
+
+        }
+
+    }};
+
+
+
   changeLang = e => {
     this.setState({lang: {...this.state.lang, [e.target.name]: e.target.value}});
   };
@@ -69,7 +186,6 @@ class WorksPropertyForm extends Component {
             ...rest,
             workAuthor: String(values.workAuthor.value),
             nsaWorkStatus: values.nsaWorkStatus,
-            workDate: values.workDate
           }
         })
     }
@@ -125,6 +241,7 @@ class WorksPropertyForm extends Component {
           disabled={!!this.props.initialValues.key}
           isSearchable={false}
           label={t('WORK_TYPE')}
+          normalize={this.selectToRedux}
           formItemLayout={
             {
               labelCol: {span: 10},
@@ -143,6 +260,7 @@ class WorksPropertyForm extends Component {
         {workPriority && <Field
           name="workPriority"
           component={renderSelect}
+          normalize={this.selectToRedux}
           isSearchable={false}
           label={workPriority.name[lng]}
           formItemLayout={
@@ -161,6 +279,7 @@ class WorksPropertyForm extends Component {
         {nsaWorkStatus && <Field
           name="nsaWorkStatus"
           disabled
+          normalize={this.selectToRedux}
           component={renderSelect}
           isSearchable={false}
           label={nsaWorkStatus.name[lng]}
@@ -175,6 +294,8 @@ class WorksPropertyForm extends Component {
         />}
         {workDate && <Field
           name="workDate"
+          colon={true}
+          normalize={this.dateToRedux}
           component={renderDatePicker}
           format={null}
           label={workDate.name[lng]}
@@ -189,6 +310,7 @@ class WorksPropertyForm extends Component {
           name="dateAppointment"
           component={renderDatePicker}
           format={null}
+          normalize={this.dateToRedux}
           label={dateAppointment.name[lng]}
           formItemLayout={
             {
@@ -203,6 +325,7 @@ class WorksPropertyForm extends Component {
         </FormItem>
         {fundArchive && !['creatingArchiveReference'].includes(workTypeValue.workTypeClass) && <Field
           name="fundArchive"
+          normalize={this.selectToRedux}
           component={renderSelect}
           label={fundArchive.name[lng]}
           formItemLayout={
@@ -225,6 +348,7 @@ class WorksPropertyForm extends Component {
           name="workRegFund"
           disabled={!!this.props.initialValues.workActualStartDate || !fundArchiveValue}
           component={ renderSelectVirt }
+          normalize={this.selectToRedux}
           matchProp="label"
           matchPos="start"
           label={workRegFund.name[lng]}
@@ -266,6 +390,7 @@ class WorksPropertyForm extends Component {
         {workRegInv && ['descriptionOfCases', 'documentDescpiption', 'inventoryEditing'].includes(workTypeValue.workTypeClass) && <Field
           name="workRegInv"
           component={ renderSelectVirt }
+          normalize={this.selectToRedux}
           matchProp="label"
           matchPos="start"
           label={workRegInv.name[lng]}
@@ -303,6 +428,7 @@ class WorksPropertyForm extends Component {
         {workRegCase && ['documentDescpiption'].includes(workTypeValue.workTypeClass) && <Field
           name="workRegCase"
           component={ renderSelectVirt }
+          normalize={this.selectMultiToRedux}
           matchProp="label"
           matchPos="start"
           label={workRegCase.name[lng]}
@@ -340,6 +466,7 @@ class WorksPropertyForm extends Component {
         {directoryType && ['creatingArchiveReference'].includes(workTypeValue.workTypeClass) && <Field
           name="directoryType"
           component={renderSelect}
+          normalize={this.selectToRedux}
           label={directoryType.name[lng]}
           formItemLayout={{
             labelCol: {span: 10},
@@ -353,6 +480,7 @@ class WorksPropertyForm extends Component {
         {nameDirectory && ['creatingArchiveReference'].includes(workTypeValue.workTypeClass) && <Field
           name="nameDirectory"
           component={renderInput}
+          normalize={this.strToRedux}
           label={nameDirectory.name[lng]}
           formItemLayout={{
             labelCol: {span: 10},
@@ -367,6 +495,7 @@ class WorksPropertyForm extends Component {
           name="workAuthor"
           component={renderSelect}
           disabled
+          normalize={this.selectToRedux}
           label={workAuthor.name[lng]}
           formItemLayout={
             {
@@ -378,6 +507,7 @@ class WorksPropertyForm extends Component {
         {workAssignedTo && <Field
           name="workAssignedTo"
           component={renderSelect}
+          normalize={this.selectToRedux}
           label={workAssignedTo.name[lng]}
           formItemLayout={
             {
@@ -388,8 +518,11 @@ class WorksPropertyForm extends Component {
           onChange={(e, newValue) => {
             const user = this.props.user;
             if (newValue) {
-              this.props.change('appointedUser', {value: user.obj, label: user.name});
-              this.props.change('nsaWorkStatus', {value: appointed.id, label: appointed.name[lng]})
+              this.props.change('appointedUser', {value: user.obj, label: user.name,
+                  idDataPropVal: this.props.nsaWorkStatusIDDpv.WorksPropertyForm.values.appointedUser &&
+                  this.props.nsaWorkStatusIDDpv.WorksPropertyForm.values.appointedUser.idDataPropVal});
+              this.props.change('nsaWorkStatus', {value: appointed.id, label: appointed.name[lng],
+                  idDataPropVal:this.props.nsaWorkStatusIDDpv.WorksPropertyForm.values.nsaWorkStatus.idDataPropVal})
             } else {
               this.props.change('appointedUser', null);
               this.props.change('nsaWorkStatus', {value: created.id, label: created.name[lng]})
@@ -405,6 +538,7 @@ class WorksPropertyForm extends Component {
         {appointedUser && <Field
           name="appointedUser"
           component={renderSelect}
+          normalize={this.selectToRedux}
           disabled
           label={appointedUser.name[lng]}
           formItemLayout={
@@ -417,6 +551,7 @@ class WorksPropertyForm extends Component {
         {tookUser && <Field
           name="tookUser"
           component={renderSelect}
+          normalize={this.selectToRedux}
           disabled
           label={tookUser.name[lng]}
           formItemLayout={
@@ -433,6 +568,7 @@ class WorksPropertyForm extends Component {
         {workPlannedStartDate && <Field
           name="workPlannedStartDate"
           component={renderDatePicker}
+          normalize={this.dateToRedux}
           format={null}
           label={workPlannedStartDate.name[lng]}
           formItemLayout={
@@ -445,6 +581,7 @@ class WorksPropertyForm extends Component {
         {workPlannedEndDate && <Field
           name="workPlannedEndDate"
           component={renderDatePicker}
+          normalize={this.dateToRedux}
           format={null}
           label={workPlannedEndDate.name[lng]}
           formItemLayout={
@@ -487,6 +624,7 @@ function mapStateToProps(state) {
     workPriorityOptions: state.generalData[WORK_PRIORITY],
     directoryTypeOptions: state.generalData.directoryType,
     nsaWorkStatusOptions: state.generalData.nsaWorkStatus,
+      nsaWorkStatusIDDpv:state.form
   }
 }
 

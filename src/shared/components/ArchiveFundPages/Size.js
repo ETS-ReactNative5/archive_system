@@ -1,186 +1,233 @@
-import React from 'react';
-import { Button, Table } from 'antd';
-import {isEmpty} from "lodash";
+import React from "react";
+import { Button, Spin, Table } from "antd";
+import { isEmpty } from "lodash";
+import { calcCountDocsOfFund } from "../../actions/actions";
 
 class Size extends React.Component {
-
   state = {
-    data: []
+    data: [],
+    dataSize: {},
+    loading: false
   };
 
   componentDidMount() {
-    if(isEmpty(this.props.tofiConstants)) return;
-    const { initialValues,
-      tofiConstants: {fundNumberOfCases, fundNumberOfUpr, fundNumberOfNTD, fundNumberOfLS,
-        fundNumberOfKino, fundNumberOfPhoto, fundNumberOfPhono, fundNumberOfVideo,
-        fundNumberOfMCHD ,fundNumberOfMicroforms, fundNumberOfRegis, fundNumberOfKinoReg,
-        fundNumberOfPhonoReg, fundNumberOfVideoReg, fundNumberOfMCHDReg, fundNumberOfPhotoReg,
-        fundNumberOfCasesWithFiles, fundNumberOfSecretCases, fundCasesInKazakhLang, fundNumberOfOCD,
-        fundNumberOfInsurance, fundNumberOfInsuranceCadre, fundNumberOfInsuranceCases, fundNumberOfCasesInFundOfUse} } = this.props;
+    if (isEmpty(this.props.tofiConstants)) return;
+    this.updateSize();
+  }
+  updateSize = () => {
+    if (!this.props.keyFund) return
+    this.setState({ loading: true });
+    calcCountDocsOfFund(this.props.keyFund.split("_")[1]).then(res =>
+      this.setState({ dataSize: res.data }, () => this.renderColun())
+    );
+  };
+  renderColun = () => {
+    const {
+      initialValues,
+      tofiConstants: {
+        fundNumberOfCases,
+        fundNumberOfUpr,
+        fundNumberOfNTD,
+        fundNumberOfLS,
+        fundNumberOfKino,
+        fundNumberOfPhoto,
+        fundNumberOfPhono,
+        fundNumberOfVideo,
+        fundNumberOfMCHD,
+        fundNumberOfMicroforms,
+        fundNumberOfLP,
+        fundNumberOfRegis,
+        fundNumberOfKinoReg,
+        fundNumberOfPhonoReg,
+        fundNumberOfVideoReg,
+        fundNumberOfMCHDReg,
+        fundNumberOfPhotoReg,
+        fundNumberOfCasesWithFiles,
+        fundNumberOfSecretCases,
+        fundCasesInKazakhLang,
+        fundNumberOfOCD,
+        fundNumberOfInsurance,
+        fundNumberOfInsuranceCadre,
+        fundNumberOfInsuranceCases,
+        fundNumberOfCasesInFundOfUse
+      }
+    } = this.props;
+    let data = this.state.dataSize;
+
     this.setState({
       data: [
         {
-          key: 'fundNumberOfCases',
+          key: "fundNumberOfCases",
           docsType: fundNumberOfCases.name[this.lng],
-          archiveFundSize: initialValues.fundNumberOfCases,
+          archiveFundSize: data ? data.fundNumberOfCases : "",
           children: [
             {
-              key: 'fundNumberOfUpr',
+              key: "fundNumberOfUpr",
               docsType: fundNumberOfUpr.name[this.lng],
-              archiveFundSize: initialValues.fundNumberOfUpr,
+              archiveFundSize: data ? data.fundNumberOfUpr : ""
             },
             {
-              key: 'fundNumberOfNTD',
+              key: "fundNumberOfLP",
+              docsType: fundNumberOfLP.name[this.lng],
+              archiveFundSize: data ? data.fundNumberOfLP : ""
+            },
+            {
+              key: "fundNumberOfNTD",
               docsType: fundNumberOfNTD.name[this.lng],
-              archiveFundSize: initialValues.fundNumberOfNTD,
+              archiveFundSize: data ? data.fundNumberOfNTD : ""
             },
             {
-              key: 'fundNumberOfLS',
+              key: "fundNumberOfLS",
               docsType: fundNumberOfLS.name[this.lng],
-              archiveFundSize: initialValues.fundNumberOfLS,
+              archiveFundSize: data ? data.fundNumberOfLS : ""
             },
             {
-              key: 'fundNumberOfKino',
+              key: "fundNumberOfKino",
               docsType: fundNumberOfKino.name[this.lng],
-              archiveFundSize: initialValues.fundNumberOfKino,
+              archiveFundSize: data ? data.fundNumberOfKino : ""
             },
             {
-              key: 'fundNumberOfPhoto',
+              key: "fundNumberOfPhoto",
               docsType: fundNumberOfPhoto.name[this.lng],
-              archiveFundSize: initialValues.fundNumberOfPhoto,
+              archiveFundSize: data ? data.fundNumberOfPhoto : ""
             },
             {
-              key: 'fundNumberOfPhono',
+              key: "fundNumberOfPhono",
               docsType: fundNumberOfPhono.name[this.lng],
-              archiveFundSize: initialValues.fundNumberOfPhono,
+              archiveFundSize: data ? data.fundNumberOfPhono : ""
             },
             {
-              key: 'fundNumberOfVideo',
+              key: "fundNumberOfVideo",
               docsType: fundNumberOfVideo.name[this.lng],
-              archiveFundSize: initialValues.fundNumberOfVideo,
+              archiveFundSize: data ? data.fundNumberOfVideo : ""
             },
             {
-              key: 'fundNumberOfMCHD',
+              key: "fundNumberOfMCHD",
               docsType: fundNumberOfMCHD.name[this.lng],
-              archiveFundSize: initialValues.fundNumberOfMCHD,
+              archiveFundSize: data ? data.fundNumberOfMCHD : ""
             },
             {
-              key: 'fundNumberOfMicroforms',
+              key: "fundNumberOfMicroforms",
               docsType: fundNumberOfMicroforms.name[this.lng],
-              archiveFundSize: initialValues.fundNumberOfMicroforms,
+              archiveFundSize: data ? data.fundNumberOfMicroforms : ""
             }
           ]
         },
         {
-          key: 'fundNumberOfRegis',
+          key: "fundNumberOfRegis",
           docsType: fundNumberOfRegis.name[this.lng],
           archiveFundSize: initialValues.fundNumberOfRegis,
           children: [
             {
-              key: 'fundNumberOfKinoReg',
+              key: "fundNumberOfKinoReg",
               docsType: fundNumberOfKinoReg.name[this.lng],
-              archiveFundSize: initialValues.fundNumberOfKinoReg,
+              archiveFundSize: initialValues.fundNumberOfKinoReg
             },
             {
-              key: 'fundNumberOfPhonoReg',
+              key: "fundNumberOfPhonoReg",
               docsType: fundNumberOfPhonoReg.name[this.lng],
-              archiveFundSize: initialValues.fundNumberOfPhonoReg,
+              archiveFundSize: initialValues.fundNumberOfPhonoReg
             },
             {
-              key: 'fundNumberOfVideoReg',
+              key: "fundNumberOfVideoReg",
               docsType: fundNumberOfVideoReg.name[this.lng],
-              archiveFundSize: initialValues.fundNumberOfVideoReg,
+              archiveFundSize: initialValues.fundNumberOfVideoReg
             },
             {
-              key: 'fundNumberOfMCHDReg',
+              key: "fundNumberOfMCHDReg",
               docsType: fundNumberOfMCHDReg.name[this.lng],
-              archiveFundSize: initialValues.fundNumberOfMCHDReg,
+              archiveFundSize: initialValues.fundNumberOfMCHDReg
             },
             {
-              key: 'fundNumberOfPhotoReg',
+              key: "fundNumberOfPhotoReg",
               docsType: fundNumberOfPhotoReg.name[this.lng],
-              archiveFundSize: initialValues.fundNumberOfPhotoReg,
+              archiveFundSize: initialValues.fundNumberOfPhotoReg
             }
           ]
         },
         {
-          key: 'fundNumberOfCasesWithFiles',
+          key: "fundNumberOfCasesWithFiles",
           docsType: fundNumberOfCasesWithFiles.name[this.lng],
           archiveFundSize: initialValues.fundNumberOfCasesWithFiles
         },
         {
-          key: 'fundNumberOfSecretCases',
+          key: "fundNumberOfSecretCases",
           docsType: fundNumberOfSecretCases.name[this.lng],
           archiveFundSize: initialValues.fundNumberOfSecretCases
         },
         {
-          key: 'fundCasesInKazakhLang',
+          key: "fundCasesInKazakhLang",
           docsType: fundCasesInKazakhLang.name[this.lng],
           archiveFundSize: initialValues.fundCasesInKazakhLang
         },
         {
-          key: 'fundNumberOfOCD',
+          key: "fundNumberOfOCD",
           docsType: fundNumberOfOCD.name[this.lng],
           archiveFundSize: initialValues.fundNumberOfOCD
         },
         {
-          key: 'fundNumberOfInsurance',
+          key: "fundNumberOfInsurance",
           docsType: fundNumberOfInsurance.name[this.lng],
           archiveFundSize: initialValues.fundNumberOfInsurance
         },
         {
-          key: 'fundNumberOfInsuranceCadre',
+          key: "fundNumberOfInsuranceCadre",
           docsType: fundNumberOfInsuranceCadre.name[this.lng],
           archiveFundSize: initialValues.fundNumberOfInsuranceCadre
         },
         {
-          key: 'fundNumberOfInsuranceCases',
+          key: "fundNumberOfInsuranceCases",
           docsType: fundNumberOfInsuranceCases.name[this.lng],
           archiveFundSize: initialValues.fundNumberOfInsuranceCases
         },
         {
-          key: 'fundNumberOfCasesInFundOfUse',
+          key: "fundNumberOfCasesInFundOfUse",
           docsType: fundNumberOfCasesInFundOfUse.name[this.lng],
           archiveFundSize: initialValues.fundNumberOfCasesInFundOfUse
         }
-      ]
-    })
-  }
+      ],
+      loading: false
+    });
+  };
 
   renderTableHeader = () => {
     return (
       <div>
-        <Button>{this.props.t('UPDATE')}</Button>
+        <Button onClick={this.updateSize}>{this.props.t("UPDATE")}</Button>
       </div>
-    )
+    );
   };
 
   render() {
-    this.lng = localStorage.getItem('i18nextLng');
+    this.lng = localStorage.getItem("i18nextLng");
     return (
-      <Table
-        title={this.renderTableHeader}
-        dataSource={this.state.data}
-        pagination={false}
-        columns={[
-          {
-            key: 'docsType',
-            title: this.props.t('DOCUMENTATION_TYPE'),
-            dataIndex: 'docsType',
-            width: '70%'
-          },
-          {
-            key: 'archiveFundSize',
-            title: this.props.t('ARCHIVE_FUND_SIZE'),
-            dataIndex: 'archiveFundSize',
-            width: '30%'
-          }
-        ]}
-        size='small'
-        scroll={{ y: '100%' }}
-        bordered
-      />
-    )
+      <div>
+        <Spin spinning={this.state.loading}>
+          <Table
+            title={this.renderTableHeader}
+            dataSource={this.state.data}
+            pagination={false}
+            columns={[
+              {
+                key: "docsType",
+                title: this.props.t("DOCUMENTATION_TYPE"),
+                dataIndex: "docsType",
+                width: "70%"
+              },
+              {
+                key: "archiveFundSize",
+                title: this.props.t("ARCHIVE_FUND_SIZE"),
+                dataIndex: "archiveFundSize",
+                width: "30%"
+              }
+            ]}
+            size="small"
+            scroll={{ y: "100%" }}
+            bordered
+          />
+        </Spin>
+      </div>
+    );
   }
 }
 

@@ -132,6 +132,7 @@ class LegalEntities extends React.PureComponent {
     };
 
     handleClick = (rec, name) => {
+
         return async () => {
             // e.stopPropagation();
             switch(name) {
@@ -357,7 +358,7 @@ class LegalEntities extends React.PureComponent {
                 data.some(item => {
                     const fundmakerOfIKObj = item.props.find(element => element.prop == fundmakerOfIK.id);
                     //TODO fundmaker should be single valued
-                    return fundmakerOfIKObj.cube.idRef && doItem.id.includes(fundmakerOfIKObj.cube.idRef);
+                    return fundmakerOfIKObj.cube && fundmakerOfIKObj.cube.idRef && doItem.id.includes(fundmakerOfIKObj.cube.idRef);
                 })
                 );
                 this.filteredOrgSourceCubeTF = this.props.orgSourceCube.cube.filter(tf => {
@@ -385,7 +386,7 @@ class LegalEntities extends React.PureComponent {
         var numbIK = item.props.find(element => element.prop == fundNumber.id);
         const result = {
             key: item.id,
-            fundNumber: numbIK ? numbIK.value : '',
+            fundNumber: numbIK ? numbIK.values ? numbIK.values.value : '':'',
             name: item.name,
         };
 
@@ -485,8 +486,8 @@ class LegalEntities extends React.PureComponent {
                         title: '№',
                         dataIndex: 'fundNumber',  //fundNumber
                         width: '5%',
-                        render: fundNumber => fundNumber ? fundNumber : '',
-                        sorter: (a, b) => a.fundNumber - b.fundNumber,
+                         render:key=>key && key.value,
+                        sorter: (a, b) => a.fundNumber.value - b.fundNumber.value,
                         sortOrder:'ascend'
                         
                     },

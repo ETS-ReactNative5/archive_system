@@ -4,7 +4,7 @@ import { submit } from 'redux-form';
 import ProfileForm from '../components/ProfilePages';
 import { getCube } from '../actions/actions';
 import {CUBE_FOR_WORKS, DO_FOR_FUND_AND_IK, DO_FOR_WORKS, DP_FOR_WORKS} from "../constants/tofiConstants";
-import {onSaveCubeData2, parseCube_new, parseForTable} from "../utils/cubeParser";
+import {onSaveCubeData, parseCube_new, parseForTable} from "../utils/cubeParser";
 import {message} from "antd/lib/index";
 
 class ProfileScreen extends React.Component {
@@ -72,7 +72,7 @@ class ProfileScreen extends React.Component {
     try {
       if(!c.cube.data) c.cube.data = this.props.cubeUsers;
       hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
-      const resSave = await onSaveCubeData2(c, v, t, objData);
+      const resSave = await onSaveCubeData(c, v, t, objData);
       hideLoading();
       if(!resSave.success) {
         message.error(this.props.t('PROPS_UPDATING_ERROR'));

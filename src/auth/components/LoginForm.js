@@ -4,7 +4,7 @@ import { Form, Button, Icon } from 'antd';
 import { Field, reduxForm } from 'redux-form';
 import { Link } from 'react-router-dom';
 import { required } from '../../shared/utils/form_validations';
-import { renderInput } from '../../shared/utils/form_components';
+import {renderInput, renderLogin} from '../../shared/utils/form_components';
 import iconVisibilty from '../../shared/assets/icons/ic_visibility.svg';
 import iconVisibiltyOff from '../../shared/assets/icons/ic_visibility_off.svg';
 import iconError from '../../shared/assets/icons/ic_error.svg';
@@ -38,7 +38,7 @@ class LoginForm extends Component {
         <Field
           name="login"
           className="login-form__input"
-          component={renderInput}
+          component={renderLogin}
           placeholder="Login"
           validate={required}
           autoFocus
@@ -48,7 +48,7 @@ class LoginForm extends Component {
           className="login-form__input"
           type={showPassword ? 'text' : 'password'}
           suffix={suffix}
-          component={renderInput}
+          component={renderLogin}
           placeholder="Password"
           validate={required}
         />

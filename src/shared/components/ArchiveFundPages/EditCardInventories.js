@@ -5,7 +5,7 @@ import {isEmpty, isEqual, map} from 'lodash';
 import axios from "axios"
 import AntTable from '../AntTable';
 import {createObj, dObj, getCasesCount, getCube, getPropVal, updateCubeData} from '../../actions/actions';
-import {getPropMeta, parseCube_new, parseForTable} from '../../utils/cubeParser';
+import {getPropMeta, parseCube_new, onSaveCubeData,  parseForTable} from '../../utils/cubeParser';
 import {
     CUBE_FOR_AF_INV,
     DO_FOR_INV, DP_FOR_INV
@@ -191,7 +191,60 @@ class EditCardInventories extends Component {
             })
     };
 
-    onSaveCubeData = ({approvalProtocol, invFile, agreement2Protocol, agreementProtocol, ...values}, doItemProp, objDataProp) => {
+    onSaveCubeData = async({approvalProtocol, invFile, agreement2Protocol, agreementProtocol, ...values}, doItemProp, objDataProp) => {
+        let hideLoading
+        try {
+            const c ={
+                cube:{
+                    cubeSConst: CUBE_FOR_AF_INV,
+                    doConst: DO_FOR_INV,
+                    dpConst: DP_FOR_INV,
+                    data:this.props.CubeForAF_Inv
+                },
+                obj:{
+                    doItem:doItemProp
+                }
+            }
+
+            const v ={
+                values:values,
+                complex:"",
+                oFiles:{
+                    agreementProtocol:agreementProtocol,
+                    approvalProtocol:approvalProtocol,
+                    invFile:invFile,
+                    agreement2Protocol:agreement2Protocol
+                }
+            }
+            const objData = objDataProp
+            const  t = this.props.tofiConstants
+            this.setState({loading: true, });
+
+            hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
+            const resSave = await onSaveCubeData(c, v, t, objData);
+            hideLoading();
+            if(!resSave.success) {
+                message.error(this.props.t('PROPS_UPDATING_ERROR'));
+                resSave.errors.forEach(err => {
+                    message.error(err.text)
+                });
+                return Promise.reject(resSave);
+            }
+            message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+            return this.props.getCube(CUBE_FOR_AF_INV, JSON.stringify(this.filters))
+                .then(() => {
+                    this.setState({loading: false, openCard: false});
+                    return {success: true}
+                })
+
+
+        } catch (e) {
+            typeof hideLoading === 'function' && hideLoading();
+            this.setState({ loading: false });
+            console.warn(e);
+        }
+
+/*
         let datas = [];
         try {
             datas = [{
@@ -251,13 +304,13 @@ class EditCardInventories extends Component {
                         return Promise.reject();
                     }
                 }
-            })
+            })*/
     };
 
     renderTableData = item => {
         const constArr = ['invNumber', 'invDates', 'invType', 'invStorage', 'fundNumberOfCases', "caseStorageMulti", "rackMulti", "sectionMulti", "shelfMulti", 'fundNumberOfCasesWithFiles',
             'documentType', 'fundFeature', 'invCaseSystem', 'invApprovalDate2', 'invApprovalDate1', 'invAgreement2Date',
-            'invAgreementDate', 'agreementProtocol', 'agreement2Protocol', 'approvalProtocol', 'invCont'];
+            'invAgreementDate', 'agreementProtocol', 'agreement2Protocol', 'approvalProtocol',"invFile", 'invCont'];
 
         const accessLevelObj = this.props.accessLevelOptions.find(al => al.id === item.accessLevel);
 
@@ -319,7 +372,7 @@ class EditCardInventories extends Component {
             return (
                 item.name[this.lng].toLowerCase().includes(filter.name.toLowerCase()) &&
                 item.invDates.join(', ').includes(filter.invDates.toLowerCase()) &&
-                item.invNumber.toLowerCase().includes(filter.invNumber.toLowerCase()) &&
+                item.invNumber.value.toLowerCase().includes(filter.invNumber.toLowerCase()) &&
                 ( filter.invType.length === 0 || filter.invType.some(p => (item.invType && p.value == item.invType.value)) ) &&
                 ( filter.documentType.length === 0 || filter.documentType.some(p => (item.documentType && p.value == item.documentType.value)) )
             )
@@ -407,8 +460,8 @@ class EditCardInventories extends Component {
                                     title: t('INV_NUMB'),
                                     dataIndex: 'invNumber',
                                     width: '7%',
-
-                                    sorter: (a, b) => ((a.invNumber).replace(/[^0-9]/g, '')) - ((b.invNumber).replace(/[^0-9]/g, '')),
+                                    render:obj=>obj && obj.value,
+                                    sorter: (a, b) => ((a.invNumber.value).replace(/[^0-9]/g, '')) - ((b.invNumber.value).replace(/[^0-9]/g, '')),
                                     filterDropdown: (
                                         <div className="custom-filter-dropdown">
                                             <Input
@@ -461,6 +514,7 @@ class EditCardInventories extends Component {
                                     title: invDates.name[lng],
                                     dataIndex: 'invDates',
                                     width: '10%',
+
                                     filterDropdown: (
                                         <div className="custom-filter-dropdown">
                                             <Input
@@ -481,7 +535,7 @@ class EditCardInventories extends Component {
                                             filterDropdownVisible: visible,
                                         }, () => this.invDates.focus());
                                     },
-                                    render: arr => arr && arr.map(o => o.value).join(', ')
+                                    render: arr => arr && arr.map(o => o.value.value).join(', ')
                                 },
                                 {
                                     key: 'invType',

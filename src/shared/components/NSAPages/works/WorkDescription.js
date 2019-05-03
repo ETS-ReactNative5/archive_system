@@ -33,9 +33,21 @@ class WorkDescription extends React.PureComponent {
 
   componentDidUpdate(prevProps) {
     if(prevProps.initialValues !== this.props.initialValues) {
-      this.customerReqsValue = {...this.props.initialValues.customerReqs};
-      this.artistNotesValue = {...this.props.initialValues.artistNotes};
-      this.qualityControlConclusionValue = {...this.props.initialValues.qualityControlConclusion};
+        this.customerReqsValue = {...this.props.initialValues.customerReqs} || {
+            kz: '',
+            ru: '',
+            en: ''
+        };
+        this.artistNotesValue = {...this.props.initialValues.artistNotes} || {
+            kz: '',
+            ru: '',
+            en: ''
+        };
+        this.qualityControlConclusionValue = {...this.props.initialValues.qualityControlConclusion} || {
+            kz: '',
+            ru: '',
+            en: ''
+        };
     }
   }
   onSubmit = values => {
@@ -65,8 +77,13 @@ class WorkDescription extends React.PureComponent {
           <Field
             name="customerReqs"
             component={renderTextareaLang}
-            format={value => (!!value ? value[lang.customerReqs] : '')}
-            parse={value => { this.customerReqsValue[lang.customerReqs] = value; return {...this.customerReqsValue} }}
+            format={value => (!!value ? value.valueLng[lang.customerReqs] : '')}
+            normalize={(val, prevVal, obj, prevObj) => {
+                let newVal = {...prevVal}; newVal.value = val;
+                if (!!newVal.valueLng){newVal.valueLng[lang.customerReqs] = val;}else
+                {newVal['valueLng']={kz:'',en:'',ru:''};newVal.valueLng[lang.customerReqs] = val;}
+                return newVal;
+            }}
             label={customerReqs.name[this.lng]}
             formItemClass="with-lang--column"
             changeLang={this.changeLang}
@@ -80,8 +97,13 @@ class WorkDescription extends React.PureComponent {
           <Field
             name="artistNotes"
             component={renderTextareaLang}
-            format={value => (!!value ? value[lang.artistNotes] : '')}
-            parse={value => { this.artistNotesValue[lang.artistNotes] = value; return {...this.artistNotesValue} }}
+            format={value => (!!value ? value.valueLng[lang.artistNotes] : '')}
+            normalize={(val, prevVal, obj, prevObj) => {
+                let newVal = {...prevVal}; newVal.value = val;
+                if (!!newVal.valueLng){newVal.valueLng[lang.artistNotes] = val;}else
+                {newVal['valueLng']={kz:'',en:'',ru:''};newVal.valueLng[lang.artistNotes] = val;}
+                return newVal;
+            }}
             label={artistNotes.name[this.lng]}
             formItemClass="with-lang--column"
             changeLang={this.changeLang}
@@ -95,8 +117,13 @@ class WorkDescription extends React.PureComponent {
           <Field
             name="qualityControlConclusion"
             component={renderTextareaLang}
-            format={value => (!!value ? value[lang.qualityControlConclusion] : '')}
-            parse={value => { this.qualityControlConclusionValue[lang.qualityControlConclusion] = value; return {...this.qualityControlConclusionValue} }}
+            format={value => (!!value ? value.valueLng[lang.qualityControlConclusion] : '')}
+            normalize={(val, prevVal, obj, prevObj) => {
+                let newVal = {...prevVal}; newVal.value = val;
+                if (!!newVal.valueLng){newVal.valueLng[lang.qualityControlConclusion] = val;}else
+                {newVal['valueLng']={kz:'',en:'',ru:''};newVal.valueLng[lang.qualityControlConclusion] = val;}
+                return newVal;
+            }}
             label={qualityControlConclusion.name[this.lng]}
             formItemClass="with-lang--column"
             changeLang={this.changeLang}

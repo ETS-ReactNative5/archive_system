@@ -605,7 +605,8 @@ class StorageUnits extends React.Component {
                         key: "archiveCipher",
                         title: archiveCipher.name[this.lng],
                         dataIndex: "archiveCipher",
-                        width: "14%"
+                        width: "14%",
+                        render: (key, obj) => { return key.value},
                     },
                     {
                         key: "name",
@@ -639,25 +640,28 @@ class StorageUnits extends React.Component {
                         key: "caseDbeg",
                         title: caseDbeg.name[this.lng],
                         dataIndex: "caseDbeg",
-                        width: "8%"
+                        width: "8%",
+                        render: (key, obj) => {return key.value},
                     },
+
                     {
                         key: "caseDend",
                         title: caseDend.name[this.lng],
                         dataIndex: "caseDend",
-                        width: "8%"
+                        width: "8%",
+                        render: (key, obj) => {return key.value},
                     },
                     {
                         key: "fundNumberOfRegis",
                         title: fundNumberOfRegis.name[this.lng],
                         dataIndex: "fundNumberOfRegis",
-                        width: "10%"
+                        width: "10%",
                     },
                     {
                         key: "provenance",
                         title: t("DOCUMENTORIGIN"),
                         dataIndex: "provenance",
-                        width: "15%"
+                        width: "15%",
                     },
                     {
                         key: "recId",

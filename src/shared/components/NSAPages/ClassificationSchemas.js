@@ -18,7 +18,6 @@ import {getPropMeta, parseCube_new} from '../../utils/cubeParser';
 
 const EditableCell = ({editable, value, onChange}) => (
 <div>
-    <p>BBBBBBBBBBBBBBBBBBBBBB</p>
     {editable
     ? <Input style={{margin: '-5px 0'}} value={value}
              onChange={e => onChange(e.target.value)}/>
@@ -28,7 +27,6 @@ const EditableCell = ({editable, value, onChange}) => (
 );
 const EditableSelect = ({editable, value, onChange, options}) => (
 <div>
-    <p>AAAAAAAAAAAAAAAAAAAAAAAA</p>
     {editable
     ? <Select
     style={{margin: '-5px 0'}}
@@ -245,7 +243,7 @@ class ClassificationSchemas extends React.Component {
                 label: this.props.tofiConstants[referenceTypeObj].name[this.lng],
                 referenceTypeObj
             } : null,
-            dateCreateShem: !!dateCreateShemObj && dateCreateShemObj.value ? moment(dateCreateShemObj.value, 'DD-MM-YYYY') : null,
+            dateCreateShem: !!dateCreateShemObj.values && dateCreateShemObj.values.value ? moment(dateCreateShemObj.values.value, 'DD-MM-YYYY') : null,
             requisites: !!requisitesObj && requisitesObj.value ? requisitesObj : {},
             vidGuidebook: !!vidGuidebookObj && vidGuidebookObj.refId ? {
                 value: vidGuidebookObj.refId,

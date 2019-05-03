@@ -37,8 +37,8 @@ class Works extends React.PureComponent {
             search: {
                 nameResearchers: '',
                 workPlannedStartDate: {
-                    dbeg: moment().subtract(1, 'w'),
-                    dend: moment().add(1, 'w')
+                    dbeg:null,// moment().subtract(1, 'w'),
+                    dend:null //moment().add(1, 'w')
                 },
                 workPlannedEndDate: {
                     dbeg: null,
@@ -146,18 +146,18 @@ class Works extends React.PureComponent {
                 key: rec.key,
                 workListName: rec.workListNameObj,
                 workType: rec.workType,
-                workPlannedEndDate: rec.workPlannedEndDateObj,
+                workPlannedEndDate: rec.workPlannedEndDateObject,
                 workPriority: rec.workPriority,
                 workStatusSource: rec.workStatusSource,
                 workSource: rec.workSource,
                 checkingType: rec.checkingType,
                 workAuthor: rec.workAuthor,
-                workDate: rec.workDate,
+                workDate: rec.workDateObject,
                 workAssignedTo: rec.workAssignedTo,
-                workPlannedStartDate: rec.workPlannedStartDateObj,
-                workActualStartDate: rec.workActualStartDateObj,
-                workActualEndDate: rec.workActualEndDateObj,
-                acceptanceDate: rec.acceptanceDateObj
+                workPlannedStartDate: rec.workPlannedStartDateObject,
+                workActualStartDate: rec.workActualStartDateId,
+                workActualEndDate: rec.workActualEndDateId,
+                acceptanceDate: rec.acceptanceDateId
             };
             this.setState({initialValues, openCard: true, selectedRow: rec})
         }
@@ -167,7 +167,10 @@ class Works extends React.PureComponent {
         this.setState({
             openCard: true,
             initialValues: {
-                workAuthor: this.props.user.name,
+                workAuthor:{
+                    label:this.props.user.name,
+                    value:this.props.user.obj
+                } ,
                 workDate: moment().startOf('day'),
                 workStatusSource: {
                     value: this.props.tofiConstants.appointed.id,
@@ -353,9 +356,9 @@ class Works extends React.PureComponent {
                 if (name === 'workActualStartDate') {
                     this.saveProps({obj}, {
                         values: {
-                            workStatusSource: {value: this.props.tofiConstants.during.id},
-                            [name]: moment().format('YYYY-MM-DD')
-                        }
+                            workStatusSource: {value: this.props.tofiConstants.during.id, idDataPropVal:target.workStatusSource.idDataPropVal},
+                            [name]: {value:moment()}
+                }
                     })
                         .then(res => {
                             if (res.success) {
@@ -367,22 +370,22 @@ class Works extends React.PureComponent {
                 } else if (name === 'workActualEndDate') {
                     this.saveProps({obj}, {
                         values: {
-                            workStatusSource: {value: this.props.tofiConstants.completed.id},
-                            [name]: moment().format('YYYY-MM-DD')
+                            workStatusSource: {value: this.props.tofiConstants.completed.id, idDataPropVal:target.workStatusSource.idDataPropVal},
+                            [name]: {value:moment()}
                         }
                     })
                 } else if (name === 'acceptanceDate') {
                     this.saveProps({obj}, {
                         values: {
-                            workStatusSource: {value: this.props.tofiConstants.accepted.id},
-                            [name]: moment().format('YYYY-MM-DD')
+                            workStatusSource: {value: this.props.tofiConstants.accepted.id, idDataPropVal:target.workStatusSource.idDataPropVal},
+                            [name]: {value:moment()}
                         }
                     })
                 } else if (name === 'notAccepted') {
                     this.saveProps({obj}, {
                         values: {
-                            workStatusSource: {value: this.props.tofiConstants.notAccepted.id},
-                            acceptanceDate: moment().format('YYYY-MM-DD')
+                            workStatusSource: {value: this.props.tofiConstants.notAccepted.id, idDataPropVal:target.workStatusSource.idDataPropVal},
+                            acceptanceDate: {value:moment()}
                         }
                     })
                 }
@@ -410,7 +413,6 @@ class Works extends React.PureComponent {
             checkingTypeObj = item.props.find(element => element.prop == checkingType.id),
             workSourceObj = item.props.find(element => element.prop == workSource.id),
             workTypeClass = workTypeClasses.find(cls => this.props.tofiConstants[cls].id == item.clsORtr);
-
         return {
             key: item.id,
             numb: idx + 1,
@@ -420,39 +422,30 @@ class Works extends React.PureComponent {
                 label: this.props.tofiConstants[workTypeClass].name[this.lng],
                 workTypeClass
             } : null,
-            workPlannedStartDate: !!workPlannedStartDateObj ? workPlannedStartDateObj.value || '' : '',
-            workPlannedStartDateObj: !!workPlannedStartDateObj && workPlannedStartDateObj.value ? moment(workPlannedStartDateObj.value, 'DD-MM-YYYY') : null,
-            workPlannedEndDate: !!workPlannedEndDateObj ? workPlannedEndDateObj.value || '' : '',
-            workPlannedEndDateObj: !!workPlannedEndDateObj && workPlannedEndDateObj.value ? moment(workPlannedEndDateObj.value, 'DD-MM-YYYY') : null,
-            workStatusSource: workStatusSourceObj && workStatusSourceObj.refId ? {
-                value: workStatusSourceObj.refId,
-                label: workStatusSourceObj.value
-            } : null,
-            checkingType: checkingTypeObj && checkingTypeObj.refId ? {
-                value: checkingTypeObj.refId,
-                label: checkingTypeObj.value
-            } : null,
+            workPlannedStartDate: !!workPlannedStartDateObj && workPlannedStartDateObj.values ? workPlannedStartDateObj.values.value || '' : '',
+            workPlannedStartDateObject: !!workPlannedStartDateObj && workPlannedStartDateObj.values ? workPlannedStartDateObj.values || '' : '',
+            workPlannedStartDateObj: !!workPlannedStartDateObj &&  workPlannedStartDateObj.values && workPlannedStartDateObj.values.value ? moment(workPlannedStartDateObj.values.value, 'DD-MM-YYYY') : null,
+            workPlannedEndDate: !!workPlannedEndDateObj && workPlannedEndDateObj.values ? workPlannedEndDateObj.values.value || '' : '',
+            workPlannedEndDateObject: !!workPlannedEndDateObj && workPlannedEndDateObj.values ? workPlannedEndDateObj.values || '' : '',
+            workPlannedEndDateObj: !!workPlannedEndDateObj && workPlannedEndDateObj.values && workPlannedEndDateObj.values.value ? moment(workPlannedEndDateObj.values.value, 'DD-MM-YYYY') : null,
+            workStatusSource: workStatusSourceObj && workStatusSourceObj.values ?workStatusSourceObj.values  : null,
+            checkingType: checkingTypeObj && checkingTypeObj.values ? checkingTypeObj.values  : null,
             workListNameObj: item.name,
-            workPriority: workPriorityObj && workPriorityObj.refId ? {
-                value: workPriorityObj.refId,
-                label: workPriorityObj.value
-            } : null,
-            workSource: !!workSourceObj && workSourceObj.cube && workSourceObj.cube.idRef ? {
-                value: workSourceObj.cube.idRef,
-                label: workSourceObj.cube.name[this.lng]
-            } : null,
-            workAuthor: !!workAuthorObj ? workAuthorObj.value || '' : '',
-            workDate: !!workDateObj && workDateObj.value ? moment(workDateObj.value, 'DD-MM-YYYY') : null,
-            workAssignedTo: !!workAssignedToObj && workAssignedToObj.cube.idRef ? {
-                value: workAssignedToObj.cube.idRef,
-                label: workAssignedToObj.cube.name[this.lng]
-            } : null,
-            workActualStartDate: !!workActualStartDateObj ? workActualStartDateObj.value || '' : '',
-            workActualStartDateObj: !!workActualStartDateObj && workActualStartDateObj.value ? moment(workActualStartDateObj.value, 'DD-MM-YYYY') : null,
-            workActualEndDate: !!workActualEndDateObj ? workActualEndDateObj.value || '' : '',
-            workActualEndDateObj: !!workActualEndDateObj && workActualEndDateObj.value ? moment(workActualEndDateObj.value, 'DD-MM-YYYY') : null,
-            acceptanceDate: !!acceptanceDateObj ? acceptanceDateObj.value || '' : '',
-            acceptanceDateObj: !!acceptanceDateObj && acceptanceDateObj.value ? moment(acceptanceDateObj.value, 'DD-MM-YYYY') : null
+            workPriority: workPriorityObj && workPriorityObj.values ?workPriorityObj.values : null,
+            workSource: !!workSourceObj && workSourceObj && workSourceObj.values ?  workSourceObj.values : null,
+            workAuthor: !!workAuthorObj && workAuthorObj.values ? workAuthorObj.values   || '' : '',
+            workDate: !!workDateObj && workDateObj.values && workDateObj.values.value ? moment(workDateObj.values.value, 'DD-MM-YYYY') : null,
+            workDateObject: !!workDateObj && workDateObj.values  ? workDateObj.values  : null,
+            workAssignedTo: !!workAssignedToObj && workAssignedToObj.values ? workAssignedToObj.values  : null,
+            workActualStartDate: !!workActualStartDateObj && workActualStartDateObj.values ? workActualStartDateObj.values.value || '' : '',
+            workActualStartDateId: !!workActualStartDateObj && workActualStartDateObj.values ? workActualStartDateObj.values || '' : '',
+            workActualStartDateObj: !!workActualStartDateObj && workActualStartDateObj.values && workActualStartDateObj.values.value ? moment(workActualStartDateObj.values.value, 'DD-MM-YYYY') : null,
+            workActualEndDate: !!workActualEndDateObj && workActualEndDateObj.values  ? workActualEndDateObj.values.value || '' : '',
+            workActualEndDateId: !!workActualEndDateObj && workActualEndDateObj.values  ? workActualEndDateObj.values || '' : '',
+            workActualEndDateObj: !!workActualEndDateObj && workActualEndDateObj.values && workActualEndDateObj.values.value ? moment(workActualEndDateObj.values.value, 'DD-MM-YYYY') : null,
+            acceptanceDate: !!acceptanceDateObj && acceptanceDateObj.values ? acceptanceDateObj.values.value || '' : '',
+            acceptanceDateId: !!acceptanceDateObj && acceptanceDateObj.values ? acceptanceDateObj.values || '' : '',
+            acceptanceDateObj: !!acceptanceDateObj  && acceptanceDateObj.values && acceptanceDateObj.values.value ? moment(acceptanceDateObj.values.value, 'DD-MM-YYYY') : null
         }
     };
 
@@ -747,14 +740,14 @@ class Works extends React.PureComponent {
                                         <div className="flex">
                                             <DatePicker
                                                 format="DD-MM-YYYY"
-                                                value={this.state.search.workPlannedStartDate.dbeg}
+                                                //value={this.state.search.workPlannedStartDate.dbeg}
                                                 style={{marginRight: '16px'}}
                                                 showToday={false}
                                                 onChange={this.onDateChange('workPlannedStartDate', 'dbeg')}
                                             />
                                             <DatePicker
                                                 format="DD-MM-YYYY"
-                                                value={this.state.search.workPlannedStartDate.dend}
+                                                //value={this.state.search.workPlannedStartDate.dend}
                                                 showToday={false}
                                                 onChange={this.onDateChange('workPlannedStartDate', 'dend')}
                                             />
@@ -828,8 +821,8 @@ class Works extends React.PureComponent {
                                                 <Popconfirm title={this.props.t('CONFIRM_REMOVE')} onConfirm={() =>
                                                     this.saveProps({obj: {doItem: record.key}}, {
                                                         values: {
-                                                            workStatusSource: {value: this.props.tofiConstants.appointed.id},
-                                                            workActualStartDate: {mode: "del"}
+                                                            workStatusSource: {value: this.props.tofiConstants.appointed.id, idDataPropVal:record.workStatusSource.idDataPropVal},
+                                                            workActualStartDate: {value:moment(), mode: "del",idDataPropVal:record.workActualStartDateId.idDataPropVal}
                                                         }
                                                     })
                                                 }>
@@ -884,8 +877,8 @@ class Works extends React.PureComponent {
                                                 <Popconfirm title={this.props.t('CONFIRM_REMOVE')} onConfirm={() =>
                                                     this.saveProps({obj: {doItem: record.key}}, {
                                                         values: {
-                                                            workStatusSource: {value: this.props.tofiConstants.during.id},
-                                                            workActualEndDate: {mode: "del"}
+                                                            workStatusSource: {value: this.props.tofiConstants.appointed.id, idDataPropVal:record.workStatusSource.idDataPropVal},
+                                                            workActualEndDate: {value:moment(), mode: "del",idDataPropVal:record.workActualEndDateId.idDataPropVal}
                                                         }
                                                     })
                                                 }>
@@ -942,8 +935,8 @@ class Works extends React.PureComponent {
                                                 <Popconfirm title={this.props.t('CONFIRM_REMOVE')} onConfirm={() =>
                                                     this.saveProps({obj: {doItem: record.key}}, {
                                                         values: {
-                                                            workStatusSource: {value: this.props.tofiConstants.completed.id},
-                                                            acceptanceDate: {mode: "del"}
+                                                            workStatusSource: {value: this.props.tofiConstants.appointed.id, idDataPropVal:record.workStatusSource.idDataPropVal},
+                                                            acceptanceDate: {value:moment(), mode: "del",idDataPropVal:record.acceptanceDateId.idDataPropVal}
                                                         }
                                                     })
                                                 }>

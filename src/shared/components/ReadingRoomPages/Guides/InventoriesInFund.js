@@ -328,7 +328,8 @@ class InventoriesInFund extends React.Component {
                         title: t('INV_NUMB'),
                         dataIndex: "invNumber",
                         width: "5%",
-                        sorter: (a, b) => ((a.invNumber).replace(/[^0-9]/g, '')) - ((b.invNumber).replace(/[^0-9]/g, ''))
+                        render: (key, obj) => { return key.value},
+                        sorter: (a, b) => ((a.invNumber.value).replace(/[^0-9]/g, '')) - ((b.invNumber.value).replace(/[^0-9]/g, ''))
                     },
                     {
                         key: "name",
@@ -371,7 +372,9 @@ class InventoriesInFund extends React.Component {
                         dataIndex: "invDates",
                         width: "10%",
                         render:(obj,rec)=>{
-                            return obj && obj.join(', ');
+                            return rec.invDates && rec.invDates[0]  ? rec.invDates[0].value : "";
+                            // return rec ? rec.invDates[0].value : "";
+                            // return obj && obj.join(', ');
                           }    ,
                         filterDropdown: (
                         <div className="custom-filter-dropdown">

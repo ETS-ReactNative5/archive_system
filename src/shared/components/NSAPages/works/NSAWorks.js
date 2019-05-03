@@ -101,54 +101,54 @@ class NSAWorks extends React.PureComponent {
             minValue:moment().add(-1,"W").format("YYYY-MM-DD"),
             nameFilter:"Неделя"
         },()=>this.getCubeAct())
-    }
+    };
     onMonthThreeDate=()=>{
         this.setState({
             maxValue:moment().format("YYYY-MM-DD"),
             minValue:moment().add(-3,"M").startOf("month").format("YYYY-MM-DD"),
             nameFilter:"3 Месяца"
         },()=>this.getCubeAct())
-    }
+    };
     onMonthOneDate=()=>{
         this.setState({
             maxValue:moment().startOf("month").format("YYYY-MM-DD"),
             minValue:moment().add(-1,"M").startOf("month").format("YYYY-MM-DD"),
             nameFilter:moment().add(-1,"M").format("MMMM")
         },()=>this.getCubeAct())
-    }
+    };
     onMonthDate=()=>{
         this.setState({
             maxValue:moment().format("YYYY-MM-DD"),
             minValue:moment().startOf("month").format("YYYY-MM-DD"),
             nameFilter:moment().format("MMMM")
         },()=>this.getCubeAct())
-    }
+    };
     onYearDate=()=>{
         this.setState({
             maxValue:moment().format("YYYY-MM-DD"),
             minValue:moment().add(-1,"Y").format("YYYY-MM-DD"),
             nameFilter:"Год"
         },()=>this.getCubeAct())
-    }
+    };
 
     showModalDate = () => {
         this.setState({
             visible: true,
         });
-    }
+    };
     handleOk = (e) => {
         this.setState({
             visible: false,
             nameFilter:`С ${this.state.minValue} По ${this.state.maxValue}`
         },()=>this.getCubeAct());
-    }
+    };
     handleCancel = (e) => {
         this.setState({
             maxValue:moment().format("YYYY-MM-DD"),
             minValue:moment().startOf('month').format("YYYY-MM-DD"),
             visible: false,
         });
-    }
+    };
 
     onPriorityChange = s => {
         this.setState({priority: s})
@@ -174,7 +174,6 @@ class NSAWorks extends React.PureComponent {
             selectedRow: null,
             initialValues: {
                 workAuthor: {value: this.props.user.obj, label: this.props.user.name},
-                workDate: moment().startOf('day'),
                 nsaWorkStatus: {
                     value: this.props.tofiConstants.created.id,
                     label: this.props.tofiConstants.created.name[this.lng]
@@ -369,12 +368,13 @@ class NSAWorks extends React.PureComponent {
             e.stopPropagation();
             const newData = this.state.data.slice();
             const target = newData.find(el => el.key === key);
-            if (target) {
+            if (target) {               
                 if (name === 'workActualStartDate') {
                     this.saveProps({obj}, {
+
                         values: {
-                            nsaWorkStatus: {value: this.props.tofiConstants.during.id},
-                            [name]: moment().format('YYYY-MM-DD')
+                            nsaWorkStatus: {value: this.props.tofiConstants.during.id,idDataPropVal:target.nsaWorkStatus.idDataPropVal},
+                            [name]: {value:moment()}
                         }
                     })
                         .then(res => {
@@ -387,23 +387,23 @@ class NSAWorks extends React.PureComponent {
                 } else if (name === 'workActualEndDate') {
                     this.saveProps({obj}, {
                         values: {
-                            nsaWorkStatus: {value: this.props.tofiConstants.completed.id},
-                            [name]: moment().format('YYYY-MM-DD')
+                            nsaWorkStatus: {value: this.props.tofiConstants.completed.id, idDataPropVal:target.nsaWorkStatus.idDataPropVal},
+                            [name]: {value:moment()}
                         }
                     })
                 } else if (name === 'acceptanceDate') {
                     this.saveProps({obj}, {
                         values: {
-                            nsaWorkStatus: {value: this.props.tofiConstants.accepted.id},
-                            [name]: moment().format('YYYY-MM-DD'),
-                            tookUser: String(this.props.user.obj)
+                            nsaWorkStatus: {value: this.props.tofiConstants.accepted.id, idDataPropVal:target.nsaWorkStatus ? target.nsaWorkStatus.idDataPropVal:''},
+                            [name]: {value:moment()},
+                            tookUser: {value:String(this.props.user.obj),idDataPropVal:target.tookUser ? target.tookUser.idDataPropVal : ''}
                         }
                     })
                 } else if (name === 'notAccepted') {
                     this.saveProps({obj}, {
                         values: {
-                            nsaWorkStatus: {value: this.props.tofiConstants.notAccepted.id},
-                            acceptanceDate: moment().format('YYYY-MM-DD')
+                            nsaWorkStatus: {value: this.props.tofiConstants.notAccepted.id,idDataPropVal:target.nsaWorkStatus.idDataPropVal},
+                            acceptanceDate:  {value:moment()}
                         }
                     })
                 }
@@ -417,7 +417,7 @@ class NSAWorks extends React.PureComponent {
         const constArr = ['workPlannedEndDate', 'workAuthor', 'workRegFund', 'workRegInv', 'workIndexNumber', 'nsaWorkStatus', 'tookUser',
             'workPriority', 'workDate', 'workAssignedTo', 'workPlannedStartDate', 'workActualStartDate', 'workRecipient', 'appointedUser',
             'workActualEndDate', 'acceptanceDate', 'workRegCase', 'intermediateResultDate', 'fundArchive', 'dateAppointment', 'customerReqs',
-            'qualityControlConclusion', 'artistNotes'];
+            'qualityControlConclusion', 'artistNotes','nameDirectory','directoryType'];
         const workTypeClass = workTypeClasses.find(cls => this.props.tofiConstants[cls].id == item.clsORtr);
         const result = {
             key: item.id,
@@ -431,10 +431,10 @@ class NSAWorks extends React.PureComponent {
         };
         parseForTable(item.props, this.props.tofiConstants, result, constArr);
         // This thing is because some stings are multilang and some are not in TOFI 😵 madness 😵
-        ['customerReqs', 'qualityControlConclusion', 'artistNotes']
+/*        ['customerReqs', 'qualityControlConclusion', 'artistNotes']
             .forEach(c => {
                 result[c] = result[c + 'Lng']
-            });
+            });*/
         return result;
     };
     menu = (
@@ -527,6 +527,7 @@ class NSAWorks extends React.PureComponent {
         } = tofiConstants;
 
         this.filteredData = data.filter(item => {
+            console.log(item);
             return (
                 // item.numb === Number(search) ||
                 (item.workType ? item.workType.label.toLowerCase().includes(search.workType.toLowerCase()) : search.workType === '') &&
@@ -536,16 +537,16 @@ class NSAWorks extends React.PureComponent {
                 (priority.length === 0 || priority.some(p => (item.workPriority && p.value == item.workPriority.value))) &&
                 (status.length === 0 || status.some(p => (item.nsaWorkStatus && p.value == item.nsaWorkStatus.value))) &&
                 (performer.length === 0 || performer.some(p => (item.workAssignedTo && p.value == item.workAssignedTo.value))) &&
-                (!search.workPlannedStartDate.dbeg || (item.workPlannedStartDate && item.workPlannedStartDate.isSameOrAfter(search.workPlannedStartDate.dbeg, 'day'))) &&
-                (!search.workPlannedStartDate.dend || (item.workPlannedStartDate && item.workPlannedStartDate.isSameOrBefore(search.workPlannedStartDate.dend, 'day'))) &&
-                (!search.workPlannedEndDate.dbeg || (item.workPlannedEndDate && item.workPlannedEndDate.isSameOrAfter(search.workPlannedEndDate.dbeg, 'day'))) &&
-                (!search.workPlannedEndDate.dend || (item.workPlannedEndDate && item.workPlannedEndDate.isSameOrBefore(search.workPlannedEndDate.dend, 'day'))) &&
-                (!search.workActualStartDate.dbeg || (item.workActualStartDate && item.workActualStartDate.isSameOrAfter(search.workActualStartDate.dbeg, 'day'))) &&
-                (!search.workActualStartDate.dend || (item.workActualStartDate && item.workActualStartDate.isSameOrBefore(search.workActualStartDate.dend, 'day'))) &&
-                (!search.workActualEndDate.dbeg || (item.workActualEndDate && item.workActualEndDate.isSameOrAfter(search.workActualEndDate.dbeg, 'day'))) &&
-                (!search.workActualEndDate.dend || (item.workActualEndDate && item.workActualEndDate.isSameOrAfter(search.workActualEndDate.dend, 'day'))) &&
-                (!search.acceptanceDate.dbeg || (item.acceptanceDate && item.acceptanceDate.isSameOrAfter(search.acceptanceDate.dbeg, 'day'))) &&
-                (!search.acceptanceDate.dend || (item.acceptanceDate && item.acceptanceDate.isSameOrBefore(search.acceptanceDate.dend, 'day')))
+                (!search.workPlannedStartDate.dbeg || (item.workPlannedStartDate && moment(item.workPlannedStartDate.value,'DD-MM-YYYY').isSameOrAfter(search.workPlannedStartDate.dbeg, 'day'))) &&
+                (!search.workPlannedStartDate.dend || (item.workPlannedStartDate && moment(item.workPlannedStartDate.value,'DD-MM-YYYY').isSameOrBefore(search.workPlannedStartDate.dend, 'day'))) &&
+                (!search.workPlannedEndDate.dbeg || (item.workPlannedEndDate && moment(item.workPlannedEndDate.value,'DD-MM-YYYY').isSameOrAfter(search.workPlannedEndDate.dbeg, 'day'))) &&
+                (!search.workPlannedEndDate.dend || (item.workPlannedEndDate && moment(item.workPlannedEndDate.value,'DD-MM-YYYY').isSameOrBefore(search.workPlannedEndDate.dend, 'day'))) &&
+                (!search.workActualStartDate.dbeg || (item.workActualStartDate && moment(item.workActualStartDate,'DD-MM-YYYY').value.isSameOrAfter(search.workActualStartDate.dbeg, 'day'))) &&
+                (!search.workActualStartDate.dend || (item.workActualStartDate && moment(item.workActualStartDate,'DD-MM-YYYY').value.isSameOrBefore(search.workActualStartDate.dend, 'day'))) &&
+                (!search.workActualEndDate.dbeg || (item.workActualEndDate && moment(item.workActualEndDate.value,'DD-MM-YYYY').isSameOrAfter(search.workActualEndDate.dbeg, 'day'))) &&
+                (!search.workActualEndDate.dend || (item.workActualEndDate && moment(item.workActualEndDate.value,'DD-MM-YYYY').isSameOrAfter(search.workActualEndDate.dend, 'day'))) &&
+                (!search.acceptanceDate.dbeg || (item.acceptanceDate && moment(item.acceptanceDate.value,'DD-MM-YYYY').isSameOrAfter(search.acceptanceDate.dbeg, 'day'))) &&
+                (!search.acceptanceDate.dend || (item.acceptanceDate && moment(item.acceptanceDate.value,'DD-MM-YYYY').isSameOrBefore(search.acceptanceDate.dend, 'day')))
             )
         });
         return (
@@ -754,7 +755,7 @@ class NSAWorks extends React.PureComponent {
                                 ),
                                 filterIcon: <Icon type="filter"
                                                   style={{color: (search.workPlannedStartDate.dbeg || search.workPlannedStartDate.dend) ? '#ff9800' : '#aaa'}}/>,
-                                render: text => (text ? text.format('DD-MM-YYYY') : '')
+                                render: text => (text ? text.value : (text instanceof moment ? moment(text).format('DD-MM-YYYY'):''))
                             },
                             {
                                 key: 'workPlannedEndDate',
@@ -782,7 +783,7 @@ class NSAWorks extends React.PureComponent {
                                 ),
                                 filterIcon: <Icon type="filter"
                                                   style={{color: (search.workPlannedEndDate.dbeg || search.workPlannedEndDate.dend) ? '#ff9800' : '#aaa'}}/>,
-                                render: text => (text ? text.format('DD-MM-YYYY') : '')
+                                render: text => (text ? text.value : '')
                             },
                             {
                                 key: 'workActualStartDate',
@@ -811,6 +812,7 @@ class NSAWorks extends React.PureComponent {
                                 filterIcon: <Icon type="filter"
                                                   style={{color: (search.workActualStartDate.dbeg || search.workActualStartDate.dend) ? '#ff9800' : '#aaa'}}/>,
                                 render: (text, record) => {
+
                                     return (
                                         text ?
                                             <div className="editable-cell-text-wrapper">
@@ -820,7 +822,7 @@ class NSAWorks extends React.PureComponent {
                                                             onClick={this.addSpecialDate(record.key, 'workActualStartDateContinue')}
                                                             className='green-btn'
                                                     /> :
-                                                    text.format('DD-MM-YYYY') || ' '}
+                                                    text.value || ' '}
                                             </div>
                                             :
                                             <div className="editable-row-operations">
@@ -865,7 +867,7 @@ class NSAWorks extends React.PureComponent {
                                     return (
                                         text ?
                                             <div className="editable-cell-text-wrapper">
-                                                {text.format('DD-MM-YYYY') || ' '}
+                                                {text.value || ' '}
                                             </div>
                                             :
                                             <div className="editable-row-operations">
@@ -913,13 +915,15 @@ class NSAWorks extends React.PureComponent {
                                         text ?
                                             <div className="editable-cell-text-wrapper">
                         <span
-                            style={record.nsaWorkStatus && (record.nsaWorkStatus.value == this.props.tofiConstants.accepted.id || record.nsaWorkStatus.value == this.props.tofiConstants.found.id) ? {color: 'green'} : {color: 'red'}}>{text.format('DD-MM-YYYY') || ' '}</span>
+                            style={record.nsaWorkStatus && (record.nsaWorkStatus.value == this.props.tofiConstants.accepted.id || record.nsaWorkStatus.value == this.props.tofiConstants.found.id) ? {color: 'green'} : {color: 'red'}}>{text.value || ' '}</span>
                                                 <Popconfirm title={this.props.t('CONFIRM_REMOVE')} onConfirm={() =>
-                                                    this.onSaveCubeData({
-                                                        nsaWorkStatus: {value: this.props.tofiConstants.completed.id},
-                                                        workType: record.workType,
-                                                        acceptanceDate: {mode: "del"}
-                                                    }, record.key, {})
+                                                    this.saveProps({obj:{doItem:record.key}},{
+                                                        values:{
+                                                            nsaWorkStatus:{value:this.props.tofiConstants.completed.id,idDataPropVal:record.nsaWorkStatus.idDataPropVal},
+                                                            acceptanceDate:{value:'',mode:"del",idDataPropVal:record.acceptanceDate.idDataPropVal}
+                                                        }
+                                                    })
+
                                                 }>
                                                     <Icon
                                                         type="close-circle"

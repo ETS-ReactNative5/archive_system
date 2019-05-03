@@ -18,6 +18,8 @@ class MainInfoFundForm extends Component {
     super(props);
 
     this.state = {
+      stateDate:{},
+        optionMultiSelect:[],
       lang: {
         name: localStorage.getItem('i18nextLng'),
         shortName: localStorage.getItem('i18nextLng'),
@@ -146,6 +148,7 @@ class MainInfoFundForm extends Component {
   };
   componentDidUpdate(prevProps) {
     if(prevProps.initialValues !== this.props.initialValues) {
+      this.fundNumber={...this.props.initialValues.fundNumber}
       this.shortNameValue = {...this.props.initialValues.shortName} || {kz: '', ru: '', en: ''};
       this.nameValue = {...this.props.initialValues.name} || {kz: '', ru: '', en: ''};
       this.fundExitReasonValue = {...this.props.initialValues.fundExitReason} || {kz: '', ru: '', en: ''};
@@ -155,8 +158,109 @@ class MainInfoFundForm extends Component {
       this.collectionLocationValue = {...this.props.initialValues.collectionLocation} || {kz: '', ru: '', en: ''};
     }
   }
+    dateToRedux=(val , prev)=>{{
+      let coppyPrev = {...prev}
 
-  render() {
+      if (!!val){
+          let newDate = moment(val).format("DD-MM-YYYY")
+          if (!!coppyPrev.idDataPropVal){
+            coppyPrev.value = newDate
+              return coppyPrev
+          }else {
+            return {
+              value:newDate
+            }
+          }
+      }else{
+        if (!!coppyPrev.value){
+            coppyPrev.value=""
+            return coppyPrev
+        }else{
+          return {}
+        }
+
+      }
+
+    }}
+    strToRedux = (val, prevVal, obj, prevObj) => {
+        var newVal = {...prevVal};
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: {kz: val},
+                valueLng: {ru: val},
+                valueLng: {en: val}
+            }
+            return objVal
+        } else {
+            newVal.value = val;
+            newVal['valueLng']={kz:val,ru:val,en:val}
+            return (newVal)
+
+        }
+    };
+
+    selectToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val === null) {
+                let newValNull = {...prevVal};
+                newValNull.label = null;
+                newValNull.labelFull = null;
+                newValNull.value = null;
+                return newValNull
+            } else {
+                let newVal = {...prevVal};
+                newVal.value = val.value;
+                newVal.label = val.label;
+                newVal.fundTypeClass= val.fundTypeClass ? val.fundTypeClass :''
+                newVal.labelFull = val.label;
+                return (newVal)
+            }
+
+        }
+    };
+    selectMultiToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val.length > 0){
+                let coppyPrevVal = prevVal?[...prevVal]:[]
+                let coppyVal = [...val]
+                if (coppyPrevVal.length > 0 ) {
+                    for (let i = 0; i < coppyPrevVal.length; i++) {
+                        if (coppyPrevVal[i].idDataPropVal == undefined) continue
+                        if (coppyPrevVal[i].idDataPropVal !== undefined) {
+                            let findePrevVal = this.state.optionMultiSelect.find((el) => el.idDataPropVal === coppyPrevVal[i].idDataPropVal)
+
+                            if (findePrevVal === undefined) {
+                                setTimeout(() => {
+                                    this.setState({
+                                        optionMultiSelect: this.state.optionMultiSelect.concat(coppyPrevVal[i])
+                                    })
+                                })
+
+                            }
+                        }
+
+                    }
+                }
+
+                for (let i = 0; i < coppyVal.length; i++) {
+                    if (coppyVal[i].idDataPropVal === undefined) {
+                        let findVal = this.state.optionMultiSelect.find((el) => el.value === coppyVal[i].value)
+                        if (findVal !== undefined) {
+                            coppyVal.splice(i, 1)
+                            coppyVal.push(findVal)
+                        }
+                    }
+                }
+                return coppyVal
+            } else {
+                return []
+            }
+        }
+    };
+
+
+    render() {
     if(!this.props.tofiConstants) return null;
 
     this.lng = localStorage.getItem('i18nextLng');
@@ -175,6 +279,7 @@ class MainInfoFundForm extends Component {
           component={ renderSelect }
           disabled={!!this.props.initialValues.key}
           isSearchable={false}
+          normalize={this.selectToRedux}
           label={fundArchive.name[this.lng]}
           formItemLayout={
               {
@@ -191,6 +296,7 @@ class MainInfoFundForm extends Component {
         <Field
           name="fundType"
           component={ renderSelect }
+          normalize={this.selectToRedux}
           disabled={!!this.props.initialValues.key}
           isSearchable={false}
           label={t('FUND_TYPE')}
@@ -250,18 +356,20 @@ class MainInfoFundForm extends Component {
         {fundNumber && <Field
           name='fundNumber'
           component={renderInput}
+          normalize={this.strToRedux}
           label={fundNumber.name[this.lng]}
           formItemLayout={{
             labelCol: {span: 10},
             wrapperCol: {span: 14}
           }}
           colon={true}
-          validate={required}
+          validate={requiredLng}
         />}
         {fundIndex && <Field
           name='fundIndex'
           component={renderInput}
           label={fundIndex.name[this.lng]}
+          normalize={this.strToRedux}
           formItemLayout={{
             labelCol: {span: 10},
             wrapperCol: {span: 14}
@@ -270,6 +378,7 @@ class MainInfoFundForm extends Component {
         {fundmakerOfIK && fundTypeValue && ['fundOrg', 'fundLP'].includes(fundTypeValue.fundTypeClass) && <Field
           name="fundmakerOfIK"
           component={ renderSelectVirt }
+          normalize={this.selectToRedux}
           matchProp="label"
           matchPos="start"
           label={fundmakerOfIK.name[this.lng]}
@@ -286,14 +395,16 @@ class MainInfoFundForm extends Component {
               this.props[this.mapFundFM[fundTypeValue.fundTypeClass] + 'Options'].map(o => ({ value: o.id, label: o.name[this.lng] }))
               : []
           }
-          onFocus={this.loadClsObj([this.mapFundFM[fundTypeValue.fundTypeClass]])}
+          onMenuOpen={this.loadClsObj([this.mapFundFM[fundTypeValue.fundTypeClass]])}
           validate={requiredLabel}
           colon={true}
         />}
+
         {fundmakerMulti && fundTypeValue && !['fundOrg', 'fundLP'].includes(fundTypeValue.fundTypeClass) && <Field
           name="fundmakerMulti"
           component={ renderSelectVirt }
           isMulti
+          normalize={this.selectMultiToRedux}
           matchProp="label"
           matchPos="start"
           label={fundmakerMulti.name[this.lng]}
@@ -310,13 +421,15 @@ class MainInfoFundForm extends Component {
               this.props[this.mapFundFM[fundTypeValue.fundTypeClass] + 'Options'].map(o => ({ value: o.id, label: o.name[this.lng] }))
               : []
           }
-          onFocus={this.loadClsObj([this.mapFundFM[fundTypeValue.fundTypeClass]])}
+          onMenuOpen={this.loadClsObj([this.mapFundFM[fundTypeValue.fundTypeClass]])}
           validate={requiredArr}
           colon={true}
         />}
         {fundCategory && <Field
           name="fundCategory"
           component={renderSelect}
+          normalize={this.selectToRedux}
+
           label={fundCategory.name[this.lng]}
           formItemLayout={{
               labelCol: {span: 10},
@@ -331,6 +444,7 @@ class MainInfoFundForm extends Component {
         {fundFeature && <Field
           name="fundFeature"
           component={renderSelect}
+          normalize={this.selectToRedux}
           label={fundFeature.name[this.lng]}
           formItemLayout={{
               labelCol: {span: 10},
@@ -346,6 +460,7 @@ class MainInfoFundForm extends Component {
               name="caseStorageMulti"
               component={renderSelect}
               isMulti
+              normalize={this.selectMultiToRedux}
               label={caseStorageMulti.name[this.lng]}
               formItemLayout={{
                   labelCol: {span: 10},
@@ -359,6 +474,7 @@ class MainInfoFundForm extends Component {
               name="rackMulti"
               component={renderSelect}
               isMulti
+              normalize={this.selectMultiToRedux}
               label={rackMulti.name[this.lng]}
               formItemLayout={{
                   labelCol: {span: 10},
@@ -373,6 +489,7 @@ class MainInfoFundForm extends Component {
               name="sectionMulti"
               component={renderSelect}
               isMulti
+              normalize={this.selectMultiToRedux}
               label={sectionMulti.name[this.lng]}
               formItemLayout={{
                   labelCol: {span: 10},
@@ -384,8 +501,9 @@ class MainInfoFundForm extends Component {
 
           />}
           {shelfMulti && <Field
-              name="shelfMultii"
+              name="shelfMulti"
               component={renderSelect}
+              normalize={this.selectMultiToRedux}
               isMulti
               label={shelfMulti.name[this.lng]}
               formItemLayout={{
@@ -401,7 +519,8 @@ class MainInfoFundForm extends Component {
           name="fundExitDate"
           component={renderDatePicker}
           disabled={!!this.props.initialValues.workActualStartDate}
-          format={null}
+          format={val=> {return val && val.value}}
+          normalize={this.dateToRedux}
           label={fundExitDate.name[this.lng]}
           formItemLayout={
             {
@@ -415,8 +534,14 @@ class MainInfoFundForm extends Component {
         {fundExitReason && fundFeatureValue && fundFeatureValue.value === excluded.id && <Field
           name="fundExitReason"
           component={ renderInputLang }
-          format={value => (!!value ? value[lang.fundExitReason] : '')}
-          parse={value => { this.fundExitReasonValue[lang.fundExitReason] = value; return {...this.fundExitReasonValue} }}
+          format={value => (!!value ? value.valueLng[lang.fundExitReason] : '')}
+          normalize={(val, prevVal, obj, prevObj) => {
+              let newVal = {...prevVal}; newVal.value = val;
+              if (!!newVal.valueLng){newVal.valueLng[lang.fundExitReason] = val;}else
+              {newVal['valueLng']={kz:'',en:'',ru:''};newVal.valueLng[lang.fundExitReason] = val;}
+              return newVal;
+          }}
+
           label={fundExitReason.name[this.lng]}
           formItemClass="with-lang"
           changeLang={this.changeLang}
@@ -434,6 +559,8 @@ class MainInfoFundForm extends Component {
           component={ renderSelectVirt }
           matchProp="label"
           matchPos="start"
+          isMulti
+          normalize={this.selectMultiToRedux}
           label={fundIndustry.name[this.lng]}
           optionHeight={40}
           formItemLayout={
@@ -445,7 +572,7 @@ class MainInfoFundForm extends Component {
           isLoading={loading.fundIndustryLoading}
           options={fundIndustryOptions ? fundIndustryOptions.map(o => ({ value: o.id, label: o.name[this.lng] })) : []}
           onFocus={this.loadChilds2('fundIndustry')}
-          validate={requiredLabel}
+          validate={requiredArr}
           colon={true}
         />}
 {/*        {affiliation && <Field
@@ -465,6 +592,7 @@ class MainInfoFundForm extends Component {
           disabled
           component={renderSelect}
           isMulti
+          normalize={this.selectMultiToRedux}
           label={fundToGuidbook.name[this.lng]}
           formItemLayout={{
             labelCol: {span: 10},
@@ -477,6 +605,7 @@ class MainInfoFundForm extends Component {
         {fundDbeg && <Field
           name="fundDbeg"
           component={ renderInput }
+          normalize={this.strToRedux}
           label={fundDbeg.name[this.lng]}
           formItemLayout={
             {
@@ -488,6 +617,7 @@ class MainInfoFundForm extends Component {
         {fundDend && <Field
           name="fundDend"
           component={ renderInput }
+          normalize={this.strToRedux}
           label={fundDend.name[this.lng]}
           formItemLayout={
             {
@@ -499,6 +629,7 @@ class MainInfoFundForm extends Component {
         <Field
           name="accessLevel"
           component={ renderSelect }
+          normalize={this.selectToRedux}
           label={t('ACCESS_LEVEL')}
           formItemLayout={
             {
@@ -515,7 +646,8 @@ class MainInfoFundForm extends Component {
         {fundFirstDocFlow && <Field
           name="fundFirstDocFlow"
           component={renderDatePicker}
-          format={null}
+          format={val=> val && val.value}
+          normalize={this.dateToRedux}
           label={fundFirstDocFlow.name[this.lng]}
           formItemLayout={
             {
@@ -529,8 +661,9 @@ class MainInfoFundForm extends Component {
         {fundDateOfLastCheck && <Field
           name="fundDateOfLastCheck"
           component={renderDatePicker}
-          format={null}
+          format={val=> {return val && val.value}}
           label={fundDateOfLastCheck.name[this.lng]}
+          normalize={this.dateToRedux}
           formItemLayout={
             {
               labelCol: {span: 10},
@@ -543,7 +676,8 @@ class MainInfoFundForm extends Component {
         {collectionCreateDate && fundTypeValue && ['collectionOrg', 'collectionLP'].includes(fundTypeValue.fundTypeClass) && <Field
           name="collectionCreateDate"
           component={renderDatePicker}
-          format={null}
+          normalize={this.dateToRedux}
+          format={val=> {return val && val.value}}
           label={collectionCreateDate.name[this.lng]}
           formItemLayout={
             {
@@ -557,8 +691,13 @@ class MainInfoFundForm extends Component {
         {creationConds && fundTypeValue && ['collectionOrg', 'collectionLP'].includes(fundTypeValue.fundTypeClass) && <Field
           name="creationConds"
           component={ renderInputLang }
-          format={value => (!!value ? value[lang.creationConds] : '')}
-          parse={value => { this.creationCondsValue[lang.creationConds] = value; return {...this.creationCondsValue} }}
+          format={value => (!!value ? value.valueLng[lang.creationConds] : '')}
+          normalize={(val, prevVal, obj, prevObj) => {
+              let newVal = {...prevVal}; newVal.value = val;
+              if (!!newVal.valueLng){newVal.valueLng[lang.creationConds] = val;}else
+              {newVal['valueLng']={kz:'',en:'',ru:''};newVal.valueLng[lang.creationConds] = val;}
+              return newVal;
+          }}
           label={creationConds.name[this.lng]}
           formItemClass="with-lang"
           changeLang={this.changeLang}
@@ -574,8 +713,13 @@ class MainInfoFundForm extends Component {
         {creationReason && fundTypeValue && ['collectionOrg', 'collectionLP'].includes(fundTypeValue.fundTypeClass) &&  <Field
           name="creationReason"
           component={ renderInputLang }
-          format={value => (!!value ? value[lang.creationReason] : '')}
-          parse={value => { this.creationReasonValue[lang.creationReason] = value; return {...this.creationReasonValue} }}
+          format={value => (!!value ? value.valueLng[lang.creationReason] : '')}
+          normalize={(val, prevVal, obj, prevObj) => {
+              let newVal = {...prevVal}; newVal.value = val;
+              if (!!newVal.valueLng){newVal.valueLng[lang.creationReason] = val;}else
+              {newVal['valueLng']={kz:'',en:'',ru:''};newVal.valueLng[lang.creationReason] = val;}
+              return newVal;
+          }}
           label={creationReason.name[this.lng]}
           formItemClass="with-lang"
           changeLang={this.changeLang}
@@ -591,8 +735,13 @@ class MainInfoFundForm extends Component {
         {creationPrinciple && fundTypeValue && ['collectionOrg', 'collectionLP'].includes(fundTypeValue.fundTypeClass) &&  <Field
           name="creationPrinciple"
           component={ renderInputLang }
-          format={value => (!!value ? value[lang.creationPrinciple] : '')}
-          parse={value => { this.creationPrincipleValue[lang.creationPrinciple] = value; return {...this.creationPrincipleValue} }}
+          format={value => (!!value ? value.valueLng[lang.creationPrinciple] : '')}
+          normalize={(val, prevVal, obj, prevObj) => {
+              let newVal = {...prevVal}; newVal.value = val;
+              if (!!newVal.valueLng){newVal.valueLng[lang.creationPrinciple] = val;}else
+              {newVal['valueLng']={kz:'',en:'',ru:''};newVal.valueLng[lang.creationPrinciple] = val;}
+              return newVal;
+          }}
           label={creationPrinciple.name[this.lng]}
           formItemClass="with-lang"
           changeLang={this.changeLang}
@@ -608,8 +757,13 @@ class MainInfoFundForm extends Component {
         {collectionLocation && fundTypeValue && ['collectionOrg', 'collectionLP'].includes(fundTypeValue.fundTypeClass) &&  <Field
           name="collectionLocation"
           component={ renderInputLang }
-          format={value => (!!value ? value[lang.collectionLocation] : '')}
-          parse={value => { this.collectionLocationValue[lang.collectionLocation] = value; return {...this.collectionLocationValue} }}
+          format={value => (!!value ? value.valueLng[lang.collectionLocation] : '')}
+          normalize={(val, prevVal, obj, prevObj) => {
+              let newVal = {...prevVal}; newVal.value = val;
+              if (!!newVal.valueLng){newVal.valueLng[lang.collectionLocation] = val;}else
+              {newVal['valueLng']={kz:'',en:'',ru:''};newVal.valueLng[lang.collectionLocation] = val;}
+              return newVal;
+          }}
           label={collectionLocation.name[this.lng]}
           formItemClass="with-lang"
           changeLang={this.changeLang}
@@ -625,13 +779,13 @@ class MainInfoFundForm extends Component {
         {lastReceivedYear && <Field
           name='lastReceivedYear'
           component={renderInput}
+          normalize={this.strToRedux}
           label={lastReceivedYear.name[this.lng]}
           formItemLayout={{
             labelCol: {span: 10},
             wrapperCol: {span: 14}
           }}
           placeholder='dddd'
-          normalize={digits(4)}
         />}
         {dirty && <Form.Item className="ant-form-btns">
           <Button className="signup-form__btn" type="primary" htmlType="submit" disabled={submitting}>

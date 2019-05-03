@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import AntTabs from "./../../../AntTabs";
 import MainInfoCaseForm from "./MainInfoCaseFormWorks";
-import DocumentFile from "./DocumentFileWorks";
+import Damage from "./DamageWorks";
 
 class CardCase_invTypeLS_LSDoc extends Component {
 
@@ -22,9 +22,11 @@ class CardCase_invTypeLS_LSDoc extends Component {
           />
         },
         {
-          tabKey: 'documentFile',
+          tabKey: 'damage',
           tabName: tofiConstants.documentFile.name[localStorage.getItem('i18nextLng')],
-          tabContent: <DocumentFile />
+          tabContent: <Damage
+              tofiConstants={tofiConstants}
+          />
         }
       ]}
     />

@@ -139,7 +139,6 @@ class CasesInInventory extends React.Component {
         };
         parseForTable(item.props, this.props.tofiConstants, result, constArr);
         return result
-
     };
 
     goBackFund = () => {
@@ -611,12 +610,11 @@ class CasesInInventory extends React.Component {
         const {data, selectedCase, search, newSprtData} = this.state;
         this.lng = localStorage.getItem('i18nextLng');
         this.filteredData = newSprtData.filter(item => {
-
             return (
                 item.name[this.lng].toLowerCase().includes(search.name.toLowerCase()) &&
-                String(item.caseDbeg).toLowerCase().includes(String(search.caseDbeg).toLowerCase()) &&
-                String(item.caseDend).toLowerCase().includes(String(search.caseDend).toLowerCase()) &&
-                item.fundNumber.toLowerCase().includes(search.fundNumber.toLowerCase())
+                String(item.caseDbeg.value).toLowerCase().includes(String(search.caseDbeg).toLowerCase()) &&
+                String(item.caseDend.value).toLowerCase().includes(String(search.caseDend).toLowerCase()) &&
+                item.fundNumber.value.toLowerCase().includes(search.fundNumber.toLowerCase())
 
             )
 
@@ -673,6 +671,7 @@ class CasesInInventory extends React.Component {
                                     key: "fundNumber",
                                     title: t('CASE_NUMB'),
                                     dataIndex: "fundNumber",
+                                    render: (key, obj) => { return key.value},
                                     filterDropdown: (
                                         <div className="custom-filter-dropdown">
                                             <Input
@@ -693,14 +692,15 @@ class CasesInInventory extends React.Component {
                                             filterDropdownVisible: visible,
                                         }, () => this.fundNumber.focus());
                                     },
-                                    sorter: (a, b) => ((a.fundNumber).replace(/[^0-9]/g, '')) - ((b.fundNumber).replace(/[^0-9]/g, '')),
+                                    sorter: (a, b) => ((a.fundNumber.value).replace(/[^0-9]/g, '')) - ((b.fundNumber.value).replace(/[^0-9]/g, '')),
                                     width: "7%"
                                 },
                                 {
                                     key: "archiveCipher",
                                     title: t('ARCHIVALCIPHER'),
                                     dataIndex: "archiveCipher",
-                                    width: "13%"
+                                    width: "13%",
+                                    render: (key, obj) => { return key.value},
                                 },
                                 {
                                     key: "name",
@@ -743,9 +743,8 @@ class CasesInInventory extends React.Component {
                                     title: caseDbeg.name[this.lng],
                                     dataIndex: "caseDbeg",
                                     width: "6%",
-                                    render: (obj) => {
-                                        return obj && obj.format('DD-MM-YYYY')
-                                    },
+                                        render: (key, obj) => { return key.value},
+
                                     filterDropdown: (
                                         <div className="custom-filter-dropdown">
                                             <Input
@@ -771,7 +770,7 @@ class CasesInInventory extends React.Component {
                                     title: caseDend.name[this.lng],
                                     dataIndex: "caseDend",
                                     width: "6%",
-                                    render: obj => obj && obj.format('DD-MM-YYYY'),
+                                    render: (key, obj) => { return key.value},
                                     filterDropdown: (
                                         <div className="custom-filter-dropdown">
                                             <Input

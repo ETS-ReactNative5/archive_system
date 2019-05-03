@@ -22,6 +22,13 @@ export const requiredArr = valueArr => (valueArr && valueArr.length !== 0 ? unde
 // export const requiredDate = value => (value && value._d ? undefined : requiredMsg[localStorage.getItem('i18nextLng')]);
 
 export const requiredDate = value => {
+    if(value){
+      if (value.value ){
+        return undefined
+      }else {
+        return  requiredMsg[localStorage.getItem('i18nextLng')]
+      }
+    }
   return (value && value._d ? undefined : requiredMsg[localStorage.getItem('i18nextLng')])
 };
 

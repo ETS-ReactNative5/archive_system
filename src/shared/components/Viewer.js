@@ -20,32 +20,42 @@ class Viewer extends React.Component {
     console.log(e.target.files)
   };
 
-  renderViewerList = (item, idx) =>
-      <li tabIndex={0} key={item.name+idx} onClick={() => {
-        this.setState({ windowFile: <Spin size='large' style={{ position: 'relative', top: '50%' }}/> });
-        if(item.type) {
-          const url = URL.createObjectURL(item);
-          this.setState({
-            windowFile: <img onError={() => this.brokenImgHandle(item)} src={url} alt={item}/>
-          })
-        } else {
-          getFile(item.name, item.fileType)
-            .then(res => {
-              const url = URL.createObjectURL(res.data);
+  renderViewerList = (file, idx) =>{
+      let item = file
+
+      if (item.value === undefined){
+          item={
+              value:file
+          }
+      }
+      return <li tabIndex={0} key={item.value.name+idx} onClick={() => {
+          this.setState({ windowFile: <Spin size='large' style={{ position: 'relative', top: '50%' }}/> });
+          if(item.value.type) {
+              const url = URL.createObjectURL(item.value);
               this.setState({
-                windowFile: <img onError={() => this.brokenImgHandle(res.data)} src={url} alt={item}/>
+                  windowFile: <img onError={() => this.brokenImgHandle(item.value)} src={url} alt={item.value}/>
               })
-            })
-            .catch(err => console.warn(err))
-        }
+          } else {
+              getFile(item.value.name, item.value.fileType)
+                  .then(res => {
+                      const url = URL.createObjectURL(res.data);
+                      this.setState({
+                          windowFile: <img onError={() => this.brokenImgHandle(res.data)} src={url} alt={item.value}/>
+                      })
+                  })
+                  .catch(err => console.warn(err))
+          }
       }}>
-        {item.title || item.name}
-        {this.props.editable && <Popconfirm title='Подтвердите удаление' onConfirm={() => {
-          console.log(item.name);
-        }}>
-          <span onClick={e => e.stopPropagation()}><Icon type='close'/></span>
-        </Popconfirm>}
+          {item.value.title || item.value.name}
+          {this.props.editable && <Popconfirm title='Подтвердите удаление' onConfirm={() => {
+              console.log(item.value.name);
+          }}>
+              <span onClick={e => e.stopPropagation()}><Icon type='close'/></span>
+          </Popconfirm>}
       </li>;
+
+
+  }
 
       componentDidMount() {
         this.setState(

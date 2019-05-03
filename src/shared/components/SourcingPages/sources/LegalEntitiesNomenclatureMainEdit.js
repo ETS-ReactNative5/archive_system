@@ -8,7 +8,7 @@ import moment from 'moment';
 
 import {renderDatePicker, renderInput, renderSelect} from '../../../utils/form_components';
 import SiderCardLegalEntities from './SiderCardLegalEntities';
-import {required, requiredLabel} from '../../../utils/form_validations';
+import {required,requiredLng, requiredLabel} from '../../../utils/form_validations';
 import {getAllObjOfCls, createObj, updateCubeData, getCube, getObjList, dObj} from '../../../actions/actions';
 import {getPropMeta, parseCube_new} from '../../../utils/cubeParser';
 import {SYSTEM_LANG_ARRAY} from '../../../constants/constants';
@@ -34,6 +34,66 @@ const LegalEntitiesNomenclaturePropsEdit = (
     }
 
   };
+   const strToRedux = (val, prevVal, obj, prevObj) => {
+        var newVal = {...prevVal};
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: {kz: val},
+                valueLng: {ru: val},
+                valueLng: {en: val}
+            }
+            return objVal
+        } else {
+            newVal.value = val;
+            newVal['valueLng']={kz:val,ru:val,en:val}
+
+            return (newVal)
+
+        }
+    };
+    const dateToRedux=(val , prev)=>{{
+        let coppyPrev = {...prev}
+
+        if (!!val){
+            let newDate = moment(val).format("DD-MM-YYYY")
+            if (!!coppyPrev.idDataPropVal){
+                coppyPrev.value = newDate
+                return coppyPrev
+            }else {
+                return {
+                    value:newDate
+                }
+            }
+        }else{
+            if (!!coppyPrev.value){
+                coppyPrev.value=""
+                return coppyPrev
+            }else{
+                return {}
+            }
+
+        }
+
+    }}
+    const selectToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val === null) {
+                let newValNull = {...prevVal};
+                newValNull.label = null;
+                newValNull.labelFull = null;
+                newValNull.value = null;
+                return newValNull
+            } else {
+                let newVal = {...prevVal};
+                newVal.value = val.value;
+                newVal.label = val.label;
+                newVal.labelFull = val.label;
+                return (newVal)
+            }
+
+        }
+    };
 
   const lng = localStorage.getItem('i18nextLng');
   const { nomenCreateDate , nomenNumber, nomenApprovalDate, nomenAgreementDate, nomenPerechen, nomenLastChangeDate } = tofiConstants;
@@ -43,6 +103,7 @@ const LegalEntitiesNomenclaturePropsEdit = (
       {nomenNumber && <Field
         name='nomenNumber'
         colon
+        normalize={strToRedux}
         component={ renderInput }
         label={nomenNumber.name[lng]}
         formItemLayout={
@@ -51,11 +112,12 @@ const LegalEntitiesNomenclaturePropsEdit = (
             wrapperCol: { span: 12 }
           }
         }
-        validate={required}
+        validate={requiredLng}
       />}
       {nomenPerechen && <Field
         name='nomenPerechen'
         colon
+        normalize={selectToRedux}
         component={ renderSelect }
         label={nomenPerechen.name[lng]}
         data={perechenListOptions ? perechenListOptions.map(option => ({value: option.id, label: option.name[lng]})) : []}
@@ -85,6 +147,7 @@ const LegalEntitiesNomenclaturePropsEdit = (
         name='nomenAgreementDate'
         component={ renderDatePicker }
         format={null}
+        normalize={dateToRedux}
         label={nomenAgreementDate.name[lng]}
         formItemLayout={
           {
@@ -97,6 +160,7 @@ const LegalEntitiesNomenclaturePropsEdit = (
         name='nomenApprovalDate'
         component={ renderDatePicker }
         format={null}
+        normalize={dateToRedux}
         label={nomenApprovalDate.name[lng]}
         formItemLayout={
           {

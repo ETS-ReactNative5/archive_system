@@ -16,7 +16,7 @@ import {
   getValueOfMultiText,
   accessConditionsOfFund,
 } from '../../actions/actions';
-import {getPropMeta, parseCube_new, onSaveCubeData, onSaveCubeData2, parseForTable} from '../../utils/cubeParser';
+import {getPropMeta, parseCube_new, onSaveCubeData, parseForTable} from '../../utils/cubeParser';
 import {
   CUBE_FOR_FUND_AND_IK, DO_FOR_FUND_AND_IK, DP_FOR_FUND_AND_IK, DT_FOR_FUND_AND_IK,
   FUND_CATEGORY,
@@ -237,7 +237,7 @@ class SearchNSA extends Component {
   };
 
 /*
-  onSaveCubeData2 = (objVerData, prefix, {method, protocol, ...values}, doItemProp, objDataProp, valOld) => {
+  onSaveCubeData= (objVerData, prefix, {method, protocol, ...values}, doItemProp, objDataProp, valOld) => {
     let datas = [];
     this.setState({loading:true})
     try {
@@ -311,7 +311,6 @@ class SearchNSA extends Component {
       datas = [{
         own: [{doConst: DO_FOR_FUND_AND_IK, doItem: doItemProp, isRel: "0", objData: objDataProp}],
         props: map(values, (val, key) => {
-          console.log(val, key);
           const propMetaData = getPropMeta(this.props.cubeForFundAndIKRecord["dp_" + this.props.tofiConstants[DP_FOR_FUND_AND_IK].id], this.props.tofiConstants[key]);
           let value = val;
           if((propMetaData.typeProp === 315 || propMetaData.typeProp === 311 || propMetaData.typeProp === 317) && typeof val === 'string') value = {kz: val, ru: val, en: val};
@@ -364,7 +363,7 @@ class SearchNSA extends Component {
     const obj = {
       doItem: this.state.selectedRow.key
     };
-    return onSaveCubeData2({cube, obj}, {values: values, idDPV: this.withIdDPV}, this.props.tofiConstants)
+    return onSaveCubeData({cube, obj}, {values: values, idDPV: this.withIdDPV}, this.props.tofiConstants)
     //return onSaveCubeData({cube, obj}, {oFiles: values}, this.props.tofiConstants)
   };
 
@@ -521,7 +520,7 @@ class SearchNSA extends Component {
       caseOCD, irreparablyDamaged, caseFundOfUse, propAuthenticity, typeOfPaperCarrier,
       // fundAnnotationFile, invFile, 
     } = this.props.tofiConstants;
-    const fundNumbObj = item.props.find(element =>  element.prop == fundNumber.id),
+    const fundNumbObj = item.props.find(element =>  element.prop == fundNumber.id).values,
           fundIndexObj = item.props.find(element => element.prop == fundIndex.id),
           fundCategoryObj = item.props.find(element => element.prop == fundCategory.id),
           fundFeatureObj = item.props.find(element => element.prop == fundFeature.id),
@@ -551,7 +550,6 @@ class SearchNSA extends Component {
     const caseFundOfUseObj = item.props.find(element => element.prop === caseFundOfUse.id);
     const propAuthenticityObj = item.props.find(element => element.prop === propAuthenticity.id);
     const typeOfPaperCarrierObj = item.props.find(element => element.prop === typeOfPaperCarrier.id);
-    
     return {
       key: item.id,
       shortName: item.name,
@@ -568,9 +566,9 @@ class SearchNSA extends Component {
       fundList: item.name ? item.name[this.lng] || '' : '',
       fundNumber: fundNumbObj ? fundNumbObj.value || '' : '',
       fundIndex: fundIndexObj ? fundIndexObj.value || '' : '',
-      fundDend: fundDendObj ? fundDendObj.value || '' : '',
-      fundDbeg: fundDbegObj ? fundDbegObj.value || '' : '',
-      fundCategory: fundCategoryObj && fundCategoryObj.refId ? {value: fundCategoryObj.refId, label: fundCategoryObj.value} : {},
+      fundDend: fundDendObj.values ? fundDendObj.values.dend || '' : '',
+      fundDbeg: fundDbegObj.values ? fundDbegObj.values.dbeg || '' : '',
+      fundCategory: fundCategoryObj && fundCategoryObj.values ? fundCategoryObj.values.label : {},
       fundFeature: fundFeatureObj && fundFeatureObj.refId ? {value: fundFeatureObj.refId, label: fundFeatureObj.value} : {},
       fundExitReason: fundExitReasonObj && fundExitReasonObj.valueLng,
       creationConds: creationCondsObj && creationCondsObj.valueLng,
@@ -578,10 +576,8 @@ class SearchNSA extends Component {
       creationPrinciple: creationPrincipleObj && creationPrincipleObj.valueLng,
       collectionLocation: collectionLocationObj && collectionLocationObj.valueLng,
       fundIndustry: fundIndustryObj && fundIndustryObj.values && fundIndustryObj.values.length > 0 ? fundIndustryObj.values.sort((a,b) => a.value > b.value)[fundIndustryObj.values.length - 1] : {},
-
     }
   };
-
   renderRecordData = (item) => {
     const constArr = ['fundToGuidbook', 'accessDocument', 'locationOfSupplementaryMaterials',
           'fundAnnotationFile', 'invFile', 'fundHistoricalNote'];
@@ -736,6 +732,7 @@ class SearchNSA extends Component {
               }
               placeholder={t('FUND_TYPE')}
             />
+
           </div>
           <div className="label-select">
             <Select
@@ -895,7 +892,7 @@ class SearchNSA extends Component {
                   title: fundCategory.name[this.lng] || '',
                   dataIndex: 'fundCategory',
                   width: "13%",
-                  render: obj => obj && obj.label
+                  render: obj =>  obj
                 },
                 {
                   key: 'fundType',

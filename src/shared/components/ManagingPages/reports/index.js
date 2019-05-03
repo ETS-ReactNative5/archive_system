@@ -84,6 +84,8 @@ class Reports extends React.Component {
           width: '5%'
         }
       ];
+      debugger;
+      console.log(this.props.cubeReports)
       const columns = dpReportsPropColumns.concat(this.props.cubeReports[`dp_${dpReportsFactor.id}`]
         .map((dp, _, arr) => ({
           key: dp.id,
@@ -130,7 +132,7 @@ class Reports extends React.Component {
               <Select
                 name="reportType"
                 isSearchable={false}
-                value={this.state.filter.reportType}
+                value='Тип отчета'
                 onChange={this.onSelectChange("reportType")}
                 options={this.state.reportTypeOptions}
                 placeholder={t('REPORT_TYPE')}

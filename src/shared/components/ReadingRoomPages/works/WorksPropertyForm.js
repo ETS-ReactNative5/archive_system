@@ -56,6 +56,121 @@ class WorksPropertyForm extends Component {
 
     workName = {...this.props.initialValues.workListName} || {kz: '', ru: '', en: ''};
 
+    strToRedux = (val, prevVal, obj, prevObj) => {
+        var newVal = {...prevVal};
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: {kz: val},
+                valueLng: {ru: val},
+                valueLng: {en: val}
+            };
+            return objVal
+        } else {
+            newVal.value = val;
+            newVal['valueLng']={kz:val,ru:val,en:val}
+            return (newVal)
+
+        }
+    };
+    fileToRedux = (val, prevVal, file, str) => {
+        let newFile = val.filter(el => el instanceof File);
+        if (newFile.length > 0) {
+            var copyVal = prevVal?[...prevVal]:[]
+            newFile.map(el => {
+                copyVal.push({
+                    value: el
+                })
+            });
+            return copyVal
+        } else {
+            return val.length == 0 ? [] : val
+        }
+    };
+    selectToRedux = (val, prevVal, obj, prevObj) => {
+
+        if (val !== undefined) {
+            if (val === null) {
+                let newValNull = {...prevVal};
+                newValNull.label = null;
+                newValNull.labelFull = null;
+                newValNull.value = null;
+                return newValNull
+            } else {
+                let newVal = {...prevVal};
+                newVal.value = val.value;
+                newVal.label = val.label;
+                newVal.labelFull = val.label;
+                newVal.workTypeClass=val.workTypeClass;
+                return (newVal)
+            }
+
+        }
+    };
+    selectMultiToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val.length > 0){
+                let coppyPrevVal = prevVal?[...prevVal]:[]
+                let coppyVal = [...val]
+                if (coppyPrevVal.length > 0 ) {
+                    for (let i = 0; i < coppyPrevVal.length; i++) {
+                        if (coppyPrevVal[i].idDataPropVal == undefined) continue
+                        if (coppyPrevVal[i].idDataPropVal !== undefined) {
+                            let findePrevVal = this.state.optionMultiSelect.find((el) => el.idDataPropVal === coppyPrevVal[i].idDataPropVal)
+
+                            if (findePrevVal === undefined) {
+                                setTimeout(() => {
+                                    this.setState({
+                                        optionMultiSelect: this.state.optionMultiSelect.concat(coppyPrevVal[i])
+                                    })
+                                })
+
+                            }
+                        }
+
+                    }
+                }
+
+                for (let i = 0; i < coppyVal.length; i++) {
+                    if (coppyVal[i].idDataPropVal === undefined) {
+                        let findVal = this.state.optionMultiSelect.find((el) => el.value === coppyVal[i].value)
+                        if (findVal !== undefined) {
+                            coppyVal.splice(i, 1)
+                            coppyVal.push(findVal)
+                        }
+                    }
+                }
+                return coppyVal
+            } else {
+                return []
+            }
+        }
+    };
+    dateToRedux=(val , prev)=>{{
+        let coppyPrev = {...prev}
+
+        if (!!val){
+            let newDate = moment(val).format("DD-MM-YYYY")
+            if (!!coppyPrev.idDataPropVal){
+                coppyPrev.value = newDate
+                return coppyPrev
+            }else {
+                return {
+                    value:newDate
+                }
+            }
+        }else{
+            if (!!coppyPrev.value){
+                coppyPrev.value=""
+                return coppyPrev
+            }else{
+                return {}
+            }
+
+        }
+
+    }};
+
     onSubmit = values => {
         const mappedStatus = this.props.clsStatusMap[values.workType.value];
         const {workType, workStatusUses, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
@@ -211,6 +326,7 @@ class WorksPropertyForm extends Component {
                     disabled={!!this.props.initialValues.key}
                     isSearchable={false}
                     label={t('WORK_TYPE')}
+                    normalize={this.selectToRedux}
                     formItemLayout={
                         {
                             labelCol: {span: 10},
@@ -229,6 +345,7 @@ class WorksPropertyForm extends Component {
                 {workPriority && <Field
                     name="workPriority"
                     component={renderSelect}
+                    normalize={this.selectToRedux}
                     isSearchable={false}
                     label={workPriority.name[lng]}
                     formItemLayout={
@@ -248,6 +365,7 @@ class WorksPropertyForm extends Component {
                     name="workStatusUses"
                     disabled
                     component={renderSelect}
+                    normalize={this.selectToRedux}
                     isSearchable={false}
                     label={t('WORK_STATUS_USES')}
                     formItemLayout={
@@ -260,6 +378,7 @@ class WorksPropertyForm extends Component {
                 {workDate && <Field
                     name="workDate"
                     component={renderDatePicker}
+                    normalize={this.dateToRedux}
                     format={null}
                     label={workDate.name[lng]}
                     formItemLayout={
@@ -272,6 +391,7 @@ class WorksPropertyForm extends Component {
                 {dateAppointment && <Field
                     name="dateAppointment"
                     component={renderDatePicker}
+                    normalize={this.dateToRedux}
                     format={null}
                     label={dateAppointment.name[lng]}
                     formItemLayout={
@@ -287,6 +407,7 @@ class WorksPropertyForm extends Component {
                 </FormItem>
                 {workAuthor && <Field
                     name="workAuthor"
+                    normalize={this.selectToRedux}
                     component={renderSelect}
                     disabled
                     label={workAuthor.name[lng]}
@@ -314,6 +435,7 @@ class WorksPropertyForm extends Component {
                 {workAssignedTo && <Field
                     name="workAssignedTo"
                     component={renderSelect}
+                    normalize={this.selectToRedux}
                     label={workAssignedTo.name[lng]}
                     formItemLayout={
                         {
@@ -326,20 +448,41 @@ class WorksPropertyForm extends Component {
                         if (newValue) {
                             this.props.change('appointedUser', {
                                 value: user.obj,
-                                label: user.name
+                                label: user.name,
+                                idDataPropVal: this.props.formReduxState.WorksPropertyForm.values.appointedUser &&
+                                this.props.formReduxState.WorksPropertyForm.values.appointedUser.idDataPropVal
                             });
-                            this.props.change('tookUser', newValue);
+                            this.props.change('tookUser', {
+                                value: newValue.value,
+                                label: newValue.label,
+                                idDataPropVal: this.props.formReduxState.WorksPropertyForm.values.tookUser &&
+                                this.props.formReduxState.WorksPropertyForm.values.tookUser.idDataPropVal
+                            });
                             this.props.change('workStatusUses', {
                                 value: appointed.id,
-                                label: appointed.name[lng]
+                                label: appointed.name[lng],
+                                idDataPropVal:this.props.formReduxState.WorksPropertyForm.values.workStatusUses.idDataPropVal
                             });
-                            this.props.change('dateAppointment', moment())
+                            this.props.change('dateAppointment',{
+                                value:moment(),
+                                idDataPropVal: this.props.formReduxState.WorksPropertyForm.values.dateAppointment &&
+                                this.props.formReduxState.WorksPropertyForm.values.dateAppointment.idDataPropVal
+                            })
                         } else {
-                            this.props.change('appointedUser', null);
-                            this.props.change('tookUser', null);
+                            this.props.change('appointedUser', {
+                                value:null,
+                                idDataPropVal: this.props.formReduxState.WorksPropertyForm.values.appointedUser &&
+                                this.props.formReduxState.WorksPropertyForm.values.appointedUser.idDataPropVal
+                            });
+                            this.props.change('tookUser', {
+                                value:null,
+                                idDataPropVal: this.props.formReduxState.WorksPropertyForm.values.tookUser &&
+                                this.props.formReduxState.WorksPropertyForm.values.tookUser.idDataPropVal
+                            });
                             this.props.change('workStatusUses', {
                                 value: created.id,
-                                label: created.name[lng]
+                                label: created.name[lng],
+                                idDataPropVal:this.props.formReduxState.WorksPropertyForm.values.workStatusUses.idDataPropVal
                             })
                             this.props.change('dateAppointment', null);
                         }
@@ -366,6 +509,7 @@ class WorksPropertyForm extends Component {
                 />}
                 {appointedUser && <Field
                     name="appointedUser"
+                    normalize={this.selectToRedux}
                     component={renderSelect}
                     disabled
                     label={appointedUser.name[lng]}
@@ -379,6 +523,7 @@ class WorksPropertyForm extends Component {
                 {tookUser && <Field
                     name="tookUser"
                     component={renderSelect}
+                    normalize={this.selectToRedux}
                     disabled={!workAssignedToValue || workAssignedToValue.value != user.obj}
                     label={tookUser.name[lng]}
                     formItemLayout={
@@ -404,6 +549,7 @@ class WorksPropertyForm extends Component {
                 {fundArchive && ['caseDeliveryToRR', 'orderCopyDoc'].includes(workTypeValue.workTypeClass) &&
                 <Field
                     name="fundArchive"
+                    normalize={this.selectToRedux}
                     component={renderSelect}
                     label={fundArchive.name[lng]}
                     disabled={!!this.props.initialValues.fundArchive}
@@ -423,6 +569,7 @@ class WorksPropertyForm extends Component {
                 {workRegFund && ['caseDeliveryToRR', 'orderCopyDoc'].includes(workTypeValue.workTypeClass) &&
                 <Field
                     name="workRegFund"
+                    normalize={this.selectToRedux}
                     disabled={!!this.props.initialValues.workActualStartDate || !fundArchiveValue}
                     component={renderSelectVirt}
                     label={workRegFund.name[lng]}
@@ -466,6 +613,7 @@ class WorksPropertyForm extends Component {
                 <Field
                     name="workRegInv"
                     component={renderSelectVirt}
+                    normalize={this.selectToRedux}
                     label={workRegInv.name[lng]}
                     disabled={!this.props.workRegFundValue || !!this.props.initialValues.workActualStartDate}
                     optionHeight={40}
@@ -504,6 +652,7 @@ class WorksPropertyForm extends Component {
                 {workRegCase && ['caseDeliveryToRR', 'orderCopyDoc'].includes(workTypeValue.workTypeClass) &&
                 <Field
                     name="workRegCase"
+                    normalize={this.selectToRedux}
                     component={renderSelectVirt}
                     label={workRegCase.name[lng]}
                     disabled={!this.props.workRegInvValue || !!this.props.initialValues.workActualStartDate}
@@ -542,6 +691,7 @@ class WorksPropertyForm extends Component {
                 />}
                 {linkToUkaz && ['caseDeliveryToRR'].includes(workTypeValue.workTypeClass) &&
                 <Field
+                normalize={this.selectMultiToRedux}
                     name="linkToUkaz"
                     isMulti
                     component={renderSelect}
@@ -562,6 +712,7 @@ class WorksPropertyForm extends Component {
                 {linkToWork && ['caseDeliveryToRR'].includes(workTypeValue.workTypeClass) &&
                 <Field
                     name="linkToWork"
+                    normalize={this.selectMultiToRedux}
                     isMulti
                     component={renderSelectVirt}
                     label={linkToWork.name[lng]}
@@ -601,6 +752,7 @@ class WorksPropertyForm extends Component {
                     name='propResearcheRequests'
                     component={renderInput}
                     label={propResearcheRequests.name[lng]}
+                    normalize={this.strToRedux}
                     readOnly
                     formItemLayout={
                         {
@@ -652,7 +804,8 @@ function mapStateToProps(state) {
         workAssignedToIPSOptions: state.generalData.workAssignedToIPS,
         clsDepInformTechOptions: state.generalData.clsDepInformTech,
         workPriorityOptions: state.generalData[WORK_PRIORITY],
-        objStudyParentOptions: state.generalData.objStudyParent
+        objStudyParentOptions: state.generalData.objStudyParent,
+        formReduxState:state.form
     }
 }
 

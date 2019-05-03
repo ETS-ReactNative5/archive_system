@@ -99,6 +99,7 @@ class FundsListCard extends React.Component {
             tabContent: <Size
               tofiConstants={tofiConstants}
               initialValues={this.state.sizeData}
+              keyFund ={initialValues.key}
               sizeData={this.state.sizeData}
               sizeLoading={this.state.sizeLoading}
               t={t}

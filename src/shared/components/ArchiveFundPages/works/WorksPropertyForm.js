@@ -49,12 +49,14 @@ class WorksPropertyForm extends Component {
     workName = {...this.props.initialValues.workListName} || {kz: '', ru: '', en: ''};
 
     onSubmit = values => {
+        debugger
         if (!this.props.initialValues.key) {
             return this.props.onCreateObj(
                 {
                     ...pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key])),
                     workStatusReg: values.workStatusReg,
-                    workDate: values.workDate
+                    workDate: values.workDate,
+                    workAuthor:values.workAuthor
                 })
         } else {
             let workStatusReg = values.workStatusReg;
@@ -67,11 +69,11 @@ class WorksPropertyForm extends Component {
 
             return this.props.onSaveCubeData({
                 ...pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key])),
-                workType: values.workType,
-                workStatusReg,
-                workDate: moment().format('YYYY-MM-DD'),
+             //   workType: values.workType,
+               // workStatusReg,
+                //workDate: moment().format('YYYY-MM-DD'),
 
-            });
+            },this.props.initialValues.key);
         }
     };
     loadClsObj = (cArr, propConsts, dte = moment().format('YYYY-MM-DD')) => {
@@ -122,6 +124,66 @@ class WorksPropertyForm extends Component {
         return endValue.valueOf() <= startValue.valueOf();
     };
 
+    dateToRedux=(val , prev)=>{{
+        let coppyPrev = {...prev}
+
+        if (!!val){
+            let newDate = moment(val).format("DD-MM-YYYY")
+            if (!!coppyPrev.idDataPropVal){
+                coppyPrev.value = newDate
+                return coppyPrev
+            }else {
+                return {
+                    value:newDate
+                }
+            }
+        }else{
+            if (!!coppyPrev.value){
+                coppyPrev.value=""
+                return coppyPrev
+            }else{
+                return {}
+            }
+
+        }
+
+    }}
+    strToRedux = (val, prevVal, obj, prevObj) => {
+        var newVal = {...prevVal};
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: {kz: val},
+                valueLng: {ru: val},
+                valueLng: {en: val}
+            }
+            return objVal
+        } else {
+            newVal.value = val;
+            newVal['valueLng']={kz:val,ru:val,en:val}
+            return (newVal)
+
+        }
+    };
+
+    selectToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val === null) {
+                let newValNull = {...prevVal};
+                newValNull.label = null;
+                newValNull.labelFull = null;
+                newValNull.value = null;
+                return newValNull
+            } else {
+                let newVal = {...prevVal};
+                newVal.value = val.value;
+                newVal.label = val.label;
+                newVal.labelFull = val.label;
+                return (newVal)
+            }
+
+        }
+    };
     render() {
         if (!this.props.tofiConstants) return null;
 
@@ -176,6 +238,7 @@ class WorksPropertyForm extends Component {
                     name="workRegFund"
                     disabled={!!this.props.initialValues.workActualStartDate}
                     component={ renderSelectVirt }
+                    normalize={this.selectToRedux}
                     matchProp="label"
                     matchPos="start"
                     label={workRegFund.name[this.lng]}
@@ -213,6 +276,7 @@ class WorksPropertyForm extends Component {
                 {workRegInv && <Field
                     name="workRegInv"
                     component={ renderSelectVirt }
+                    normalize={this.selectToRedux}
                     matchProp="label"
                     matchPos="start"
                     label={workRegInv.name[this.lng]}
@@ -252,6 +316,7 @@ class WorksPropertyForm extends Component {
                 workTypeValue.value == this.props.tofiConstants.caseDisposal.id) && <Field
                     name="workRegCase"
                     component={ renderSelectVirt }
+                    normalize={this.selectToRedux}
                     matchProp="label"
                     matchPos="start"
                     label={workRegCase.name[this.lng]}
@@ -290,6 +355,8 @@ class WorksPropertyForm extends Component {
                     name="workPlannedStartDate"
                     disabledDate={this.disabledStartDate}
                     component={renderDatePicker}
+                    normalize={this.dateToRedux}
+
                     disabled={!!this.props.initialValues.workActualStartDate}
                     format={null}
                     label={workPlannedStartDate.name[this.lng]}
@@ -304,6 +371,7 @@ class WorksPropertyForm extends Component {
                     name="workPlannedEndDate"
                     disabledDate={this.disabledEndDate}
                     component={ renderDatePicker }
+                    normalize={this.dateToRedux}
                     disabled={!!this.props.initialValues.workActualStartDate}
                     format={null}
                     isSearchable={false}
@@ -318,6 +386,7 @@ class WorksPropertyForm extends Component {
                 {workAssignedTo && <Field
                     name="workAssignedTo"
                     component={renderSelect}
+                    normalize={this.selectToRedux}
                     disabled={!!this.props.initialValues.workActualStartDate}
                     label={workAssignedTo.name[this.lng]}
                     formItemLayout={
@@ -337,6 +406,7 @@ class WorksPropertyForm extends Component {
                 <Field
                     name="retirementReason"
                     component={renderSelect}
+                    normalize={this.selectToRedux}
                     disabled
                     label={retirementReason.name[this.lng]}
                     formItemLayout={
@@ -352,6 +422,7 @@ class WorksPropertyForm extends Component {
                 <Field
                     name="deliveryPurpose"
                     component={renderSelect}
+                    normalize={this.selectToRedux}
                     disabled={(this.props.initialValues && !!this.props.initialValues.key) || !!this.props.initialValues.workActualStartDate}
                     label={deliveryPurpose.name[this.lng]}
                     formItemLayout={
@@ -371,6 +442,7 @@ class WorksPropertyForm extends Component {
                 <Field
                     name="workRecipient"
                     component={renderSelect}
+                    normalize={this.selectToRedux}
                     disabled={!!this.props.initialValues.workActualStartDate}
                     label={workRecipient.name[this.lng]}
                     formItemLayout={
@@ -389,6 +461,7 @@ class WorksPropertyForm extends Component {
                 {workPriority && <Field
                     name="workPriority"
                     component={ renderSelect }
+                    normalize={this.selectToRedux}
                     disabled={!!this.props.initialValues.workActualStartDate}
                     isSearchable={false}
                     label={workPriority.name[this.lng]}
@@ -410,6 +483,7 @@ class WorksPropertyForm extends Component {
                 {workTypeValue && workTypeValue.value == check.id && checkingType && <Field //eslint-disable-line
                     name="checkingType"
                     component={ renderSelect }
+                    normalize={this.selectToRedux}
                     disabled={!!this.props.initialValues.workActualStartDate}
                     isSearchable={false}
                     label={checkingType.name[this.lng]}
@@ -431,6 +505,7 @@ class WorksPropertyForm extends Component {
                     name="workStatusReg"
                     disabled
                     component={ renderSelect }
+                    normalize={this.selectToRedux}
                     isSearchable={false}
                     label={t('WORK_STATUS_REG')}
                     formItemLayout={
@@ -468,9 +543,8 @@ class WorksPropertyForm extends Component {
                 />}
                 {workAuthor && <Field
                     name="workAuthor"
-                    component={ renderInput }
-                    disabled={!!this.props.initialValues.workActualStartDate}
-                    readOnly
+                    component={ renderSelect }
+                    disabled
                     placeholder={t('USER_FIO_PLACEHOLDER')}
                     label={workAuthor.name[this.lng]}
                     formItemLayout={

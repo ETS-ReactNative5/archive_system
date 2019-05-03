@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import {isEmpty, differenceWith,map, isEqual, pickBy} from 'lodash';
 import AntModal from '../../AntModal';
 import {addDerivativeWorks, createObj,getCube,  getValuesOfObjsWithProps, updateCubeData} from '../../../actions/actions';
-import {onSaveCubeData2,getPropMeta, parseCube_new, parseForTable} from '../../../utils/cubeParser';
+import {onSaveCubeData,getPropMeta, parseCube_new, parseForTable} from '../../../utils/cubeParser';
 
 import {CUBE_FOR_WORKS, DO_FOR_WORKS,CUBE_FOR_AF_CASE,
     DO_FOR_CASE,
@@ -322,7 +322,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
             if (!c.cube.data) c.cube.data = this.props.CubeForAF_Case;
             console.log(this.props.CubeForAF_Case);
             hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
-            const resSave = await onSaveCubeData2(c, v, t, objData);
+            const resSave = await onSaveCubeData(c, v, t, objData);
             hideLoading();
             if (!resSave.success) {
                 message.error(this.props.t('PROPS_UPDATING_ERROR'));
