@@ -515,7 +515,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
                                     width: '10%',
                                     className: 'td-center',
                                     render: (text, record) => (
-                                        <Checkbox checked={text} disabled={record.temporaryUse}
+                                        <Checkbox checked={text} disabled
                                                   onChange={e => this.onChange(e.target.checked, record.key, 'disinfection')}/>
                                     )
                                 },
@@ -526,7 +526,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
                                     width: '10%',
                                     className: 'td-center',
                                     render: (text, record) => (
-                                        <Checkbox checked={text} disabled={record.temporaryUse}
+                                        <Checkbox checked={text} disabled
                                                   onChange={e => this.onChange(e.target.checked, record.key, 'disinfestation')}/>
                                     )
                                 },
@@ -537,7 +537,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
                                     width: '10%',
                                     className: 'td-center',
                                     render: (text, record) => (
-                                        <Checkbox checked={text} disabled={record.temporaryUse}
+                                        <Checkbox checked={text} disabled
                                                   onChange={e => this.onChange(e.target.checked, record.key, 'restoration')}/>
                                     )
                                 },
@@ -548,7 +548,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
                                     width: '10%',
                                     className: 'td-center',
                                     render: (text, record) => (
-                                        <Checkbox checked={text} disabled={record.temporaryUse}
+                                        <Checkbox checked={text} disabled
                                                   onChange={e => this.onChange(e.target.checked, record.key, 'binding')}/>
                                     )
                                 },
@@ -559,7 +559,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
                                     width: '10%',
                                     className: 'td-center',
                                     render: (text, record) => (
-                                        <Checkbox checked={text} disabled={record.temporaryUse}
+                                        <Checkbox checked={text} disabled
                                                   onChange={e => this.onChange(e.target.checked, record.key, 'restorationOfFadingTexts')}/>
                                     )
                                 },

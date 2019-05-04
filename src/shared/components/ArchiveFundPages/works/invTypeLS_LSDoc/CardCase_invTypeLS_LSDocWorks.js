@@ -8,6 +8,7 @@ class CardCase_invTypeLS_LSDoc extends Component {
   render() {
 
     const { t, tofiConstants, saveProps, stateRecord, initialValues } = this.props;
+    console.log(initialValues, stateRecord);
     return <AntTabs
       tabs={[
         {
@@ -26,6 +27,7 @@ class CardCase_invTypeLS_LSDoc extends Component {
           tabName: tofiConstants.documentFile.name[localStorage.getItem('i18nextLng')],
           tabContent: <Damage
               tofiConstants={tofiConstants}
+              initialValues={initialValues}
           />
         }
       ]}

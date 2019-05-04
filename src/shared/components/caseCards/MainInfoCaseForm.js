@@ -377,18 +377,18 @@ class MainInfoCaseForm extends Component {
     }
     checkboxToRedux2=(val, prevVal)=>{
         let newVal = {...prevVal};
-        const {yes, no} = this.props.tofiConstants
+        const {caseInsuranceTrue, caseInsuranceFalce} = this.props.tofiConstants
         if (prevVal === null) {
             let objVal ={}
             if (val=== true ){
                 objVal = {
-                    value: Number(yes.id),
+                    value: Number(caseInsuranceTrue.id),
                     kFromBase: val
 
                 }
             }else {
                 objVal = {
-                    value: Number(no.id),
+                    value: Number(caseInsuranceFalce.id),
                     kFromBase: val
                 }
             }
@@ -396,10 +396,10 @@ class MainInfoCaseForm extends Component {
             return (objVal)
         } else {
             if (val=== true ){
-                newVal.value = Number(yes.id)
+                newVal.value = Number(caseInsuranceTrue.id)
                 newVal.kFromBase= val
             }else {
-                newVal.value = Number(no.id)
+                newVal.value = Number(caseInsuranceFalce.id)
                 newVal.kFromBase= val
             }
 
@@ -934,7 +934,7 @@ class MainInfoCaseForm extends Component {
             name="caseInsurance"
             component={renderCheckbox}
             label={caseInsurance.name[this.lng]}
-            format={v => v && v.value===yes.id?true:false }
+            format={v => v && v.value===caseInsuranceTrue.id?true:false }
             normalize={this.checkboxToRedux2}
             formItemLayout={{
               labelCol: { span: 10 },

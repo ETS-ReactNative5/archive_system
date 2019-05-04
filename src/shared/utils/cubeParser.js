@@ -749,7 +749,7 @@ options = {}) {
     function buildProps(val, key) {
 
          const propMetaData = getPropMeta(cube.data["dp_" + tofiConstants[cube.dpConst].id], tofiConstants[key]);
-        debugger
+
         let value = val;
         try {
             if (propMetaData.isUniq===1 && (propMetaData.typeProp === 315 || propMetaData.typeProp === 311 || propMetaData.typeProp === 317))
@@ -759,10 +759,40 @@ options = {}) {
                     en: !!val.valueLng.en ? val.valueLng.en : val.value
                 };
             if (propMetaData.isUniq===2 && propMetaData.typeProp===315){
-                var valuesStrMulti=val.map(el=>el.value.value);
-                var idDpvMulti=val.map(el=>{return !!el.value.idDataPropVal ? String(el.value.idDataPropVal) :''});
-                value = valuesStrMulti.join(',');
-                val.idDataPropVal=idDpvMulti;
+                debugger
+                let values = []
+
+                for (let item of value){
+
+                    let mode =""
+                    if (!!item.value.idDataPropVal && !!item.value.value ){
+                        mode="upd"
+                    }else {
+                        if (!!item.value.value){
+                            mode="ins"
+                        }else {
+                            mode="del"
+                        }
+                    }
+                    let newob = {
+                        val: item.value.value,
+                        idDataPropVal:item.value.idDataPropVal?item.value.idDataPropVal:"",
+                        mode:mode
+                    }
+                    values.push(newob)
+                }
+                return {
+                    propConst: key,
+                    values: values,
+                    typeProp: String(propMetaData.typeProp),
+                    periodDepend: String(propMetaData.periodDepend),
+                    isUniq: String(propMetaData.isUniq),
+                    //periodType: periodType,
+                    //dBeg: dBeg,
+                    //dEnd: dEnd,
+                }
+
+
             }
             if ((propMetaData.typeProp === 11 || propMetaData.typeProp === 41) && (propMetaData.isUniq==1)) {
                 value = !!val.value ? String(val.value):val;

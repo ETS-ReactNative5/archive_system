@@ -132,10 +132,10 @@ class Reports extends React.Component {
               <Select
                 name="reportType"
                 isSearchable={false}
-                value='Тип отчета'
+                value={this.state.filter.reportType}
                 onChange={this.onSelectChange("reportType")}
                 options={this.state.reportTypeOptions}
-                placeholder={t('REPORT_TYPE')}
+                placeholder={t('Тип отчета')}
               />
             </div>
             <div className="label-select">
@@ -145,7 +145,7 @@ class Reports extends React.Component {
                 value={this.state.filter.periodType}
                 onChange={this.onSelectChange("periodType")}
                 options={this.state.periodTypeOptions}
-                placeholder={t('PERIOD_TYPE')}
+                placeholder={t('Тип периода')}
               />
             </div>
             <div className="label-select">
@@ -155,7 +155,7 @@ class Reports extends React.Component {
                 value={this.state.filter.periodValue}
                 onChange={this.onSelectChange("periodValue")}
                 options={this.state.periodValueOptions}
-                placeholder={t('PERIOD_VALUE')}
+                placeholder={t('Значение периода')}
               />
             </div>
           </div>

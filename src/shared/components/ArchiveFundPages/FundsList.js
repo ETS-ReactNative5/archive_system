@@ -598,9 +598,9 @@ class FundsList extends Component {
 
     this.filteredData = data.map(this.renderTableData).filter(item => {
       return (
-        (!filter.fundNumber ||
-          !item.fundNumber ||
-          item.fundNumber.value == filter.fundNumber) &&
+        // (!filter.fundNumber ||
+        //   !item.fundNumber ||
+        //   item.fundNumber.value == filter.fundNumber) &&
         (item.fundIndex ? item.fundIndex.value.toLowerCase().includes(filter.fundIndex.toLowerCase()) : filter.fundIndex === "") &&
         (item.key ? item.key.toLowerCase().includes(filter.nameResearchers.toLowerCase()) : filter.nameResearchers === "") &&
         item.fundList.toLowerCase().includes(filter.fundList.toLowerCase()) &&

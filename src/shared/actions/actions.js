@@ -500,6 +500,9 @@ export const citiesLoaded = countryId => dispatch => {
         .then(json => dispatch(getCitiesSuccess(json.data)))
 };
 
+export const propValList = propConst =>{
+return axios.General.propValList(propConst)};
+
 export const regNewUserSuccess = fd => dispatch => {
     return axios.Auth.regNewUser(fd)
 };

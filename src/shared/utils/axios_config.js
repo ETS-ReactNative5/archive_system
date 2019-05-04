@@ -129,6 +129,12 @@ export const Cube = {
 };
 
 export const General = {
+    propValList: (propConst) => {
+        const fd = new FormData();
+        fd.append("propConst", String(propConst));
+        return axios.post(`/${localStorage.getItem('i18nextLng')}/propvallist/get`, fd)
+        .then(res => res.data)
+    },
   getFactorVal: CONST =>
     axios.get(`/${localStorage.getItem('i18nextLng')}/factorVal/getFactorVal?factor=${CONST}`),
   getRoles: () =>
