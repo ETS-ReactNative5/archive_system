@@ -205,18 +205,19 @@ onWorkClassChange = s => {
       permitionDate, archiveCipher, documentFile, workRegCase}} = this.props;
 
     this.filteredData = data.filter(item => {
+        console.log(item)
+        debugger;
       return (
          ( item.key.toLowerCase().includes(search.nameResearchers.toLowerCase()) ) &&
          ( search.workTypeClass.length === 0 || search.workTypeClass.some(p => (item.workType && p.value == item.workType.value)) ) &&
-        ( !search.workDate.dbeg || moment(item.workDate, 'DD-MM-YYYY').isSameOrAfter(search.workDate.dbeg, 'day') ) &&
-        ( !search.workDate.dend || moment(item.workDate, 'DD-MM-YYYY').isSameOrBefore(search.workDate.dend, 'day') ) &&
-        ( !search.acceptanceDate.dbeg || moment(item.acceptanceDate, 'DD-MM-YYYY').isSameOrAfter(search.acceptanceDate.dbeg, 'day') ) &&
-        ( !search.acceptanceDate.dend || moment(item.acceptanceDate, 'DD-MM-YYYY').isSameOrBefore(search.acceptanceDate.dend, 'day') ) &&
-        ( !search.permitionDate.dbeg || moment(item.permitionDate, 'DD-MM-YYYY').isSameOrAfter(search.permitionDate.dbeg, 'day') ) &&
-        ( !search.permitionDate.dend || moment(item.permitionDate, 'DD-MM-YYYY').isSameOrBefore(search.permitionDate.dend, 'day') )
+        ( !search.workDate.dbeg|| moment(item.workDate.value, 'DD-MM-YYYY').isSameOrAfter(search.workDate.dbeg, 'day') ) &&
+         ( !search.workDate.dend|| moment(item.workDate.value, 'DD-MM-YYYY').isSameOrAfter(search.workDate.dend, 'day') ) &&
+        ( !search.acceptanceDate.dbeg|| moment(item.acceptanceDate.value, 'DD-MM-YYYY').isSameOrAfter(search.acceptanceDate.dbeg, 'day') ) &&
+         ( !search.acceptanceDate.dend || moment(item.acceptanceDate.value, 'DD-MM-YYYY').isSameOrAfter(search.acceptanceDate.dend, 'day') ) &&
+        ( !search.permitionDate.dbeg || moment(item.permitionDate.value, 'DD-MM-YYYY').isSameOrAfter(search.permitionDate.dbeg, 'day') ) &&
+        ( !search.permitionDate.dend || moment(item.permitionDate.value, 'DD-MM-YYYY').isSameOrAfter(search.permitionDate.dend, 'day') )
       )
     });
-
     return (
       <div className="CabinetCard">
         <div className = "CabinetCard_heading">
@@ -247,9 +248,10 @@ onWorkClassChange = s => {
                     title: t('ID'),
                     dataIndex: 'key',
                     width: '6%',
-                    render: key => key ? key.split('_')[1] : '',
+                    // render: key => key ? key.split('_')[1] : '',
+                    render: key => { return key},
                     sortOrder:'descend',
-                    sorter: (a, b) => parseInt(a.key.split('_')[1]) - parseInt(b.key.split('_')[1]),
+                    sorter: (a, b) => parseInt(a.key) - parseInt(b.key),
                     filterDropdown: (
                         <div className="custom-filter-dropdown">
                           <Input
@@ -304,7 +306,7 @@ onWorkClassChange = s => {
                 ),
                 filterIcon: <Icon type="filter"
                                   style={{color: (search.workDate.dbeg || search.workDate.dend) ? '#ff9800' : '#aaa'}}/>,
-                render: obj => obj && obj.format('DD-MM-YYYY')
+                render: obj => obj && obj.value
               },
               {
                 key: 'acceptanceDate',
@@ -332,7 +334,7 @@ onWorkClassChange = s => {
                 ),
                 filterIcon: <Icon type="filter"
                                   style={{color: (search.acceptanceDate.dbeg || search.acceptanceDate.dend) ? '#ff9800' : '#aaa'}}/>,
-                render: obj => obj && obj.format('DD-MM-YYYY')
+                render: obj =>  obj && obj.value
               },
               {
                 key: 'permitionDate',
@@ -360,7 +362,7 @@ onWorkClassChange = s => {
                 ),
                 filterIcon: <Icon type="filter"
                                   style={{color: (search.permitionDate.dbeg || search.permitionDate.dend) ? '#ff9800' : '#aaa'}}/>,
-                render: obj => obj && obj.format('DD-MM-YYYY')
+                render: obj => obj && obj.value
               },
               {
                 key: 'workStatusUses',
@@ -381,7 +383,7 @@ onWorkClassChange = s => {
                 title: workRegCase.name[this.lng],
                 dataIndex: 'workRegCase',
                 width: '35%',
-                render: obj => obj && obj.label
+                render: obj =>  obj && obj.label
               },
               {
                 key: 'documentFile',

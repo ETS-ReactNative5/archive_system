@@ -635,3 +635,6 @@ data/src/shared/components/SourcingPages/fundMaker/Chat_FundMaker.js.i
 data/src/shared/components/ReadingRoomPages/ResearcherCabinet/RequestsUser.js.i
 data/src/shared/components/caseCards/CardCase.js.i
 data/src/shared/components/caseCards/MainInfoCaseForm.js.i
+data/src/shared/components/ManagingPages/reports/filterReport.js.i
+data/src/shared/components/ManagingPages/reports/viewReports.js.i
+data/src/shared/components/ManagingPages/reports/report.js.i

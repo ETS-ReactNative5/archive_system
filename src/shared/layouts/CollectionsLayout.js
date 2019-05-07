@@ -18,6 +18,7 @@ import {redirect, onAppLoad, getAllConstants, loginSesion, getAccessLevels} from
 import Viewer from "../components/Viewer";
 import UsersRoles from "../components/AdministrationPages/usersRoles/index";
 import forgot_password from "../components/forgot_password";
+// import Report from "../components/ManagingPages/reports/Report";
 
 let AsyncSignupForm,
   AsyncECP_Form,
@@ -313,6 +314,10 @@ class CollectionsLayout extends Component {
             path: '/managing/reports',
             priv: 'control-report'
           },
+          {
+            name: t('CONTROL_REPORT1'), // Отчеты1
+            path: '/managing/thisreport',
+          },
 /*
           {
             name: t('CONTROL_WORK'), // Работы по управлению архивом
@@ -371,6 +376,7 @@ class CollectionsLayout extends Component {
               <Route exact path="/profile" render={props => user ? <AsyncProfileScreen {...props} t={t}/> : <Redirect to='/' />} />
               <Route exact path="/login" component={AsyncLoginScreen} />
               <Route exact path="/signup" component={AsyncSignupForm} />
+              {/*<Route  path="/managing/reports2" component={Report} />*/}
               <Route exact path="/ecp" render={props => <AsyncECP_Form {...props} t={t} tofiConstants={tofiConstants}/>} />
               <Route path="/uses" render={props => user ? <AsyncUsesRoutes {...props}  /> : <Redirect to='/' />} />
               <Route path="/archiveFund" render={props => user ? <AsyncArchiveFundRoutes tofiConstants={tofiConstants} {...props} /> : <Redirect to='/' />} />

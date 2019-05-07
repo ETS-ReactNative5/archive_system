@@ -1,7 +1,8 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import {Redirect, Route, Switch} from 'react-router-dom';
 import { translate } from 'react-i18next';
-import Reports from './reports';
+import Reports from './reports/index';
+import Report2 from './reports/Report2';
 import ArchivePassword from './archivePassword';
 
 const AdminRoutes = ({t, tofiConstants}) => {
@@ -9,8 +10,9 @@ const AdminRoutes = ({t, tofiConstants}) => {
     <Switch>
       <Route exact path="/managing/archivePassport" render={props => <ArchivePassword t={t} {...props}/>} />
       <Route exact path="/managing/reports" render={props => <Reports t={t} {...props}/>} />
+      <Route exact path="/managing/thisreport"  render={props => <Report2 t={t} {...props}/>}/>
     </Switch>
   )
 };
 
-export default translate('archiveFund')(AdminRoutes);
+export default translate('archiveFund   ')(AdminRoutes);

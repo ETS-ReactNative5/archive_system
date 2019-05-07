@@ -1,13 +1,9 @@
 import React from 'react';
 import Select from "../../Select";
-import { connect } from 'react-redux';
 import { Button } from 'antd';
-import {Component} from "react/lib/ReactBaseClasses";
 
-class filterReport extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
+class FilterReport extends React.Component {
+        state = {
             reportArchiveOptions: [],
             typeFondsOptions: [],
             reportAvailabilityOptions: [],
@@ -22,16 +18,15 @@ class filterReport extends Component {
                 reportCategory: null,
                 dateFirstEntry: null,
             }
-        }
     }
     render (){
-        this.lng = localStorage.getItem('i18nextLng');
-
-        const { data, columns, loading } = this.state;
-        const { t } = this.props;
+        // this.lng = localStorage.getItem('i18nextLng');
+        //
+        // const { data, columns, loading } = this.state;
+        // const { t } = this.props;
 
         return(
-            <div calssName='report_filtr'>
+            <div calssName='report_filter'>
                 <div className="data_filters">
                     <p>Фильтры данных</p>
                     <div className="label-select">
@@ -39,9 +34,9 @@ class filterReport extends Component {
                             name="reportArchive"
                             isSearchable={false}
                             value={this.state.filter.reportArchive}
-                            onChange={this.onSelectChange("reportType")}
+                            // onChange={this.onSelectChange("reportType")}
                             options={this.state.reportArchiveOptions}
-                            placeholder={t('Архив')}
+                            placeholder={'Архив'}
                         />
                     </div>
                     <div className="label-select">
@@ -49,9 +44,9 @@ class filterReport extends Component {
                             name="reportArchive"
                             isSearchable={false}
                             value={this.state.filter.typeFonds}
-                            onChange={this.onSelectChange("reportType")}
+                            // onChange={this.onSelectChange("reportType")}
                             options={this.state.typeFondsOptions}
-                            placeholder={t('Тип фонда')}
+                            placeholder={'Тип фонда'}
                         />
                     </div>
                     <div className="label-select">
@@ -59,9 +54,9 @@ class filterReport extends Component {
                             name="reportArchive"
                             isSearchable={false}
                             value={this.state.filter.reportAvailability}
-                            onChange={this.onSelectChange("reportType")}
+                            // onChange={this.onSelectChange("reportType")}
                             options={this.state.reportAvailabilityOptions}
-                            placeholder={t('Признак наличия в учете')}
+                            placeholder={'Признак наличия в учете'}
                         />
                     </div>
                     <div className="label-select">
@@ -69,9 +64,9 @@ class filterReport extends Component {
                             name="reportArchive"
                             isSearchable={false}
                             value={this.state.filter.reportIndex}
-                            onChange={this.onSelectChange("reportType")}
+                            // onChange={this.onSelectChange("reportType")}
                             options={this.state.reportIndexOptions}
-                            placeholder={t('Индекс')}
+                            placeholder={'Индекс'}
                         />
                     </div>
                     <div className="label-select">
@@ -79,9 +74,9 @@ class filterReport extends Component {
                             name="reportArchive"
                             isSearchable={false}
                             value={this.state.filter.reportCategory}
-                            onChange={this.onSelectChange("reportType")}
+                            // onChange={this.onSelectChange("reportType")}
                             options={this.state.reportCategoryOptions}
-                            placeholder={t('Категория фонда')}
+                            placeholder={'Категория фонда'}
                         />
                     </div>
                     <div className="label-select">
@@ -89,9 +84,9 @@ class filterReport extends Component {
                             name="reportArchive"
                             isSearchable={false}
                             value={this.state.filter.dateFirstEntry}
-                            onChange={this.onSelectChange("reportType")}
+                            // onChange={this.onSelectChange("reportType")}
                             options={this.state.dateFirstEntryOptions}
-                            placeholder={t('Дата первого поступления')}
+                            placeholder={'Дата первого поступления'}
                         />
                     </div>
                 </div>
@@ -107,4 +102,4 @@ class filterReport extends Component {
 
 
 
-export default connect (filterReport);
+export default FilterReport;

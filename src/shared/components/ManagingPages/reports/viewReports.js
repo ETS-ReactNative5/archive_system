@@ -1,13 +1,8 @@
 import React from 'react';
 import { Table } from 'antd';
-import {connect} from "react-redux";
-import {Component} from "react/lib/ReactBaseClasses";
+import AntTable from "../../AntTable";
 
-class viewReports extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {}
-    }
+class ViewReports extends React.Component {
     render (){
         const columns = [{
             title: 'Номер фонда',
@@ -31,35 +26,37 @@ class viewReports extends Component {
             dataIndex: 'notes',
         },
         ];
-        const data = [{
-            key: '1',
-            numbFond: 'John Brown',
-            dataFEntry: '￥300,000.00',
-            nameFond: 'New York No. 1 Lake Park',
-            retMark: '',
-            notes: ''
-        }, {
-            key: '2',
-            numbFond: 'Jim Green',
-            dataFEntry: '￥1,256,000.00',
-            nameFond: 'London No. 1 Lake Park',
-            retMark: '',
-            notes: ''
-        }, {
-            key: '3',
-            numbFond: 'Joe Black',
-            dataFEntry: '￥120,000.00',
-            nameFond: 'Sidney No. 1 Lake Park',
-            retMark: '',
-            notes: ''
-        }];
+        // const data = [{
+        //     key: '1',
+        //     numbFond: 'John Brown',
+        //     dataFEntry: '￥300,000.00',
+        //     nameFond: 'New York No. 1 Lake Park',
+        //     retMark: '',
+        //     notes: ''
+        // }, {
+        //     key: '2',
+        //     numbFond: 'Jim Green',
+        //     dataFEntry: '￥1,256,000.00',
+        //     nameFond: 'London No. 1 Lake Park',
+        //     retMark: '',
+        //     notes: ''
+        // }, {
+        //     key: '3',
+        //     numbFond: 'Joe Black',
+        //     dataFEntry: '￥120,000.00',
+        //     nameFond: 'Sidney No. 1 Lake Park',
+        //     retMark: '',
+        //     notes: ''
+        // }];
         return(
-            <Table
+            <div>
+            <AntTable
+                loading={false}
                 columns={columns}
-                dataSource={data}
-                bordered
+              //  dataSource={data}
             />
+            </div>
         )
     }
 }
-export default connect (viewReports);
+export default ViewReports;

@@ -638,3 +638,5 @@ data/src/shared/components/caseCards/MainInfoCaseForm.js.i
 data/src/shared/components/ManagingPages/reports/filterReport.js.i
 data/src/shared/components/ManagingPages/reports/viewReports.js.i
 data/src/shared/components/ManagingPages/reports/report.js.i
+data/src/shared/components/ArchiveFundPages/works/invTypeLS_LSDoc/IrrDamageTable.js.i
+data/src/shared/components/ArchiveFundPages/works/printAct.js.i

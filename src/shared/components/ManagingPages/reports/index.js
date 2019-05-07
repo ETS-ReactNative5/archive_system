@@ -6,7 +6,7 @@ import {DO_FOR_FUND_AND_IK, WORK_PRIORITY} from "../../../constants/tofiConstant
 import Select from "../../Select";
 import {uniqBy} from "lodash";
 
-class Reports extends React.Component {
+class Index extends React.Component {
 
   state = {
     loading: false,
@@ -84,8 +84,6 @@ class Reports extends React.Component {
           width: '5%'
         }
       ];
-      debugger;
-      console.log(this.props.cubeReports)
       const columns = dpReportsPropColumns.concat(this.props.cubeReports[`dp_${dpReportsFactor.id}`]
         .map((dp, _, arr) => ({
           key: dp.id,
@@ -166,7 +164,9 @@ class Reports extends React.Component {
             loading={loading}
             columns={columns}
             dataSource={data}
-          />
+          >
+            <filterReport/>
+          </Table>
         </div>
       </div>
     )
@@ -180,4 +180,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps, { getCube })(Reports);
+export default connect(mapStateToProps, { getCube })(Index);

@@ -29,7 +29,10 @@ class InquiryReqs extends React.Component {
         dbeg: null,
         dend: null
       },
-      workPlannedEndDate: {
+      nameOfOrganizationDeveloper:{
+
+      },
+  workPlannedEndDate: {
         dbeg: null,
         dend: null
       },
@@ -325,12 +328,12 @@ class InquiryReqs extends React.Component {
       return (
           ( item.key.toLowerCase().includes(filter.nameResearchers.toLowerCase()) ) &&
         (filter.researchTypeClass.length === 0 || filter.researchTypeClass.some(p => (p.researchTypeClass == item.researchTypeClass))) &&
-        ( !filter.workDate.dbeg || moment(item.workDate, 'DD-MM-YYYY').isSameOrAfter(filter.workDate.dbeg, 'day') ) &&
-        ( !filter.workDate.dend || moment(item.workDate, 'DD-MM-YYYY').isSameOrBefore(filter.workDate.dend, 'day') ) &&
-        ( !filter.workEndDate.dbeg || moment(item.workEndDate, 'DD-MM-YYYY').isSameOrAfter(filter.workEndDate.dbeg, 'day') ) &&
-        ( !filter.workEndDate.dend || moment(item.workEndDate, 'DD-MM-YYYY').isSameOrBefore(filter.workEndDate.dend, 'day') ) &&
-        ( !filter.workPlannedEndDate.dbeg || moment(item.workPlannedEndDate, 'DD-MM-YYYY').isSameOrAfter(filter.workPlannedEndDate.dbeg, 'day') ) &&
-        ( !filter.workPlannedEndDate.dend || moment(item.workPlannedEndDate, 'DD-MM-YYYY').isSameOrBefore(filter.workPlannedEndDate.dend, 'day') )
+        ( !filter.workDate.dbeg || moment(item.workDate.value).isSameOrAfter(filter.workDate.dbeg, 'day') ) &&
+        ( !filter.workDate.dend || moment(item.workDate.value).isSameOrAfter(filter.workDate.dend, 'day') ) &&
+        ( !filter.workEndDate.dbeg || moment(item.workEndDate.value).isSameOrAfter(filter.workEndDate.dbeg, 'day') ) &&
+        ( !filter.workEndDate.dend || moment(item.workEndDate.value).isSameOrBefore(filter.workEndDate.dend, 'day') ) &&
+        ( !filter.workPlannedEndDate.dbeg || moment(item.workPlannedEndDate.value).isSameOrBefore(filter.workPlannedEndDate.dbeg, 'day') ) &&
+        ( !filter.workPlannedEndDate.dend || moment(item.workPlannedEndDate.value).isSameOrBefore(filter.workPlannedEndDate.dend, 'day') )
       )
     });
 
@@ -363,9 +366,9 @@ class InquiryReqs extends React.Component {
                     title: t('ID'),
                     dataIndex: 'key',
                     width: '6%',
-                    render: key => key ? key.split('_')[1] : '',
+                    render: key => {return key} ,
                     sortOrder:'descend',
-                    sorter: (a, b) => parseInt(a.key.split('_')[1]) - parseInt(b.key.split('_')[1]),
+                    sorter: (a, b) => parseInt(a.key) - parseInt(b.key),
                     filterDropdown: (
                         <div className="custom-filter-dropdown">
                           <Input
@@ -392,14 +395,14 @@ class InquiryReqs extends React.Component {
                 title: t('RESEARCH_CLASS'),
                 dataIndex: 'researchType',
                 width: '7%',
-                render: obj => obj && obj.label
+                render: obj =>  obj && obj.label
               },
               {
                 key: 'regNumber',
                 title: regNumber.name[this.lng],
                 dataIndex: 'regNumber',
                 width: '7%',
-                render: obj => obj && obj[this.lng]
+                render: obj =>  obj && obj.value
               },
               {
                 key: 'workDate',
@@ -426,15 +429,15 @@ class InquiryReqs extends React.Component {
                   </div>
                 ),
                 filterIcon: <Icon type="filter" style={{ color: (filter.workDate.dbeg || filter.workDate.dend) ? '#ff9800' : '#aaa' }} />,
-                render: obj => obj && obj.format('DD-MM-YYYY')
+                render: obj => obj && obj.value
               },
               {
                 key: 'applicant',
                 title: t('APPLICANT'),
                 dataIndex: 'applicant',
                 width: '10%',
-                render: (obj, rec) => (rec.nameOfOrganizationDeveloper || '') + ' ' + (rec.personLastName || '') + ' ' +
-                  (rec.personName || '') + ' ' + (rec.personPatronymic || '')
+                render: (obj, rec) =>(!!rec.nameOfOrganizationDeveloper ? rec.nameOfOrganizationDeveloper.value : '') + ' ' + (!!rec.personLastName ? rec.personLastName.value : '') + ' ' +
+                  (!!rec.personName ? rec.personName.value : '') + ' ' + (!!rec.personPatronymic ? rec.personPatronymic.value : '')
               },
               {
                 key: 'workPlannedEndDate',
@@ -446,14 +449,14 @@ class InquiryReqs extends React.Component {
                     <div className="flex">
                       <DatePicker
                         format="DD-MM-YYYY"
-                        value={this.state.filter.workPlannedEndDate.dbeg}
+                        value={this.state.filter.workPlannedEndDate.value}
                         style={{marginRight: '16px'}}
                         showToday={false}
                         onChange={this.onDateChange('workPlannedEndDate', 'dbeg')}
                       />
                       <DatePicker
                         format="DD-MM-YYYY"
-                        value={this.state.filter.workPlannedEndDate.dend}
+                        value={this.state.filter.workPlannedEndDate.value}
                         showToday={false}
                         onChange={this.onDateChange('workPlannedEndDate', 'dend')}
                       />
@@ -461,7 +464,7 @@ class InquiryReqs extends React.Component {
                   </div>
                 ),
                 filterIcon: <Icon type="filter" style={{ color: (filter.workPlannedEndDate.dbeg || filter.workPlannedEndDate.dend) ? '#ff9800' : '#aaa' }} />,
-                render: obj => obj && obj.format('DD-MM-YYYY')
+                render: obj => obj && obj.value
               },
               {
                 key: 'researchTheme',
@@ -487,14 +490,14 @@ class InquiryReqs extends React.Component {
                     <div className="flex">
                       <DatePicker
                         format="DD-MM-YYYY"
-                        value={this.state.filter.workEndDate.dbeg}
+                        value={this.state.filter.workEndDate.value}
                         style={{marginRight: '16px'}}
                         showToday={false}
                         onChange={this.onDateChange('workEndDate', 'dbeg')}
                       />
                       <DatePicker
                         format="DD-MM-YYYY"
-                        value={this.state.filter.workEndDate.dend}
+                        value={this.state.filter.workEndDate.value}
                         showToday={false}
                         onChange={this.onDateChange('workEndDate', 'dend')}
                       />
@@ -502,7 +505,7 @@ class InquiryReqs extends React.Component {
                   </div>
                 ),
                 filterIcon: <Icon type="filter" style={{ color: (filter.workEndDate.dbeg || filter.workEndDate.dend) ? '#ff9800' : '#aaa' }} />,
-                render: obj => obj && obj.format('DD-MM-YYYY')
+                render: obj => obj && obj.value
               },
               {
                 key: 'resultResearch',

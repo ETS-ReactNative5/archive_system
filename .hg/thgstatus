@@ -1,3 +1,9 @@
+mpublic/locales/en
+mpublic/locales/kz
+mpublic/locales/ru
 msrc/shared/components/ArchiveFundPages
-msrc/shared/components/ManagingPages/reports
+msrc/shared/components/ManagingPages
+rsrc/shared/components/ManagingPages/reports
 msrc/shared/components/NSAPages
+msrc/shared/components/ReadingRoomPages/ResearcherCabinet
+msrc/shared/layouts
