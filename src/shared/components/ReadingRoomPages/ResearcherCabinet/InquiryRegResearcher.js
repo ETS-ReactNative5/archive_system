@@ -328,12 +328,12 @@ class InquiryReqs extends React.Component {
       return (
           ( item.key.toLowerCase().includes(filter.nameResearchers.toLowerCase()) ) &&
         (filter.researchTypeClass.length === 0 || filter.researchTypeClass.some(p => (p.researchTypeClass == item.researchTypeClass))) &&
-        ( !filter.workDate.dbeg || moment(item.workDate.value).isSameOrAfter(filter.workDate.dbeg, 'day') ) &&
-        ( !filter.workDate.dend || moment(item.workDate.value).isSameOrAfter(filter.workDate.dend, 'day') ) &&
-        ( !filter.workEndDate.dbeg || moment(item.workEndDate.value).isSameOrAfter(filter.workEndDate.dbeg, 'day') ) &&
-        ( !filter.workEndDate.dend || moment(item.workEndDate.value).isSameOrBefore(filter.workEndDate.dend, 'day') ) &&
-        ( !filter.workPlannedEndDate.dbeg || moment(item.workPlannedEndDate.value).isSameOrBefore(filter.workPlannedEndDate.dbeg, 'day') ) &&
-        ( !filter.workPlannedEndDate.dend || moment(item.workPlannedEndDate.value).isSameOrBefore(filter.workPlannedEndDate.dend, 'day') )
+        ( !filter.workDate.dbeg || moment(item.workDate && item.workDate.value).isSameOrAfter(filter.workDate.dbeg, 'day') ) &&
+        ( !filter.workDate.dend || moment(item.workDate && item.workDate.value).isSameOrAfter(filter.workDate.dend, 'day') ) &&
+        ( !filter.workEndDate.dbeg || moment(item.workEndDate && item.workEndDate.value).isSameOrAfter(filter.workEndDate.dbeg, 'day') ) &&
+        ( !filter.workEndDate.dend || moment(item.workEndDate && item.workEndDate.value).isSameOrBefore(filter.workEndDate.dend, 'day') ) &&
+        ( !filter.workPlannedEndDate.dbeg || moment(item.workPlannedEndDate && item.workPlannedEndDate.value).isSameOrBefore(filter.workPlannedEndDate.dbeg, 'day') ) &&
+        ( !filter.workPlannedEndDate.dend || moment(item.workPlannedEndDate && item.workPlannedEndDate.value).isSameOrBefore(filter.workPlannedEndDate.dend, 'day') )
       )
     });
 

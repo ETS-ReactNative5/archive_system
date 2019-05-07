@@ -205,17 +205,15 @@ onWorkClassChange = s => {
       permitionDate, archiveCipher, documentFile, workRegCase}} = this.props;
 
     this.filteredData = data.filter(item => {
-        console.log(item)
-        debugger;
       return (
          ( item.key.toLowerCase().includes(search.nameResearchers.toLowerCase()) ) &&
-         ( search.workTypeClass.length === 0 || search.workTypeClass.some(p => (item.workType && p.value == item.workType.value)) ) &&
-        ( !search.workDate.dbeg|| moment(item.workDate.value, 'DD-MM-YYYY').isSameOrAfter(search.workDate.dbeg, 'day') ) &&
-         ( !search.workDate.dend|| moment(item.workDate.value, 'DD-MM-YYYY').isSameOrAfter(search.workDate.dend, 'day') ) &&
-        ( !search.acceptanceDate.dbeg|| moment(item.acceptanceDate.value, 'DD-MM-YYYY').isSameOrAfter(search.acceptanceDate.dbeg, 'day') ) &&
-         ( !search.acceptanceDate.dend || moment(item.acceptanceDate.value, 'DD-MM-YYYY').isSameOrAfter(search.acceptanceDate.dend, 'day') ) &&
-        ( !search.permitionDate.dbeg || moment(item.permitionDate.value, 'DD-MM-YYYY').isSameOrAfter(search.permitionDate.dbeg, 'day') ) &&
-        ( !search.permitionDate.dend || moment(item.permitionDate.value, 'DD-MM-YYYY').isSameOrAfter(search.permitionDate.dend, 'day') )
+         ( search.workTypeClass.length === 0 || search.workTypeClass.some(p => (item.workType && (!!p ? p.value : '' ) == item.workType.value)) ) &&
+        ( !search.workDate.dbeg|| moment(item.workDate && item.workDate.value, 'DD-MM-YYYY').isSameOrAfter(search.workDate.dbeg, 'day') ) &&
+         ( !search.workDate.dend|| moment(item.workDate && item.workDate.value, 'DD-MM-YYYY').isSameOrAfter(search.workDate.dend, 'day') ) &&
+        ( !search.acceptanceDate.dbeg|| moment(item.acceptanceDate && item.acceptanceDate.value, 'DD-MM-YYYY').isSameOrAfter(search.acceptanceDate.dbeg, 'day') ) &&
+         ( !search.acceptanceDate.dend || moment(item.acceptanceDate && item.acceptanceDate.value, 'DD-MM-YYYY').isSameOrAfter(search.acceptanceDate.dend, 'day') ) &&
+        ( !search.permitionDate.dbeg || moment(item.permitionDate && item.permitionDate.value, 'DD-MM-YYYY').isSameOrAfter(search.permitionDate.dbeg, 'day') ) &&
+        ( !search.permitionDate.dend || moment(item.permitionDate && item.permitionDate.value, 'DD-MM-YYYY').isSameOrAfter(search.permitionDate.dend, 'day') )
       )
     });
     return (

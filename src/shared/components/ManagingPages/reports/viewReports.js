@@ -26,35 +26,36 @@ class ViewReports extends React.Component {
             dataIndex: 'notes',
         },
         ];
-        // const data = [{
-        //     key: '1',
-        //     numbFond: 'John Brown',
-        //     dataFEntry: '￥300,000.00',
-        //     nameFond: 'New York No. 1 Lake Park',
-        //     retMark: '',
-        //     notes: ''
-        // }, {
-        //     key: '2',
-        //     numbFond: 'Jim Green',
-        //     dataFEntry: '￥1,256,000.00',
-        //     nameFond: 'London No. 1 Lake Park',
-        //     retMark: '',
-        //     notes: ''
-        // }, {
-        //     key: '3',
-        //     numbFond: 'Joe Black',
-        //     dataFEntry: '￥120,000.00',
-        //     nameFond: 'Sidney No. 1 Lake Park',
-        //     retMark: '',
-        //     notes: ''
-        // }];
+        const data = [{
+            key: '1',
+            numbFond: 'John Brown',
+            dataFEntry: '￥300,000.00',
+            nameFond: 'New York No. 1 Lake Park',
+            retMark: '',
+            notes: ''
+        }, {
+            key: '2',
+            numbFond: 'Jim Green',
+            dataFEntry: '￥1,256,000.00',
+            nameFond: 'London No. 1 Lake Park',
+            retMark: '',
+            notes: ''
+        }, {
+            key: '3',
+            numbFond: 'Joe Black',
+            dataFEntry: '￥120,000.00',
+            nameFond: 'Sidney No. 1 Lake Park',
+            retMark: '',
+            notes: ''
+        }];
         return(
-            <div>
-            <AntTable
-                loading={false}
-                columns={columns}
-              //  dataSource={data}
-            />
+            <div className='common_report'>
+                <AntTable
+                    loading={false}
+                    columns={columns}
+                    dataSource={data}
+                    bordered
+                />
             </div>
         )
     }

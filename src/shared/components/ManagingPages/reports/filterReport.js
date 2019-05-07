@@ -26,8 +26,7 @@ class FilterReport extends React.Component {
         // const { t } = this.props;
 
         return(
-            <div calssName='report_filter'>
-                <div className="data_filters">
+                <div className="public_filters">
                     <p>Фильтры данных</p>
                     <div className="label-select">
                         <Select
@@ -89,12 +88,11 @@ class FilterReport extends React.Component {
                             placeholder={'Дата первого поступления'}
                         />
                     </div>
+                    <div className="report_button">
+                        <Button>Сформировать</Button>
+                        <Button>Отменить</Button>
+                    </div>
                 </div>
-                <div className="report_button">
-                    <Button>Сформировать</Button>
-                    <Button>Отменить</Button>
-                </div>
-            </div>
         )
     }
 }

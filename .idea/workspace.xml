@@ -2,6 +2,7 @@
 <project version="4">
   <component name="BookmarkManager">
     <bookmark url="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/inquiryReq/index.js" line="408" />
+    <bookmark url="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/ResearcherCabinet/Requests.js" line="210" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="517e9937-ffe9-43fd-98b7-f81bbc32aedc" name="Default Changelist" comment="Value">
@@ -34,8 +35,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/shared/components/ManagingPages/reports/Report2.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="680">
-              <caret line="130" column="34" selection-start-line="130" selection-start-column="19" selection-end-line="130" selection-end-column="34" />
+            <state relative-caret-position="51">
+              <caret line="3" column="40" selection-start-line="3" selection-start-column="40" selection-end-line="3" selection-end-column="40" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
               </folding>
@@ -52,11 +53,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/shared/components/ManagingPages/reports/FilterReport.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="327">
-              <caret line="34" column="48" lean-forward="true" selection-start-line="34" selection-start-column="48" selection-end-line="34" selection-end-column="48" />
+            <state relative-caret-position="34">
+              <caret line="2" column="30" selection-start-line="2" selection-start-column="30" selection-end-line="2" selection-end-column="30" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
               </folding>
@@ -67,8 +68,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/shared/components/ManagingPages/reports/ViewReports.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="429">
-              <caret line="56" selection-start-line="56" selection-end-line="56" />
+            <state relative-caret-position="34">
+              <caret line="2" column="38" selection-start-line="2" selection-start-column="38" selection-end-line="2" selection-end-column="38" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
               </folding>
@@ -77,21 +78,31 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/ResearcherCabinet/InquiryRegResearcher.js">
+        <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/Guides/showAllOption.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="492">
-              <caret line="347" column="36" selection-start-line="347" selection-start-column="36" selection-end-line="347" selection-end-column="36" />
+            <state relative-caret-position="34">
+              <caret line="2" column="1" lean-forward="true" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/ResearcherCabinet/InquiryRegResearcher.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="434">
+              <caret line="336" column="7" selection-start-line="336" selection-start-column="7" selection-end-line="336" selection-end-column="7" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/ResearcherCabinet/Requests.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="383">
-              <caret line="212" column="58" selection-start-line="212" selection-start-column="58" selection-end-line="212" selection-end-column="58" />
+            <state relative-caret-position="17">
+              <caret line="206" column="45" selection-start-line="206" selection-start-column="45" selection-end-line="206" selection-end-column="45" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
+                <element signature="e#7400#8103#0" />
               </folding>
             </state>
           </provider>
@@ -103,12 +114,12 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="JavaScript File" />
+        <option value="CSS File" />
       </list>
     </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>renderTableData</find>
       <find>case</find>
       <find>CUBE_FOR_AF_CASE</find>
       <find>CasesInInventory</find>
@@ -138,6 +149,7 @@
       <find>AsyncManagingRoutes</find>
       <find>managing</find>
       <find>passport</find>
+      <find>debbu</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -189,19 +201,20 @@
         <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/src/shared/components/ManagingPages/reports/report.js" />
         <option value="$PROJECT_DIR$/src/shared/components/ManagingPages/reports/Report.js" />
-        <option value="$PROJECT_DIR$/src/shared/components/ReadingRoomPages/ResearcherCabinet/InquiryRegResearcher.js" />
         <option value="$PROJECT_DIR$/src/shared/components/ManagingPages/reports/index.js" />
         <option value="$PROJECT_DIR$/public/locales/ru/header.json" />
         <option value="$PROJECT_DIR$/src/shared/layouts/CollectionsLayout.js" />
         <option value="$PROJECT_DIR$/src/shared/components/ManagingPages/ManagingRoutes.js" />
-        <option value="$PROJECT_DIR$/src/shared/components/ReadingRoomPages/ResearcherCabinet/Requests.js" />
+        <option value="$PROJECT_DIR$/src/shared/components/ManagingPages/reports/Report.css" />
+        <option value="$PROJECT_DIR$/src/shared/components/ManagingPages/reports/FilterReport.js" />
         <option value="$PROJECT_DIR$/src/shared/components/ManagingPages/reports/ViewReports.js" />
         <option value="$PROJECT_DIR$/src/shared/components/ManagingPages/reports/Report2.js" />
-        <option value="$PROJECT_DIR$/src/shared/components/ManagingPages/reports/FilterReport.js" />
+        <option value="$PROJECT_DIR$/src/shared/components/ReadingRoomPages/ResearcherCabinet/InquiryRegResearcher.js" />
+        <option value="$PROJECT_DIR$/src/shared/components/ReadingRoomPages/ResearcherCabinet/Requests.js" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="255" />
     <option name="y" value="-16" />
     <option name="width" value="1400" />
@@ -271,6 +284,15 @@
               <item name="shared" type="462c0819:PsiDirectoryNode" />
               <item name="components" type="462c0819:PsiDirectoryNode" />
               <item name="ReadingRoomPages" type="462c0819:PsiDirectoryNode" />
+              <item name="Guides" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="archive_system" type="b2602c69:ProjectViewProjectNode" />
+              <item name="archive_system" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="shared" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="ReadingRoomPages" type="462c0819:PsiDirectoryNode" />
               <item name="ResearcherCabinet" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -283,6 +305,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -355,7 +378,7 @@
       <workItem from="1556943583526" duration="21302000" />
       <workItem from="1557114415938" duration="13653000" />
       <workItem from="1557135841050" duration="10084000" />
-      <workItem from="1557203547601" duration="15324000" />
+      <workItem from="1557203547601" duration="20337000" />
     </task>
     <task id="LOCAL-00001" summary="Value">
       <created>1556970601000</created>
@@ -368,7 +391,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="354613000" />
+    <option name="totallyTimeSpent" value="359626000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -390,42 +413,20 @@
       <window_info anchor="bottom" id="TypeScript" order="0" />
       <window_info anchor="bottom" id="Messages" order="1" weight="0.5487013" />
       <window_info anchor="bottom" id="Message" order="2" />
-      <window_info anchor="bottom" id="Find" order="3" weight="0.32900432" />
+      <window_info anchor="bottom" id="Find" order="3" sideWeight="0.49947312" weight="0.22186147" />
       <window_info anchor="bottom" id="Run" order="4" />
       <window_info anchor="bottom" id="Debug" order="5" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="6" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="7" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="8" weight="0.32900432" />
       <window_info anchor="bottom" id="Docker" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.06743941" side_tool="true" weight="0.19588745" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50052685" side_tool="true" weight="0.32900432" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.32900432" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="12" sideWeight="0.93256056" visible="true" weight="0.28138527" />
+      <window_info anchor="bottom" id="Terminal" order="12" sideWeight="0.9315069" weight="0.2034632" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
-    <layout-to-restore>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17913593" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="npm" order="2" side_tool="true" />
-      <window_info id="Favorites" order="3" side_tool="true" />
-      <window_info anchor="bottom" id="TypeScript" order="0" />
-      <window_info anchor="bottom" id="Messages" order="1" weight="0.5487013" />
-      <window_info anchor="bottom" id="Message" order="2" />
-      <window_info anchor="bottom" id="Find" order="3" weight="0.32900432" />
-      <window_info anchor="bottom" id="Run" order="4" />
-      <window_info anchor="bottom" id="Debug" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="6" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="7" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="8" weight="0.32900432" />
-      <window_info anchor="bottom" id="Docker" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="10" weight="0.32900432" />
-      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.06743941" side_tool="true" weight="0.19588745" />
-      <window_info anchor="bottom" id="Terminal" order="12" sideWeight="0.93256056" visible="true" weight="0.060606062" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-    </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -517,7 +518,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/ResearcherCabinet/Requests.js</url>
-          <line>373</line>
+          <line>371</line>
           <option name="timeStamp" value="55" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
@@ -539,58 +540,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/Guides/Guides.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="593">
-          <caret line="232" column="10" selection-start-line="232" selection-start-column="10" selection-end-line="232" selection-end-column="10" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/shared/styles/readingRoom.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1052">
-          <caret line="223" column="45" selection-start-line="223" selection-start-column="45" selection-end-line="223" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/shared/constants/tofiConstants.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
-          <caret line="29" column="47" selection-start-line="29" selection-start-column="33" selection-end-line="29" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/shared/utils/cubeParser.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="18" column="12" selection-start-line="18" selection-start-column="8" selection-end-line="18" selection-end-column="12" />
-          <folding>
-            <element signature="e#0#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/shared/containers/ReadingRoom.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1377">
-          <caret line="100" column="27" selection-start-line="100" selection-start-column="11" selection-end-line="100" selection-end-column="27" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-            <element signature="e#3970#4549#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/App.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="29" column="5" selection-start-line="29" selection-start-column="5" selection-end-line="29" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/shared/reducers/cubes.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
@@ -636,34 +585,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
           <caret line="7" column="18" selection-start-line="7" selection-start-column="7" selection-end-line="7" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/Guides/CasesInInventory.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="11305">
-          <caret line="690" column="55" selection-start-line="690" selection-start-column="55" selection-end-line="690" selection-end-column="55" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/Guides/FundsInGuide.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5712">
-          <caret line="351" column="45" selection-start-line="351" selection-start-column="45" selection-end-line="351" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/Guides/InventoriesInFund.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4760">
-          <caret line="294" column="6" selection-start-line="294" selection-start-column="6" selection-end-line="294" selection-end-column="6" />
-          <folding>
-            <element signature="e#12639#13036#0" />
-            <element signature="e#13058#14668#0" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -895,13 +816,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/ResearcherCabinet/InquiryRegResearcher.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="492">
-          <caret line="347" column="36" selection-start-line="347" selection-start-column="36" selection-end-line="347" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="723">
@@ -912,13 +826,10 @@
     <entry file="file://$PROJECT_DIR$/package-lock.json">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/ResearcherCabinet/Requests.js">
+    <entry file="file://$PROJECT_DIR$/src/shared/styles/readingRoom.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="383">
-          <caret line="212" column="58" selection-start-line="212" selection-start-column="58" selection-end-line="212" selection-end-column="58" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="195">
+          <caret line="223" column="45" selection-start-line="223" selection-start-column="45" selection-end-line="223" selection-end-column="45" />
         </state>
       </provider>
     </entry>
@@ -929,10 +840,86 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/shared/components/ManagingPages/reports/Report.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="1" lean-forward="true" selection-start-line="5" selection-start-column="1" selection-end-line="5" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/Guides/InventoriesInFund.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4997">
+          <caret line="294" column="6" selection-start-line="294" selection-start-column="6" selection-end-line="294" selection-end-column="6" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+            <element signature="e#12639#13036#0" />
+            <element signature="e#13058#14668#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/Guides/index.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/Guides/Guides.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/Guides/FundsInGuide.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3">
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/Guides/CasesInInventory.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="11730">
+          <caret line="690" column="55" selection-start-line="690" selection-start-column="55" selection-end-line="690" selection-end-column="55" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/Guides/FundInfoModal.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/Guides/showAllOption.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="1" lean-forward="true" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shared/components/ManagingPages/reports/FilterReport.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="30" selection-start-line="2" selection-start-column="30" selection-end-line="2" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/shared/components/ManagingPages/reports/ViewReports.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="429">
-          <caret line="56" selection-start-line="56" selection-end-line="56" />
+        <state relative-caret-position="34">
+          <caret line="2" column="38" selection-start-line="2" selection-start-column="38" selection-end-line="2" selection-end-column="38" />
           <folding>
             <element signature="e#0#26#0" expanded="true" />
           </folding>
@@ -941,20 +928,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/shared/components/ManagingPages/reports/Report2.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="680">
-          <caret line="130" column="34" selection-start-line="130" selection-start-column="19" selection-end-line="130" selection-end-column="34" />
+        <state relative-caret-position="51">
+          <caret line="3" column="40" selection-start-line="3" selection-start-column="40" selection-end-line="3" selection-end-column="40" />
           <folding>
             <element signature="e#0#26#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/shared/components/ManagingPages/reports/FilterReport.js">
+    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/ResearcherCabinet/InquiryRegResearcher.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="327">
-          <caret line="34" column="48" lean-forward="true" selection-start-line="34" selection-start-column="48" selection-end-line="34" selection-end-column="48" />
+        <state relative-caret-position="434">
+          <caret line="336" column="7" selection-start-line="336" selection-start-column="7" selection-end-line="336" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/shared/components/ReadingRoomPages/ResearcherCabinet/Requests.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="206" column="45" selection-start-line="206" selection-start-column="45" selection-end-line="206" selection-end-column="45" />
           <folding>
             <element signature="e#0#26#0" expanded="true" />
+            <element signature="e#7400#8103#0" />
           </folding>
         </state>
       </provider>
