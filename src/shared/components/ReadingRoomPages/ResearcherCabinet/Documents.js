@@ -1,9 +1,9 @@
 import React from 'react';
 import {Button, InputNumber, Table} from 'antd';
-import moment from "moment";
 import {SYSTEM_LANG_ARRAY} from "../../../constants/constants";
 import {parseForTable} from "../../../utils/cubeParser";
 import { ArchiveFund } from '../../../utils/axios_config'
+import moment from "moment";
 
 class Documents extends React.Component {
 
@@ -24,7 +24,7 @@ class Documents extends React.Component {
   };
   rowSelectionChildWorks = (childWorks) => {
     const self = this;
-    const selectedDocs = childWorks.reduce((acc, w) => acc.concat(w.docsResearch.map(obj => obj.value)), []);
+    const selectedDocs = childWorks.reduce((acc, w) => acc.concat(!!w.docsResearch ? w.docsResearch.map( obj => obj.value): ''), []);
     return {
       onSelect: (rec, selected) => {
         if(selectedDocs.includes(rec.key)) return;
@@ -129,26 +129,28 @@ class Documents extends React.Component {
           title: fundNumber.name[this.lng],
           dataIndex: 'fundNumber',
           width: '10%',
-          render: obj => obj && obj[this.lng]
+          render: obj =>{return  obj && obj.value}
         },
         {
           key: 'archiveCipher',
           title: archiveCipher.name[this.lng] + '/' + documentDate.name[this.lng],
           dataIndex: 'archiveCipher',
           width: '40%',
-          render: (obj, rec) => obj + ' ' +(rec.documentDate ? rec.documentDate.format('DD-MM-YYYY') : '')
+          render: obj=>{return obj.value}
         },
         {
           key: 'pageNumberStart',
           title: t('PAGE_START'),
           dataIndex: 'pageNumberStart',
-          width: '20%'
+          width: '20%',
+          render: obj =>{ return obj.value}
         },
         {
           key: 'pageNumberEnd',
           title: t('PAGE_END'),
           dataIndex: 'pageNumberEnd',
-          width: '20%'
+          width: '20%',
+          render: obj =>{ return obj.value}
         },
         /*{
           key: 'from',

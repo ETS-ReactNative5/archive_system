@@ -63,11 +63,10 @@ class ClassificationInfo extends React.Component{
       <Form className="antForm-spaceBetween">
         <FormItem
           label="Наименование или начальные слова документа"
-          //{...formItemLayout}
         >
           <Input 
             placeholder="" 
-            value={this.state.record.nameOrPrimaryWords}
+            value={this.state.record.nameOrPrimaryWords ? this.state.record.nameOrPrimaryWords.value : ''}
             onChange={(e) => this.onChange(e.target.value, 'nameOrPrimaryWords')}
           />
         </FormItem>        
@@ -78,7 +77,7 @@ class ClassificationInfo extends React.Component{
           <TextArea 
             autosize={{minRows:5,maxRows:10}}
             placeholder="" 
-            value={this.state.record.documentContent}
+            value={this.state.record.documentContent ? this.state.record.documentContent.value : ''}
             onChange={(e) => this.onChange(e.target.value, 'documentContent')}
           />
         </FormItem>        
@@ -95,7 +94,7 @@ class ClassificationInfo extends React.Component{
         >
           <Input 
             placeholder="" 
-            value={this.state.record.peopleMentioned}
+            value={this.state.record.peopleMentioned ? this.state.record.peopleMentioned.value : ''}
             onChange={(e) => this.onChange(e.target.value, 'peopleMentioned')}
           />
         </FormItem>        
@@ -106,22 +105,21 @@ class ClassificationInfo extends React.Component{
         >
           <Input 
             placeholder="" 
-            value={this.state.record.organizationsMentioned}
+            value={this.state.record.organizationsMentioned ? this.state.record.organizationsMentioned.value : ''}
             onChange={(e) => this.onChange(e.target.value, 'organizationsMentioned')}
           />
         </FormItem>        
         <FormItem
           label="Другие ключевые слова"
-          //{...formItemLayout}
           colon={false}
         >
           <TextArea 
             autosize={{minRows:3,maxRows:6}}
             placeholder="" 
-            value={this.state.record.documentKeywords}
+            value={this.state.record.documentKeywords ? this.state.record.documentKeywords.value : ''}
             onChange={(e) => this.onChange(e.target.value, 'documentKeywords')}
           />
-        </FormItem>        
+        </FormItem>
       </Form>      
     )
   }

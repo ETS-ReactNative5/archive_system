@@ -692,6 +692,9 @@ render()
                     key: "archiveCipher",
                     title: archiveCipher.name[this.lng],
                     dataIndex: "archiveCipher",
+                    render: (text, record) => {
+                        return (record.archiveCipher ? record.archiveCipher.value  : '')
+                    },
                     width: "18%"
                 },
                 {
@@ -727,9 +730,8 @@ render()
                     title: documentDate.name[this.lng],
                     dataIndex: "documentDate",
                     width: "10%",
-                    render: (text, record) => {
-                        return (
-                        text ? (text.format('DD-MM-YYYY')) : record.implicitDates)
+                    render: (text, record) => {return (
+                            record.documentDate ? record.documentDate.value : '')
                     }
                 },
                 {
@@ -778,7 +780,7 @@ render()
             lng={this.lng}
             t={t}
             />
-            )} F
+            )}
         </div>
         <Modal
         footer={null}

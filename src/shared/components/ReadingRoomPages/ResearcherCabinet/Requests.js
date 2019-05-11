@@ -246,10 +246,10 @@ onWorkClassChange = s => {
                     title: t('ID'),
                     dataIndex: 'key',
                     width: '6%',
-                    // render: key => key ? key.split('_')[1] : '',
-                    render: key => { return key},
-                    sortOrder:'descend',
-                    sorter: (a, b) => parseInt(a.key) - parseInt(b.key),
+                    render: key => key ,
+                    // render: key => { return key},
+                    sorter: (a, b) => parseInt(a.key.split('_')[1] ) - parseInt(b.key.split('_')[1]),
+                    sortOrder: "descend",
                     filterDropdown: (
                         <div className="custom-filter-dropdown">
                           <Input
@@ -303,8 +303,8 @@ onWorkClassChange = s => {
                   </div>
                 ),
                 filterIcon: <Icon type="filter"
-                                  style={{color: (search.workDate.dbeg || search.workDate.dend) ? '#ff9800' : '#aaa'}}/>,
-                render: obj => obj && obj.value
+                                 c style={{color: (search.workDate.dbeg || search.workDate.dend) ? '#ff9800' : '#aaa'}}/>,
+                render: obj =>{return obj && obj.value}
               },
               {
                 key: 'acceptanceDate',

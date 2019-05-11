@@ -113,6 +113,7 @@ class WorksPropertyForm extends Component {
           component={ renderSelectVirt }
           label={workRegFund.name[lng]}
           optionHeight={40}
+          disabled
           formItemLayout={{
             labelCol: { span: 10 },
             wrapperCol: { span: 14 }

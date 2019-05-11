@@ -437,6 +437,10 @@ export const getObjVer_new = objId => {
 export const getValueOfMultiText = (objId, props) =>
     axios.General.getValueOfMultiText(objId, props);
 
+export const getIdGetObj = (objId, dimObjConst) =>
+    axios.General.getIdGetObj(objId, dimObjConst);
+
+
 export const saveValueOfMultiText = (objId, props, dte) =>
     axios.General.saveValueOfMultiText(objId, props, dte);
 
@@ -545,7 +549,10 @@ export const getValuesOfObjsWithProps = fd =>
 
 
 //////////////////////////////////////////// WORKS ////////////////////////////////////////////
-
+export const getAct1 = idWork=>
+    axios.Works.getAct1(idWork);
+export const lightToDestroy = idWork=>
+axios.Works.lightToDestroy(idWork);
 export const rabota1 = idWork =>
     axios.Works.rabota1(idWork);
 

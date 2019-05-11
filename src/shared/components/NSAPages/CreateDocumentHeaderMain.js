@@ -155,10 +155,10 @@ class CreateDocumentHeaderMain extends React.Component{
               >
                 не установлен
               </Checkbox>
-              <Input 
+              <Input
                 disabled={this.state.record.parent !== '0'}
                 placeholder="Фамилия Имя Отчество" 
-                value={this.state.record.documentAuthor}
+                value={this.state.record.documentAuthor ? this.state.record.documentAuthor.value : ''}
                 onChange={(e) => this.onChange(e.target.value, 'documentAuthor')}
               />
             </FormItem>        
@@ -178,7 +178,7 @@ class CreateDocumentHeaderMain extends React.Component{
               <Input 
                 disabled={this.state.record.parent !== '0'}
                 placeholder="Наименование" 
-                value={this.state.record.addressee}
+                value={this.state.record.addressee ? this.state.record.addressee.value : ''}
                 onChange={(e) => this.onChange(e.target.value, 'addressee')}
               />
             </FormItem>        
@@ -197,7 +197,7 @@ class CreateDocumentHeaderMain extends React.Component{
                 disabled={this.state.record.parent !== '0'}
                 autosize={{minRows:2,maxRows:4}}
                 placeholder="" 
-                value={this.state.record.question}
+                value={this.state.record.question ? this.state.record.question.value : ''}
                 onChange={(e) => this.onChange(e.target.value, 'question')}
               />
             </FormItem>        
@@ -215,7 +215,7 @@ class CreateDocumentHeaderMain extends React.Component{
               <Input 
                 disabled={this.state.record.parent !== '0'}
                 placeholder="" 
-                value={this.state.record.event}
+                value={this.state.record.event ? this.state.record.event.value : ''}
                 onChange={(e) => this.onChange(e.target.value, 'event')}
               />
             </FormItem>        
@@ -233,7 +233,7 @@ class CreateDocumentHeaderMain extends React.Component{
               <Input 
                 disabled={this.state.record.parent !== '0'}
                 placeholder="" 
-                value={this.state.record.person}
+                value={this.state.record.person ? this.state.record.person.value : ''}
                 onChange={(e) => this.onChange(e.target.value, 'person')}
               />
             </FormItem>        

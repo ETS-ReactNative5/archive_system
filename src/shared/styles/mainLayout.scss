@@ -6,17 +6,18 @@
   overflow-x: hidden;
 }
 
-.ant-form-item-label{
+.ant-form-item-label {
   white-space: normal;
   text-align: left;
   line-height: 17px;
 }
 
-
 .main-content {
   display: flex;
 }
-
+.upp-case{
+  text-transform: uppercase;
+}
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -47,4 +48,44 @@
       text-decoration: none;
     }
   }
+}
+
+.text-center {
+  text-align: center;
+}
+
+.underlined {
+  border-bottom: 1px solid #000000;
+}
+
+.w-845 {
+  width: 845px !important;
+}
+
+.act_print {
+  width: 794px;
+  margin: 0 auto;
+  .ant-row {
+    padding: 5px 0;
+    font-size: 14px;
+    line-height: 24px;
+  }
+  h1,h2{
+    font-weight: bold;
+  }
+}
+
+.irrDamageDiv .ant-table-wrapper {
+  min-height: 105px;
+}
+
+.mb-4 {
+  margin-bottom: 40px;
+}
+
+@media print {
+  .printHide {
+    visibility: hidden;
+  }
+  
 }

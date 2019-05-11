@@ -277,6 +277,7 @@ class InquiryReqs extends React.Component {
       obj.doItem = res.data.idItemDO;
       this.createNewWork(obj);
       return this.saveProps(
+
         {cube, obj},
         v,
         this.props.tofiConstants
@@ -329,10 +330,10 @@ class InquiryReqs extends React.Component {
           ( item.key.toLowerCase().includes(filter.nameResearchers.toLowerCase()) ) &&
         (filter.researchTypeClass.length === 0 || filter.researchTypeClass.some(p => (p.researchTypeClass == item.researchTypeClass))) &&
         ( !filter.workDate.dbeg || moment(item.workDate && item.workDate.value).isSameOrAfter(filter.workDate.dbeg, 'day') ) &&
-        ( !filter.workDate.dend || moment(item.workDate && item.workDate.value).isSameOrAfter(filter.workDate.dend, 'day') ) &&
+        ( !filter.workDate.dend || moment(item.workDate && item.workDate.value).isSameOrBefore(filter.workDate.dend, 'day') ) &&
         ( !filter.workEndDate.dbeg || moment(item.workEndDate && item.workEndDate.value).isSameOrAfter(filter.workEndDate.dbeg, 'day') ) &&
         ( !filter.workEndDate.dend || moment(item.workEndDate && item.workEndDate.value).isSameOrBefore(filter.workEndDate.dend, 'day') ) &&
-        ( !filter.workPlannedEndDate.dbeg || moment(item.workPlannedEndDate && item.workPlannedEndDate.value).isSameOrBefore(filter.workPlannedEndDate.dbeg, 'day') ) &&
+        ( !filter.workPlannedEndDate.dbeg || moment(item.workPlannedEndDate && item.workPlannedEndDate.value).isSameOrAfter(filter.workPlannedEndDate.dbeg, 'day') ) &&
         ( !filter.workPlannedEndDate.dend || moment(item.workPlannedEndDate && item.workPlannedEndDate.value).isSameOrBefore(filter.workPlannedEndDate.dend, 'day') )
       )
     });
@@ -366,9 +367,8 @@ class InquiryReqs extends React.Component {
                     title: t('ID'),
                     dataIndex: 'key',
                     width: '6%',
-                    render: key => {return key} ,
-                    sortOrder:'descend',
-                    sorter: (a, b) => parseInt(a.key) - parseInt(b.key),
+                    render: key =>  key  ,
+                    sorter: (a, b) => parseInt(a.key.split('_')[1]) - parseInt(b.key.split('_')[1]),
                     filterDropdown: (
                         <div className="custom-filter-dropdown">
                           <Input
@@ -449,14 +449,14 @@ class InquiryReqs extends React.Component {
                     <div className="flex">
                       <DatePicker
                         format="DD-MM-YYYY"
-                        value={this.state.filter.workPlannedEndDate.value}
+                        value={this.state.filter.workPlannedEndDate.dbeg}
                         style={{marginRight: '16px'}}
                         showToday={false}
                         onChange={this.onDateChange('workPlannedEndDate', 'dbeg')}
                       />
                       <DatePicker
                         format="DD-MM-YYYY"
-                        value={this.state.filter.workPlannedEndDate.value}
+                        value={this.state.filter.workPlannedEndDate.dend}
                         showToday={false}
                         onChange={this.onDateChange('workPlannedEndDate', 'dend')}
                       />
@@ -490,14 +490,14 @@ class InquiryReqs extends React.Component {
                     <div className="flex">
                       <DatePicker
                         format="DD-MM-YYYY"
-                        value={this.state.filter.workEndDate.value}
+                        value={this.state.filter.workEndDate.dbeg}
                         style={{marginRight: '16px'}}
                         showToday={false}
                         onChange={this.onDateChange('workEndDate', 'dbeg')}
                       />
                       <DatePicker
                         format="DD-MM-YYYY"
-                        value={this.state.filter.workEndDate.value}
+                        value={this.state.filter.workEndDate.dend}
                         showToday={false}
                         onChange={this.onDateChange('workEndDate', 'dend')}
                       />

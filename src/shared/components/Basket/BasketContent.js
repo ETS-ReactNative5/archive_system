@@ -259,7 +259,10 @@ class BasketContent extends React.PureComponent {
                             key: 'archiveCipher',
                             title: archiveCipher.name[this.lng],
                             dataIndex: 'archiveCipher',
-                            width: '15%'
+                            width: '15%',
+                            render: (text, record) => {
+                                return (record.archiveCipher ? record.archiveCipher.value  : '')
+                            },
                         },
                         {
                             key: 'name',
@@ -272,13 +275,19 @@ class BasketContent extends React.PureComponent {
                             key: 'caseDbeg',
                             title: caseDbeg.name[this.lng],
                             dataIndex: 'caseDbeg',
-                            width: '10%'
+                            width: '10%',
+                            render: (obj, key) => {
+                                return (key.caseDbeg ? key.caseDbeg.value  : '')
+                            },
                         },
                         {
                             key: 'caseDend',
                             title: caseDend.name[this.lng],
                             dataIndex: 'caseDend',
-                            width: '10%'
+                            width: '10%',
+                            render: (obj, key) => {
+                                return (key.caseDend? key.caseDend.value  : '')
+                            },
                         },
                         {
                             key: 'caseThemes',

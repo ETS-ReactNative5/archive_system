@@ -68,7 +68,6 @@ class ResearcherCabinet extends React.Component {
   };
 
   onCreateObj = async ({cube, obj}, v) => {
-    debugger;
     let hideCreateObj;
     try {
       hideCreateObj = message.loading(this.props.t('CREATING_NEW_OBJECT'), 0);

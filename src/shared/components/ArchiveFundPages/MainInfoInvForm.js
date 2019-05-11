@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {Button, Form} from 'antd';
 import {Field, reduxForm, formValueSelector} from 'redux-form';
 import {
@@ -18,7 +18,7 @@ import {isEqual, pickBy} from 'lodash';
 import {required, requiredArr, requiredDate, requiredLabel, requiredLng} from '../../utils/form_validations';
 
 /*eslint eqeqeq:0*/
-class MainInfoFundForm extends Component {
+class MainInfoFundForm extends React.Component {
 
     constructor(props) {
         super(props);
@@ -348,7 +348,7 @@ class MainInfoFundForm extends Component {
                     }
                     validate={requiredLng}
                 />}
-                {invCont && (
+                {invCont &&
                     <Field
                         name="invCont"
                         component={renderCheckbox}
@@ -360,7 +360,7 @@ class MainInfoFundForm extends Component {
                             wrapperCol: {span: 14}
                         }}
                     />
-                )}
+                }
                 <Field
                     name="name"
                     component={renderInputLang}
@@ -437,25 +437,23 @@ class MainInfoFundForm extends Component {
                     colon
                     validate={requiredLabel}
                 />}
-                {invDates && <Field
-                    name='invDates'
-                    component={renderTaggedSelect}
-                    label={invDates.name[this.lng]}
-                    format={val => {
-                        return (val && val.map(it => it.value ? it.value.value : ''))
-                    }}
-                    //parse={val => {debugger; val && val.map(str => ({value: str, mode: 'ins'}))}}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                    normalize={this.taggedSelectToRedux}
+                {/*{invDates && <Field*/}
+                    {/*name='invDates'*/}
+                    {/*component={renderInput}*/}
+                    {/*label={invDates.name[this.lng]}*/}
 
-                    colon={true}
-                    required={requiredArr}
-                />}
+                    {/*// //parse={val => {debugger; val && val.map(str => ({value: str, mode: 'ins'}))}}*/}
+                    {/*formItemLayout={*/}
+                        {/*{*/}
+                            {/*labelCol: {span: 10},*/}
+                            {/*wrapperCol: {span: 14}*/}
+                        {/*}*/}
+                    {/*}*/}
+                    {/*normalize={this.}*/}
+
+                     {/*colon={true}*/}
+                     {/*required={requiredArr}*/}
+                {/*/>}*/}
                 {fundFeature && <Field
                     name="fundFeature"
                     component={renderSelect}

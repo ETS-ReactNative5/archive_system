@@ -710,8 +710,7 @@ options = {}) {
        }
     }
 
-    console.log(testObj);
-    
+
 
     const files = {...testObj};
 
@@ -747,23 +746,61 @@ options = {}) {
     }];
 
     function buildProps(val, key) {
-
          const propMetaData = getPropMeta(cube.data["dp_" + tofiConstants[cube.dpConst].id], tofiConstants[key]);
+        if (propMetaData === undefined){
+            if(!!tofiConstants[key]){
+                let idPropitem = tofiConstants[key].id
+                let props =cube.data["dp_" + tofiConstants[cube.dpConst].id].find(el => el.propItem === idPropitem)
+                let propcConst
+                for (let keys in tofiConstants){
+                    if(tofiConstants[keys].id === props.prop){
+                        propcConst = keys
+                        break
+                    }
 
+                }
+
+                if (!!idPropitem && !!props && !!propcConst){
+                    if (!!val.value){
+
+                    }else {
+                        val.mode= "del"
+                    }
+                    return {
+                        propConst: propcConst,
+                        propItemConst:key,
+                        val: val.value,
+                        idDataPropVal: val.idDataPropVal,
+                        typeProp: String(props.typeProp),
+                        periodDepend: String(props.periodDepend),
+                        isUniq: String(props.isUniq),
+                        //periodType: periodType,
+                        //dBeg: dBeg,
+                        //dEnd: dEnd,
+                        mode: val.mode ? val.mode : val.idDataPropVal ? 'upd' : 'ins'
+                    }
+                }
+            }
+
+        }
         let value = val;
         try {
-            if (propMetaData.isUniq===1 && (propMetaData.typeProp === 315 || propMetaData.typeProp === 311 || propMetaData.typeProp === 317))
+            if (propMetaData.isUniq===1 && (propMetaData.typeProp === 315 || propMetaData.typeProp === 311 || propMetaData.typeProp === 317)) {
+
+                if (!!val.value) {
+
+                } else {
+                    val.mode = "del"
+                }
                 value = {
                     kz: !!val.valueLng.kz ? val.valueLng.kz : val.value,
                     ru: !!val.valueLng.ru ? val.valueLng.ru : val.value,
                     en: !!val.valueLng.en ? val.valueLng.en : val.value
                 };
+            }
             if (propMetaData.isUniq===2 && propMetaData.typeProp===315){
-                debugger
                 let values = []
-
                 for (let item of value){
-
                     let mode =""
                     if (!!item.value.idDataPropVal && !!item.value.value ){
                         mode="upd"
@@ -795,14 +832,27 @@ options = {}) {
 
             }
             if ((propMetaData.typeProp === 11 || propMetaData.typeProp === 41) && (propMetaData.isUniq==1)) {
-                value = !!val.value ? String(val.value):val;
+
+                value = !!val.value ? String(val.value):String(val);
+                if (!!value){
+
+                }else{
+                    val.mode= "del"
+                }
             }
             if(propMetaData.typeProp === 312){
+
                 if(val instanceof  moment){
                     value = val.value? moment(val.value).format('YYYY-MM-DD'):moment(val).format('YYYY-MM-DD')
-                }else {
-                    value= val.value? moment(val.value,'DD-MM-YYYY').format('YYYY-MM-DD'):moment(val,'DD-MM-YYYY').format('YYYY-MM-DD')
 
+                }else {
+                    value= val.value? moment(val.value,'DD-MM-YYYY').format('YYYY-MM-DD'): val[2]=='-' ? moment(val,'DD-MM-YYYY').format('YYYY-MM-DD') : val
+
+                }
+                if (!!value){
+
+                }else{
+                    val.mode= "del"
                 }
             }
             if (((propMetaData.typeProp === 11) && (propMetaData.isUniq==2)) || ((propMetaData.typeProp === 41) && (propMetaData.isUniq==2))) {
@@ -810,10 +860,21 @@ options = {}) {
                 var idDpvMulti=val.map(el=>{return !!el.idDataPropVal ? el.idDataPropVal :''});
                 value = valuesStrMulti.join(',');
                 val.idDataPropVal=idDpvMulti;
+                if (!!value){
+
+                }else{
+                    val.mode= "del"
+                }
             }
 
             if(propMetaData.typeProp === 21){
+
                  value=val && val.value;
+                if (!!value){
+
+                }else{
+                    val.mode= "del"
+                }
             }
 
         } catch(e) {

@@ -73,7 +73,7 @@ class CabinetCard extends React.PureComponent {
     } else if(workType && workType.workTypeClass === 'orderCopyDoc'){
       // if it is child request
       this.setState({ docs: []});
-      if(!docsResearch.length) return;
+      if(!(docsResearch ? docsResearch.length : '')) return;
       this.setState({ loadingDocs: true });
       const fd = new FormData();
       fd.append('ids', docsResearch.map(o => o.value).join(','));

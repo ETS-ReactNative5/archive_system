@@ -1049,6 +1049,7 @@ class CreateDocument extends React.Component {
     };
 
     onEditRecordChange = (label, data) => {
+        debugger;
         const {changedRow, selectedRow} = this.state;
         if (typeof label !== 'string' && label.documentFile) {
             changedRow.documentFile = label.documentFile;
@@ -1064,7 +1065,10 @@ class CreateDocument extends React.Component {
                     changedRow.linkToObzor = data;
                     break;
                 default:
-                    changedRow[label] = data;
+                    changedRow[label].value = data
+                    changedRow[label].valueLng.ru = data
+                    changedRow[label].valueLng.kz = data
+                    changedRow[label].valueLng.en = data;
             }
         }
         this.setState({
@@ -1123,7 +1127,6 @@ class CreateDocument extends React.Component {
     }
 
     renderSelectColumns(text, record, column) {
-        debugger;
         const {clsPutev, clsKatalog, clsUkaz, clsObzor} = this.props.tofiConstants;
         const referenceTypes = [clsPutev, clsKatalog, clsUkaz, clsObzor];
         return (

@@ -491,7 +491,8 @@ class Works extends React.PureComponent {
                         }
                     })
                 } else if (name === 'permitionDate') {
-                    this.saveProps({obj}, {
+                     this.saveProps({obj}, {
+
                         values: {
                             [mappedStatus]: {value: this.props.tofiConstants.issued.id,idDataPropVal:target[mappedStatus].idDataPropVal},
                             permitionDate: moment().format('YYYY-MM-DD')

@@ -633,7 +633,8 @@ class ArchiveFundWorks extends React.PureComponent {
                                                 pathname: `/archiveFund/works/accounting/${target.workRegFund.value}_${target.workRegInv ? target.workRegInv.value : ''}`,
                                                 state: {
                                                     workId: key,
-                                                    data: res.data
+                                                    data: res.data ,
+                                                    stateRecord
                                                 }
                                             })
                                         }
@@ -649,7 +650,8 @@ class ArchiveFundWorks extends React.PureComponent {
                                                 pathname: `/archiveFund/works/expertize/${target.workRegFund.value}_${target.workRegInv ? target.workRegInv.value : ''}`,
                                                 state: {
                                                     workId: key,
-                                                    data: res.data
+                                                    data: res.data,
+                                                    stateRecord
                                                 }
                                             })
                                         }
@@ -699,7 +701,8 @@ class ArchiveFundWorks extends React.PureComponent {
                                     state: {
                                         workId: key,
                                         data: res.data,
-                                        workIndexNumber: target.workIndexNumber
+                                        workIndexNumber: target.workIndexNumber,
+                                        stateRecord
                                     }
                                 })
                             }
@@ -716,7 +719,8 @@ class ArchiveFundWorks extends React.PureComponent {
                                     state: {
                                         workId: key,
                                         data: res.data,
-                                        workIndexNumber: target.workIndexNumber
+                                        workIndexNumber: target.workIndexNumber,
+                                        stateRecord
                                     }
                                 })
                             }
@@ -1471,7 +1475,7 @@ class ArchiveFundWorks extends React.PureComponent {
                                 title={record.workType.workTypeClass === 'casesForTemporaryUse' ? t("GET_BACK") : t("COMPLETE")}
                                 icon={record.workType.workTypeClass === 'casesForTemporaryUse' ? "sync" : "poweroff"}
                                 disabled={!record.workActualStartDate}
-                                onClick={this.addSpecialDate(record.key, 'workActualEndDate')}
+                                onClick={this.addSpecialDate(record.key, 'workActualEndDate',record)}
                                 className='green-btn'
                                 />}
                                 {/*<Button title="CANCEL" icon="close" onClick={this.addSpecialDate(record.key, 'workActualEndDate')} className='green-btn'/>*/}
@@ -1532,11 +1536,11 @@ class ArchiveFundWorks extends React.PureComponent {
                                 <Button disabled={!record.workActualEndDate}
                                         title={record.workType.workTypeClass === 'caseSearch' ? t('FOUND') : t("ACCEPT")}
                                         icon="check-circle" className='green-btn'
-                                        onClick={this.addSpecialDate(record.key, 'acceptanceDate')}/>
+                                        onClick={this.addSpecialDate(record.key, 'acceptanceDate',record)}/>
                                 <Button disabled={!record.workActualEndDate}
                                         title={record.workType.workTypeClass === 'caseSearch' ? t('NOT_FOUND') : t("DECLINE")}
                                         icon="close"
-                                        onClick={this.addSpecialDate(record.key, 'notAccepted')}
+                                        onClick={this.addSpecialDate(record.key, 'notAccepted',record)}
                                         className='green-btn'/>
                             </div>
                             )

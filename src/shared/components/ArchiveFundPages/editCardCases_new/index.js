@@ -46,6 +46,7 @@ class EditCardCases extends React.Component {
         selectedRow: {},
         filter: {
             name: '',
+            fundFeature: [],
             fundNumber: '',
             caseDbeg: {
                 dbeg: null,
@@ -86,7 +87,7 @@ class EditCardCases extends React.Component {
                     concatType: "and",
                     conds: [
                         {
-                            consts: "section,fundNumber,fundIndex,caseDbeg,caseDend,caseStructuralSubdivision,caseNotes,documentFile,caseNumberOfPages,structuralSubdivisionList,caseDocsLang,irreparablyDamaged,caseOCD,caseInsurance,caseFundOfUse,caseStorage,rack,shelf,propAuthenticity,fundFeature,caseDateOfDeposit,documentFile,dateForming,linkToKatalog,linkToUkaz,linkToObzor,surnameOriginator,uprDocType,storageUnitType,caseNomenItem,accountingUnitType,numberOfOriginals,compositionOfTextDocumentation,storageUnitQuantity,documentAuthor,addressee,question,terrain,documentDate,dateAccuracy,inaccurateDateFeature,day,month,year,typeOfPaperCarrier,objectCode,projectName,projectStage,projectPartName,volumeNumber,yearOfCompletion,accountingUnitNumber,authorTitle,cameraOperator,artistOfTheWork,dateOfRecording,timingOfVideoRecording,TypeAndFormatOfRecording,numberOfVideoItems,original,copy,shootingDate,shootPlace,movieVariant,formatAndBase,numberOfMovieItems,movieNegative,doubleNegative,phonogramNegative,phonogramMagnetic,intermediatePositive,positive,colorPassports,playingTime,mainContent,genre,eventLocation,firstLine,initialsOfAuthors,initialsOfTranslators,manufactureDate,manufacturePlace,serialNumber,numberOfPhonoItems,gremoriginal,gramplastine,recordPlace,soundingSpeed,magneticTapeType,photoDescription,documentShootAuthor,numberOfPhotoPrints,externalFeatures,productionNumber,numberOfPhotoItems,photoNegative,photoDoubleNegative,photoPositive,photocast,slide,filmStrip,terrain,electronicDocumentsFormat,personLastName,personName,personPatronymic,publicPositionOfPerson,propNationality,documentLanguage,documentPlaybackMethod"
+                            consts: "section,bunchCases,fundNumber,fundIndex,caseDbeg,caseDend,caseStructuralSubdivision,caseNotes,documentFile,caseNumberOfPages,structuralSubdivisionList,caseDocsLang,irreparablyDamaged,caseOCD,caseInsurance,caseFundOfUse,caseStorage,rack,shelf,propAuthenticity,fundFeature,caseDateOfDeposit,documentFile,dateForming,linkToKatalog,linkToUkaz,linkToObzor,surnameOriginator,uprDocType,storageUnitType,caseNomenItem,accountingUnitType,numberOfOriginals,compositionOfTextDocumentation,storageUnitQuantity,documentAuthor,addressee,question,terrain,documentDate,dateAccuracy,inaccurateDateFeature,day,month,year,typeOfPaperCarrier,objectCode,projectName,projectStage,projectPartName,volumeNumber,yearOfCompletion,accountingUnitNumber,authorTitle,cameraOperator,artistOfTheWork,dateOfRecording,timingOfVideoRecording,TypeAndFormatOfRecording,numberOfVideoItems,original,copy,shootingDate,shootPlace,movieVariant,formatAndBase,numberOfMovieItems,movieNegative,doubleNegative,phonogramNegative,phonogramMagnetic,intermediatePositive,positive,colorPassports,playingTime,mainContent,genre,eventLocation,firstLine,initialsOfAuthors,initialsOfTranslators,manufactureDate,manufacturePlace,serialNumber,numberOfPhonoItems,gremoriginal,gramplastine,recordPlace,soundingSpeed,magneticTapeType,photoDescription,documentShootAuthor,numberOfPhotoPrints,externalFeatures,productionNumber,numberOfPhotoItems,photoNegative,photoDoubleNegative,photoPositive,photocast,slide,filmStrip,terrain,electronicDocumentsFormat,personLastName,personName,personPatronymic,publicPositionOfPerson,propNationality,documentLanguage,documentPlaybackMethod"
                         }
                     ]
                 }
@@ -124,7 +125,7 @@ class EditCardCases extends React.Component {
     }
 
     renderTableData = item => {
-        const constArr = ["section","fundNumber","fundIndex","caseDbeg","caseDend","caseStructuralSubdivision","caseNotes","documentFile","caseNumberOfPages","structuralSubdivisionList","caseDocsLang","irreparablyDamaged","caseOCD","caseInsurance","caseFundOfUse","caseStorage","rack","shelf","propAuthenticity","fundFeature","caseDateOfDeposit","documentFile","dateForming","linkToKatalog","linkToUkaz","linkToObzor","surnameOriginator","uprDocType","storageUnitType","caseNomenItem","accountingUnitType","numberOfOriginals","compositionOfTextDocumentation","storageUnitQuantity","documentAuthor","addressee","question","terrain","documentDate","dateAccuracy","inaccurateDateFeature","day","month","year","typeOfPaperCarrier","objectCode","projectName","projectStage","projectPartName","volumeNumber","yearOfCompletion","accountingUnitNumber","authorTitle","cameraOperator","artistOfTheWork","dateOfRecording","timingOfVideoRecording","TypeAndFormatOfRecording","numberOfVideoItems","original","copy","shootingDate","shootPlace","movieVariant","formatAndBase","numberOfMovieItems","movieNegative","doubleNegative","phonogramNegative","phonogramMagnetic","intermediatePositive","positive","colorPassports","playingTime","mainContent","genre","eventLocation","firstLine","initialsOfAuthors","initialsOfTranslators","manufactureDate","manufacturePlace","serialNumber","numberOfPhonoItems","gremoriginal","gramplastine","recordPlace","soundingSpeed","magneticTapeType","photoDescription","documentShootAuthor","numberOfPhotoPrints","externalFeatures","productionNumber","numberOfPhotoItems","photoNegative","photoDoubleNegative","photoPositive","photocast","slide","filmStrip","terrain","electronicDocumentsFormat","personLastName","personName","personPatronymic","publicPositionOfPerson","propNationality","documentLanguage","documentPlaybackMethod"]
+        const constArr = ["section","bunchCases","fundNumber","fundIndex","caseDbeg","caseDend","caseStructuralSubdivision","caseNotes","documentFile","caseNumberOfPages","structuralSubdivisionList","caseDocsLang","irreparablyDamaged","caseOCD","caseInsurance","caseFundOfUse","caseStorage","rack","shelf","propAuthenticity","fundFeature","caseDateOfDeposit","documentFile","dateForming","linkToKatalog","linkToUkaz","linkToObzor","surnameOriginator","uprDocType","storageUnitType","caseNomenItem","accountingUnitType","numberOfOriginals","compositionOfTextDocumentation","storageUnitQuantity","documentAuthor","addressee","question","terrain","documentDate","dateAccuracy","inaccurateDateFeature","day","month","year","typeOfPaperCarrier","objectCode","projectName","projectStage","projectPartName","volumeNumber","yearOfCompletion","accountingUnitNumber","authorTitle","cameraOperator","artistOfTheWork","dateOfRecording","timingOfVideoRecording","TypeAndFormatOfRecording","numberOfVideoItems","original","copy","shootingDate","shootPlace","movieVariant","formatAndBase","numberOfMovieItems","movieNegative","doubleNegative","phonogramNegative","phonogramMagnetic","intermediatePositive","positive","colorPassports","playingTime","mainContent","genre","eventLocation","firstLine","initialsOfAuthors","initialsOfTranslators","manufactureDate","manufacturePlace","serialNumber","numberOfPhonoItems","gremoriginal","gramplastine","recordPlace","soundingSpeed","magneticTapeType","photoDescription","documentShootAuthor","numberOfPhotoPrints","externalFeatures","productionNumber","numberOfPhotoItems","photoNegative","photoDoubleNegative","photoPositive","photocast","slide","filmStrip","terrain","electronicDocumentsFormat","personLastName","personName","personPatronymic","publicPositionOfPerson","propNationality","documentLanguage","documentPlaybackMethod"]
 
         const result = {
             key: item.id,
@@ -245,7 +246,9 @@ class EditCardCases extends React.Component {
         };
         return <CardCase {...params}/>
     }
-
+    onFundFeatureChange = s => {
+        this.setState({ filter: { ...this.state.filter, fundFeature: s } });
+    };
     render() {
         if (isEmpty(this.props.tofiConstants)) return null;
         const {
@@ -264,6 +267,8 @@ class EditCardCases extends React.Component {
                 ( !filter.caseDbeg.dbeg || moment(item.caseDbeg.value).isSameOrAfter(moment(filter.caseDbeg.dbeg).format("DD-MM-YYYY"), 'day') ) &&
                 ( !filter.caseDbeg.dend || moment(item.caseDbeg.value).isSameOrBefore(moment(filter.caseDbeg.dend).format("DD-MM-YYYY"), 'day') ) &&
                 ( !filter.caseDend.dbeg || moment(item.caseDend.value).isSameOrAfter(moment(filter.caseDend.dbeg).format("DD-MM-YYYY"), 'day') ) &&
+                (filter.fundFeature.length === 0 ||filter.fundFeature.some(p => item.fundFeature && p.value == item.fundFeature.value)) &&
+
                 ( !filter.caseDend.dend || moment(item.caseDend.value).isSameOrBefore(moment(filter.caseDend.dend).format("DD-MM-YYYY"), 'day') )
             )
         });
@@ -271,7 +276,7 @@ class EditCardCases extends React.Component {
         return (
             <div className="EditCardCases">
                 <div className="table-header">
-                    <Button icon="printer">{t('REPORTS')}</Button>
+                    {/*<Button icon="printer">{t('REPORTS')}</Button>*/}
                     <Link to={{
                         pathname: `/archiveFund/editFundCard/${this.props.match.params.idFundCard}/${this.props.match.params.idInventCard}/${selectedRow.key}`,
                         state: {
@@ -325,8 +330,8 @@ class EditCardCases extends React.Component {
                             name="fundFeature"
                             isMulti
                             isSearchable={false}
-                            value={this.state.fundFeature}
-                            onChange={this.onSelectChange('fundFeature')}
+                            value={filter.fundFeature}
+                            onChange={this.onFundFeatureChange}
                             isLoading={this.state.fundFeatureLoading}
                             options={fundFeatureOptions ? fundFeatureOptions.map(option => ({
                                 value: option.id,

@@ -194,7 +194,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
     renderTableFooter = () => {
         return (
             <div className="table-footer">
-                <Button onClick={this.changeSelectedButton}>Добавить дело</Button>
+                <Button onClick={this.openCard}>Добавить дело</Button>
                 <Button onClick={this.openModal}>{this.props.t('SAVE_TEMPORARY_STATE')}</Button>
                 <Link to="/archiveFund/works"><Button>{this.props.t('CANCEL')}</Button></Link>
                 <Button onClick={() => this.sendAddedWorks('complete')}>{this.props.t('COMPLETE')}</Button>
@@ -203,10 +203,8 @@ class ArchiveFundWorksChecking extends React.PureComponent {
     };
 
     componentDidMount() {
-
         if (this.props.location && this.props.location.state && this.props.location.state.data) {
             this.setState({data: this.props.location.state.data.map(this.renderTableData)});
-
             const fd = new FormData();
             const datas = [{
                 objs: `${this.props.match.params.fund.split('_')[0]}`,
@@ -223,32 +221,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
                     }
                 }).catch(err => {
                 console.error(err);
-            })
-            const filters = {
-                filterDOAnd: [
-                    {
-                        dimConst: DO_FOR_CASE,
-                        concatType: "and",
-                        conds: [
-                            {
-                                //ids: '1007_144376'
-                                data: {
-                                    valueRef: {
-                                        id: "1006_2383812"
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                ]
-            };
-            this.setState({loading: true});
-            this.props.getCube(CUBE_FOR_AF_CASE, JSON.stringify(filters))
-                .then(() => this.setState({loading: false}))
-                .catch(err => {
-                    console.error(err);
-                    this.setState({loading: false})
-                })
+            });
         }
     }
 
@@ -265,10 +238,31 @@ class ArchiveFundWorksChecking extends React.PureComponent {
             openCard: true,
             selectedRow: rec,
             selectedWorks:this.props.location.state.stateRecord
-
         })
 
     };
+    updateCase=()=>{
+        if (this.props.location && this.props.location.state && this.props.location.state.data) {
+            this.setState({data: this.props.location.state.data.map(this.renderTableData)});
+            const fd = new FormData();
+            const datas = [{
+                objs: `${this.props.match.params.fund.split('_')[0]}`,
+                propConsts: "caseNumber,fundIndex"
+            }, {objs: `${this.props.match.params.fund.split('_')[1]}`, propConsts: "invNumber"}];
+            fd.append('datas', JSON.stringify(datas));
+            getValuesOfObjsWithProps(fd)
+                .then(res => {
+                    if (res.success) {
+                        const workRegFundNumber = res.data.find(obj => obj.id == this.props.match.params.fund.split('_')[0]).caseNumber[this.lng];
+                        const workRegFundIndex = res.data.find(obj => obj.id == this.props.match.params.fund.split('_')[0]).fundIndex[this.lng];
+                        const workRegInvNumber = res.data.find(obj => obj.id == this.props.match.params.fund.split('_')[1]).invNumber[this.lng];
+                        this.setState({workRegFundNumber, workRegFundIndex, workRegInvNumber})
+                    }
+                }).catch(err => {
+                console.error(err);
+            });
+        }
+    }
     changeSelectedButton = () => {
         this.setState({
             openCard: true,
@@ -276,42 +270,74 @@ class ArchiveFundWorksChecking extends React.PureComponent {
         })
 
     };
-
-    getRespCard(invType, docType) {
-        const {
-            invTypePerm,
-            uprDoc,
-            uprNTD,
-            invTypeVideo,
-            videoDoc,
-            invTypeDigital,
-            invTypeLS,
-            invTypeAlbum,
-            LSDoc,
-            invTypePhoto,
-            photoDoc,
-            invTypePhonoGram,
-            phonoDoc,
-            invTypeMovie,
-            movieDoc,
-            invTypePhonoMag
-        } = this.props.tofiConstants;
+    openCard=(invType, docType)=>{
+        this.setState({
+            openCard: true,
+            selectedRow:{},
+            selectedWorks:this.props.location.state.stateRecord,
+            stateRecord:this.state.selectedWorks
+        });
         const params = {
             t: this.props.t,
-            initialValues: this.state.selectedRow,
-            stateRecord:this.state.selectedWorks,
-            saveProps: this.onCreateObj,
-            tofiConstants: this.props.tofiConstants
+            saveProps: this.saveProps,
+            initialValues:{},
+            tofiConstants: this.props.tofiConstants,
+            invType: invType,
+            docType: docType,
+            onCreateObj:this.onCreateObj,
         };
-        switch (true) {
-            case invType == invTypeLS.id && docType == LSDoc.id:
-                return <CardCase_invTypeLS_LSDoc {...params} />;
-            default:
-                return <CardCase_invTypeLS_LSDoc {...params} />;
-        }
-    }
+        return <CardCase_invTypeLS_LSDoc
+            {...params} />;
 
-    saveProps = async (c, v, t = this.props.tofiConstants, objData) => {
+    }
+    getRespCard(invType, docType) {
+          const params = {
+              t: this.props.t,
+              saveProps: this.saveProps,
+              initialValues: this.state.selectedRow,
+              tofiConstants: this.props.tofiConstants,
+              stateRecord:this.state.selectedWorks,
+              invType: invType,
+              docType: docType,
+              onCreateObj:this.onCreateObj,
+          };
+          return <CardCase_invTypeLS_LSDoc {...params} />;
+
+    }
+    onCreateObj = ({name, documentFile,  ...values}) => {
+        const cube = {
+            cubeSConst: CUBE_FOR_AF_CASE
+        };
+        const obj = {
+            name: name,
+            fullName: name,
+            clsConst: 'caseList',
+
+        };
+        let newVal = {
+            values,
+            oFiles:{
+                documentFile
+            }
+        }
+        const hideCreateObj = message.loading(this.props.t('CREATING_NEW_OBJECT'), 0);
+        return createObj(cube, obj)
+            .then(res => {
+                hideCreateObj();
+                if (res.success) {
+                    return this.saveProps({},newVal,this.props.tofiConstants,{}, res.data.idItemDO, {})
+                } else {
+                    if (res.errors) {
+                        res.errors.forEach(err => {
+                            message.error(err.text)
+                        })
+                    }
+                }
+            }).catch(err => {
+                console.error(err)
+            })
+    }
+    saveProps = async (c, v, t = this.props.tofiConstants, objData, key) => {
         let hideLoading;
         try {
             if (!c.cube) c.cube = {
@@ -320,7 +346,9 @@ class ArchiveFundWorksChecking extends React.PureComponent {
                 dpConst: DP_FOR_CASE,
             };
             if (!c.cube.data) c.cube.data = this.props.CubeForAF_Case;
-            console.log(this.props.CubeForAF_Case);
+            c["obj"] = {
+                doItem: key
+            }
             hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
             const resSave = await onSaveCubeData(c, v, t, objData);
             hideLoading();
@@ -332,8 +360,9 @@ class ArchiveFundWorksChecking extends React.PureComponent {
                 return Promise.reject(resSave);
             }
             message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
-            /*this.setState({loading: true, openCard: false});
-             await this.getCubeAct();*/
+            this.setState({loading: true, openCard: false});
+            this.updateCase()
+
             return resSave;
         }
         catch (e) {
@@ -341,120 +370,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
             this.setState({loading: false});
             console.warn(e);
         }
-    };
-    onCreateObj = ({name, ...values}) => {
-        const cube = {
-            cubeSConst: CUBE_FOR_AF_CASE,
-        };
-
-        const obj = {
-            name: name,
-            fullName: name,
-            clsConst: 'caseList',
-
-        };
-        const objdata = {
-            name: name,
-            fullName: name,
-        };
-
-
-        const hideCreateObj = message.loading(this.props.t('CREATING_NEW_OBJECT'), 0);
-        return createObj(cube, obj)
-            .then(res => {
-                hideCreateObj();
-                if (res.success) {
-
-                    return this.onSaveCubeData(values ,res.data.idItemDO, objdata)
-                } else {
-                    if (res.errors) {
-                        res.errors.forEach(err => {
-                            message.error(err.text)
-                        })
-                    }
-                }
-            }).catch(err => {
-                console.error(err)
-            })
-    };
-
-    onSaveCubeData = ({caseInventory, ...values}, doItemProp, objDataProp) => {
-        const filters = {
-            filterDOAnd: [{
-                dimConst: 'doForCase',
-                concatType: 'and',
-                conds: [
-                    {
-                        data: {
-                            valueRef: {
-                                id: String("1006_2383812")
-                            }
-                        }
-                    }
-                ]
-            }]
-        };
-        let datas = [];
-        try {
-            datas = [{
-                own: [{doConst: DO_FOR_CASE, doItem: doItemProp, isRel: "0", objData: objDataProp}],
-                props: map(values, (val, key) => {
-                    const propMetaData = getPropMeta(this.props.CubeForAF_Case["dp_" + this.props.tofiConstants[DP_FOR_CASE].id], this.props.tofiConstants[key]);
-                    let value = val;
-                    if ((propMetaData.typeProp === 315 || propMetaData.typeProp === 311 || propMetaData.typeProp === 317) && typeof val === 'string') value = {
-                        kz: val,
-                        ru: val,
-                        en: val
-                    };
-                    if (val && typeof val === 'object' && val.value) value = String(val.value);
-                    if (val && typeof val === 'object' && val.mode) propMetaData.mode = val.mode;
-                    if (propMetaData.isUniq === 2 && val[0] && val[0].value) {
-                        propMetaData.mode = val[0].mode;
-                        value = val.map(v => String(v.value)).join(",");
-                    }
-                    return {
-                        propConst: key,
-                        val: value,
-                        typeProp: String(propMetaData.typeProp),
-                        periodDepend: String(propMetaData.periodDepend),
-                        isUniq: String(propMetaData.isUniq),
-                        mode: propMetaData.mode
-                    }
-                }),
-                periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
-            }];
-        } catch (err) {
-            console.error(err);
-            return Promise.reject();
-        }
-        const hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 30);
-        return updateCubeData(CUBE_FOR_AF_CASE, moment().format('YYYY-MM-DD'), JSON.stringify(datas), {}, {
-            caseInventory
-        })
-            .then(res => {
-                hideLoading();
-                if (res.success) {
-                    message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
-                    this.setState({loading: true});
-                    return this.props.getCube(CUBE_FOR_AF_CASE, JSON.stringify(filters))
-                        .then(() => {
-                            this.setState({loading: false, openCard: false});
-                            return {success: true}
-                        })
-                } else {
-                    message.error(this.props.t('PROPS_UPDATING_ERROR'));
-                    if (res.errors) {
-                        res.errors.forEach(err => {
-                            message.error(err.text);
-                        });
-                        return Promise.reject();
-                    }
-                }
-            })
-    };
-
-
-
+    }
     render() {
         if (isEmpty(this.props.tofiConstants)) return null;
 
@@ -572,7 +488,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
                             width: '10%',
                             className: 'td-center',
                             render: (text, record) => (
-                                <Checkbox checked={text} disabled={record.temporaryUse}
+                                <Checkbox checked={text} disabled
                                           onChange={e => this.onChange(e.target.checked, record.key, 'irreparablyDamaged')}/>
                             )
                         }

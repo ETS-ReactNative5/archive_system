@@ -284,6 +284,13 @@ export const General = {
     return axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getValueOfMultiText`, fd)
       .then(res => res.data)
   },
+    getIdGetObj: (objId, dimObjConst) => {
+        const fd = new FormData();
+        fd.append('objId', String(objId));
+        fd.append('dimObjConst', dimObjConst);
+        return axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getIdDimObj`, fd)
+            .then(res => res.data)
+    },
   // Saving value of Multi text props; They are send separately, because CubeS do not support them
   saveValueOfMultiText: (objId, props, dte) => {
     const fd = new FormData();
@@ -405,6 +412,18 @@ export const Works = {
     return axios.post(`/${localStorage.getItem('i18nextLng')}/rabotaUchet/rabotaAcc`, fd)
       .then(res => res.data)
   },
+    getAct1:idWork=>{
+        const fd= new FormData();
+        fd.append('idWork',idWork);
+        return axios.post(`/${localStorage.getItem('i18nextLng')}/rabotaUchet/getAct1`, fd)
+        .then(res => res.data)
+    },
+    lightToDestroy:idWork=>{
+        const fd= new FormData();
+        fd.append('idWork',idWork);
+        return axios.post(`/${localStorage.getItem('i18nextLng')}/rabotaUchet/LightToDestroy`, fd)
+        .then(res => res.data)
+    },
   // Заточенный апи для работ учета и хранения (проваливание) submit
   addDerivativeWorks: fd =>
     axios.post(`/${localStorage.getItem('i18nextLng')}/rabotaUchet/addDerivativeWorks`, fd)
@@ -446,3 +465,7 @@ export const ReadingRoom = {
       .then(res => res.data)
   }
 };
+
+
+
+

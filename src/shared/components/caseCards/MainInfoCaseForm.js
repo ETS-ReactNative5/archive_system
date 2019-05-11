@@ -53,12 +53,12 @@ class MainInfoCaseForm extends Component {
     };
   }
 
-  nameValue = { ...this.props.initialValues.name } || {
+  nameValue = this.props.initialValues.name && { ...this.props.initialValues.name } || {
     kz: "",
     ru: "",
     en: ""
   };
-  caseNotesValue = { ...this.props.initialValues.caseNotes } || {
+  caseNotesValue = this.props.initialValues.caseNotes && { ...this.props.initialValues.caseNotes } || {
     kz: "",
     ru: "",
     en: ""
@@ -71,24 +71,31 @@ class MainInfoCaseForm extends Component {
   };
 
   onSubmit = ({ name,documentFile, ...values }) => {
+    console.log(this.props.initialValues)
     if (!this.props.initialValues.key) {
-      return this.props.save({
-        objData: {
-            name: name,
-          parent: this.props.initialValues.parent
-        },
-        props: {
-          ...pickBy(
-            values,
-            (val, key) => !isEqual(val, this.props.initialValues[key])
-          ),
-          // fundIndex: values.fundIndex,
-          // caseNomenItem: values.caseNomenItem,
-          // caseStructuralSubdivision: this.props.initialValues.parent.split(
-          //   "_"
-          // )[1],
-          // caseInventory: this.props.initialValues.caseInventory.split("_")[1]
-        }
+      return this.props.onCreateObj({
+          ...pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key])),
+
+          name:name,
+          documentFile:documentFile,
+          caseInventory:this.props.keyInv,
+          caseWorkProp:this.props.keyWork.split("_")[1]
+        // objData: {
+        //     name: name,
+        // },
+        // props: {
+        //   ...pickBy(
+        //     values,
+        //     (val, key) => !isEqual(val, this.props.initialValues[key]),
+        //
+        //   ),
+        //   // fundIndex: values.fundIndex,
+        //   // caseNomenItem: values.caseNomenItem,
+        //   // caseStructuralSubdivision: this.props.initialValues.parent.split(
+        //   //   "_"
+        //   // )[1],
+        //   // caseInventory: this.props.initialValues.caseInventory.split("_")[1]
+        // }
       });
     } else {
       const cube = {
@@ -493,6 +500,7 @@ class MainInfoCaseForm extends Component {
         caseOCDOptions,
         caseStructuralSubdivisionOption,
         sectionOptions,
+        bunchCasesOptions,
       tofiConstants: {
         uprDoc,
         uprNTD,
@@ -500,6 +508,7 @@ class MainInfoCaseForm extends Component {
         videoDoc,
         movieDoc,
         phonoDoc,
+          bunchCases,
         photoDoc,
           yes,
         macReadDoc,
@@ -955,30 +964,54 @@ class MainInfoCaseForm extends Component {
             }}
           />
         )}
-        {caseStorage && (
+        {bunchCases && (
           <Field
-            name="caseStorage"
+            name="bunchCases"
             component={renderSelect}
             normalize={this.selectToRedux}
-            label={caseStorage.name[this.lng]}
+            label={bunchCases.name[this.lng]}
             formItemLayout={{
               labelCol: { span: 10 },
               wrapperCol: { span: 14 }
             }}
             isLoading={this.state.caseStorageLoading}
             data={
-              caseStorageOptions
-                ? caseStorageOptions.map(option => ({
+                bunchCasesOptions
+                ? bunchCasesOptions.map(option => ({
                     value: option.id,
                     label: option.name[this.lng]
                   }))
                 : []
             }
-            onMenuOpen={this.loadOptions(["caseStorage"])}
+            onMenuOpen={this.loadOptions(["bunchCases"])}
             // validate={requiredLabel}
             // colon={true}
           />
         )}
+          {caseStorage && (
+              <Field
+                  name="caseStorage"
+                  component={renderSelect}
+                  normalize={this.selectToRedux}
+                  label={caseStorage.name[this.lng]}
+                  formItemLayout={{
+                      labelCol: { span: 10 },
+                      wrapperCol: { span: 14 }
+                  }}
+                  isLoading={this.state.caseStorageLoading}
+                  data={
+                      caseStorageOptions
+                          ? caseStorageOptions.map(option => ({
+                              value: option.id,
+                              label: option.name[this.lng]
+                          }))
+                          : []
+                  }
+                  onMenuOpen={this.loadOptions(["caseStorage"])}
+                  // validate={requiredLabel}
+                  // colon={true}
+              />
+          )}
         {rack && (
           <Field
             name="rack"
@@ -1577,10 +1610,7 @@ class MainInfoCaseForm extends Component {
               // colon={true}
             />
           )}
-        <hr />
-        <Form.Item>
-          <h3>{inaccurateDate.name[this.lng]}</h3>
-        </Form.Item>
+
         {inaccurateDateFeature &&
           this.showInput([
             {
@@ -1592,6 +1622,11 @@ class MainInfoCaseForm extends Component {
               docType: uprDoc
             }
           ]) && (
+            <div>
+                <hr />
+                <Form.Item>
+                    <h3>{inaccurateDate.name[this.lng]}</h3>
+                </Form.Item>
             <Field
               name="inaccurateDateFeature"
               component={renderSelect}
@@ -1614,6 +1649,7 @@ class MainInfoCaseForm extends Component {
               // validate={requiredLabel}
               // colon={true}
             />
+            </div>
           )}
         {day &&
           this.showInput([
@@ -3239,7 +3275,8 @@ export default connect(
       shelfOptions: state.generalData.shelf,
       inaccurateDateFeatureOptions: state.generalData.inaccurateDateFeature,
       typeOfPaperCarrierOptions: state.generalData.typeOfPaperCarrier,
-      caseDocLangObjOptions: state.generalData.caseDocLangObj,
+        caseDocLangObjOptions: state.generalData.caseDocLangObj,
+        bunchCasesOptions: state.generalData.bunchCases,
 
       linkToKatalogOptions: state.generalData.linkToKatalog,
       linkToUkazOptions: state.generalData.linkToUkaz,

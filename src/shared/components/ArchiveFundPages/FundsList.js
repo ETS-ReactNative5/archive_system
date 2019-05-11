@@ -289,7 +289,8 @@ class FundsList extends Component {
         fullName: name,
         clsConst: fundType && fundType.fundTypeClass,
         accessLevel,
-        doItem: id
+          doItem: id
+
       };
 
       // если создается новый фонд (нет id)
@@ -598,38 +599,17 @@ class FundsList extends Component {
 
     this.filteredData = data.map(this.renderTableData).filter(item => {
       return (
-        // (!filter.fundNumber ||
-        //   !item.fundNumber ||
-        //   item.fundNumber.value == filter.fundNumber) &&
+        (!filter.fundNumber ||!item.fundNumber ||item.fundNumber.value == filter.fundNumber) &&
         (item.fundIndex ? item.fundIndex.value.toLowerCase().includes(filter.fundIndex.toLowerCase()) : filter.fundIndex === "") &&
-        (item.key ? item.key.toLowerCase().includes(filter.nameResearchers.toLowerCase()) : filter.nameResearchers === "") &&
+        (!item.key|| item.key ? item.key.toLowerCase().includes(filter.nameResearchers.toLowerCase()) : filter.nameResearchers === "") &&
         item.fundList.toLowerCase().includes(filter.fundList.toLowerCase()) &&
-        (item.fundDbeg &&
-          item.fundDbeg.value
-            .toLowerCase()
-            .includes(filter.fundDbeg.toLowerCase())) &&
-        (item.fundDend &&
-          item.fundDend.value
-            .toLowerCase()
-            .includes(filter.fundDend.toLowerCase())) &&
-        (filter.fundCategory.length === 0 ||
-          filter.fundCategory.some(
-            p => item.fundCategory && p.value == item.fundCategory.value
-          )) &&
-        (filter.fundArchive.length === 0 ||
-          filter.fundArchive.some(
-            p => item.fundArchive && p.value == item.fundArchive.value
-          )) &&
-        (filter.fundFeature.length === 0 ||
-          filter.fundFeature.some(
-            p => item.fundFeature && p.value == item.fundFeature.value
-          )) &&
-        (filter.fundType.length === 0 ||
-          filter.fundType.some(
-            p => item.fundType && p.value == item.fundType.value
-          )) &&
-        (filter.fundIndustryObj.length === 0 ||
-          filter.fundIndustryObj.some(p => p.value == item.fundIndustry.value))
+        ( item.fundDbeg ? item.fundDbeg.value.toLowerCase().includes(filter.fundDbeg.toLowerCase()) : true) &&
+        ( item.fundDend ? item.fundDend.value.toLowerCase().includes(filter.fundDend.toLowerCase()) : true) &&
+        (filter.fundCategory.length === 0 || filter.fundCategory.some(p => item.fundCategory && p.value == item.fundCategory.value)) &&
+          (filter.fundArchive.length === 0 || filter.fundArchive.some( p => item.fundArchive && p.value == item.fundArchive.value )) &&
+          (filter.fundFeature.length === 0 ||filter.fundFeature.some(p => item.fundFeature && p.value == item.fundFeature.value)) &&
+          (filter.fundType.length === 0 ||filter.fundType.some(p => item.fundType && p.value == item.fundType.value)) &&
+          (filter.fundIndustryObj.length === 0 || filter.fundIndustryObj.some(p => p.value == item.fundIndustry.value))
       );
     });
 

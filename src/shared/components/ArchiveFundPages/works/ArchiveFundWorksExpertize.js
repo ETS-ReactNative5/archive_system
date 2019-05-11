@@ -6,6 +6,9 @@ import AntModal from '../../AntModal';
 import {CUBE_FOR_WORKS, DO_FOR_WORKS} from '../../../constants/tofiConstants';
 import moment from 'moment';
 import {addDerivativeWorksExp, getValuesOfObjsWithProps, updateCubeData} from '../../../actions/actions';
+import {CSSTransition} from "react-transition-group";
+import SiderCard from "../../SiderCard";
+import CardCase_invTypeLS_LSDoc from "./invTypeLS_LSDoc/CardCase_invTypeLS_LSDocWorks";
 
 /*eslint eqeqeq:0*/
 class ArchiveFundWorksExpertize extends React.PureComponent {
@@ -151,7 +154,28 @@ class ArchiveFundWorksExpertize extends React.PureComponent {
       this.setState({ data: newData });
     }
   };
+    getRespCard(invType, docType) {
+        const params = {
+            t: this.props.t,
+            saveProps: this.saveProps,
+            initialValues: this.state.selectedRow,
+            tofiConstants: this.props.tofiConstants,
+            stateRecord:this.state.selectedWorks,
+            invType: invType,
+            docType: docType,
+            onCreateObj:this.onCreateObj,
+        };
+        return <CardCase_invTypeLS_LSDoc {...params} />;
 
+    }
+    changeSelectedRow = rec => {
+        this.setState({
+            openCard: true,
+            selectedRow: rec,
+            selectedWorks:this.props.location.state.stateRecord
+        })
+
+    }
   render() {
     if(isEmpty(this.props.tofiConstants)) return null;
 
@@ -159,7 +183,7 @@ class ArchiveFundWorksExpertize extends React.PureComponent {
 
     this.lng = localStorage.getItem('i18nextLng');
     return (
-      <div className="WorksChecking">
+      <div className="WorksChecking EditCardCases__body">
         <Table
           columns={[
             {
@@ -217,9 +241,23 @@ class ArchiveFundWorksExpertize extends React.PureComponent {
           pagination={{pageSize: 20, defaultCurrent: this.props.location.state && this.props.location.state.workIndexNumber && Math.ceil(Number(this.props.location.state.workIndexNumber)/20)}}
           title={this.renderTableHeader}
           footer={this.renderTableFooter}
+          onRowDoubleClick={this.changeSelectedRow}
           dataSource={this.state.data}
           scroll={{x: 1500, y: '100%'}}
         />
+        <CSSTransition
+        in={this.state.openCard}
+        timeout={300}
+        classNames="right card"
+        unmountOnExit
+        >
+          <SiderCard
+          closer={<Button type='danger' className='right' onClick={() => this.setState({openCard: false})}
+                          shape="circle" icon="arrow-right"/>}
+          >
+              {this.getRespCard(this.props.invType, this.props.docType)}
+          </SiderCard>
+        </CSSTransition>
         <AntModal
           visible={this.state.modal.visible}
           title={t('INDICATE_NUMBER_TITLE')}

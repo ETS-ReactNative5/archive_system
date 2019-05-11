@@ -27,26 +27,22 @@ class DamageTableWorks extends React.Component {
         damageList: [],
         tableData: '',
         deliveryPurposeList: [],
-        newDescDmg: '',
-        newIndexDmg: '',
-        newdeliveryPurpose: '',
+        newDescDmg: null,
+        newIndexDmg: [],
+        newdeliveryPurpose: null,
         loading:false
-
     };
 
 
     handleChangeDamageList = value => {
-        console.log(value);
         this.setState({newIndexDmg: value});
     };
 
     handleChangeDeliveryPurpose = (value) => {
-        console.log(value);
         this.setState({newdeliveryPurpose: value});
     };
 
     damageDesriptionChange = e => {
-        console.log(e.target.value);
         this.setState({newDescDmg: e.target.value});
     };
 
@@ -72,11 +68,12 @@ class DamageTableWorks extends React.Component {
             cubeSConst: 'cubeForWorks'
         };
 
-        var name = {ru: this.state.newdeliveryPurpose.label};
+        var name = {ru: 'Работа по повреждению'};
         const obj = {
             name: name,
             fullName: name,
             clsConst: 'casesForTemporaryUse',
+            parent:String(this.props.stateRecord.key),
         };
 
         let hideCreateObj;
@@ -85,7 +82,6 @@ class DamageTableWorks extends React.Component {
             hideCreateObj();
 
             createObj(cube, obj).then(resNewWork => {
-                debugger;
                 if (!resNewWork.success) {
                     resNewWork.errors.forEach(err => {
                         message.error(err.text)
@@ -102,6 +98,30 @@ class DamageTableWorks extends React.Component {
                             objData: {}
                         }],
                         props: [
+                            {
+                                propConst: 'workAuthor',
+                                val: String(this.props.user.obj),
+                                typeProp: '41',
+                                periodDepend: "0",
+                                isUniq: '1',
+                                mode: 'ins'
+                            },
+                            {
+                                propConst: 'workRegFund',
+                                val: String(this.props.stateRecord.workRegFund.value),
+                                typeProp: '41',
+                                periodDepend: "0",
+                                isUniq: '1',
+                                mode: 'ins'
+                            },
+                            {
+                                propConst: 'workRegInv',
+                                val: String(this.props.stateRecord.workRegInv.value),
+                                typeProp: '41',
+                                periodDepend: "0",
+                                isUniq: '1',
+                                mode: 'ins'
+                            },
                             {
                                 propConst: 'workDate',
                                 val: moment().format('YYYY-MM-DD'),
@@ -139,7 +159,7 @@ class DamageTableWorks extends React.Component {
                                 mode: 'ins'
                             }, {
                                 propConst: 'deliveryPurpose',
-                                val: String(this.state.newdeliveryPurpose.key),
+                                val: String(this.state.newdeliveryPurpose),
                                 typeProp: '11',
                                 periodDepend: "0",
                                 isUniq: '1',
@@ -178,13 +198,15 @@ class DamageTableWorks extends React.Component {
 
 
     buildComponent = () => {
+        console.log(this.props.initialValues);
+       console.log(this.props.stateRecord);
         this.setState({
             loading:false,
-            newDescDmg: '',
-            newIndexDmg: '',
-            newdeliveryPurpose: ''
+            newDescDmg: null,
+            newIndexDmg: [],
+            newdeliveryPurpose: null
         });
-        console.log(this.props.initialValues);
+       // console.log(this.props.initialValues);
         var filterWorks = {
             filterDOAnd: [
                 {
@@ -223,7 +245,6 @@ class DamageTableWorks extends React.Component {
         fd.append("filters", JSON.stringify(filterWorks));
         axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getCubeData`, fd).then(res => {
             var cubeData = res.data.data;
-            console.log(cubeData);
             const parsedCube = parseCube_new(
             cubeData["cube"],
             [],
@@ -326,6 +347,12 @@ class DamageTableWorks extends React.Component {
         this.buildComponent();
     };
 
+    componentDidUpdate(prevProps){
+        if(prevProps.initialValues !== this.props.initialValues){
+            this.buildComponent();
+        }
+    }
+
 
     renderColumns(text, record, column, file) {
         return (
@@ -341,16 +368,6 @@ class DamageTableWorks extends React.Component {
     }
 
 
-    handleChange(value, key, column) {
-        const newData = [...this.state.data];
-        const target = newData.find(item => key === item.key);
-        if (target) {
-            target[column] = value;
-            this.setState({data: newData}, () => {
-                console.log(this.state.data)
-            });
-        }
-    }
 
     cancel = key => {
         const newData = [...this.state.data];
@@ -427,6 +444,7 @@ class DamageTableWorks extends React.Component {
         return (
         <div>
             <div>
+                <hr/>
                 <h3>{this.props.header}
                 </h3>
                 <hr/>
@@ -438,15 +456,15 @@ class DamageTableWorks extends React.Component {
                 pagination={false}
                 scroll={{y: '100%'}}
                 onRowClick={this.onRowClick}
-                rowClassName={record => this.state.selectedRow && this.state.selectedRow.key === record.key ? 'row-selected' : ''}
+                rowClassName={record => this.state.selectedRow && this.state.selectedRow.idx === record.key ? 'row-selected' : ''}
                 style={{marginLeft: '5px'}}
                 />
-                <div>
+                <div className="mt-4">
                     <p>Создать работу по восстановлению</p>
                     <Row>
                         <Col span={7}>
                             <Select
-                            labelInValue
+                            value={this.state.newdeliveryPurpose}
                             style={{width: '100%'}}
                             onChange={this.handleChangeDeliveryPurpose}
                             placeholder="Выберите цель"
@@ -456,6 +474,7 @@ class DamageTableWorks extends React.Component {
                         </Col>
                         <Col span={10}>
                             <Select
+                            value={this.state.newIndexDmg}
                             mode="multiple"
                             style={{width: '100%'}}
                             onChange={this.handleChangeDamageList}
@@ -466,6 +485,7 @@ class DamageTableWorks extends React.Component {
                         </Col>
                         <Col span={5}>
                             <Input onChange={this.damageDesriptionChange}
+                                   value={this.state.newDescDmg}
                                    placeholder="Описание повреждения"/>
                         </Col>
                         <Col span={2}>
@@ -488,7 +508,8 @@ class DamageTableWorks extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        state: state
+        state: state,
+        user:state.auth.user
     }
 }
 
