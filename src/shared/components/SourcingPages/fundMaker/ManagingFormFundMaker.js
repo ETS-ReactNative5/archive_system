@@ -30,7 +30,10 @@ class ManagingFormFundMaker extends Component {
     };
   }
 
-    strToRedux = (val, prevVal, obj, prevObj) => {
+    strToRedux = (val, prevVal, obj, prevObj, flag) => {
+        if(!!flag){
+            val = val.replace(/[^\d;]/g, '')
+        }
         var newVal = {...prevVal};
         if (prevVal === null) {
             let objVal = {
@@ -234,7 +237,7 @@ console.log('leaderFIO ', this.props.initialValues.leaderFIO);
         />}
         {leaderPhone && <Field
           name="leaderPhone"
-          component={ renderInput }
+          component={renderInput }
           label={leaderPhone.name[lng]}
           formItemLayout={
             {
@@ -243,7 +246,7 @@ console.log('leaderFIO ', this.props.initialValues.leaderFIO);
             }
           }
           placeholder='+7 ('
-          normalize={this.strToRedux}
+          normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
         />}
         <Form.Item style={{marginBottom: '5px'}}><h3>{t('DEP_LEADER')}</h3></Form.Item>
         {depLeaderFIO && <Field
@@ -301,7 +304,7 @@ console.log('leaderFIO ', this.props.initialValues.leaderFIO);
             }
           }
           placeholder='+7 ('
-          normalize={this.strToRedux}
+          normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
         />}
         <Form.Item style={{marginBottom: '5px'}}><h3>{t('RESPONSIBLE')}</h3></Form.Item>
         {responsibleFIO && <Field
@@ -354,7 +357,7 @@ console.log('leaderFIO ', this.props.initialValues.leaderFIO);
             }
           }
           placeholder='+7 ('
-          normalize={this.strToRedux}
+          normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
         />}
         {responsibleAppointmentDate && <Field
           name="responsibleAppointmentDate"
@@ -424,7 +427,7 @@ console.log('leaderFIO ', this.props.initialValues.leaderFIO);
             }
           }
           placeholder='+7 ('
-          normalize={this.strToRedux}
+          normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
         />}
         {archiveLeaderAppointmentDate && <Field
           name="archiveLeaderAppointmentDate"
@@ -494,7 +497,7 @@ console.log('leaderFIO ', this.props.initialValues.leaderFIO);
             }
           }
           placeholder='+7 ('
-          normalize={this.strToRedux}
+          normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
         />}
         {dirty && <Form.Item className="ant-form-btns">
           <Button className="signup-form__btn" type="primary" htmlType="submit" disabled={submitting}>

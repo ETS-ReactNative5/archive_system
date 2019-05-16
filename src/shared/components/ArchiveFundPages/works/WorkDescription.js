@@ -14,7 +14,10 @@ const columns = [
         width: '4%',
         title: '#',
         dataIndex: 'idx',
-        key: 'idx'
+        key: 'idx',
+        render: (text, rec, i) => {
+            return i + 1
+        }
     },
     {
         width: '75%',
@@ -85,42 +88,70 @@ class WorkDescription extends React.PureComponent {
     componentDidMount() {
         console.log(this.props.initialValues);
         var fundName = this.props.initialValues.workRegFund.labelFull;
+
+        var filterOfActs = [];
+
+        this.props.initialValues.workType.workTypeClass == 'caseAvailabilityCheck' && filterOfActs.push({
+            idx: '1',
+            name: 'Акт проверки наличия и состояния архивных документов: ' + fundName,
+            actNumber: this.props.initialValues.key.slice(-4) + '_1',
+            showAct: <Button
+            onClick={() => this.showAct('damage', this.props.initialValues.key.slice(-4) + '_1')}
+            type="primary"
+            shape="circle"><Icon type="eye"/></Button>
+        });
+
+        this.props.initialValues.workType.workTypeClass == 'caseAvailabilityCheck' && filterOfActs.push({
+            idx: '2',
+            name: 'Акт об обнаружении архивных документов',
+            actNumber: this.props.initialValues.key.slice(-4) + '_2',
+            showAct: <Button
+            onClick={() => this.showAct('irrDamage', this.props.initialValues.key.slice(-4) + '_2')}
+            type="primary"
+            shape="circle"><Icon type="eye"/></Button>
+        });
+        (this.props.initialValues.workType.workTypeClass == 'caseExamination' ||  this.props.initialValues.workType.workTypeClass == 'caseDisposal') && filterOfActs.push({
+            idx: '3',
+            name: 'Акт о выделении к уничтожению документов, не подлежащих хранению',
+            actNumber: this.props.initialValues.key.slice(-4) + '_3',
+            showAct: <Button
+            onClick={() => this.showAct('lightToDestroy', this.props.initialValues.key.slice(-4) + '_3')}
+            type="primary"
+            shape="circle"><Icon type="eye"/></Button>
+        });
+        (this.props.initialValues.workType.workTypeClass == 'caseExamination' || this.props.initialValues.workType.workTypeClass == 'caseDisposal') && filterOfActs.push({
+            idx: '4',
+            name: 'Акт о неисправимых повреждениях документов',
+            actNumber: this.props.initialValues.key.slice(-4) + '_4',
+            showAct: <Button
+            onClick={() => this.showAct('CrashedAct', this.props.initialValues.key.slice(-4) + '_4')}
+            type="primary"
+            shape="circle"><Icon type="eye"/></Button>
+        });
+        this.props.initialValues.workType.workTypeClass == 'caseRegistration' && filterOfActs.push({
+            idx: '5',
+            name: 'Акт приема-передачи документов на хранение',
+            actNumber: this.props.initialValues.key.slice(-4) + '_5',
+            showAct: <Button
+            onClick={() => this.showAct('TransferAct', this.props.initialValues.key.slice(-4) + '_5')}
+            type="primary"
+            shape="circle"><Icon type="eye"/></Button>
+        });
+        this.props.initialValues.workType.workTypeClass == 'caseRegistration' && filterOfActs.push({
+            idx: '6',
+            name: 'Акт приема на хранение документов личного происхождения',
+            actNumber: this.props.initialValues.key.slice(-4) + '_6',
+            showAct: <Button
+            onClick={() => this.showAct('TransferLPAct', this.props.initialValues.key.slice(-4) + '_6')}
+            type="primary"
+            shape="circle"><Icon type="eye"/></Button>
+        });
+
+
+
+
         this.setState({
-            dataSource: [{
-                idx: '1',
-                name: 'Акт проверки наличия и состояния архивных документов: ' + fundName,
-                actNumber: this.props.initialValues.key.slice(-4) + '_1',
-                showAct: <Button
-                onClick={() => this.showAct('damage', this.props.initialValues.key.slice(-4) + '_1')}
-                type="primary"
-                shape="circle"><Icon type="eye"/></Button>
-            }, {
-                idx: '2',
-                name: 'Акт об обнаружении архивных документов',
-                actNumber: this.props.initialValues.key.slice(-4) + '_2',
-                showAct: <Button
-                onClick={() => this.showAct('irrDamage', this.props.initialValues.key.slice(-4) + '_2')}
-                type="primary"
-                shape="circle"><Icon type="eye"/></Button>
-            }, {
-                idx: '3',
-                name: 'Акт о выделении к уничтожению документов, не подлежащих хранению',
-                actNumber: this.props.initialValues.key.slice(-4) + '_3',
-                showAct: <Button
-                onClick={() => this.showAct('lightToDestroy', this.props.initialValues.key.slice(-4) + '_3')}
-                type="primary"
-                shape="circle"><Icon type="eye"/></Button>
-            },
-                {
-                    idx: '4',
-                    name: 'Акт о неисправимых повреждениях документов',
-                    actNumber: this.props.initialValues.key.slice(-4) + '_4',
-                    showAct: <Button
-                    onClick={() => this.showAct('CrashedAct', this.props.initialValues.key.slice(-4) + '_4')}
-                    type="primary"
-                    shape="circle"><Icon type="eye"/></Button>
-                }
-            ]
+            dataSource: filterOfActs
         });
         getPropValByConst('workDescription')
         .then(data => console.log(data))
@@ -182,6 +213,7 @@ class WorkDescription extends React.PureComponent {
             visible={this.state.visible}
             cancelText="Закрыть"
             onCancel={this.handleCancel}
+            footer={false}
             >
 
                 <PrintAct

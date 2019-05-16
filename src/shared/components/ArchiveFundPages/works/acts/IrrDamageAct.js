@@ -174,12 +174,12 @@ class IrrDamageAct extends React.Component {
         const filters = {
             filterDOAnd: [
                 {
-                    dimConst: 'doForCase2',
+                    dimConst: 'doForCase',
                     concatType: "and",
                     conds: [
                         {
                             data: {
-                                dimPropConst: 'dpForCase2',
+                                dimPropConst: 'dpForCase',
                                 propConst: 'caseWorkProp',
                                 valueRef: {id: String(this.props.workId)}
                             }
@@ -189,7 +189,7 @@ class IrrDamageAct extends React.Component {
             ],
             filterDPAnd: [
                 {
-                    dimConst: 'dpForCase2',
+                    dimConst: 'dpForCase',
                     concatType: "and",
                     conds: [
                         {
@@ -200,7 +200,7 @@ class IrrDamageAct extends React.Component {
             ]
         };
         const fd = new FormData();
-        fd.append("cubeSConst", 'CubeForAF_Case2');
+        fd.append("cubeSConst", 'CubeForAF_Case');
         fd.append("filters", JSON.stringify(filters));
         axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getCubeData`, fd).then(res => {
             var cubeData = res.data.data;
@@ -209,10 +209,10 @@ class IrrDamageAct extends React.Component {
             [],
             "dp",
             "do",
-            cubeData['do_' + this.props.tofiConstants.doForCase2.id],
-            cubeData['dp_' + this.props.tofiConstants.dpForCase2.id],
-            ['do_' + this.props.tofiConstants.doForCase2.id],
-            ['dp_' + this.props.tofiConstants.dpForCase2.id]
+            cubeData['do_' + this.props.tofiConstants.doForCase.id],
+            cubeData['dp_' + this.props.tofiConstants.dpForCase.id],
+            ['do_' + this.props.tofiConstants.doForCase.id],
+            ['dp_' + this.props.tofiConstants.dpForCase.id]
             );
 
             var tableData = parsedCube.map(this.renderTableData);

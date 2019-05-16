@@ -2,7 +2,10 @@ import React from 'react';
 import {Button, Col, Row} from "antd";
 import AntTable from "../../../AntTable";
 import axios from "axios";
-import {getAct1, getIdGetObj, lightToDestroy} from "../../../../actions/actions";
+import {
+    crashedAct, getAct1, getIdGetObj,
+    lightToDestroy
+} from "../../../../actions/actions";
 import moment from "moment";
 import {parseCube_new, parseForTable} from "../../../../utils/cubeParser";
 import ReactDOMServer from 'react-dom/server';
@@ -35,40 +38,42 @@ class CrashedAct extends React.Component {
             key: 'idx',
             width: '5%',
             render: (obj, rec, i) => {
-                return '1'
+                return i + 1;
             }
         }, {
-            title: 'Названия групп документов',
-            dataIndex: 'name',
-            key: 'name',
-            width: '20%'
+            title: 'Номер ед.хр.',
+            dataIndex: 'caseNumber',
+            key: 'caseNumber',
+            width: '8%'
+        }, {
+            title: 'Заголовок повреждений ед.хр.',
+            dataIndex: 'caseName',
+            key: 'caseName',
+            width: '32%',
+            render: caseName => caseName && caseName.ru
         }, {
             title: 'Крайние даты',
             dataIndex: 'invDates',
             key: 'invDates',
-            width: '15%'
+            width: '15%',
+            render: (text, rec) => [rec.caseDbeg + ' - ' + rec.caseDend]
         }, {
-            title: 'Номера описей',
-            dataIndex: 'invNumber',
-            key: 'invNumber',
-            width: '15%'
-        }, {
-            title: 'Номера ед.хр. по описям',
+            title: 'Количество листов (время звучания, метраж)',
             dataIndex: 'numberCases',
             key: 'numberCases',
             width: '15%',
-            render: obj => obj && obj.join(', '),
-        }, {
-            title: 'Кол-во ед.хр',
-            dataIndex: 'countCases',
-            key: 'countCases',
-            width: '15%'
+            render: (obj, rec) => {
+                var infoAbout = '';
+                infoAbout +=rec.caseNumberOfPages && ['кол-во стр: ' + rec.caseNumberOfPages];
+                infoAbout +=rec.playingTime && [', Время: ' + rec.playingTime];
+                return infoAbout;
+            }
         },
             {
                 title: 'Примечание',
                 dataIndex: 'caseNotes',
                 key: 'caseNotes',
-                width: '15%',
+                width: '10%',
                 render: obj => obj && obj.ru
             }]
     };
@@ -76,7 +81,7 @@ class CrashedAct extends React.Component {
     printContent = () => {
         return (<div>
             <h2 className="text-center" style={{textAlign: "center"}}>
-                Акт о выделении к уничтожению документов, не подлежащих хранению</h2>
+                Акт о неисправимых повреждениях документов</h2>
             <Row>
                 <Col span={24} className="text-center" style={{textAlign: "center"}}><span
                 style={{textDecoration: "underline"}}>{this.state.fundArchive}</span><br/>(Название
@@ -109,36 +114,33 @@ class CrashedAct extends React.Component {
             <Row style={{clear: "both"}}>
                 <Col style={{width: "41.6%", float: "right"}}>Дата: </Col>
             </Row> <br/>
-            <h2 style={{textAlign: "center"}}>О выделении к уничтожению документов, не
-                подлежащих хранению</h2>
-            <Row style={{}}>К уничтожению отобраны: документы фонда № <span
+            <h2 style={{textAlign: "center"}}>О неисправимых повреждениях документов</h2>
+            <Row style={{}}>№ фонда <span
             style={{textDecoration: "underline"}}>{this.state.fundNumber}</span></Row>
-            <Row style={{textAlign: "center"}}> <span
-            style={{textDecoration: "underline"}}>{this.props.initialValues.workRegFund.label}</span></Row>
-            <Row style={{textAlign: "center"}}> (Название фонда)</Row> <br/>
-            <Row>На основании Акта о неисправимых повреждениях документов № <span style={{textDecoration: "underline"}}>{this.props.actNumber.slice(0, -1) + '4'}</span> от {this.props.initialValues.workActualEndDate.value}<br/>(Ссылки
-                на нормативно-методические документы, для проведения экспертизы)</Row>
+            <Row> <span
+            style={{textDecoration: "underline"}}>Название фонда: {this.props.initialValues.workRegFund.label}</span></Row>
+            <br/>
+            <Row>В фонде обнаружены <span
+            style={{textDecoration: "underline"}}>{this.state.total}</span> едениц
+                хранения, признанные неисправимо поврежденными</Row>
+
 
             <br/>
             <AntTable pagination={false} loading={this.state.loading}
                       dataSource={this.state.tableData} columns={this.state.columns}/>
             <br/>
+
+
             <Row>
-                Итого <span
-            style={{textDecoration: "underline"}}>{this.state.total}</span> ед.хр. за
-                <span style={{textDecoration: "underline"}}>{this.state.year}</span>
-                год(ы)
+                Итого обнаружено неисправимо поврежденных <span style={{textDecoration: "underline"}}>{this.state.total}</span> ед.хр.
             </Row>
             <Row>
-                Количество ед.хр., крайние даты и краткая характеристика документов,
-                остающихся на хранении <span
-            style={{textDecoration: "underline"}}>{this.state.savedList}</span>
+               Заведующий отделом <span style={{textDecoration: "underline"}}>{this.state.zavOtdel}</span>
             </Row>
             <Row>
-                Документы <span
-            style={{textDecoration: "underline"}}>{this.state.orgName}</span><br/>(Название
-                организации)
+                Хранитель фондов <span style={{textDecoration: "underline"}}>{this.props.initialValues.workAssignedTo.label}</span>
             </Row>
+            Перечисленные документы подлежат списанию, ввиду___________________________________________
             <Row>
                 сданы на переработку по приемо-сдаточной накладной <span
             style={{textDecoration: "underline"}}>{this.state.nacladDate}  </span> № <span
@@ -146,23 +148,29 @@ class CrashedAct extends React.Component {
             </Row>
 
             <Row>
-                <Col col={24}><br/> Заведующий отделом
-                    (архивохранилищем): {this.props.initialValues.workAssignedTo.label}
+                <Col col={24}><br/> Эксперты: {this.props.initialValues.workAssignedTo.label}
+                </Col>
+            </Row>
+            <Row>
+                <Col style={{width:'50%',textAlign:'left',float:'left'}}>
+                    Согласован протоколом ЭПК
+                    <br/>
+                    _______________________________________
+                    <br/>
+                    (наименование местного исполнительного органа, архива)
+                    <br/>
+                    от 20__ г. № _________
+                </Col>
+                <Col style={{width:'50%',textAlign:'left',float:'left'}}>
+                    Согласован протоколом ЦЭК уполномоченного органа
+                    <br/>
+                    от 20__ г. № _________
                 </Col>
             </Row>
 
             <h3><br/>Изменения в учетные документы внесены</h3>
             <Row>
                 <Col col={24}>{this.props.initialValues.workAssignedTo.label}</Col>
-            </Row>
-
-            <h3>Проверку производили</h3>
-            <Row>
-                <Col col={24}>{this.props.initialValues.workAuthor.label}</Col>
-            </Row>
-            <Row>
-                <Col
-                col={24}>Дата: {this.props.initialValues.workActualEndDate.value}</Col>
             </Row>
         </div>)
     };
@@ -180,61 +188,17 @@ class CrashedAct extends React.Component {
     };
 
     componentDidMount() {
-        lightToDestroy((this.props.workId).split('_')[1]).then(res => {
+        crashedAct((this.props.workId).split('_')[1]).then(res => {
             let data = res.data;
-            var arrObj = [];
-            var obj = JSON.stringify(data, function(key, value) {
-                arrObj.push(value);
-            });
-
-            /*getCountsOfCaseInInv*/
-            const filters = {
-                filterDOAnd: [
-                    {
-                        dimConst: 'doForCase',
-                        concatType: "and",
-                        conds: [
-                            {
-                                data: {
-                                    dimPropConst: 'dpForCase',
-                                    propConst: 'caseInventory',
-                                    valueRef: {id: String('123_' + data.inv_id)}
-                                }
-                            }
-                        ]
-                    }
-                ],
-                filterDPAnd: [
-                    {
-                        dimConst: 'dpForCase',
-                        concatType: "and",
-                        conds: [
-                            {
-                                consts: "archiveCipher"
-                            }
-                        ]
-                    }
-                ]
-            };
-            const fd = new FormData();
-            fd.append("cubeSConst", 'CubeForAF_Case');
-            fd.append("filters", JSON.stringify(filters));
-            axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getCubeData`, fd).then(res => {
-                var savedList = parseInt(res.data.data['do_' + this.props.tofiConstants.doForCase.id].length) - parseInt(data.countCases);
-                this.setState({
-                    savedList: savedList
-                })
-            });
-
-
             this.setState({
                 fundNumber: data.fundNumber,
                 fundArchive: data.fundArchive.ru,
                 caseAvailabilityCheck: this.props.initialValues.workType.label,
-                tableData: arrObj,
-                total: data.countCases,
-                orgName: data.ik.ru,
+                tableData: data.propCases,
+                invNumber: data.invNumber,
+                total: data.propCases.length,
                 loading: false,
+                zavOtdel: data.zavOtdel.ru
 
             })
         });

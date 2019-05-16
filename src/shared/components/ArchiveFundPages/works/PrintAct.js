@@ -7,6 +7,8 @@ import DamageAct from "./acts/DamageAct";
 import IrrDamageAct from "./acts/IrrDamageAct";
 import LightToDestroy from "./acts/LightToDestroy";
 import CrashedAct from "./acts/CrashedAct";
+import TransferAct from "./acts/TransferAct.js";
+import TransferLPAct from "./acts/TransferLPAct";
 
 
 
@@ -39,9 +41,15 @@ class PrintAct extends React.Component {
             case 'lightToDestroy':
                 return (<LightToDestroy workId={workId} tofiConstants={tofiConstants}
                                       initialValues={initialValues} type={type}  actNumber={actNumber}/>);
-            case 'crashedAct':
+            case 'CrashedAct':
                 return (<CrashedAct workId={workId} tofiConstants={tofiConstants}
-                                        initialValues={initialValues} type={type}  actNumber={actNumber}/>)
+                                        initialValues={initialValues} type={type}  actNumber={actNumber}/>);
+            case 'TransferAct':
+                return (<TransferAct workId={workId} tofiConstants={tofiConstants}
+                                    initialValues={initialValues} type={type}  actNumber={actNumber}/>);
+            case 'TransferLPAct':
+                return (<TransferLPAct workId={workId} tofiConstants={tofiConstants}
+                                     initialValues={initialValues} type={type}  actNumber={actNumber}/>)
 
 
         }

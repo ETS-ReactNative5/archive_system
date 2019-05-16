@@ -419,7 +419,7 @@ class DamageTableWorks extends React.Component {
                     key: 'indexDamage',
                     title: this.props.tofiConstants['indexDamage'].name[this.lng],
                     dataIndex: 'indexDamage',
-                    render: (obj, record) => obj.map(el => el.label).join(', '),
+                    render: (obj, record) =>obj && obj.map(el => el.label).join(', '),
                     width: '35%',
 
                 },

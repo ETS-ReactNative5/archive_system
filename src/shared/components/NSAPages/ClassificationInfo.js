@@ -14,6 +14,7 @@ import {Field, formValueSelector, reduxForm} from "redux-form";
 import { isEmpty, isEqual, map, pickBy, forOwn } from "lodash";
 import connect from "react-redux/es/connect/connect";
 import {getAllObjOfCls, getObjByObjVal, getPropVal} from "../../actions/actions";
+import moment from "moment";
 
 class ClassificationInfo extends React.Component{
 
@@ -92,7 +93,221 @@ class ClassificationInfo extends React.Component{
   closeModal = () => {
     this.setState({modal:false})
   };
+    dateToRedux = (val, prev) => {
+        {
+            let coppyPrev = { ...prev };
 
+            if (!!val) {
+                let newDate = moment(val).format("DD-MM-YYYY");
+                if (!!coppyPrev.idDataPropVal) {
+                    coppyPrev.value = newDate;
+                    return coppyPrev;
+                } else {
+                    return {
+                        value: newDate
+                    };
+                }
+            } else {
+                if (!!coppyPrev.value) {
+                    coppyPrev.value = "";
+                    return coppyPrev;
+                } else {
+                    return {};
+                }
+            }
+        }
+    };
+    strToRedux = (val, prevVal, obj, prevObj, flag) => {
+
+        if(!!flag){
+            val = val.replace(/[^\d;]/g, '')
+        }
+        var newVal = { ...prevVal };
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: { kz: val },
+                valueLng: { ru: val },
+                valueLng: { en: val }
+            };
+            return objVal;
+        } else {
+            newVal.value = val;
+            newVal["valueLng"] = { kz: val, ru: val, en: val };
+
+            return newVal;
+        }
+    };
+    fileToRedux = (val, prevVal, file, str) => {
+        let newFile = val.filter(el => el instanceof File);
+        if (newFile.length > 0) {
+            var copyVal = prevVal ? [...prevVal] : [];
+            newFile.map(el => {
+                copyVal.push({
+                    value: el
+                });
+            });
+            return copyVal;
+        } else {
+            return val.length == 0 ? [] : val;
+        }
+    };
+    selectToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val === null) {
+                let newValNull = { ...prevVal };
+                newValNull.label = null;
+                newValNull.labelFull = null;
+                newValNull.value = null;
+                return newValNull;
+            } else {
+                let newVal = { ...prevVal };
+                newVal.value = val.value;
+                newVal.label = val.label;
+                newVal.labelFull = val.label;
+                return newVal;
+            }
+        }
+    };
+
+    selectMultiToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val.length > 0){
+                let coppyPrevVal = prevVal?[...prevVal]:[]
+                let coppyVal = [...val]
+                if (coppyPrevVal.length > 0 ) {
+                    for (let i = 0; i < coppyPrevVal.length; i++) {
+                        if (coppyPrevVal[i].idDataPropVal == undefined) continue
+                        if (coppyPrevVal[i].idDataPropVal !== undefined) {
+                            let findePrevVal = this.state.optionMultiSelect.find((el) => el.idDataPropVal === coppyPrevVal[i].idDataPropVal)
+
+                            if (findePrevVal === undefined) {
+                                setTimeout(() => {
+                                    this.setState({
+                                        optionMultiSelect: this.state.optionMultiSelect.concat(coppyPrevVal[i])
+                                    })
+                                })
+
+                            }
+                        }
+
+                    }
+                }
+
+                for (let i = 0; i < coppyVal.length; i++) {
+                    if (coppyVal[i].idDataPropVal === undefined) {
+                        let findVal = this.state.optionMultiSelect.find((el) => el.value === coppyVal[i].value)
+                        if (findVal !== undefined) {
+                            coppyVal.splice(i, 1)
+                            coppyVal.push(findVal)
+                        }
+                    }
+                }
+                return coppyVal
+            } else {
+                return []
+            }
+        }
+    };
+    checkboxToRedux=(val, prevVal)=>{
+        let newVal = {...prevVal};
+        const {yes,irreparablyDamagedTrue,irreparablyDamagedFalse, no} = this.props.tofiConstants
+        if (prevVal === null) {
+            let objVal ={}
+            if (val=== true ){
+                objVal = {
+                    value: Number(irreparablyDamagedTrue.id),
+                    kFromBase: val
+
+                }
+            }else {
+                objVal = {
+                    value: Number(irreparablyDamagedFalse.id),
+                    kFromBase: val
+                }
+            }
+
+            return (objVal)
+        } else {
+            if (val=== true ){
+                newVal.value = Number(irreparablyDamagedTrue.id)
+                newVal.kFromBase= val
+            }else {
+                newVal.value = Number(irreparablyDamagedFalse.id)
+                newVal.kFromBase= val
+            }
+
+
+            return (newVal)
+
+        }
+    }
+    checkboxToRedux2=(val, prevVal)=>{
+        let newVal = {...prevVal};
+        const {caseInsuranceTrue, caseInsuranceFalce} = this.props.tofiConstants
+        if (prevVal === null) {
+            let objVal ={}
+            if (val=== true ){
+                objVal = {
+                    value: Number(caseInsuranceTrue.id),
+                    kFromBase: val
+
+                }
+            }else {
+                objVal = {
+                    value: Number(caseInsuranceFalce.id),
+                    kFromBase: val
+                }
+            }
+
+            return (objVal)
+        } else {
+            if (val=== true ){
+                newVal.value = Number(caseInsuranceTrue.id)
+                newVal.kFromBase= val
+            }else {
+                newVal.value = Number(caseInsuranceFalce.id)
+                newVal.kFromBase= val
+            }
+
+
+            return (newVal)
+
+        }
+    }
+    checkboxToRedux3=(val, prevVal)=>{
+        let newVal = {...prevVal};
+        const {caseFundOfUseTrue, caseFundOfUseFalce} = this.props.tofiConstants
+        if (prevVal === null) {
+            let objVal ={}
+            if (val=== true ){
+                objVal = {
+                    value: Number(caseFundOfUseTrue.id),
+                    kFromBase: val
+
+                }
+            }else {
+                objVal = {
+                    value: Number(caseFundOfUseFalce.id),
+                    kFromBase: val
+                }
+            }
+
+            return (objVal)
+        } else {
+            if (val=== true ){
+                newVal.value = Number(caseFundOfUseTrue.id)
+                newVal.kFromBase= val
+            }else {
+                newVal.value = Number(caseFundOfUseFalce.id)
+                newVal.kFromBase= val
+            }
+
+
+            return (newVal)
+
+        }
+    }
   render() {
     if(!this.props.tofiConstants) return null;
 
@@ -112,8 +327,10 @@ class ClassificationInfo extends React.Component{
           name="referenceName"
           disabled={!isEmpty(this.props.initialValues.approvalDateMetodika)}
           component={ renderInput }
+
+          normalize={this.strToRedux}
+
           label={t('REFERENCE_NAME')}
-          readOnly={true}
           formItemLayout={
             {
               labelCol: { span: 10 },
@@ -123,10 +340,10 @@ class ClassificationInfo extends React.Component{
         />
         <Field
           name="referenceType"
-          disabled={!isEmpty(this.props.initialValues.approvalDateMetodika)}
           component={ renderInput }
           label={t('ARCHIVE_REFERENCE_TYPE')}
-          readOnly={true}
+          normalize={this.strToRedux}
+          disabled
           formItemLayout={
             {
               labelCol: { span: 10 },
@@ -147,6 +364,8 @@ class ClassificationInfo extends React.Component{
                   wrapperCol: { span: 14 }
                 }
               }
+              normalize={this.selectToRedux}
+
               isLoading={loading.vidGuidebookLoading}
               onMenuOpen={this.loadOptions('vidGuidebook')}
               data={vidGuidebookOptions ? vidGuidebookOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : []}
@@ -162,6 +381,8 @@ class ClassificationInfo extends React.Component{
                   wrapperCol: { span: 14 }
                 }
               }
+              normalize={this.selectToRedux}
+
               isLoading={loading.oblastPutevLoading}
               onMenuOpen={this.loadOptions('oblastPutev')}
               data={oblastPutevOptions ? oblastPutevOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : []}
@@ -177,6 +398,7 @@ class ClassificationInfo extends React.Component{
                   wrapperCol: { span: 14 }
                 }
               }
+              normalize={this.selectToRedux}
               isLoading={loading.rubrikPutevLoading}
               onMenuOpen={this.loadOptions('rubrikPutev')}
               data={rubrikPutevOptions ? rubrikPutevOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : []}
@@ -196,6 +418,8 @@ class ClassificationInfo extends React.Component{
                   wrapperCol: { span: 14 }
                 }
               }
+              normalize={this.selectToRedux}
+
               isLoading={loading.vidKatalogLoading}
               onMenuOpen={this.loadOptions('vidKatalog')}
               data={vidKatalogOptions ? vidKatalogOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : []}
@@ -211,6 +435,8 @@ class ClassificationInfo extends React.Component{
                   wrapperCol: { span: 14 }
                 }
               }
+              normalize={this.selectToRedux}
+
               isLoading={loading.oblastKatalogLoading}
               onMenuOpen={this.loadOptions('oblastKatalog')}
               data={oblastKatalogOptions ? oblastKatalogOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : []}
@@ -230,6 +456,8 @@ class ClassificationInfo extends React.Component{
                   wrapperCol: { span: 14 }
                 }
               }
+              normalize={this.selectToRedux}
+
               isLoading={loading.vidUkazLoading}
               onMenuOpen={this.loadOptions('vidUkaz')}
               data={vidUkazOptions ? vidUkazOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : []}
@@ -245,6 +473,7 @@ class ClassificationInfo extends React.Component{
                   wrapperCol: { span: 14 }
                 }
               }
+              normalize={this.selectToRedux}
               isLoading={loading.oblastUkazLoading}
               onMenuOpen={this.loadOptions('oblastUkaz')}
               data={oblastUkazOptions ? oblastUkazOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : []}
@@ -260,6 +489,8 @@ class ClassificationInfo extends React.Component{
                   wrapperCol: { span: 14 }
                 }
               }
+              normalize={this.selectToRedux}
+
               isLoading={loading.rubrikUkazLoading}
               onMenuOpen={this.loadOptions('rubrikUkaz')}
               data={rubrikUkazOptions ? rubrikUkazOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : []}
@@ -279,6 +510,8 @@ class ClassificationInfo extends React.Component{
                   wrapperCol: { span: 14 }
                 }
               }
+              normalize={this.selectToRedux}
+
               isLoading={loading.vidObzoraLoading}
               onMenuOpen={this.loadOptions('vidObzora')}
               data={vidObzoraOptions ? vidObzoraOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : []}
@@ -294,6 +527,8 @@ class ClassificationInfo extends React.Component{
                   wrapperCol: { span: 14 }
                 }
               }
+              normalize={this.selectToRedux}
+
               isLoading={loading.oblastObzorLoading}
               onMenuOpen={this.loadOptions('oblastObzor')}
               data={oblastObzorOptions ? oblastObzorOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : []}
@@ -311,6 +546,8 @@ class ClassificationInfo extends React.Component{
               wrapperCol: { span: 14 }
             }
           }
+          normalize={this.selectToRedux}
+
           isLoading={loading.groupLoading}
           onMenuOpen={this.loadOptions('group')}
           data={groupOptions ? groupOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : []}
@@ -328,6 +565,8 @@ class ClassificationInfo extends React.Component{
               wrapperCol: { span: 14 }
             }
           }
+          normalize={this.strToRedux}
+
           />
         }
         <Field
@@ -335,12 +574,15 @@ class ClassificationInfo extends React.Component{
           component={ renderTextarea }
           disabled={!isEmpty(this.props.initialValues.approvalDateMetodika)}
           label={tofiConstants.goalSprav.name[this.lng]}
+
           formItemLayout={
             {
               labelCol: { span: 10 },
               wrapperCol: { span: 14 }
             }
           }
+          normalize={this.strToRedux}
+
         />
         <Field
           name="method"
@@ -354,18 +596,22 @@ class ClassificationInfo extends React.Component{
               wrapperCol: { span: 14 }
             }
           }
+          normalize={this.fileToRedux}
         />
         <Field
           name="metodikaText"
           component={ renderTextarea }
           disabled={!isEmpty(this.props.initialValues.approvalDateMetodika)}
           label={tofiConstants.metodikaText.name[this.lng]}
+
           formItemLayout={
             {
               labelCol: { span: 10 },
               wrapperCol: { span: 14 }
             }
           }
+          normalize={this.strToRedux}
+
         />
         <Field
           name="approvalDateMetodika"
@@ -378,6 +624,8 @@ class ClassificationInfo extends React.Component{
               wrapperCol: { span: 14 }
             }
           }
+          normalize={this.dateToRedux}
+
         />
         <Field
           name="protocol"
@@ -385,6 +633,8 @@ class ClassificationInfo extends React.Component{
           disabled={!isEmpty(this.props.initialValues.approvalDateMetodika)}
           formItemClass="classificationInfo_uploadBtn"
           label={tofiConstants.protocol.name[this.lng]}
+          normalize={this.fileToRedux}
+
           formItemLayout={
             {
               labelCol: { span: 10 },
@@ -395,28 +645,30 @@ class ClassificationInfo extends React.Component{
         <Field
           name="lastChangeDateScheme"
           component={ renderInput }
-          disabled={!isEmpty(this.props.initialValues.approvalDateMetodika)}
           label={tofiConstants.lastChangeDateScheme.name[this.lng]}
-          readOnly={true}
           formItemLayout={
             {
               labelCol: { span: 10 },
               wrapperCol: { span: 14 }
             }
           }
+          disabled
         />
         <Field
           name="changesAuthor"
           component={ renderInput }
-          disabled={!isEmpty(this.props.initialValues.approvalDateMetodika)}
+          disabled
           label={tofiConstants.changesAuthor.name[this.lng]}
-          readOnly={true}
+          format={(val)=>{
+              return !!val ? {value:val.label} :""
+          }}
           formItemLayout={
             {
               labelCol: { span: 10 },
               wrapperCol: { span: 14 }
             }
           }
+
         />
         {dirty && <Form.Item className="ant-form-btns">
           <Button className="signup-form__btn" type="primary" htmlType="submit" disabled={submitting}>

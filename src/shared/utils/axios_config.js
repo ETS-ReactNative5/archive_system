@@ -424,6 +424,16 @@ export const Works = {
         return axios.post(`/${localStorage.getItem('i18nextLng')}/rabotaUchet/LightToDestroy`, fd)
         .then(res => res.data)
     },
+    crashedAct:idWork=>{
+        const fd= new FormData();
+        fd.append('idWork',idWork);
+        return axios.post(`/${localStorage.getItem('i18nextLng')}/rabotaUchet/crashedAct`, fd)
+        .then(res => res.data)
+    },
+
+
+
+
   // Заточенный апи для работ учета и хранения (проваливание) submit
   addDerivativeWorks: fd =>
     axios.post(`/${localStorage.getItem('i18nextLng')}/rabotaUchet/addDerivativeWorks`, fd)

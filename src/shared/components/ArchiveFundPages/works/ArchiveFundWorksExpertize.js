@@ -126,6 +126,7 @@ class ArchiveFundWorksExpertize extends React.PureComponent {
     )
   };
   renderTableData = (item, idx) => {
+      debugger;
     return {
       key: item.id,
       numb: idx + 1,
@@ -237,11 +238,12 @@ class ArchiveFundWorksExpertize extends React.PureComponent {
           ]}
           bordered
           size="small"
-          rowClassName={(rec, idx) => (this.props.location.state && rec.numb == this.props.location.state.workIndexNumber ? "row-selected" : "")}
+          rowClassName={(rec, idx) => (rec ==this.state.selectedRow ? "row-selected" : "")}
           pagination={{pageSize: 20, defaultCurrent: this.props.location.state && this.props.location.state.workIndexNumber && Math.ceil(Number(this.props.location.state.workIndexNumber)/20)}}
           title={this.renderTableHeader}
           footer={this.renderTableFooter}
-          onRowDoubleClick={this.changeSelectedRow}
+        //  onRowDoubleClick={this.changeSelectedRow}
+          onRowClick={this.changeSelectedRow}
           dataSource={this.state.data}
           scroll={{x: 1500, y: '100%'}}
         />

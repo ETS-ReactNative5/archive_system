@@ -11,6 +11,7 @@ class DamageAct extends React.Component {
 
     state = {
         fundArchive: 'state Архив',
+        cntCaseNotA:'0',
         date: 'state Date',
         number: 'state Number',
         podpis: 'state Расшифрока подписи',
@@ -28,6 +29,7 @@ class DamageAct extends React.Component {
         restorationOfFadingTexts: '0',
         irreparablyDamaged: '0',
         hasNotInInv: '0',
+        cntAdded:'0',
         storageAndDamage: '0'
     };
 
@@ -36,19 +38,22 @@ class DamageAct extends React.Component {
         getAct1((this.props.workId).split('_')[1]).then(res=>{console.log(res);
         let data=res.data;
         this.setState({
+            cntCaseNotA:data.cntCaseNotA,
+            cntAdded:data.cntAdded,
             fundNumber:data.fundNumber,
             fundArchive:data.fundArchive.ru,
             startDate:data.workActualStartDate,
             endDate:data.workActualEndDate,
             invNumber:data.invNumber,
             invCount:data.cntCase,
+            cntAdded:data.cntAdded,
             disinfection:data.workType.disinfection,
             disinfestation:data.workType.disinfestation,
             restoration:data.workType.restoration,
             binding:data.workType.binding,
             restorationOfFadingTexts:data.workType.restorationOfFadingTexts,
             irreparablyDamaged:data.cntCaseDamage,
-            caseInInv:parseInt(data.cntCase)+parseInt(data.cntCaseDamage)
+            caseInInv:parseInt(data.cntCase)+parseInt(data.cntCaseNotA)
         })
         });
             }
@@ -128,19 +133,19 @@ class DamageAct extends React.Component {
                 </Col>
             </Row>
             <strong>1. Числится по описям <span  style={{textDecoration:"underline"}}>{this.state.invCount}</span> ед.хр.<br/></strong>
-            <strong>2. Не оказалось в наличие <span  style={{textDecoration:"underline"}}>0</span> ед.хр.<br/></strong>
+            <strong>2. Не оказалось в наличии <span  style={{textDecoration:"underline"}}>{this.state.cntCaseNotA}</span> ед.хр.<br/></strong>
             <strong>3. Имеется в наличии по данному фонду</strong>
             <Row>
                 <Col col={24}>
                     (Включенных в описи) <span
-                 style={{textDecoration:"underline"}}>{this.state.caseInInv}</span> ед.хр.
+                 style={{textDecoration:"underline"}}>{this.state.invCount - this.state.cntCaseNotA}</span> ед.хр.
                 </Col>
             </Row>
             <strong>Из них требующих:</strong>
             <Row>
                 <Col col={24}>
                     а) Дезинфекция <span
-                 style={{textDecoration:"underline"}}>{!!this.state.disinfection ? this.state.binding:'0'}</span> ед.хр.
+                 style={{textDecoration:"underline"}}>{!!this.state.disinfection ? this.state.disinfection:'0'}</span> ед.хр.
                 </Col>
                 <Col col={24}>
                     б) Дезинсекция <span
@@ -166,7 +171,7 @@ class DamageAct extends React.Component {
             <Row>
                 <Col col={24}>
                     4. Имеется не включенных в описи: <span
-                 style={{textDecoration:"underline"}}>{this.state.hasNotInInv}</span>
+                 style={{textDecoration:"underline"}}>{this.state.cntAdded }</span>
                 </Col>
             </Row>
             <Row>
@@ -174,7 +179,7 @@ class DamageAct extends React.Component {
                     5. Итого по данному фонду (включенных и невключенных в описи)
                     имеющихся в
                     наличии: <span
-                 style={{textDecoration:"underline"}}>{this.state.invCount}</span> ед.хр.
+                 style={{textDecoration:"underline"}}>{this.state.caseInInv}</span> ед.хр.
                 </Col>
             </Row>
             <h3><br/>Характеристика условий их хранения.</h3>

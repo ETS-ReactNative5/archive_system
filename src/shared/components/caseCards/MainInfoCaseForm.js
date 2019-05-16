@@ -255,7 +255,12 @@ class MainInfoCaseForm extends Component {
     }
   };
 
-  strToRedux = (val, prevVal, obj, prevObj) => {
+
+
+    strToRedux = (val, prevVal, obj, prevObj, flag) => {
+        if(!!flag){
+           val = val.replace(/[^\d;]/g, '')
+        }
     var newVal = { ...prevVal };
     if (prevVal === null) {
       let objVal = {
@@ -826,7 +831,7 @@ class MainInfoCaseForm extends Component {
               name="caseNumberOfPages"
               component={renderInput}
               label={caseNumberOfPages.name[this.lng]}
-              normalize={this.strToRedux}
+              normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
               formItemLayout={{
                 labelCol: { span: 10 },
                 wrapperCol: { span: 14 }
@@ -1665,7 +1670,7 @@ class MainInfoCaseForm extends Component {
             <Field
               name="day"
               component={renderInput}
-              normalize={this.strToRedux}
+              normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
               disabled={!inaccurateDateFeatureValue}
               label={day.name[this.lng]}
               formItemLayout={{
@@ -1688,7 +1693,7 @@ class MainInfoCaseForm extends Component {
             <Field
               name="month"
               component={renderInput}
-              normalize={this.strToRedux}
+              normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
               disabled={!inaccurateDateFeatureValue}
               label={month.name[this.lng]}
               formItemLayout={{
@@ -1711,7 +1716,7 @@ class MainInfoCaseForm extends Component {
             <Field
               name="year"
               component={renderInput}
-              normalize={this.strToRedux}
+              normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
               disabled={!inaccurateDateFeatureValue}
               label={year.name[this.lng]}
               formItemLayout={{

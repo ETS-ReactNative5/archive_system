@@ -14,7 +14,7 @@ import {
     updateCubeData,
     dObj
 } from '../../actions/actions';
-import {getPropMeta, parseCube_new} from '../../utils/cubeParser';
+import {getPropMeta,onSaveCubeData, parseCube_new} from '../../utils/cubeParser';
 
 const EditableCell = ({editable, value, onChange}) => (
 <div>
@@ -80,8 +80,8 @@ class ClassificationSchemas extends React.Component {
         if (this.state.data[0].editable) return;
 
         const recEdit = {
-            referenceName: rec.referenceName,
-            referenceType: rec.referenceType.label,
+            referenceName: {value: rec.referenceName},
+            referenceType: {value:rec.referenceType.label},
             vidGuidebook: rec.vidGuidebook,
             oblastPutev: rec.oblastPutev,
             rubrikPutev: rec.rubrikPutev,
@@ -233,7 +233,6 @@ class ClassificationSchemas extends React.Component {
         const protocolObj = item.props.find(element => element.prop === protocol.id);
         const lastChangeDateSchemeObj = item.props.find(element => element.prop === lastChangeDateScheme.id);
         const changesAuthorObj = item.props.find(element => element.prop === changesAuthor.id);
-
         return {
             key: item.id,
             numb: idx + 1,
@@ -244,59 +243,26 @@ class ClassificationSchemas extends React.Component {
                 referenceTypeObj
             } : null,
             dateCreateShem: !!dateCreateShemObj.values && dateCreateShemObj.values.value ? moment(dateCreateShemObj.values.value, 'DD-MM-YYYY') : null,
-            requisites: !!requisitesObj && requisitesObj.value ? requisitesObj : {},
-            vidGuidebook: !!vidGuidebookObj && vidGuidebookObj.refId ? {
-                value: vidGuidebookObj.refId,
-                label: vidGuidebookObj.value
-            } : null,
-            oblastPutev: !!oblastPutevObj && oblastPutevObj.refId ? {
-                value: oblastPutevObj.refId,
-                label: oblastPutevObj.value
-            } : null,
-            rubrikPutev: !!rubrikPutevObj && rubrikPutevObj.refId ? {
-                value: rubrikPutevObj.refId,
-                label: rubrikPutevObj.value
-            } : null,
-            vidKatalog: !!vidKatalogObj && vidKatalogObj.refId ? {
-                value: vidKatalogObj.refId,
-                label: vidKatalogObj.value
-            } : null,
-            oblastKatalog: !!oblastKatalogObj && oblastKatalogObj.refId ? {
-                value: oblastKatalogObj.refId,
-                label: oblastKatalogObj.value
-            } : null,
-            vidUkaz: !!vidUkazObj && vidUkazObj.refId ? {
-                value: vidUkazObj.refId,
-                label: vidUkazObj.value
-            } : null,
-            oblastUkaz: !!oblastUkazObj && oblastUkazObj.refId ? {
-                value: oblastUkazObj.refId,
-                label: oblastUkazObj.value
-            } : null,
-            rubrikUkaz: !!rubrikUkazObj && rubrikUkazObj.refId ? {
-                value: rubrikUkazObj.refId,
-                label: rubrikUkazObj.value
-            } : null,
-            vidObzora: !!vidObzoraObj && vidObzoraObj.refId ? {
-                value: vidObzoraObj.refId,
-                label: vidObzoraObj.value
-            } : null,
-            oblastObzor: !!oblastObzorObj && oblastObzorObj.refId ? {
-                value: oblastObzorObj.refId,
-                label: oblastObzorObj.value
-            } : null,
-            theme: !!themeObj && themeObj.value ? themeObj.value : '',
-            group: !!groupObj && groupObj.refId ? {
-                value: groupObj.refId,
-                label: groupObj.value
-            } : null,
-            goalSprav: !!goalSpravObj && goalSpravObj.value ? goalSpravObj.value : '',
+            requisites: !!requisitesObj && requisitesObj.values ? requisitesObj.values : {},
+            vidGuidebook: !!vidGuidebookObj && vidGuidebookObj.values ?vidGuidebookObj.values : null,
+            oblastPutev: !!oblastPutevObj && oblastPutevObj.values ? oblastPutevObj.values: null,
+            rubrikPutev: !!rubrikPutevObj && rubrikPutevObj.values ? rubrikPutevObj.values : null,
+            vidKatalog: !!vidKatalogObj && vidKatalogObj.values ?vidKatalogObj.values  : null,
+            oblastKatalog: !!oblastKatalogObj && oblastKatalogObj.values ? oblastKatalogObj.values : null,
+            vidUkaz: !!vidUkazObj && vidUkazObj.values ? vidUkazObj.values : null,
+            oblastUkaz: !!oblastUkazObj && oblastUkazObj.values ? oblastUkazObj.values : null,
+            rubrikUkaz: !!rubrikUkazObj && rubrikUkazObj.values? rubrikUkazObj.values: null,
+            vidObzora: !!vidObzoraObj && vidObzoraObj.values ?vidObzoraObj.values : null,
+            oblastObzor: !!oblastObzorObj && oblastObzorObj.values ? oblastObzorObj.values : null,
+            theme: !!themeObj && themeObj.values ? themeObj.values : '',
+            group: !!groupObj && groupObj.values ? groupObj.values : null,
+            goalSprav: !!goalSpravObj && goalSpravObj.values ? goalSpravObj.values : '',
             method: !!methodObj && methodObj.values ? methodObj.values : [],
-            metodikaText: !!metodikaTextObj && metodikaTextObj.value ? metodikaTextObj.value : '',
-            approvalDateMetodika: !!approvalDateMetodikaObj && approvalDateMetodikaObj.value ? moment(approvalDateMetodikaObj.value, 'DD-MM-YYYY') : '',
+            metodikaText: !!metodikaTextObj && metodikaTextObj.values ? metodikaTextObj.values : '',
+            approvalDateMetodika: !!approvalDateMetodikaObj && approvalDateMetodikaObj.values ? moment(approvalDateMetodikaObj.values.value, 'DD-MM-YYYY') : '',
             protocol: !!protocolObj && protocolObj.values ? protocolObj.values : '',
-            lastChangeDateScheme: !!lastChangeDateSchemeObj && lastChangeDateSchemeObj.value ? lastChangeDateSchemeObj.value : '',
-            changesAuthor: !!changesAuthorObj && changesAuthorObj.value ? changesAuthorObj.value : '',
+            lastChangeDateScheme: !!lastChangeDateSchemeObj && lastChangeDateSchemeObj.values ? lastChangeDateSchemeObj.values : '',
+            changesAuthor: !!changesAuthorObj && changesAuthorObj.values ? changesAuthorObj.values : '',
         }
     };
 
@@ -447,11 +413,35 @@ class ClassificationSchemas extends React.Component {
         );
     };
 
-    refreshRecord = (props, quick) => {
+    refreshRecord = ({referenceName, ...props}, quick) => {
+        let selercrow = this.state.selectedRow
+
+        const name = {};
+        SYSTEM_LANG_ARRAY.forEach(lang => {
+            name[lang] = !!referenceName?referenceName.value:selercrow.referenceName
+        });
+        const obj = {
+            name,
+            fullName: name,
+
+        };
+
         const {valOld} = this.state.selectedRow;
-        const changesAuthor = this.props.user ? String(this.props.user.obj) : '';
-        const lastChangeDateScheme = moment();
-        //console.log(props); //return;
+        let changesAuthor = selercrow.changesAuthor
+        if(!!changesAuthor){
+            changesAuthor.value=this.props.user.obj
+            changesAuthor.label = this.props.user.name
+            changesAuthor.labelFull = this.props.user.name
+
+        }else {
+            changesAuthor = this.props.user ? String(this.props.user.obj) : '';
+        }
+         let lastChangeDateScheme = selercrow.lastChangeDateScheme
+        if(!!lastChangeDateScheme ){
+            lastChangeDateScheme.value = moment()
+        }else{
+            lastChangeDateScheme = moment()
+        }
         const cube = {
             cubeSConst: 'csClassificationShem',
             doConst: 'doForSchemClas',
@@ -461,7 +451,7 @@ class ClassificationSchemas extends React.Component {
             ...props,
             changesAuthor,
             lastChangeDateScheme
-        }, this.state.selectedTableRowKey, {}, valOld, quick)
+        }, this.state.selectedTableRowKey, obj, valOld, quick)
     };
 
 
@@ -484,8 +474,61 @@ class ClassificationSchemas extends React.Component {
     };
 
 
-    onSaveCubeData = (objVerData, {method, protocol, ...values}, doItemProp, objDataProp, valOld, quick) => {
-        let datas = [];
+    onSaveCubeData = async (objVerData, {method, protocol, ...values}, doItemProp, objDataProp, valOld, quick) => {
+
+        let hideLoading
+        try {
+            const c ={
+                cube:{
+                    cubeSConst: "csClassificationShem",
+                    doConst: "doForSchemClas",
+                    dpConst: "dpForSchemClas",
+                    data:this.props[objVerData.cube.cubeSConst]
+                },
+                obj:{
+                    doItem:doItemProp
+                }
+            }
+
+            const v ={
+                values:values,
+                complex:"",
+                oFiles:{
+                    method:method,
+                    protocol:protocol,
+                }
+            }
+            const objData = objDataProp
+            const  t = this.props.tofiConstants
+            this.setState({loading: true, });
+
+            hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
+            const resSave = await onSaveCubeData(c, v, t, objData);
+            hideLoading();
+            if(!resSave.success) {
+                message.error(this.props.t('PROPS_UPDATING_ERROR'));
+                resSave.errors.forEach(err => {
+                    message.error(err.text)
+                });
+                return Promise.reject(resSave);
+            }
+            message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+            return this.props.getCube('csClassificationShem', JSON.stringify(this.filters))
+                .then(() => {
+                    if (quick) {
+                        this.setState({loading: false});
+                    } else {
+                        this.setState({loading: false, openCard: false});
+                    }
+                    return {success: true}
+                })
+
+        } catch (e) {
+            typeof hideLoading === 'function' && hideLoading();
+            this.setState({ loading: false });
+            console.warn(e);
+        }
+     /*   let datas = [];
         this.setState({loading: true})
         try {
             datas = [{
@@ -571,7 +614,7 @@ class ClassificationSchemas extends React.Component {
                     return {success: false}
                 }
             }
-        })
+        })*/
     };
 
     onSideBarTabClick = (key) => {

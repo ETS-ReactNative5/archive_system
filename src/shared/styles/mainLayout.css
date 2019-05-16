@@ -66,4 +66,10 @@
 
 @media print {
   .printHide {
-    visibility: hidden; } }
+    visibility: hidden; }
+  table::-webkit-scrollbar {
+    width: 0 !important; }
+  table {
+    overflow: -moz-scrollbars-none; }
+  table {
+    -ms-overflow-style: none; } }

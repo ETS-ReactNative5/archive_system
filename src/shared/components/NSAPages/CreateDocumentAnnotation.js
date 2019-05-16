@@ -39,14 +39,30 @@ class ClassificationInfo extends React.Component{
       this.setState({ record: nextProps.record });
     }
   }
-  
-  onChange(value, name) {
-    this.setState({record: { ...this.state.record, [name]: value }}, () => {
-      this.props.onChange(name, value)
-    })
-  };
-  
-  render() {
+
+    onChange = (value, label) =>{
+        const {onChange} = this.props;
+        const {record} = this.state;
+        const data = {
+            ...record[label],
+            value: value,
+            valueLng: {
+                ru: value,
+                kz: value,
+                en: value
+            }
+        };
+        this.setState({
+            record: {
+                ...record,
+                [label]: data
+            },
+        });
+        onChange(label, data);
+    };
+
+
+    render() {
     if(!this.props.tofiConstants) return null;
 
     this.lng = localStorage.getItem('i18nextLng');

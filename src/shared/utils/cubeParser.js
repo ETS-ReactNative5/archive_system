@@ -787,16 +787,17 @@ options = {}) {
         try {
             if (propMetaData.isUniq===1 && (propMetaData.typeProp === 315 || propMetaData.typeProp === 311 || propMetaData.typeProp === 317)) {
 
-                if (!!val.value) {
 
-                } else {
-                    val.mode = "del"
-                }
                 value = {
                     kz: !!val.valueLng.kz ? val.valueLng.kz : val.value,
                     ru: !!val.valueLng.ru ? val.valueLng.ru : val.value,
                     en: !!val.valueLng.en ? val.valueLng.en : val.value
                 };
+                if (!!value) {
+
+                } else {
+                    val.mode = "del"
+                }
             }
             if (propMetaData.isUniq===2 && propMetaData.typeProp===315){
                 let values = []

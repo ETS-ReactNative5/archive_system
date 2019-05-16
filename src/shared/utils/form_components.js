@@ -93,6 +93,8 @@ export const renderLogin = ({input, formItemClass, meta: {submitFailed, error}, 
 
 export const renderTextarea = ({input, formItemClass, meta: {submitFailed, error}, formItemLayout, colon, ...rest}) => {
     const addCls = !!colon ? ' with-colon' : '';
+    var input2 = {...input};
+    input2.value = input.value && input.value.value ? input.value.value : null;
     return (
     <FormItem
     colon={colon || false}
@@ -102,7 +104,7 @@ export const renderTextarea = ({input, formItemClass, meta: {submitFailed, error
     {...formItemLayout}
     >
         <Input.TextArea
-        {...input}
+        {...input2}
         {...rest}
         autosize={{minRows: 5}}
         />
@@ -570,7 +572,6 @@ export const renderDoubleDateInput = fields => {
 };
 
 export const renderFields = (fields) => {
-    console.log(fields);
     return (
     <div>
         <div className="input-row">

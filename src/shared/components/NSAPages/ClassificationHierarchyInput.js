@@ -42,6 +42,9 @@ class ClassificationHierarchyInput extends React.Component{
           colon={true}
           label={t('SECTION')}
           autoComplete="off"
+          format={(val)=>{
+              return {value:val}
+          }}
           formItemLayout={
             {
               labelCol: { span: 5 },
@@ -60,6 +63,10 @@ class ClassificationHierarchyInput extends React.Component{
               wrapperCol: { span: 19 }
             }
           }
+          format={(val)=>{
+              return {value:val}
+
+          }}
         />
         <Field
           name="spellVariant"
@@ -72,6 +79,10 @@ class ClassificationHierarchyInput extends React.Component{
               wrapperCol: { span: 19 }
             }
           }
+          format={(val)=>{
+              return {value:val}
+
+          }}
         />
         <Form.Item>
           <Button className="signup-form__btn" type="primary" htmlType="button" disabled={inputSaveDisabled} onClick={this.save}>

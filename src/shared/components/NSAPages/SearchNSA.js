@@ -38,6 +38,7 @@ class SearchNSA extends Component {
     this.filteredData = [];
 
     this.state = {
+        sortVal:'ascend',
       data: [],
       dataRec: [],
       selectedRow: {},
@@ -770,6 +771,24 @@ class SearchNSA extends Component {
                   title: t('FUND_NUMB'),
                   dataIndex: 'fundNumber',
                   width: "8%",
+                    // sorter: (a, b) => {
+                    //
+                    //   if(this.state.sortVal === 'ascend'){
+                    //       this.setState({
+                    //           sortVal:'descend'
+                    //       });
+                    //       if (a.fundNumber != null && b.fundNumber != null) {
+                    //           return parseInt(a.fundNumber) - parseInt(b.fundNumber);
+                    //       }
+                    //   }else{
+                    //       this.setState({
+                    //           sortVal:'ascend'
+                    //       });
+                    //       {
+                    //           return parseInt(b.fundNumber) - parseInt(a.fundNumber);
+                    //       }
+                    //   }},
+                    // sortOrder: this.state.sortVal,
                     filterDropdown: (
                         <div className="custom-filter-dropdown">
                             <Input
@@ -790,6 +809,7 @@ class SearchNSA extends Component {
                     },
                     sorter: (a, b) =>((a.fundNumber).replace(/[^0-9]/g,'')) - ((b.fundNumber).replace(/[^0-9]/g,''))
                 },
+
                 {
                   key: 'fundIndex',
                   title: fundIndex.name[this.lng] || '',

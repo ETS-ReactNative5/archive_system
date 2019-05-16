@@ -8,7 +8,7 @@ import AntTable from '../AntTable'
 import ClassificationHierarchyInput from './ClassificationHierarchyInput';
 import { SYSTEM_LANG_ARRAY } from '../../constants/constants';
 import {createObj, getCube, getObjByObjVal, updateCubeData, getFundCountData, dObj} from '../../actions/actions';
-import {getPropMeta, parseCube_new} from '../../utils/cubeParser';
+import {getPropMeta, onSaveCubeData, parseCube_new} from '../../utils/cubeParser';
 
 class ClassificationHierarchy extends React.Component{
 
@@ -116,9 +116,9 @@ class ClassificationHierarchy extends React.Component{
       referenceName: item.name[this.lng],
       parent: item.parent,
 
-      indexSceme: !!indexScemeObj && indexScemeObj.value ? indexScemeObj.value : '',
-      spellVariant: !!spellVariantObj && spellVariantObj.value ? spellVariantObj.value : '',
-      requisites: !!requisitesObj && requisitesObj.value ? requisitesObj.value : '',
+      indexSceme: !!indexScemeObj && indexScemeObj.values ? indexScemeObj.values.value : '',
+      spellVariant: !!spellVariantObj && spellVariantObj.values ? spellVariantObj.values.value : '',
+      requisites: !!requisitesObj && requisitesObj.values ? requisitesObj.values.value : '',
     }
   };
 
@@ -273,7 +273,50 @@ class ClassificationHierarchy extends React.Component{
       }
     }
   }
-  onSaveCubeData = (objVerData, values, doItemProp, objDataProp, valOld) => {
+  onSaveCubeData =  async (objVerData, values, doItemProp, objDataProp, valOld) => {
+      // let hideLoading
+      // try {
+      //     const c ={
+      //         cube:{
+      //             cubeSConst: "csClassificationShem",
+      //             doConst: "doForSchemClas",
+      //             dpConst: "dpForSchemClas",
+      //             data:this.props[objVerData.cube.cubeSConst]
+      //         },
+      //         obj:{
+      //             doItem:doItemProp
+      //         }
+      //     }
+      //
+      //     const v ={
+      //         values:values,
+      //         complex:"",
+      //         oFiles:{}
+      //     }
+      //     const objData = objDataProp
+      //     const  t = this.props.tofiConstants
+      //     this.setState({loading: true, });
+      //
+      //     hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
+      //     const resSave = await onSaveCubeData(c, v, t, objData);
+      //     hideLoading();
+      //     if(!resSave.success) {
+      //         message.error(this.props.t('PROPS_UPDATING_ERROR'));
+      //         resSave.errors.forEach(err => {
+      //             message.error(err.text)
+      //         });
+      //         return Promise.reject(resSave);
+      //     }
+      //     message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+      //     return this.props.getCube('csClassificationShem', JSON.stringify(this.filters))
+      //
+      // } catch (e) {
+      //     typeof hideLoading === 'function' && hideLoading();
+      //     this.setState({ loading: false });
+      //     console.warn(e);
+      // }
+
+
     let datas = [];
     try {
       datas = [{
@@ -294,7 +337,7 @@ class ClassificationHierarchy extends React.Component{
           }
           if(val && typeof val === 'object' && val.value) {
             value = String(val.value);
-            oldValue = oldValue && String(valOld[key].value); 
+            oldValue = oldValue && String(valOld[key].value);
           }
           if(val && typeof val === 'object' && val.mode) propMetaData.mode = val.mode;
           if(propMetaData.isUniq === 2 && val[0].value) {
@@ -371,8 +414,11 @@ class ClassificationHierarchy extends React.Component{
     
     const columns = [
       { title: t('SECTION'), dataIndex: 'referenceName', key: 'referenceName', width:'45%' },
-      { title: t('INDEX_SCEME'), dataIndex: 'indexSceme', key: 'indexSceme', width:'15%' },
-      { title: t('SPELL_VARIANT'), dataIndex: 'spellVariant', key: 'spellVariant', width:'30%' },
+      { title: t('INDEX_SCEME'), dataIndex: 'indexSceme',
+          render:(val)=>{return val},
+          key: 'indexSceme', width:'15%' },
+      { title: t('SPELL_VARIANT'), dataIndex: 'spellVariant',           render:(val)=>{return val},
+          key: 'spellVariant', width:'30%' },
       { title: '', dataIndex: '', key: 'action', width:'10%',
         render: (text, record) => {
           return (

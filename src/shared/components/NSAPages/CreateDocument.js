@@ -885,8 +885,6 @@ class CreateDocument extends React.Component {
                         values: {pageNumberEnd, turnoverSheetEnd}
                     }
                 }
-                //console.log(complex)
-
 
                 const values = {
                     invNumber,
@@ -1049,7 +1047,6 @@ class CreateDocument extends React.Component {
     };
 
     onEditRecordChange = (label, data) => {
-        debugger;
         const {changedRow, selectedRow} = this.state;
         if (typeof label !== 'string' && label.documentFile) {
             changedRow.documentFile = label.documentFile;
@@ -1065,10 +1062,7 @@ class CreateDocument extends React.Component {
                     changedRow.linkToObzor = data;
                     break;
                 default:
-                    changedRow[label].value = data
-                    changedRow[label].valueLng.ru = data
-                    changedRow[label].valueLng.kz = data
-                    changedRow[label].valueLng.en = data;
+                    changedRow[label] = data;
             }
         }
         this.setState({

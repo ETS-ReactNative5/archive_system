@@ -4,7 +4,7 @@ import {Select} from 'antd';
 import moment from "moment"
 import {
     createObj,
-    getCube, getObjListNew, getPropVal,
+    getCube, getObjListNew, getPropVal, getPropValByConst,
     propValList, updateCubeData2
 } from "../../../../actions/actions";
 import axios from 'axios';
@@ -22,37 +22,44 @@ const EditableCell = ({editable, value, onChange}) => (
 );
 class IrrDamageTable extends React.Component {
     state = {
+        cubeReason:'',
         data: [],
         dataObj: [],
         irrDamageList: [],
         tableData: '',
+        selectReason: [],
         deliveryPurposeList: [],
         newDescDmg: null,
         newIrrDmg: [],
+        newSelectReason: [],
         loading: false,
-        addVisible:false
+        addVisible: false,
+        idDpvReason: '',
+        idDpvNoStorageCase:''
     };
 
     handleChangeirrDamageList = value => {
-        console.log(value);
         this.setState({newIrrDmg: value});
     };
 
+    handleChangeReason = e => {
+        this.setState({newSelectReason: e.target.value});
+    };
+
     handleChangeDeliveryPurpose = (value) => {
-        console.log(value);
         this.setState({newdeliveryPurpose: value});
     };
 
     damageDesriptionChange = e => {
-        console.log(e.target.value);
         this.setState({newDescDmg: e.target.value});
     };
 
 
-    renderTableData = item => {
-        const constArr = ['fundNumber', 'descriptionDamage', 'irreparableDamage'];
+    renderTableData = (item,idx) => {
+        const constArr = ['fundNumber', 'descriptionDamage', 'irreparableDamage', 'noStorageReasonCase'];
         const result = {
-            key: item.id
+            key: item.id,
+            idx: idx +1
         };
         parseForTable(item.props, this.props.tofiConstants, result, constArr);
         return result;
@@ -70,19 +77,24 @@ class IrrDamageTable extends React.Component {
             name: name,
             fullName: name,
             clsConst: 'caseExamination',
-            parent: String(this.props.stateRecord.key),
+            parent: String((this.props.stateRecord.key) ),
         };
         let hideCreateObj;
         try {
+
+
+
             hideCreateObj = message.loading('Создание объекта', 30);
             hideCreateObj();
+
+
+            if(this.props.stateRecord.workType.workTypeClass !== 'caseExamination'){
             createObj(cube, obj).then(resNewWork => {
                 if (!resNewWork.success) {
                     resNewWork.errors.forEach(err => {
                         message.error(err.text)
                     });
                 } else if (resNewWork.success == true) {
-
                     let hideCreateObj2 = message.loading('Cохранение свойств', 30);
                     hideCreateObj2();
                     const datas = [{
@@ -125,14 +137,14 @@ class IrrDamageTable extends React.Component {
                                 isUniq: '1',
                                 mode: 'ins'
                             }/*,
-                            {
-                                propConst: 'workStatusAdmissionAndExpertise ',
-                                val: String(this.props.tofiConstants.appointmentProcess.id),
-                                typeProp: '11',
-                                periodDepend: "0",
-                                isUniq: '1',
-                                mode: 'ins'
-                            }*/
+                             {
+                             propConst: 'workStatusAdmissionAndExpertise ',
+                             val: String(this.props.tofiConstants.appointmentProcess.id),
+                             typeProp: '11',
+                             periodDepend: "0",
+                             isUniq: '1',
+                             mode: 'ins'
+                             }*/
                         ],
                         periods: [{
                             periodType: '0',
@@ -140,59 +152,65 @@ class IrrDamageTable extends React.Component {
                             dend: '3333-12-31'
                         }]
                     }];
-                    return updateCubeData2('cubeForWorks', '', JSON.stringify(datas)).then(res => {
+                    updateCubeData2('cubeForWorks', '', JSON.stringify(datas)).then(res => {
                         if (res.success == true) {
-                            /*Обновляем пропы дела*/
-                            let hideCreateObj3 = message.loading('Cохранение свойств', 30);
-                            hideCreateObj3();
-                            const datasCase = [{
-                                own: [{
-                                    doConst: 'doForCase',
-                                    doItem: String(this.props.idDimObjCase),
-                                    isRel: "0",
-                                    objData: {}
-                                }],
-                                props: [
-                                    {
-                                        propConst: 'descriptionDamage',
-                                        val: {
-                                            ru: this.state.newDescDmg,
-                                            kz: this.state.newDescDmg,
-                                            en: this.state.newDescDmg
-                                        },
-                                        typeProp: '315',
-                                        periodDepend: "0",
-                                        isUniq: '1',
-                                        mode: 'ins'
-                                    },
-                                    {
-                                        propConst: 'irreparableDamage',
-                                        val: this.state.newIrrDmg.join(','),
-                                        typeProp: '41',
-                                        periodDepend: "0",
-                                        isUniq: '2',
-                                        mode: 'ins'
-                                    },
-                                    {
-                                        propConst: 'irreparablyDamaged',
-                                        val: String(this.props.tofiConstants.irreparablyDamagedTrue.id),
-                                        typeProp: '11',
-                                        periodDepend: "0",
-                                        isUniq: '1',
-                                        mode: 'ins'
-                                    }
-
-                                ],
-                                periods: [{
-                                    periodType: '0',
-                                    dbeg: '1800-01-01',
-                                    dend: '3333-12-31'
-                                }]
-                            }];
-                            updateCubeData2('CubeForAF_Case', '', JSON.stringify(datasCase)).then(res => {
-                                if (res.success == true) { this.buildComponent()}})
+                                 console.log('success');
                         }
                     });
+
+                }
+            });
+            }
+            /*Обновляем пропы дела*/
+            let hideCreateObj3 = message.loading('Cохранение свойств', 30);
+            hideCreateObj3();
+            const datasCase = [{
+                own: [{
+                    doConst: 'doForCase',
+                    doItem: String(this.props.idDimObjCase),
+                    isRel: "0",
+                    objData: {}
+                }],
+                props: [
+                    {
+                        propConst: 'descriptionDamage',
+                        val: {
+                            ru: this.state.newDescDmg,
+                            kz: this.state.newDescDmg,
+                            en: this.state.newDescDmg
+                        },
+                        typeProp: '315',
+                        periodDepend: "0",
+                        isUniq: '1',
+                        mode: 'ins'
+                    },
+                    {
+                        propConst: 'irreparableDamage',
+                        val: this.state.newIrrDmg.join(','),
+                        typeProp: '41',
+                        periodDepend: "0",
+                        isUniq: '2',
+                        mode: 'ins'
+                    },
+                    {
+                        propConst: 'irreparablyDamaged',
+                        val: String(this.props.tofiConstants.irreparablyDamagedTrue.id),
+                        typeProp: '11',
+                        periodDepend: "0",
+                        isUniq: '1',
+                        mode: 'ins'
+                    }
+
+                ],
+                periods: [{
+                    periodType: '0',
+                    dbeg: '1800-01-01',
+                    dend: '3333-12-31'
+                }]
+            }];
+            updateCubeData2('CubeForAF_Case', '', JSON.stringify(datasCase)).then(res => {
+                if (res.success == true) {
+                    this.buildComponent()
                 }
             })
         }
@@ -207,9 +225,20 @@ class IrrDamageTable extends React.Component {
 
 
     buildComponent = () => {
-        console.log(this.props.idDimObjCase);
-        console.log(this.props.initialValues);
-        console.log(this.props.stateRecord);
+
+
+        getPropValByConst('noStorageReasonCase').then(res => {
+            var selectReason = [];
+            var data = res.data;
+            data.forEach(el => {
+                selectReason.push({value: el.id, label: el.name.ru});
+            });
+            this.setState({
+                selectReason: selectReason,
+            })
+        });
+
+
         this.setState({
             loading: false,
         });
@@ -230,7 +259,7 @@ class IrrDamageTable extends React.Component {
                     concatType: "and",
                     conds: [
                         {
-                            consts: "fundNumber,descriptionDamage,irreparableDamage"
+                            consts: "fundNumber,descriptionDamage,irreparableDamage,noStorageReasonCase"
                         }
                     ]
                 }
@@ -242,8 +271,6 @@ class IrrDamageTable extends React.Component {
         fd.append("cubeSConst", 'CubeForAF_Case');
         fd.append("filters", JSON.stringify(filterCase));
         axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getCubeData`, fd).then(res => {
-            console.log('RUN!');
-            debugger;
             var cubeData = res.data.data;
             const parsedCube = parseCube_new(
             cubeData["cube"],
@@ -255,24 +282,33 @@ class IrrDamageTable extends React.Component {
             ['do_' + this.props.tofiConstants.doForCase.id],
             ['dp_' + this.props.tofiConstants.dpForCase.id]
             );
-
-
             var tableData = parsedCube.map(this.renderTableData);
-            debugger;
-            var checkDamage=tableData[0]['irreparableDamage'];
-            if(!!checkDamage && checkDamage.length>0){
+
+
+            var checkDamage = tableData[0]['irreparableDamage'];
+            if (!!checkDamage && checkDamage.length > 0) {
                 this.setState({
                     tableData: tableData,
-                    addVisible:false
+                    addVisible: false
                 });
-            } else{
+            } else {
                 this.setState({
                     tableData: null,
-                    addVisible:true
+                    addVisible: true
                 });
             }
+            console.log(tableData[0].noStorageReasonCase);
+            var cubeReason = tableData[0].noStorageReasonCase && tableData[0].noStorageReasonCase.value;
+            var cubeReasonName = tableData[0].noStorageReasonCase && tableData[0].noStorageReasonCase.label;
+            var idDpvReason = tableData[0].noStorageReasonCase && tableData[0].noStorageReasonCase.idDataPropVal;
+            var idDpvNoStorageCase = tableData[0].noStorageCase ? tableData[0].noStorageCase.idDataPropVal : null;
 
-            console.log(this.state.tableData);
+            this.setState({
+                currReason: cubeReasonName,
+                newSelectReason: cubeReason,
+                idDpvReason: idDpvReason,
+                idDpvNoStorageCase: idDpvNoStorageCase
+            });
         })
         .catch(err => {
             console.error(err);
@@ -296,9 +332,9 @@ class IrrDamageTable extends React.Component {
             this.setState({
                 irrDamageList: selectDataDamage
             })
-            console.log(this.state.irrDamageList)
         });
     }
+
 
     componentDidMount() {
         this.buildComponent();
@@ -325,7 +361,7 @@ class IrrDamageTable extends React.Component {
         if (target) {
             target[column] = value;
             this.setState({data: newData}, () => {
-                console.log(this.state.data)
+
             });
         }
     }
@@ -352,6 +388,80 @@ class IrrDamageTable extends React.Component {
         }
     }
 
+    saveReason = () => {
+        var datas = [{
+            own: [{
+                doConst: 'doForCase',
+                doItem: String(this.props.idDimObjCase),
+                isRel: "0",
+                objData: {}
+            }],
+            props: [
+                {
+                    propConst: 'noStorageReasonCase',
+                    val: String(this.state.newSelectReason),
+                    typeProp: '11',
+                    periodDepend: "0",
+                    isUniq: '1',
+                    mode: 'ins'
+                },{
+                    propConst: 'noStorageCase',
+                    val: String(this.props.tofiConstants.yes.id),
+                    typeProp: '11',
+                    periodDepend: "0",
+                    isUniq: '1',
+                    mode: 'ins'
+                }
+            ],
+            periods: [{
+                periodType: '0',
+                dbeg: '1800-01-01',
+                dend: '3333-12-31'
+            }]
+        }];
+        if (!!this.state.idDpvReason) {
+            datas = [{
+                own: [{
+                    doConst: 'doForCase',
+                    doItem: String(this.props.idDimObjCase),
+                    isRel: "0",
+                    objData: {}
+                }],
+                props: [
+                    {
+                        propConst: 'noStorageReasonCase',
+                        val: String(this.state.newSelectReason),
+                        typeProp: '11',
+                        periodDepend: "0",
+                        isUniq: '1',
+                        idDataPropVal: String(this.state.idDpvReason),
+                        mode: 'upd'
+                    },{
+                        propConst: 'noStorageCase',
+                        val: String(this.props.tofiConstants.yes.id),
+                        typeProp: '11',
+                        periodDepend: "0",
+                        isUniq: '1',
+                        idDataPropVal:String(this.state.idDpvNoStorageCase),
+                        mode: 'upd'
+                    }
+                ],
+                periods: [{
+                    periodType: '0',
+                    dbeg: '1800-01-01',
+                    dend: '3333-12-31'
+                }]
+            }];
+        }
+
+        updateCubeData2('CubeForAF_Case', '', JSON.stringify(datas)).then(res => {
+            if (res.success == true) {
+                this.buildComponent()
+            }
+        });
+
+    };
+
     render() {
 
         this.lng = localStorage.getItem('i18nextLng');
@@ -363,17 +473,23 @@ class IrrDamageTable extends React.Component {
             <hr/>
             <Table columns={[
                 {
+                    key: 'idx',
+                    title: 'П/П',
+                    dataIndex: 'idx',
+                    width: '5%'
+                },
+                {
                     key: 'fundNumber',
                     title: '№',
                     dataIndex: 'fundNumber',
-                    width: '8%',
+                    width: '5%',
                     render: obj => obj && obj.value
                 },
                 {
                     key: 'irreparableDamage',
                     title: this.props.tofiConstants['irreparableDamage'].name[this.lng],
                     dataIndex: 'irreparableDamage',
-                    width: '47%',
+                    width: '45%',
                     render: obj => obj && obj.map(el => el.label).join(', ')
                 },
                 {
@@ -389,7 +505,7 @@ class IrrDamageTable extends React.Component {
 
             </Table>
 
-            {this.state.addVisible==true ? <Row>
+            {this.state.addVisible == true ? <Row>
                 <p>Указать неисправимые повреждения</p>
                 <Col span={11}>
                     <Select
@@ -416,12 +532,39 @@ class IrrDamageTable extends React.Component {
                         <Icon type="plus-circle"></Icon>
                     </Button>
                 </Col>
-            </Row>:''
+            </Row> : ''
             }
+
+            {this.props.stateRecord.workType.workTypeClass == 'caseExamination' &&
+            <div>
+                <br/>
+                <hr/>
+                <p style={{margin: '10px 0'}}>Причины по которым дела не подлежат хранению: {this.state.currReason ? this.state.currReason :'причина не указана'}</p>
+                <Row>
+                    <Col span={15}>
+                        <select
+                        style={{width: '100%', borderRadius: '5px', padding: '6px 4px'}}
+                        defaultValue=''
+                        value={this.state.newSelectReason}
+                        onChange={this.handleChangeReason}
+                        placeholder="Выберите причину">
+                            {this.state.selectReason.map(el => <option
+                            value={el.value}>{el.label}</option>)}
+                        </select>
+                    </Col>
+                    <Col span={7}>
+                        <Button type="primary" disabled={!this.state.newSelectReason}
+                                onClick={this.saveReason}>Сохранить</Button>
+                    </Col>
+                </Row>
+            </div>
+            }
+
         </div>
         )
     }
 }
+
 
 function mapStateToProps(state) {
     return {

@@ -55,11 +55,26 @@ class CreateDocumentHeaderMain extends React.Component{
       }
     }
   };
-  
-  onChange(value, name) {
-    this.setState({record: { ...this.state.record, [name]: value }}, () => {
-      this.props.onChange(name, value)
-    })
+
+  onChange = (value, label) =>{
+    const {onChange} = this.props;
+    const {record} = this.state;
+    const data = {
+      ...record[label],
+      value: value,
+      valueLng: {
+        ru: value,
+        kz: value,
+        en: value
+      }
+    };
+    this.setState({
+      record: {
+        ...record,
+        [label]: data
+      },
+    });
+    onChange(label, data);
   };
   
   markAsUnkhown(checked, name, value) {
@@ -150,8 +165,9 @@ class CreateDocumentHeaderMain extends React.Component{
             >
               <Checkbox 
                 disabled={this.state.record.parent !== '0'}
-                checked={this.state.record.documentAuthor && this.state.record.documentAuthor !== '' ? false : true}
-                onChange={(e) => this.markAsUnkhown(e.target.checked, 'documentAuthor', '')}
+                checked={this.state.record.documentAuthor && this.state.record.documentAuthor.value !== '' ? false : true}
+                // onChange={(e) => this.markAsUnkhown(e.target.checked, 'documentAuthor', '')}
+                onChange ={(e) => this.onChange(e)}
               >
                 не установлен
               </Checkbox>

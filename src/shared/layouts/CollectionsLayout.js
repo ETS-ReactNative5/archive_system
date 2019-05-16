@@ -309,14 +309,15 @@ class CollectionsLayout extends Component {
             path: '/managing/archivePassport',
             priv: 'passport'
           },
+          // {
+          //   name: t('CONTROL_REPORT'), // Отчеты
+          //   path: '/managing/reports',
+          //   priv: 'control-report'
+          // },
           {
-            name: t('CONTROL_REPORT'), // Отчеты
-            path: '/managing/reports',
-            priv: 'control-report'
-          },
-          {
-            name: t('CONTROL_REPORT1'), // Отчеты1
+            name: t('CONTROL_REPORT'), // Отчеты1
             path: '/managing/thisreport',
+              priv: 'control-report'
           },
 /*
           {

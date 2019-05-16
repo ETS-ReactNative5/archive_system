@@ -553,6 +553,9 @@ export const getAct1 = idWork=>
     axios.Works.getAct1(idWork);
 export const lightToDestroy = idWork=>
 axios.Works.lightToDestroy(idWork);
+export const crashedAct = idWork=>
+axios.Works.crashedAct(idWork);
+
 export const rabota1 = idWork =>
     axios.Works.rabota1(idWork);
 

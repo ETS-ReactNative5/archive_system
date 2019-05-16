@@ -100,7 +100,10 @@ class MainInfoFundMaker extends Component {
     };
 
 
-    strToRedux = (val, prevVal, obj, prevObj) => {
+    strToRedux = (val, prevVal, obj, prevObj, flag) => {
+        if(!!flag){
+            val = val.replace(/[^\d;]/g, '')
+        }
         var newVal = {...prevVal};
         if (prevVal === null) {
             let objVal = {
@@ -477,7 +480,7 @@ class MainInfoFundMaker extends Component {
             name="fundNumber"
             component={renderInput}
             placeholder={t('NUMB_OF_IK')}
-            normalize={this.strToRedux}
+            normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
             label={t('NUMB_OF_IK')}
             formItemLayout={
                 {
@@ -537,7 +540,7 @@ class MainInfoFundMaker extends Component {
             />
             {contractNumber && <Field
             name="contractNumber"
-            normalize={this.strToRedux}
+            normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
             component={renderInput}
             placeholder={contractNumber.name[lng]}
             label={contractNumber.name[lng]}
@@ -761,7 +764,7 @@ class MainInfoFundMaker extends Component {
             {orgPhone && <Field
             name="orgPhone"
             component={renderInput}
-            normalize={this.strToRedux}
+            normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
             placeholder='+7 ('
             label={orgPhone.name[lng]}
             formItemLayout={
@@ -782,7 +785,7 @@ class MainInfoFundMaker extends Component {
                     wrapperCol: {span: 14}
                 }
             }
-            normalize={this.strToRedux}
+            normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
             />}
             {orgEmail && <Field
             name="orgEmail"

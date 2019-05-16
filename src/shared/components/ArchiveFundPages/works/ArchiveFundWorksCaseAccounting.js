@@ -297,10 +297,11 @@ class ArchiveFundWorksCaseAccounting extends React.PureComponent {
           ]}
           bordered
           size="small"
-          rowClassName={rec => (this.props.location.state && rec.numb == this.props.location.state.workIndexNumber ? "row-selected" : "")}
+          rowClassName={record => this.state.selectedRow && this.state.selectedRow.key === record.key ? 'row-selected' : ''}
           title={this.renderTableHeader}
           footer={this.renderTableFooter}
           dataSource={this.state.data}
+          onRowClick={this.selectRow}
           onRowDoubleClick={this.changeSelectedRow}
           pagination={{pageSize: 20, defaultCurrent: this.props.location.state && this.props.location.state.workIndexNumber && Math.ceil(Number(this.props.location.state.workIndexNumber)/20)}}
           scroll={{x: 1500, y: '100%'}}
