@@ -6,7 +6,7 @@ import {createRole, getAllPermis, getRoles} from "../../../actions/actions";
 import AntTable from "../../AntTable";
 import SiderCard from "../../SiderCard";
 import UsersRolesCard from './UsersRolesCard';
-import {Form, Icon, Input, Button, Modal} from 'antd';
+import {Form, Icon, message, Input, Button, Modal} from 'antd';
 
 import FormItem from "antd/es/form/FormItem";
 
@@ -92,15 +92,6 @@ class UsersRoles extends React.Component {
     }
 
 
-    componentDidUpdate(prevProps, prevState) {
-        console.log('update');
-    }
-
-    componentWillMount() {
-        console.log('start mount');
-
-    }
-
     changeSelectedRow = rec => {
         if (isEmpty(this.state.selectedRow) || (!isEqual(this.state.selectedRow, rec) && !this.state.openCard)) {
             this.setState({selectedRow: rec})
@@ -147,7 +138,32 @@ class UsersRoles extends React.Component {
                             <Input value={this.state.inputValue} onChange={this.updateInputValue}/>
                         </FormItem>
                         <FormItem>
-                            <Button type="primary" onClick={() => createRole(this.state.inputValue)}>Добавить
+                            <Button type="primary" onClick={() => {
+                                createRole(this.state.inputValue).then((res) => {
+                                        if(!!res.data.errors){
+                                            for (let item of res.data.errors){
+                                                message.error(item.text)
+                                            }
+                                        }else {
+                                            message.success("Роль добавлена")
+                                            this.setState({
+                                                visible: false,
+                                            });
+                                            getRoles()
+                                                .then(
+                                                    response => {
+                                                        this.setState({
+                                                            data: response.data.map(item => ({...item, key: item.id}))
+                                                        })
+                                                    }
+                                                );
+
+                                        }
+                                    }).catch(e => {
+                                    console.log(e)
+                                })
+
+                            }}>Добавить
                                 роль</Button>
                         </FormItem>
                     </Form>

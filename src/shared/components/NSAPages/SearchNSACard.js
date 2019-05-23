@@ -72,6 +72,7 @@ class FundsListCard extends React.Component {
               sizeLoading={this.state.sizeLoading}
               t={t}
               withIdDPV = {this.props.withIdDPV}
+              keyFund = {record.key}
             />
           },
           {

@@ -46,14 +46,13 @@ class DamageAct extends React.Component {
             endDate:data.workActualEndDate,
             invNumber:data.invNumber,
             invCount:data.cntCase,
-            cntAdded:data.cntAdded,
             disinfection:data.workType.disinfection,
             disinfestation:data.workType.disinfestation,
             restoration:data.workType.restoration,
             binding:data.workType.binding,
             restorationOfFadingTexts:data.workType.restorationOfFadingTexts,
             irreparablyDamaged:data.cntCaseDamage,
-            caseInInv:parseInt(data.cntCase)+parseInt(data.cntCaseNotA)
+            caseInInv:parseInt(data.cntCase) - parseInt(data.cntCaseNotA) + parseInt(data.cntAdded)
         })
         });
             }
@@ -95,8 +94,8 @@ class DamageAct extends React.Component {
             </Row>
             <Row style={{clear:"both"}}>
                 <Col style={{width:"41.6%",float:"right"}}>
-                    <span style={{textDecoration:"underline"}}>{this.state.fundArchive}</span><br/>Название
-                    архива</Col>
+                    <span style={{textDecoration:"underline"}}>{this.state.fundArchive}</span><br/>(Название
+                    архива)</Col>
             </Row>
             <Row style={{clear:"both"}}>
                 <Col style={{width:"41.6%",float:"right"}}>_________________________<br/>Подпись Расшифровка
@@ -127,9 +126,7 @@ class DamageAct extends React.Component {
             </Row>
             <Row>
                 <Col col={24}>
-                    Проверка проводилась с <span
-                 style={{textDecoration:"underline"}}>{this.state.startDate}</span> по <span
-                 style={{textDecoration:"underline"}}>{this.state.endDate}</span>
+                    Проверка проводилась с <span style={{textDecoration:"underline"}}> {this.state.startDate} </span> по <span style={{textDecoration:"underline"}}> {this.state.endDate} </span>
                 </Col>
             </Row>
             <strong>1. Числится по описям <span  style={{textDecoration:"underline"}}>{this.state.invCount}</span> ед.хр.<br/></strong>
@@ -170,22 +167,24 @@ class DamageAct extends React.Component {
             </Row>
             <Row>
                 <Col col={24}>
-                    4. Имеется не включенных в описи: <span
-                 style={{textDecoration:"underline"}}>{this.state.cntAdded }</span>
+                    <strong>  4. Имеется не включенных в описи: <span
+                    style={{textDecoration:"underline"}}>{this.state.cntAdded }</span>     </strong>
                 </Col>
             </Row>
             <Row>
                 <Col col={24}>
-                    5. Итого по данному фонду (включенных и невключенных в описи)
+                    <strong>   5. Итого по данному фонду (включенных и невключенных в описи)
                     имеющихся в
                     наличии: <span
-                 style={{textDecoration:"underline"}}>{this.state.caseInInv}</span> ед.хр.
+                        style={{textDecoration:"underline"}}>{this.state.caseInInv}</span> ед.хр.    </strong>
                 </Col>
             </Row>
             <h3><br/>Характеристика условий их хранения.</h3>
             <Row>
                 <Col col={24}>
-                    Отрицательные явления в состоянии с условии хранения.<br/>
+                    ____________________________________________________________<br/>
+                    ____________________________________________________________<br/>
+                    ____________________________________________________________<br/>
                 </Col>
             </Row>
             <h3 style={{}}>Проверку производили</h3>

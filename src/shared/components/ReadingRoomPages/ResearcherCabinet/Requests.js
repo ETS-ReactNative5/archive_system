@@ -14,6 +14,7 @@ import Select from "../../Select.js"
 class Requests extends React.Component {
 
   state = {
+    sortState: true,
     search: {
       workDate: {
         dbeg: null,
@@ -39,6 +40,12 @@ class Requests extends React.Component {
     viewerList: [],
     openModal: false
   };
+
+    onChange = (pagination, filters, sorter) => {
+        if(sorter.columnKey === "key") {
+            this.setState({sortState: !this.state.sortState});
+        }
+    }
 
   onDateChange = (name, dateType) => {
     return date => {
@@ -239,6 +246,7 @@ onWorkClassChange = s => {
             loading={this.props.loading}
             dataSource={this.filteredData}
             changeSelectedRow={this.changeSelectedRow}
+            onChange={this.onChange}
             openedBy="Works"
             columns={[
                 {
@@ -249,7 +257,7 @@ onWorkClassChange = s => {
                     render: key => key ,
                     // render: key => { return key},
                     sorter: (a, b) => parseInt(a.key.split('_')[1] ) - parseInt(b.key.split('_')[1]),
-                    sortOrder: "descend",
+                    sortOrder: this.state.sortState ? 'descend' : 'ascend',
                     filterDropdown: (
                         <div className="custom-filter-dropdown">
                           <Input
@@ -303,8 +311,8 @@ onWorkClassChange = s => {
                   </div>
                 ),
                 filterIcon: <Icon type="filter"
-                                 c style={{color: (search.workDate.dbeg || search.workDate.dend) ? '#ff9800' : '#aaa'}}/>,
-                render: obj =>{return obj && obj.value}
+                                  style={{color: (search.workDate.dbeg || search.workDate.dend) ? '#ff9800' : '#aaa'}}/>,
+                render: obj => obj && obj.value
               },
               {
                 key: 'acceptanceDate',

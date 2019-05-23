@@ -18,6 +18,13 @@ export const Auth = {
   getUser: () =>
     axios.get(`/${localStorage.getItem('i18nextLng')}/session/aboutMe`)
       .then(response => response.data),
+
+    getUserInfo: (objUser) =>{
+        const fd = new FormData();
+        fd.append('objUser', objUser);
+     return axios.post(`/${localStorage.getItem('i18nextLng')}/session/aboutMe`,fd)
+          .then(response => response.data.data)
+    },
   regNewUser: fd =>
     axios.post(`/${localStorage.getItem('i18nextLng')}/registration/regUser`, fd),
   regNewUserWithECP: fd =>
@@ -159,23 +166,22 @@ export const General = {
       .then(res => res.data),
 
 
-  savePrivs: (idRole, idsPriv) =>
-    axios.get(`/${localStorage.getItem('i18nextLng')}/session/editRole?idRole=${idRole}&idsPriv=${idsPriv}`)
-      .then(res => res.data),
-
+  savePrivs: (idRole, idsPriv) => {
+     return axios.get(`/${localStorage.getItem('i18nextLng')}/session/editRole?idRole=${idRole}&idsPriv=${idsPriv}`)
+  },
 
   setRoles: (objId, roles) =>
     axios.post(`/${localStorage.getItem('i18nextLng')}/session/setRoles?obj=${objId}&roles=${roles}`)
       .then(res => res.data),
 
   createRole: roleName => {
-    axios.get(`/${localStorage.getItem('i18nextLng')}/session/createRole`, {
+    return axios.get(`/${localStorage.getItem('i18nextLng')}/session/createRole`, {
       params: {
         name: {kz: roleName, ru: roleName, en: roleName},
         fullName: {kz: roleName, ru: roleName, en: roleName}
       }
     })
-      .then(res => res.data)
+
   },
 
 

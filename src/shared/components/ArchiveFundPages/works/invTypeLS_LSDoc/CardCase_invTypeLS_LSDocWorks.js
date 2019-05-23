@@ -24,7 +24,8 @@ class CardCase_invTypeLS_LSDoc extends Component {
         rendercard:false,
         cubeger:false,
         keyInv:"",
-        getInclusive:false
+        getInclusive:false     ,
+        showDamage:false
 
     };
     componentDidMount() {
@@ -340,7 +341,7 @@ class CardCase_invTypeLS_LSDoc extends Component {
                                 initialValues={this.state.getInclusive === false? this.state.data[0]:{sd:"t"} }
                             />
                         },
-                        {
+                      this.state.idDimObjCase &&  {
                             tabKey: 'damage',
                             tabName: 'Повреждения',
                             tabContent: <Damage

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { submit } from 'redux-form';
 import ProfileForm from '../components/ProfilePages';
-import { getCube } from '../actions/actions';
+import {getCube, getIdGetObj,getUserInfo} from '../actions/actions';
 import {CUBE_FOR_WORKS, DO_FOR_FUND_AND_IK, DO_FOR_WORKS, DP_FOR_WORKS} from "../constants/tofiConstants";
 import {onSaveCubeData, parseCube_new, parseForTable} from "../utils/cubeParser";
 import {message} from "antd/lib/index";
@@ -10,24 +10,29 @@ import {message} from "antd/lib/index";
 class ProfileScreen extends React.Component {
 
   state = {
-    data: []
+    data: [],
+      userInfo:{}
   };
 
   componentDidMount() {
-    const filters = {
-      filterDOAnd: [
-        {
-          dimConst: 'doUsers',
-          concatType: 'and',
-          conds: [
-            {
-              obj: this.props.user.obj
-            }
-          ]
-        }
-      ]
-    };
-    this.props.getCube('cubeUsers', JSON.stringify(filters));
+    getIdGetObj(this.props.user.obj,'doUsers').then(res=>{
+     let idDimObj=res.data.idDimObj;
+        const filters = {
+            filterDOAnd: [
+                {
+                    dimConst: 'doUsers',
+                    concatType: 'and',
+                    conds: [
+                        {
+                            ids: String(idDimObj)
+                        }
+                    ]
+                }
+            ]
+        };
+        this.props.getCube('cubeUsers', JSON.stringify(filters));
+    });
+
   }
 
   componentDidUpdate(prevProps) {
@@ -45,12 +50,25 @@ class ProfileScreen extends React.Component {
       this.withIdDPV = parseForTable(parsedCube.props, this.props.tofiConstants, {});
       this.setState({
         data: this.renderFormData(parsedCube)
+      },()=>{
+          getUserInfo(this.props.user.obj)
+              .then((res)=>{
+                  let newData = {...this.state.data}
+                  newData["login"] = {value:res.login}
+                  newData["email"] = {value:res.email}
+                  newData["phone"] = {value:res.phoneNumber}
+                  this.setState({
+                      data:newData
+                  })
+              }).catch(e=>{
+              console.log(e)
+          })
       })
     }
   }
 
   renderFormData = item => {
-    const constArr = ["gender", "education", "iin", "copyUdl", "location", "job", "position", "scanCopyLetter", "photo", "dateRegistration",
+    const constArr = ["gender", "education", "theme","iin", "copyUdl", "location", "job", "position", "scanCopyLetter", "photo", "dateRegistration",
       "workEndDate", "nationality", "propStudy", "staffRole", "personAcademicDegree", "personAcademicTitle", "dateOfBirth", "personLastName",
       "personName", "personPatronymic", "regulationsAcquainted", "publishedWork", "bibliographicInform", "directUseDocument", "goalSprav",
       "chronologicalBegin", "chronologicalEnd", "formResultRealization"];

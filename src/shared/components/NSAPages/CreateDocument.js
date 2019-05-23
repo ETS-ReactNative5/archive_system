@@ -720,7 +720,7 @@ class CreateDocument extends React.Component {
 
 
         let newValuenomenLastChangeDate = target.nomenLastChangeDate;
-        target.nomenLastChangeDate = {value: newValuenomenLastChangeDate};
+        target.nomenLastChangeDate = {value: moment().format('DD-MM-YYYY')};
 
         let newValuearchiveCipher = {
             value: archiveCipher.ru,
@@ -920,8 +920,17 @@ class CreateDocument extends React.Component {
         });
     };
 
-    onSaveCubeData = (objVerData, {method, protocol, ...values}, doItemProp, objDataProp, valOld) => {
+    onSaveCubeData = (objVerData, {method, protocol,documentFile, ...values}, doItemProp, objDataProp, valOld) => {
         let datas = [];
+
+        let documentFileNew =[]
+        if (!!documentFile){
+
+            for (let val of documentFile){
+                documentFileNew.push(val.value)
+            }
+            documentFile = documentFileNew
+        }
         this.setState({loading: true})
         try {
             datas = [{
@@ -936,37 +945,39 @@ class CreateDocument extends React.Component {
                     const propMetaData = getPropMeta(this.props[objVerData.cube.cubeSConst]["dp_" + this.props.tofiConstants[objVerData.cube.dpConst].id], this.props.tofiConstants[key]);
                     console.log(val, valOld, valOld[key], key);
                     let value = val;
-                    let oldValue = valOld[key];
-                    if ((propMetaData.typeProp === 315 || propMetaData.typeProp === 311 || propMetaData.typeProp === 317) && typeof val === 'string') {
-                        value = {kz: val, ru: val, en: val};
-                        oldValue = oldValue && {
+                   // let oldValue = valOld[key];
+                    if ((propMetaData.typeProp === 315 || propMetaData.typeProp === 311 || propMetaData.typeProp === 317) && typeof val.value === 'string') {
+                        value = {kz: val.value, ru: val.value, en: val.value};
+                     /*   oldValue = oldValue && {
                             kz: valOld[key],
                             ru: valOld[key],
                             en: valOld[key]
-                        };
+                        };*/
                     }
                     if (propMetaData.typeProp === 312 && typeof value === 'string') {
-                        value = value.split('-').reverse().join('-');
-                        oldValue = oldValue && oldValue.split('-').reverse().join('-');
+                        if(value[4]!=='-'){
+                            value = value.split('-').reverse().join('-');
+                        }
+                       // oldValue = oldValue && oldValue.split('-').reverse().join('-');
                     }
-                    if (val && typeof val === 'object' && val.value) {
+                    if (propMetaData.typeProp !== 315 && val && typeof val === 'object' && val.value) {
                         value = String(val.value);
-                        oldValue = oldValue && String(valOld[key].value);
+                     //   oldValue = oldValue && String(valOld[key].value);
                     }
-                    if (val && typeof val === 'object' && val.mode) propMetaData.mode = val.mode;
+                    if (propMetaData.typeProp !== 315 && val && typeof val === 'object' && val.mode) propMetaData.mode = val.mode;
                     if (propMetaData.isUniq === 2 && val[0] && val[0].value) {
                         propMetaData.mode = val[0].mode;
                         value = val.map(v => String(v.value)).join(",");
-                        oldValue = oldValue && valOld[key].map(v => String(v.value)).join(",");
+                       // oldValue = oldValue && valOld[key].map(v => String(v.value)).join(",");
                     }
                     return {
                         propConst: key,
                         val: value,
-                        oldValue,
+                       // oldValue,
                         typeProp: String(propMetaData.typeProp),
                         periodDepend: String(propMetaData.periodDepend),
                         isUniq: String(propMetaData.isUniq),
-                        mode: propMetaData.mode
+                     //   mode: propMetaData.mode
                     }
                 }),
                 periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
@@ -978,7 +989,8 @@ class CreateDocument extends React.Component {
         const hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
         return updateCubeData(objVerData.cube.cubeSConst, moment().format('YYYY-MM-DD'), JSON.stringify(datas), {}, {
             method,
-            protocol
+            protocol,
+            documentFile
         })
         .then(res => {
             hideLoading();
@@ -1072,9 +1084,10 @@ class CreateDocument extends React.Component {
     };
 
     refreshRecord = () => {
+        debugger;
         const values = pickBy(this.state.changedRow, (val, key) => !isEqual(val, this.state.selectedRow[key]))
         const surnameOriginator = this.props.user ? String(this.props.user.obj) : '';
-        const nomenLastChangeDate = moment();
+        const nomenLastChangeDate = moment().format('YYYY-MM-DD');
         const cube = {
             cubeSConst: 'cubeDocuments',
             doConst: 'doDocuments',

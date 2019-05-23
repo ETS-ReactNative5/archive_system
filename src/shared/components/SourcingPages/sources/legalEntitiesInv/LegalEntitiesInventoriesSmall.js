@@ -120,7 +120,7 @@ class LegalEntitiesInventoriesSmall extends React.Component {
       invApprovalDate2Obj = item.props.find(element => element.prop == invApprovalDate2.id),
       invDatesObj = item.props.find(element => element.prop == invDates.id),
       invTypeObj = item.props.find(element => element.prop == invType.id);
-              debugger;
+
     return {
       key: item.id,
       invList: item.name[this.lng],

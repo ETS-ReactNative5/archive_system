@@ -114,14 +114,15 @@ class Researchers extends React.Component {
       name: item.name,
       researcherClassObj: {
         researcherClass,
-        value: this.props.tofiConstants[researcherClass].id,
-        label: this.props.tofiConstants[researcherClass].name[this.lng],
+        value: this.props.tofiConstants[researcherClass] ? this.props.tofiConstants[researcherClass].id : '',
+        label: this.props.tofiConstants[researcherClass] ? this.props.tofiConstants[researcherClass].name[this.lng] : '',
       }
     };
+    // debugger;
     parseForTable(item.props, this.props.tofiConstants, result, constArr);
     // Don't know how to handle both array and obj in uploadImage component. Sorry kinda my fault🤷
-    if(result.copyUdl && result.copyUdl.length) result.copyUdl = result.copyUdl[0].name;
-    if(result.photo) result.photo = result.photo.name;
+    // if(result.copyUdl && result.copyUdl.length) result.copyUdl = result.copyUdl[0].name;
+    // if(result.photo) result.photo = result.photo.name;
     result.personFullName = result.personLastName + ' ' + result.personName + ' ' + result.personPatronymic;
     return result;
   };
@@ -204,7 +205,7 @@ class Researchers extends React.Component {
         (filter.researcherClass.length === 0 || filter.researcherClass.some(p => (p.researcherClass == item.researcherClassObj.researcherClass)))
       )
     });
-    
+
     return (
       <div className='Works'>
         <div className="title">
@@ -247,14 +248,15 @@ class Researchers extends React.Component {
                           key: 'iin',
                           title: iin.name[this.lng],
                           dataIndex: 'iin',
-                          width: '15%'
+                          width: '15%',
+                          render: obj =>{ return obj ? obj.value: ''}
                         },
                         {
                           key: 'personFullName',
                           title: t('FIO'), // personLastName.name[this.lng],
                           dataIndex: 'personLastName',
                           width: '40%',
-                          render: (obj, record) => record.name[this.lng],
+                          render: (obj, record) => (record ?  record.name[this.lng] : ''),
                           filterDropdown: (
                             <div className="custom-filter-dropdown">
                               <Input
@@ -287,7 +289,7 @@ class Researchers extends React.Component {
                           title: tofiConstants.job.name[this.lng],
                           dataIndex: 'job',
                           width: '25%',
-                          render: (obj, record) =>  record.job, //record.name[this.lng],
+                          render: (obj, record) =>  {return record && record.job ? record.job.value : ''}, //record.name[this.lng],
                         },
                         {
                           key: 'action',
@@ -383,7 +385,8 @@ class Researchers extends React.Component {
                           key: 'iin',
                           title: iin.name[this.lng],
                           dataIndex: 'iin',
-                          width: '15%'
+                          width: '15%',
+                          render: obj =>{ return  obj ? obj.value : ''}
                         },
                         {
                           key: 'name',
@@ -423,7 +426,7 @@ class Researchers extends React.Component {
                           title: tofiConstants.position.name[this.lng],
                           dataIndex: 'position',
                           width: '15%',
-                          render: (obj, record) =>  record.position, //record.name[this.lng],
+                          render: (obj, record) =>  {return obj ? obj.value : ''}, //record.name[this.lng],
                         },
                         {
                           key: 'action',

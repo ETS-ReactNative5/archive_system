@@ -13,6 +13,7 @@ import {isEmpty} from "lodash";
 class Chat_FundMaker extends React.PureComponent {
 
     state = {
+        sortState: true,
         withIdDPV: this.props.withIdDPV,
         initialValues: this.props.initialValues,
         id: this.props.id,
@@ -25,6 +26,11 @@ class Chat_FundMaker extends React.PureComponent {
         loading: false
     };
 
+    onChange = (pagination, filters, sorter) => {
+        if(sorter.columnKey === "letterDetails") {
+            this.setState({sortState: !this.state.sortState});
+        }
+    }
 
     onChangeFile = (e) => {
         this.setState({
@@ -371,6 +377,7 @@ class Chat_FundMaker extends React.PureComponent {
             <Spin spinning={this.state.loading}>
                 <Table
                 bordered
+                onChange={this.onChange}
                 columns={[
                     {
                         key: 'letterDetails',
@@ -382,7 +389,7 @@ class Chat_FundMaker extends React.PureComponent {
                         sorter: (a, b) => {
                             a.key - b.key
                         },
-                        sortOrder: 'ascend'
+                        sortOrder: this.state.sortState ? 'ascend' : 'descend',
                     },
                     {
                         key: 'corresOrgFile',

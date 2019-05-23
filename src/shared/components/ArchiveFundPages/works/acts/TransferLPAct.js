@@ -26,6 +26,7 @@ class TransferLPAct extends React.Component {
         total: 'state total',
         year: '2019',
         nacladDate: '',
+        cntCase:'0',
         nacladNumb: '',
         savedList: '0',
         orgName: '',
@@ -37,8 +38,7 @@ class TransferLPAct extends React.Component {
 
     printContent = () => {
         return (<div>
-            <h2 className="text-center" style={{textAlign: "center"}}>
-                Акт приема на хранение документов личного происхождения</h2>
+
 
             <Row>
                 <Col span={24} className="text-center" style={{textAlign: "center"}}><span
@@ -60,8 +60,8 @@ class TransferLPAct extends React.Component {
             <Row style={{clear: "both"}}>
                 <Col style={{width: "41.6%", float: "right"}}>
                     <span
-                    style={{textDecoration: "underline"}}>{this.state.fundArchive}</span><br/>Название
-                    архива</Col>
+                    style={{textDecoration: "underline"}}>{this.state.fundArchive}</span><br/>(Название
+                    архива)</Col>
             </Row>
             <Row style={{clear: "both"}}>
                 <Col
@@ -90,15 +90,15 @@ class TransferLPAct extends React.Component {
                 приняты документы
                 ________________________________________________________________
                 <br/>
-                в количестве ___________ ед.хр. (условных) caseNumberOfPages документов
+                <p style={{textAlign:'center'}}>(Общая характеристика документов)</p>
+                в количестве  <span style={{textDecoration: "underline"}}>{this.state.cntCase}</span> ед.хр. (условных) ________________ документов
                 (листов)
             </Row>
 
 
             <Row>
                 по архивной сдаточной описи <br/>
-                Фонду присвоен №_____________________________ <span
-            style={{textDecoration: "underline"}}>__</span> ед.хр.
+                Фонду присвоен № {this.state.fundNumber}, <span style={{textDecoration: "underline"}}>{this.state.cntCase}</span> ед.хр.
             </Row>
 
             <Row>
@@ -131,20 +131,19 @@ class TransferLPAct extends React.Component {
     };
 
     componentDidMount() {
-             getAct1((this.props.workId).split('_')[1]).then(res => {
-         let data = res.data;
-         this.setState({
-         fundNumber: data.fundNumber,
-         fundArchive: data.fundArchive.ru,
-         caseAvailabilityCheck: this.props.initialValues.workType.label,
-         tableData: data.propCases,
-         invNumber: data.invNumber,
-         total: data.propCases.length,
-         loading: false,
-         zavOtdel: data.zavOtdel.ru
+        getAct1((this.props.workId).split('_')[1]).then(res => {
+            let data = res.data;
+            this.setState({
+                fundNumber: data.fundNumber,
+                fundArchive: data.fundArchive.ru,
+                caseAvailabilityCheck: this.props.initialValues.workType.label,
+                tableData: data.propCases,
+                invNumber: data.invNumber,
+                loading: false,
+                cntCase: data.cntCase
 
-         })
-         });
+            })
+        });
     }
 
 
@@ -159,6 +158,8 @@ class TransferLPAct extends React.Component {
 
         <div className="act_print">
             <Button type='primary' onClick={() => this.toPrint(this.printContent())}>Распечатать</Button>
+            <h2 className="text-center printNone" style={{textAlign: "center"}}>
+                Акт приема на хранение документов личного происхождения</h2>
             {this.printContent()}
         </div>
         )

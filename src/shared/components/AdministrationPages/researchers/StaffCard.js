@@ -44,7 +44,7 @@ class ResearchersCard extends React.PureComponent {
       const personNameToSend = toSend.personName || personNameInit;
       const personPatronymicToSend = toSend.personPatronymic || personPatronymicInit;
       SYSTEM_LANG_ARRAY.forEach(lang => {
-        name[lang] = `${pesonLastNameToSend} ${personNameToSend} ${personPatronymicToSend}`.trim();
+        name[lang] = `${pesonLastNameToSend.value} ${personNameToSend.value} ${personPatronymicToSend.value}`.trim();
       });
       objData.name = name;
       objData.fullName = name;

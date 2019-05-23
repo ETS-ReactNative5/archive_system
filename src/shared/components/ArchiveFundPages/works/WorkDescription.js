@@ -1,8 +1,10 @@
 import React from 'react';
 import {Button, Icon, Input, Modal, Radio, Table} from 'antd';
-import {getPropValByConst} from '../../../actions/actions'
+import {getIdGetObj, getPropValByConst} from '../../../actions/actions'
 import AntTable from "../../AntTable";
 import PrintAct from "./PrintAct.js";
+import axios from 'axios';
+import {parseCube_new, parseForTable} from "../../../utils/cubeParser";
 
 const TextArea = Input.TextArea;
 const RadioButton = Radio.Button;
@@ -42,6 +44,54 @@ const columns = [
 
 class WorkDescription extends React.PureComponent {
     state = {
+        irrDmg: [{
+            key: "irreparableDamage",
+            title: this.props.tofiConstants['irreparableDamage'].name.ru,
+            dataIndex: 'irreparableDamage',
+            width: '40%',
+            render: obj => obj && obj.map(el => el.label).join(', '),
+
+        }, {
+            key: 'noStorageReasonCase',
+            title: this.props.tofiConstants['noStorageReasonCase'].name.ru,
+            dataIndex: 'noStorageReasonCase',
+            render: obj => obj && obj.label,
+            width: '40%'
+
+        }, {
+            key: 'descriptionDamage',
+            title: this.props.tofiConstants['descriptionDamage'].name.ru,
+            dataIndex: 'descriptionDamage',
+            width: '20%',
+            render: obj => obj && obj.value
+        }],
+        tableDataIrrDmg: [],
+        columnsDmg: [
+            {
+                key: "idx",
+                title: "",
+                dataIndex: 'idx',
+                width: '5%',
+                render: ('')
+            },
+            {
+                key: 'indexDamage',
+                title: this.props.tofiConstants['indexDamage'].name.ru,
+                dataIndex: 'indexDamage',
+                render: (obj) => this.props.initialValues.indexDamage && this.props.initialValues.indexDamage.map(el => el.label).join(', '),
+                width: '55%',
+
+            },
+            {
+                key: 'descriptionDamage',
+                title: this.props.tofiConstants['descriptionDamage'].name.ru,
+                dataIndex: 'descriptionDamage',
+                width: '40%',
+                render: obj => this.props.initialValues.descriptionDamage
+            }
+        ],
+        showOnlySearch: false,
+        showOnlyLP: false,
         visible: false,
         selectedRow: '',
         workDescription: {
@@ -50,6 +100,7 @@ class WorkDescription extends React.PureComponent {
             ru: ''
         },
         dataSource: [],
+        tableDataDMG: [{idx: ''}],
         lang: localStorage.getItem('i18nextLng'),
         dirty: false,
         type: ''
@@ -80,79 +131,223 @@ class WorkDescription extends React.PureComponent {
         })
     };
 
+
+    renderTableData = item => {
+        const constArr = ['descriptionDamage', 'noStorageReasonCase', 'irreparableDamage'];
+        const result = {
+            key: item.id
+        };
+        parseForTable(item.props, this.props.tofiConstants, result, constArr);
+        return result;
+    };
+
+    renderIrrDmg = () => {
+        debugger;
+        getIdGetObj(this.props.initialValues.workRegCase.value, 'doForCase').then(
+        res => {
+            var caseId = res.data.idDimObj;
+            var getCaseFilter = {
+                filterDOAnd: [
+                    {
+                        dimConst: 'doForCase',
+                        concatType: "and",
+                        conds: [
+                            {
+                                ids: String(caseId),
+                            }
+                        ]
+                    }
+                ],
+                filterDPAnd: [
+                    {
+                        dimConst: 'dpForCase',
+                        concatType: "and",
+                        conds: [
+                            {
+                                consts: "noStorageReasonCase,descriptionDamage,irreparableDamage"
+                            }
+                        ]
+                    }
+                ],
+            };
+            const fd = new FormData();
+            fd.append("cubeSConst", 'CubeForAF_Case');
+            fd.append("filters", JSON.stringify(getCaseFilter));
+            axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getCubeData`, fd).then(res2 => {
+                console.log(res2);
+                var cubeData = res2.data.data;
+                const parsedCube = parseCube_new(
+                cubeData["cube"],
+                [],
+                "dp",
+                "do",
+                cubeData['do_' + this.props.tofiConstants.doForCase.id],
+                cubeData['dp_' + this.props.tofiConstants.dpForCase.id],
+                ['do_' + this.props.tofiConstants.doForCase.id],
+                ['dp_' + this.props.tofiConstants.dpForCase.id]
+                );
+                var tableData = parsedCube.map(this.renderTableData);
+                this.setState({
+                    tableDataIrrDmg: tableData
+                })
+            })
+        }
+        )
+    };
+
+
     showAct = (type, actNumber) => {
         console.log(this.props.initialValues.key, type);
         this.setState({visible: true, type: type, actNumber: actNumber})
     };
 
     componentDidMount() {
-        console.log(this.props.initialValues);
-        var fundName = this.props.initialValues.workRegFund.labelFull;
+        this.props.initialValues.workType.workTypeClass == 'caseDisposal' && this.renderIrrDmg();
 
-        var filterOfActs = [];
-
-        this.props.initialValues.workType.workTypeClass == 'caseAvailabilityCheck' && filterOfActs.push({
-            idx: '1',
-            name: 'Акт проверки наличия и состояния архивных документов: ' + fundName,
-            actNumber: this.props.initialValues.key.slice(-4) + '_1',
-            showAct: <Button
-            onClick={() => this.showAct('damage', this.props.initialValues.key.slice(-4) + '_1')}
-            type="primary"
-            shape="circle"><Icon type="eye"/></Button>
-        });
-
-        this.props.initialValues.workType.workTypeClass == 'caseAvailabilityCheck' && filterOfActs.push({
-            idx: '2',
-            name: 'Акт об обнаружении архивных документов',
-            actNumber: this.props.initialValues.key.slice(-4) + '_2',
-            showAct: <Button
-            onClick={() => this.showAct('irrDamage', this.props.initialValues.key.slice(-4) + '_2')}
-            type="primary"
-            shape="circle"><Icon type="eye"/></Button>
-        });
-        (this.props.initialValues.workType.workTypeClass == 'caseExamination' ||  this.props.initialValues.workType.workTypeClass == 'caseDisposal') && filterOfActs.push({
-            idx: '3',
-            name: 'Акт о выделении к уничтожению документов, не подлежащих хранению',
-            actNumber: this.props.initialValues.key.slice(-4) + '_3',
-            showAct: <Button
-            onClick={() => this.showAct('lightToDestroy', this.props.initialValues.key.slice(-4) + '_3')}
-            type="primary"
-            shape="circle"><Icon type="eye"/></Button>
-        });
-        (this.props.initialValues.workType.workTypeClass == 'caseExamination' || this.props.initialValues.workType.workTypeClass == 'caseDisposal') && filterOfActs.push({
-            idx: '4',
-            name: 'Акт о неисправимых повреждениях документов',
-            actNumber: this.props.initialValues.key.slice(-4) + '_4',
-            showAct: <Button
-            onClick={() => this.showAct('CrashedAct', this.props.initialValues.key.slice(-4) + '_4')}
-            type="primary"
-            shape="circle"><Icon type="eye"/></Button>
-        });
-        this.props.initialValues.workType.workTypeClass == 'caseRegistration' && filterOfActs.push({
-            idx: '5',
-            name: 'Акт приема-передачи документов на хранение',
-            actNumber: this.props.initialValues.key.slice(-4) + '_5',
-            showAct: <Button
-            onClick={() => this.showAct('TransferAct', this.props.initialValues.key.slice(-4) + '_5')}
-            type="primary"
-            shape="circle"><Icon type="eye"/></Button>
-        });
-        this.props.initialValues.workType.workTypeClass == 'caseRegistration' && filterOfActs.push({
-            idx: '6',
-            name: 'Акт приема на хранение документов личного происхождения',
-            actNumber: this.props.initialValues.key.slice(-4) + '_6',
-            showAct: <Button
-            onClick={() => this.showAct('TransferLPAct', this.props.initialValues.key.slice(-4) + '_6')}
-            type="primary"
-            shape="circle"><Icon type="eye"/></Button>
-        });
+        getIdGetObj(this.props.initialValues.workRegFund.value, 'doForFundAndIK').then(res => {
+            console.log(res);
+            var fundID = res.data.idDimObj;
 
 
+            var filterFundType = {
+                filterDOAnd: [
+                    {
+                        dimConst: 'doForFundAndIK',
+                        concatType: "and",
+                        conds: [
+                            {
+                                ids: String(fundID),
+                            }
+                        ]
+                    }
+                ],
+                filterDPAnd: [
+                    {
+                        dimConst: 'dpForFundAndIK',
+                        concatType: "and",
+                        conds: [
+                            {
+                                consts: "fundNumber"
+                            }
+                        ]
+                    }
+                ],
+            };
+            const fd = new FormData();
+            var doForFund = this.props.tofiConstants.doForFundAndIK.id;
+            var fundLPConstId = this.props.tofiConstants.fundLP.id;
+            var notFoundId = this.props.tofiConstants.notFound.id;
+            fd.append("cubeSConst", 'cubeForFundAndIK');
+            fd.append("filters", JSON.stringify(filterFundType));
+            axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getCubeData`, fd).then(res2 => {
+                console.log(res2);
+                res2.data.data['do_' + doForFund][0].clsORtr == fundLPConstId && this.setState({
+                    showOnlyLP: true
+                });
+
+                this.props.initialValues.workStatusReg && this.props.initialValues.workStatusReg.value == notFoundId && this.setState({
+                    showOnlySearch: true
+                });
 
 
-        this.setState({
-            dataSource: filterOfActs
+                console.log(this.props.initialValues);
+                var fundName = this.props.initialValues.workRegFund.labelFull;
+
+
+                var workType = this.props.initialValues.workType.workTypeClass;
+                var filterOfActs = [];
+                workType == 'caseAvailabilityCheck' && filterOfActs.push({
+                    idx: '1',
+                    name: 'Акт проверки наличия и состояния архивных документов: ' + fundName,
+                    actNumber: this.props.initialValues.key.slice(-4) + '_1',
+                    showAct: <Button
+                    onClick={() => this.showAct('damage', this.props.initialValues.key.slice(-4) + '_1')}
+                    type="primary"
+                    shape="circle"><Icon type="eye"/></Button>
+                });
+
+                workType == 'caseAvailabilityCheck' && filterOfActs.push({
+                    idx: '2',
+                    name: 'Акт об обнаружении архивных документов',
+                    actNumber: this.props.initialValues.key.slice(-4) + '_2',
+                    showAct: <Button
+                    onClick={() => this.showAct('irrDamage', this.props.initialValues.key.slice(-4) + '_2')}
+                    type="primary"
+                    shape="circle"><Icon type="eye"/></Button>
+                });
+                if (workType == 'caseExamination' || this.props.initialValues.workType.workTypeClass == 'caseDisposal') {
+                    filterOfActs.push({
+                        idx: '3',
+                        name: 'Акт о выделении к уничтожению документов, не подлежащих хранению',
+                        actNumber: this.props.initialValues.key.slice(-4) + '_3',
+                        showAct: <Button
+                        onClick={() => this.showAct('lightToDestroy', this.props.initialValues.key.slice(-4) + '_3')}
+                        type="primary"
+                        shape="circle"><Icon type="eye"/></Button>
+                    });
+                }
+                if (workType == 'caseExamination' || this.props.initialValues.workType.workTypeClass == 'caseDisposal') {
+                    filterOfActs.push({
+                        idx: '4',
+                        name: 'Акт о неисправимых повреждениях документов',
+                        actNumber: this.props.initialValues.key.slice(-4) + '_4',
+                        showAct: <Button
+                        onClick={() => this.showAct('CrashedAct', this.props.initialValues.key.slice(-4) + '_4')}
+                        type="primary"
+                        shape="circle"><Icon type="eye"/></Button>
+                    })
+                }
+
+                (this.state.showOnlyLP === false && workType === 'caseRegistration') && filterOfActs.push({
+                    idx: '5',
+                    name: 'Акт приема-передачи документов на хранение',
+                    actNumber: this.props.initialValues.key.slice(-4) + '_5',
+                    showAct: <Button
+                    onClick={() => this.showAct('TransferAct', this.props.initialValues.key.slice(-4) + '_5')}
+                    type="primary"
+                    shape="circle"><Icon type="eye"/></Button>
+                });
+                (this.state.showOnlyLP === true && workType === 'caseRegistration') && filterOfActs.push({
+                    idx: '6',
+                    name: 'Акт приема на хранение документов личного происхождения',
+                    actNumber: this.props.initialValues.key.slice(-4) + '_6',
+                    showAct: <Button
+                    onClick={() => this.showAct('TransferLPAct', this.props.initialValues.key.slice(-4) + '_6')}
+                    type="primary"
+                    shape="circle"><Icon type="eye"/></Button>
+                });
+
+                (workType === 'casesForTemporaryUse') && filterOfActs.push({
+                    idx: '7',
+                    name: 'Акт о выдаче архивных документов во временное пользование',
+                    actNumber: this.props.initialValues.key.slice(-4) + '_7',
+                    showAct: <Button
+                    onClick={() => this.showAct('GiveToAct', this.props.initialValues.key.slice(-4) + '_7')}
+                    type="primary"
+                    shape="circle"><Icon type="eye"/></Button>
+                });
+
+                (this.state.showOnlySearch === true && workType === 'caseSearch') && filterOfActs.push({
+                    idx: '8',
+                    name: 'Акт о не обнаружении документов, пути розыска которых исчерпаны',
+                    actNumber: this.props.initialValues.key.slice(-4) + '_8',
+                    showAct: <Button
+                    onClick={() => this.showAct('SearchAct', this.props.initialValues.key.slice(-4) + '_8')}
+                    type="primary"
+                    shape="circle"><Icon type="eye"/></Button>
+                });
+
+
+                this.setState({
+                    dataSource: filterOfActs
+                });
+
+
+            });
+
         });
+
+
         getPropValByConst('workDescription')
         .then(data => console.log(data))
         .catch(err => console.error(err))
@@ -200,9 +395,53 @@ class WorkDescription extends React.PureComponent {
                 </div>
                 )}
             </div>
+
+            {
+
+                this.props.initialValues.workType.workTypeClass == 'casesForTemporaryUse' &&
+                <div>
+                    <br/>
+                    <hr/>
+                    <br/>
+                    <AntTable
+                    bordered
+                    columns={this.state.columnsDmg}
+                    dataSource={this.state.tableDataDMG}
+                    size='small'
+                    pagination={false}
+                    scroll={{y: '100%'}}
+                    />
+                </div>
+            }
+
+            {
+
+
+                this.props.initialValues.workType.workTypeClass == 'caseDisposal' &&
+                <div><br/>
+                    <hr/>
+                    <br/>
+
+                    <AntTable
+                    bordered
+                    columns={this.state.irrDmg}
+                    dataSource={this.state.tableDataIrrDmg}
+                    size='small'
+                    pagination={false}
+                    scroll={{y: '100%'}}
+                    />
+                </div>
+            }
+
+
             <div>
 
-                {this.props.initialValues.workStatusReg && (this.props.initialValues.workStatusReg.value == this.props.tofiConstants.accepted.id) ?
+                {this.props.initialValues.workStatusReg && (
+                this.props.initialValues.workStatusReg.value == this.props.tofiConstants.accepted.id ||
+                this.props.initialValues.workStatusReg.value == this.props.tofiConstants.issued.id ||
+                this.props.initialValues.workStatusReg.value == this.props.tofiConstants.returned.id ||
+                this.props.initialValues.workStatusReg.value == this.props.tofiConstants.notFound.id
+                ) ?
                 <AntTable
                 size='small'
                 rowClassName={record => this.state.selectedRow && this.state.selectedRow.key === record.key ? 'row-selected' : ''}

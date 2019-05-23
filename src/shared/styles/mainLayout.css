@@ -67,6 +67,8 @@
 @media print {
   .printHide {
     visibility: hidden; }
+  .printNone {
+    display: none; }
   table::-webkit-scrollbar {
     width: 0 !important; }
   table {

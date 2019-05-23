@@ -176,6 +176,6 @@
   "VIEWER_CASE": "Electronic content of case",
   "SHOW_FILES": "Show files",
   "ELECTRONIC_CONTENT": "Electronic content of case",
-  "CHOICE_FILE": "Choice file from list"
-
+  "CHOICE_FILE": "Choice file from list",
+  "USER_FIO_PLACEHOLDER": ""
 }

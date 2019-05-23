@@ -277,7 +277,6 @@ class InquiryReqs extends React.Component {
       obj.doItem = res.data.idItemDO;
       this.createNewWork(obj);
       return this.saveProps(
-
         {cube, obj},
         v,
         this.props.tofiConstants

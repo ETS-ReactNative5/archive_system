@@ -629,7 +629,6 @@ class MainInfoFundForm extends Component {
         <Field
           name="accessLevel"
           component={ renderSelect }
-          normalize={this.selectToRedux}
           label={t('ACCESS_LEVEL')}
           formItemLayout={
             {

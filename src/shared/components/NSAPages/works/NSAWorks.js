@@ -38,6 +38,7 @@ class NSAWorks extends React.PureComponent {
         super(props);
 
         this.state = {
+            sortState: true,
             visible: false,
             data: [],
             nameFilter:"",
@@ -94,6 +95,11 @@ class NSAWorks extends React.PureComponent {
             workRegInvOptions: [],
             workRegInvSelected: null
         };
+    }
+    onChange = (pagination, filters, sorter) => {
+        if(sorter.columnKey === "key") {
+            this.setState({sortState: !this.state.sortState});
+        }
     }
     onWeekDate=()=>{
         this.setState({
@@ -648,7 +654,6 @@ class NSAWorks extends React.PureComponent {
                 <div className="Works__body">
                     <AntTable
                         loading={loading}
-
                         rowClassName={rec => {
                             if(rec.nsaWorkStatus!=null){
                                 let newClass=
@@ -661,9 +666,7 @@ class NSAWorks extends React.PureComponent {
                             }
                           }
                         }
-
-
-
+                        onChange={this.onChange}
                         columns={[
                             {
                                 key: 'numb',
@@ -677,7 +680,7 @@ class NSAWorks extends React.PureComponent {
                                 dataIndex: 'key',
                                 width: '10%',
                                 render: key => key ? key.slice(5,8)+'-'+key.slice(-4) : '',
-                                sortOrder:'descend',
+                                sortOrder: this.state.sortState ? 'descend' : 'ascend',
                                 sorter: (a, b) => parseInt(a.key.split('_')[1]) - parseInt(b.key.split('_')[1]),
                                 filterDropdown: (
                                     <div className="custom-filter-dropdown">

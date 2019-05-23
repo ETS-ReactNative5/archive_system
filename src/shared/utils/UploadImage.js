@@ -50,9 +50,10 @@ class PicturesWall extends React.Component {
   );
 
   render() {
-    let value = this.props.value;
+    let value = !!this.props.value.value?this.props.value.value: this.props.value ;
+
     if(value && value.constructor === Array && value.length) {
-      value = value[0];
+      value = value[0].value;
     }
 
     //from cube parser makes it File but empty

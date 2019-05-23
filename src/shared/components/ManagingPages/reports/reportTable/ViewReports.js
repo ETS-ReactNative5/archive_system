@@ -5,6 +5,8 @@ import '../ReportStyle.css';
 
 class ViewReports extends React.Component {
     render (){
+
+
         this.lng = localStorage.getItem("i18nextLng");
         let {filter} = this.props
         console.log(filter)

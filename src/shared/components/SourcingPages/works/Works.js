@@ -23,6 +23,7 @@ class Works extends React.PureComponent {
         super(props);
 
         this.state = {
+            sortState: true,
             visible: false,
             data: [],
             nameFilter:"",
@@ -124,7 +125,11 @@ class Works extends React.PureComponent {
             visible: false,
         });
     }
-
+    onChange = (pagination, filters, sorter) => {
+        if(sorter.columnKey === "key") {
+            this.setState({sortState: !this.state.sortState});
+        }
+    }
     onPriorityChange = s => {
         this.setState({priority: s})
     };
@@ -620,7 +625,7 @@ class Works extends React.PureComponent {
                 <div className="Works__body">
                     <AntTable
                         loading={loading}
-
+                        onChange={this.onChange}
                         rowClassName={rec => {
                             if (rec.workStatusSource != null) {
                                 let newClass =
@@ -652,7 +657,7 @@ class Works extends React.PureComponent {
                                 dataIndex: 'key',
                                 width: '10%',
                                 render: key => key ? key.slice(5,8)+'-'+key.slice(-4) : '',
-                                sortOrder:'descend',
+                                sortOrder: this.state.sortState ? 'descend' : 'ascend',
                                 sorter: (a, b) => parseInt(a.key.split('_')[1]) - parseInt(b.key.split('_')[1]),
                                 filterDropdown: (
                                     <div className="custom-filter-dropdown">

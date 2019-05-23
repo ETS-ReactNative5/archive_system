@@ -87,8 +87,8 @@ class IrrDamageAct extends React.Component {
             <Row style={{clear: "both"}}>
                 <Col style={{width: "41.6%", float: "right"}}>
                     <span
-                    style={{textDecoration: "underline"}}>{this.state.fundArchive}</span><br/>Название
-                    архива</Col>
+                    style={{textDecoration: "underline"}}>{this.state.fundArchive}</span><br/>(Название
+                    архива)</Col>
             </Row>
             <Row style={{clear: "both"}}>
                 <Col

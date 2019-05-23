@@ -255,8 +255,6 @@ class MainInfoCaseForm extends Component {
     }
   };
 
-
-
     strToRedux = (val, prevVal, obj, prevObj, flag) => {
         if(!!flag){
            val = val.replace(/[^\d;]/g, '')
@@ -1405,7 +1403,7 @@ class MainInfoCaseForm extends Component {
         {numberOfOriginals && (
           <Field
             name="numberOfOriginals"
-            normalize={this.strToRedux}
+            normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
             component={renderInput}
             label={numberOfOriginals.name[this.lng]}
             formItemLayout={{
@@ -1430,7 +1428,7 @@ class MainInfoCaseForm extends Component {
           <Field
             name="storageUnitQuantity"
             component={renderInput}
-            normalize={this.strToRedux}
+            normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
             label={storageUnitQuantity.name[this.lng]}
             formItemLayout={{
               labelCol: { span: 10 },

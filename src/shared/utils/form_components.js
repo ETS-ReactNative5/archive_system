@@ -572,6 +572,7 @@ export const renderDoubleDateInput = fields => {
 };
 
 export const renderFields = (fields) => {
+    console.log(fields);
     return (
     <div>
         <div className="input-row">

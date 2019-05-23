@@ -26,6 +26,11 @@ const ChangePasswordForm = ({t}) => {
         component={renderInput}
         type='password'
         label={t('NEW_PASSWORD')}
+        format={(val)=>{
+            return{
+                value:val
+            }
+        }}
         formItemLayout={{
           labelCol: {span: 10},
           wrapperCol: {span: 14}
@@ -39,6 +44,11 @@ const ChangePasswordForm = ({t}) => {
         formItemLayout={{
           labelCol: {span: 10},
           wrapperCol: {span: 14}
+        }}
+        format={(val)=>{
+            return{
+                value:val
+            }
         }}
       />
     </Form>

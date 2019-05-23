@@ -38,7 +38,7 @@ class SearchNSA extends Component {
     this.filteredData = [];
 
     this.state = {
-        sortVal:'ascend',
+      sortState: true,
       data: [],
       dataRec: [],
       selectedRow: {},
@@ -566,7 +566,7 @@ class SearchNSA extends Component {
       fundType: fundTypeObj ? {value: fundTypeObj.id, label: fundTypeObj.name[this.lng], fundTypeClass: fundTypeObj.constName} : {},
       fundList: item.name ? item.name[this.lng] || '' : '',
       fundNumber: fundNumbObj ? fundNumbObj.value || '' : '',
-      fundIndex: fundIndexObj ? fundIndexObj.value || '' : '',
+      fundIndex: fundIndexObj && fundIndexObj.values ? fundIndexObj.values.value || '' : '',
       fundDend: fundDendObj.values ? fundDendObj.values.dend || '' : '',
       fundDbeg: fundDbegObj.values ? fundDbegObj.values.dbeg || '' : '',
       fundCategory: fundCategoryObj && fundCategoryObj.values ? fundCategoryObj.values.label : {},
@@ -648,15 +648,17 @@ class SearchNSA extends Component {
         })
       });
   };
-
+  onChange = (pagination, filters, sorter) => {
+    if(sorter.columnKey === "fundNumber") {
+      this.setState({sortState: !this.state.sortState});
+    }
+  }
   render() {
-
     if(isEmpty(this.props.tofiConstants)) return null;
     const { loading, selectedRow, data, filter, fundCaseFlags } = this.state;
     const { annotationContentOfDocument, invMulti, fundHistoricalNoteMulti } = this.state;
     const { t, tofiConstants,
       tofiConstants: { fundNumber, fundDbeg, fundDend, fundIndex, fundCategory, fundFeature, fundIndustry } } = this.props;
-    
     this.filteredData = data.map(this.renderTableData).filter(item => {
       return (
         item.fundIndex.toLowerCase().includes(filter.fundIndex.toLowerCase()) &&
@@ -764,6 +766,7 @@ class SearchNSA extends Component {
         </div>
         <div className="fundsList__body">
           <AntTable
+            onChange={this.onChange}
             columns={
               [
                 {
@@ -771,24 +774,7 @@ class SearchNSA extends Component {
                   title: t('FUND_NUMB'),
                   dataIndex: 'fundNumber',
                   width: "8%",
-                    // sorter: (a, b) => {
-                    //
-                    //   if(this.state.sortVal === 'ascend'){
-                    //       this.setState({
-                    //           sortVal:'descend'
-                    //       });
-                    //       if (a.fundNumber != null && b.fundNumber != null) {
-                    //           return parseInt(a.fundNumber) - parseInt(b.fundNumber);
-                    //       }
-                    //   }else{
-                    //       this.setState({
-                    //           sortVal:'ascend'
-                    //       });
-                    //       {
-                    //           return parseInt(b.fundNumber) - parseInt(a.fundNumber);
-                    //       }
-                    //   }},
-                    // sortOrder: this.state.sortVal,
+                  sortOrder: this.state.sortState ? 'ascend' : 'descend',
                     filterDropdown: (
                         <div className="custom-filter-dropdown">
                             <Input

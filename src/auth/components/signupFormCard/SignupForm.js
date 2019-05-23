@@ -20,7 +20,7 @@ import {
 import {digits, normalizePhone} from "../../../shared/utils/form_normalizing";
 import {Link} from "react-router-dom";
 import {sign} from "../../../shared/utils";
-import moment from "../../../shared/components/caseCards/MainInfoCaseForm";
+import moment from "moment";
 // import {showFileChooser, signXml} from "../../../shared/utils/ncaLayers";
 
 const validate = values => {
@@ -156,7 +156,8 @@ class SignupForm extends React.Component {
   onSubmit = async ({scanCopyLetter, ecp, ...values}) => {
     const fd = new FormData();
     scanCopyLetter && scanCopyLetter.forEach((f, idx) => {
-      f && fd.append(`files_scanCopyLetter_${idx+1}`, f)
+
+      f && fd.append(`files_scanCopyLetter_${idx+1}`, f.value)
     });
 
     ['regulationsAcquainted', 'publishedWork', 'bibliographicInform'].forEach(c => {
@@ -176,6 +177,7 @@ class SignupForm extends React.Component {
       else if(value && typeof value === 'object' && value.format && value.format('YYYY-MM-DD')) {
         fd.append(key, value.format('YYYY-MM-DD'));
       }
+
       else {
         value && fd.append(key, value);
       }
@@ -241,7 +243,6 @@ class SignupForm extends React.Component {
   };
 
   strToRedux = (val, prevVal, obj, prevObj, flag) => {
-    debugger;
     if(!!flag){
       val = val.replace(/[^\d;]/g, '')
     }
@@ -279,6 +280,31 @@ class SignupForm extends React.Component {
       }
     }
   };
+    dateToRedux = (val, prev) => {
+        {
+            let coppyPrev = { ...prev };
+
+            if (!!val) {
+
+                let newDate = val
+                if (!!coppyPrev.idDataPropVal) {
+                    coppyPrev.value = newDate;
+                    return coppyPrev;
+                } else {
+                    return {
+                        value: newDate
+                    };
+                }
+            } else {
+                if (!!coppyPrev.value) {
+                    coppyPrev.value = "";
+                    return coppyPrev;
+                } else {
+                    return {};
+                }
+            }
+        }
+    };
 
   render() {
     if(isEmpty(this.props.tofiConstants)) return null;
@@ -304,7 +330,9 @@ class SignupForm extends React.Component {
                       name="iin"
                       formItemClass="signup-form__input"
                       component={renderInput}
-                      normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
+                      format={(val)=>{
+                        return {value:val}
+                      }}
                       placeholder="yymmddxxxxxx"
                       label={iin.name[this.lng]}
                       formItemLayout={
@@ -320,8 +348,9 @@ class SignupForm extends React.Component {
                       name="personLastName"
                       formItemClass="signup-form__input"
                       component={renderInput}
-                      normalize={this.strToRedux}
-                      placeholder={t("LAST_NAME_PLACEHOLDER")}
+                      format={(val)=>{
+                          return {value:val}
+                      }}                      placeholder={t("LAST_NAME_PLACEHOLDER")}
                       label={personLastName.name[this.lng]}
                       formItemLayout={{
                         labelCol: {span: 10},
@@ -334,8 +363,9 @@ class SignupForm extends React.Component {
                       name="personName"
                       formItemClass="signup-form__input"
                       component={renderInput}
-                      normalize={this.strToRedux}
-                      placeholder={t("FIRST_NAME_PLACEHOLDER")}
+                      format={(val)=>{
+                          return {value:val}
+                      }}                      placeholder={t("FIRST_NAME_PLACEHOLDER")}
                       label={personName.name[this.lng]}
                       formItemLayout={{
                         labelCol: {span: 10},
@@ -348,8 +378,9 @@ class SignupForm extends React.Component {
                       name="personPatronymic"
                       formItemClass="signup-form__input"
                       component={renderInput}
-                      normalize={this.strToRedux}
-                      placeholder={t("MIDDLE_NAME_PLACEHOLDER")}
+                      format={(val)=>{
+                          return {value:val}
+                      }}                      placeholder={t("MIDDLE_NAME_PLACEHOLDER")}
                       label={personPatronymic.name[this.lng]}
                       formItemLayout={{
                         labelCol: {span: 10},
@@ -360,7 +391,6 @@ class SignupForm extends React.Component {
                       name="dateOfBirth"
                       formItemClass="signup-form__input"
                       component={renderDatePicker}
-                      normalize={this.strToRedux}
                       format={null}
                       label={dateOfBirth.name[this.lng]}
                       formItemLayout={{
@@ -372,7 +402,6 @@ class SignupForm extends React.Component {
                       name="gender"
                       formItemClass="signup-form__input"
                       component={renderSelect}
-                      normalize={this.selectToRedux}
                       label={gender.name[this.lng]}
                       formItemLayout={{
                         labelCol: {span: 10},
@@ -386,7 +415,6 @@ class SignupForm extends React.Component {
                       name="nationality"
                       formItemClass="signup-form__input"
                       component={renderSelect}
-                      normalize={this.selectToRedux}
                       label={nationality.name[this.lng]}
                       formItemLayout={{
                         labelCol: {span: 10},
@@ -433,7 +461,6 @@ class SignupForm extends React.Component {
                   name="theme"
                   formItemClass="signup-form__input wrap-normal unset-lh"
                   component={renderCreatableSelect}
-                  normalize={this.selectToRedux}
                   placeholder={t("THEME")}
                   label={t("THEME")}
                   formItemLayout={{
@@ -485,7 +512,6 @@ class SignupForm extends React.Component {
                   name="directUseDocument"
                   formItemClass="signup-form__input wrap-normal unset-lh"
                   component={renderSelect}
-                  normalize={this.selectToRedux}
                   disabled={!themeValue || Boolean(themeValue && themeValue.directUseDocument && themeValue.directUseDocument.idRef)}
                   label={directUseDocument.name[this.lng]}
                   formItemLayout={{
@@ -500,7 +526,9 @@ class SignupForm extends React.Component {
                   name="goalSprav"
                   formItemClass="signup-form__input wrap-normal unset-lh"
                   component={renderInput}
-                  normalize={this.strToRedux}
+                  format={(val)=>{
+                      return {value:val}
+                  }}
                   validate={requiredLng}
                   disabled={!themeValue || Boolean(themeValue && themeValue.goalSprav && themeValue.goalSprav.ru)}
                   label={goalSprav.name[this.lng]}
@@ -512,7 +540,7 @@ class SignupForm extends React.Component {
                 <Fields
                   names={[ 'chronologicalBegin', 'chronologicalEnd' ]}
                   component={renderDoubleDateInput}
-                  normalize={this.strToRedux}
+
                   disabledFields={{
                     chronologicalBegin: !themeValue || !!(themeValue && themeValue.chronologicalBegin && themeValue.chronologicalBegin.ru),
                     chronologicalEnd: !themeValue || !!(themeValue && themeValue.chronologicalEnd && themeValue.chronologicalEnd.ru)
@@ -522,7 +550,6 @@ class SignupForm extends React.Component {
                     chronologicalEnd: digits(4)
                   }}
                   label={t('start-end')}
-                  format={null}
                   validate={requiredLng}
                   formItemLayout={
                     {
@@ -535,7 +562,6 @@ class SignupForm extends React.Component {
                   name="formResultRealization"
                   formItemClass="signup-form__input wrap-normal unset-lh"
                   component={renderSelect}
-                  normalize={this.selectToRedux}
                   disabled={!themeValue || Boolean(themeValue && themeValue.formResultRealization && themeValue.formResultRealization.idRef)}
                   label={formResultRealization.name[this.lng]}
                   formItemLayout={{
@@ -569,7 +595,9 @@ class SignupForm extends React.Component {
                   name="job"
                   formItemClass="signup-form__input"
                   component={renderInput}
-                  normalize={this.strToRedux}
+                  format={(val)=>{
+                      return {value:val}
+                  }}
                   label={job.name[this.lng]}
                   formItemLayout={{
                     labelCol: {span: 10},
@@ -580,7 +608,9 @@ class SignupForm extends React.Component {
                   name="position"
                   formItemClass="signup-form__input"
                   component={renderInput}
-                  normalize={this.strToRedux}
+                  format={(val)=>{
+                      return {value:val}
+                  }}
                   label={position.name[this.lng]}
                   formItemLayout={{
                     labelCol: {span: 10},
@@ -591,7 +621,6 @@ class SignupForm extends React.Component {
                   name="education"
                   formItemClass="signup-form__input"
                   component={renderSelect}
-                  normalize={this.selectToRedux}
                   label={education.name[this.lng]}
                   formItemLayout={{
                     labelCol: {span: 10},
@@ -605,7 +634,6 @@ class SignupForm extends React.Component {
                   name="personAcademicDegree"
                   formItemClass="signup-form__input"
                   component={renderSelect}
-                  normalize={this.selectToRedux}
                   label={personAcademicDegree.name[this.lng]}
                   formItemLayout={{
                     labelCol: {span: 10},
@@ -619,7 +647,6 @@ class SignupForm extends React.Component {
                   name="personAcademicTitle"
                   formItemClass="signup-form__input"
                   component={renderSelect}
-                  normalize={this.selectToRedux}
                   label={personAcademicTitle.name[this.lng]}
                   formItemLayout={{
                     labelCol: {span: 10},
@@ -644,13 +671,17 @@ class SignupForm extends React.Component {
                   }}
                   colon={true}
                   validate={requiredLng}
-                  normalize={(val, prevVal, obj, prevObj)=>this.strToRedux(val, prevVal, obj, prevObj, true)}
-                />
+                  format={(val)=>{
+                      return {value:val}
+                  }}
+                    />
                 <Field
                   name="login"
                   formItemClass="signup-form__input"
                   component={renderInput}
-                  normalize={this.strToRedux}
+                  format={(val)=>{
+                      return {value:val}
+                  }}
                   label={t('LOGIN')}
                   formItemLayout={{
                     labelCol: {span: 10},
@@ -663,7 +694,9 @@ class SignupForm extends React.Component {
                   name="email"
                   formItemClass="signup-form__input"
                   component={renderInput}
-                  normalize={this.strToRedux}
+                  format={(val)=>{
+                      return {value:val}
+                  }}
                   label={t('EMAIL')}
                   formItemLayout={{
                     labelCol: {span: 10},
@@ -676,7 +709,9 @@ class SignupForm extends React.Component {
                   name="location"
                   formItemClass="signup-form__input"
                   component={renderInput}
-                  normalize={this.strToRedux}
+                  format={(val)=>{
+                      return {value:val}
+                  }}
                   label={location.name[this.lng]}
                   formItemLayout={{
                     labelCol: {span: 10},
@@ -757,5 +792,5 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {submit, change, push, getPropVal, getObjChildsByConst, regNewUserSuccess})(reduxForm({
   form: "signUpForm",
   validate,
-  initialValues: {iin: '950223350036', personLastName: 'Izbassar', personName: 'Nurbek', email: 'nurbek-2395@mail.ru', phone: '87071723132', login: 'Nur'}
+  initialValues: {}
 })(translate('signUpForm')(SignupForm)));

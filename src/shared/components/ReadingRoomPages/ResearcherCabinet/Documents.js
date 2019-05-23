@@ -1,9 +1,9 @@
 import React from 'react';
 import {Button, InputNumber, Table} from 'antd';
+import moment from "moment";
 import {SYSTEM_LANG_ARRAY} from "../../../constants/constants";
 import {parseForTable} from "../../../utils/cubeParser";
 import { ArchiveFund } from '../../../utils/axios_config'
-import moment from "moment";
 
 class Documents extends React.Component {
 

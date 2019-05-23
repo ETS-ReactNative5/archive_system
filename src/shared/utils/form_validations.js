@@ -14,7 +14,7 @@ const requiredEmailMsg = {
 
 export const required = value =>(value && value.trim() ? undefined : requiredMsg[localStorage.getItem('i18nextLng')]);
 
-export const requiredEmail = value => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value.value) ? undefined : requiredEmailMsg[localStorage.getItem('i18nextLng')];
+export const requiredEmail = value => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value) ? undefined : requiredEmailMsg[localStorage.getItem('i18nextLng')];
 
 export const requiredLabel = valueObj => (valueObj && valueObj.label && valueObj.label.trim() ? undefined : requiredMsg[localStorage.getItem('i18nextLng')]);
 

@@ -18,7 +18,7 @@ export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable
         cubeVal.forEach(cubeValItem => {
             const prop = doTableWithProps.find(doItem => doItem['id'] === cubeValItem[doConst])['props'].find(dpItem => dpItem['id'] === cubeValItem[dpConst]);
             const propType = prop['typeProp'];
-            switch(true) {
+            switch (true) {
                 case (propType === 1) :
                     return;
                 case (propType === 11 && prop.isUniq === 2):
@@ -92,7 +92,7 @@ export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable
                             dend: cubeValItem['dend'],
                         }
                     } else {
-                        if (cubeValItem['valueNumb']|| cubeValItem['valueNumb'] ==0) {
+                        if (cubeValItem['valueNumb'] || cubeValItem['valueNumb'] == 0) {
                             prop.values = {
                                 value: cubeValItem['valueNumb'],
                                 measure: cubeValItem['measure'],
@@ -133,7 +133,7 @@ export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable
                     break;
 
                 case (propType.toString().startsWith('31')) :
-                    switch(propType % 10) {
+                    switch (propType % 10) {
 
                         case 1: // свойство типа строка с маской
                         case 5: // свойство типа строка
@@ -509,7 +509,7 @@ export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable
         });
         console.log('doTableWithProps', doTableWithProps);
         return doTableWithProps;
-    } catch(err) {
+    } catch (err) {
         console.warn(err);
         return []
     }
@@ -529,15 +529,15 @@ export const parseForTable = (props, tofiConstants, result, constArr) => {
                     result[c] = dp.complexChildValues;
                 } else {
                     if (dp.values) {
-                        if (dp.propItem){
+                        if (dp.propItem) {
                             const con = keys.find(c => tofiConstants[c].id === dp.propItem);
                             result[con] = dp.values;
-                        }else{
+                        } else {
                             result[c] = dp.values;
 
                         }
                     } else {
-                        c in result ?"" : result[c] = null;
+                        c in result ? "" : result[c] = null;
 
                     }
                 }
@@ -575,7 +575,7 @@ export const parseForTable = (props, tofiConstants, result, constArr) => {
         });
         //console.log(result);
         //  return withIdDPV;
-    } catch(e) {
+    } catch (e) {
         console.warn(e);
         console.log('No such constants', constArr.filter(c => !tofiConstants[c]));
     }
@@ -585,7 +585,7 @@ export const getPropMeta = (cubeProps, cnst) => {
     try {
         return cubeProps.find(prop => prop.prop === cnst.id);
 
-    } catch(err) {
+    } catch (err) {
         console.error(cubeProps, cnst, err)
     }
 };
@@ -684,32 +684,35 @@ options = {}) {
 }
 */
 
-export function onSaveCubeData({cube, obj},{values, complex, oFiles = {}, qFiles = {}},
-tofiConstants,
-objData = {},
-periods,
-dte = moment().format('YYYY-MM-DD'),
-options = {}) {
+export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFiles = {}},
+                               tofiConstants,
+                               objData = {},
+                               periods,
+                               dte = moment().format('YYYY-MM-DD'),
+                               options = {}) {
 
     var test = Object.entries(oFiles);
 
-    let testObj={};
+    let testObj = {};
 
 
-    for (let i=0; i<test.length;i++){
-       if(!!test[i][1]) {
-         testObj[test[i][0]]=[];
-         var vv=test[i][1].map(el=>{return !el.idDataPropVal ? el.value:el});
-         var newVV=[];
-            vv.forEach((item,i,arr) =>{
-                if(item instanceof File){
-                    newVV.push(item);
-                }
-            });
-           testObj[test[i][0]]=newVV;
-       }
+    for (let i = 0; i < test.length; i++) {
+        if (!!test[i][1]) {
+            testObj[test[i][0]] = [];
+            if (!!test[i][1][0]) {
+                var vv = test[i][1].map(el => {
+                    return !el.idDataPropVal ? el.value : el
+                });
+                var newVV = [];
+                vv.forEach((item, i, arr) => {
+                    if (item instanceof File) {
+                        newVV.push(item);
+                    }
+                });
+                testObj[test[i][0]] = newVV;
+            }
+        }
     }
-
 
 
     const files = {...testObj};
@@ -734,7 +737,7 @@ options = {}) {
             typeProp: '71',
             periodDepend: String(propMetaData.periodDepend),
             isUniq: String(propMetaData.isUniq),
-            mode:mode ? mode:'ins',
+            mode: mode ? mode : 'ins',
             child: map(values, buildProps)
         }
     });
@@ -746,29 +749,29 @@ options = {}) {
     }];
 
     function buildProps(val, key) {
-         const propMetaData = getPropMeta(cube.data["dp_" + tofiConstants[cube.dpConst].id], tofiConstants[key]);
-        if (propMetaData === undefined){
-            if(!!tofiConstants[key]){
+        const propMetaData = getPropMeta(cube.data["dp_" + tofiConstants[cube.dpConst].id], tofiConstants[key]);
+        if (propMetaData === undefined) {
+            if (!!tofiConstants[key]) {
                 let idPropitem = tofiConstants[key].id
-                let props =cube.data["dp_" + tofiConstants[cube.dpConst].id].find(el => el.propItem === idPropitem)
+                let props = cube.data["dp_" + tofiConstants[cube.dpConst].id].find(el => el.propItem === idPropitem)
                 let propcConst
-                for (let keys in tofiConstants){
-                    if(tofiConstants[keys].id === props.prop){
+                for (let keys in tofiConstants) {
+                    if (tofiConstants[keys].id === props.prop) {
                         propcConst = keys
                         break
                     }
 
                 }
 
-                if (!!idPropitem && !!props && !!propcConst){
-                    if (!!val.value){
+                if (!!idPropitem && !!props && !!propcConst) {
+                    if (!!val.value) {
 
-                    }else {
-                        val.mode= "del"
+                    } else {
+                        val.mode = "del"
                     }
                     return {
                         propConst: propcConst,
-                        propItemConst:key,
+                        propItemConst: key,
                         val: val.value,
                         idDataPropVal: val.idDataPropVal,
                         typeProp: String(props.typeProp),
@@ -785,7 +788,7 @@ options = {}) {
         }
         let value = val;
         try {
-            if (propMetaData.isUniq===1 && (propMetaData.typeProp === 315 || propMetaData.typeProp === 311 || propMetaData.typeProp === 317)) {
+            if (propMetaData.isUniq === 1 && (propMetaData.typeProp === 315 || propMetaData.typeProp === 311 || propMetaData.typeProp === 317)) {
 
 
                 value = {
@@ -799,23 +802,23 @@ options = {}) {
                     val.mode = "del"
                 }
             }
-            if (propMetaData.isUniq===2 && propMetaData.typeProp===315){
+            if (propMetaData.isUniq === 2 && propMetaData.typeProp === 315) {
                 let values = []
-                for (let item of value){
-                    let mode =""
-                    if (!!item.value.idDataPropVal && !!item.value.value ){
-                        mode="upd"
-                    }else {
-                        if (!!item.value.value){
-                            mode="ins"
-                        }else {
-                            mode="del"
+                for (let item of value) {
+                    let mode = ""
+                    if (!!item.value.idDataPropVal && !!item.value.value) {
+                        mode = "upd"
+                    } else {
+                        if (!!item.value.value) {
+                            mode = "ins"
+                        } else {
+                            mode = "del"
                         }
                     }
                     let newob = {
                         val: item.value.value,
-                        idDataPropVal:item.value.idDataPropVal?item.value.idDataPropVal:"",
-                        mode:mode
+                        idDataPropVal: item.value.idDataPropVal ? item.value.idDataPropVal : "",
+                        mode: mode
                     }
                     values.push(newob)
                 }
@@ -832,53 +835,55 @@ options = {}) {
 
 
             }
-            if ((propMetaData.typeProp === 11 || propMetaData.typeProp === 41) && (propMetaData.isUniq==1)) {
+            if ((propMetaData.typeProp === 11 || propMetaData.typeProp === 41) && (propMetaData.isUniq == 1)) {
 
-                value = !!val.value ? String(val.value):String(val);
-                if (!!value){
+                value = !!val.value ? String(val.value) : val instanceof Object ? "" : String(val);
+                if (!!value) {
 
-                }else{
-                    val.mode= "del"
+                } else {
+                    val.mode = "del"
                 }
             }
-            if(propMetaData.typeProp === 312){
+            if (propMetaData.typeProp === 312) {
 
-                if(val instanceof  moment){
-                    value = val.value? moment(val.value).format('YYYY-MM-DD'):moment(val).format('YYYY-MM-DD')
+                if (val instanceof moment) {
+                    value = val.value ? moment(val.value).format('YYYY-MM-DD') : moment(val).format('YYYY-MM-DD')
 
-                }else {
-                    value= val.value? moment(val.value,'DD-MM-YYYY').format('YYYY-MM-DD'): val[2]=='-' ? moment(val,'DD-MM-YYYY').format('YYYY-MM-DD') : val
+                } else {
+                    value = val.value ? moment(val.value, 'DD-MM-YYYY').format('YYYY-MM-DD') : val[2] == '-' ? moment(val, 'DD-MM-YYYY').format('YYYY-MM-DD') : val instanceof Object ? "": val
 
                 }
-                if (!!value){
+                if (!!value) {
 
-                }else{
-                    val.mode= "del"
+                } else {
+                    val.mode = "del"
                 }
             }
-            if (((propMetaData.typeProp === 11) && (propMetaData.isUniq==2)) || ((propMetaData.typeProp === 41) && (propMetaData.isUniq==2))) {
-                var valuesStrMulti=val.map(el=>el.value);
-                var idDpvMulti=val.map(el=>{return !!el.idDataPropVal ? el.idDataPropVal :''});
+            if (((propMetaData.typeProp === 11) && (propMetaData.isUniq == 2)) || ((propMetaData.typeProp === 41) && (propMetaData.isUniq == 2))) {
+                var valuesStrMulti = val.map(el => el.value);
+                var idDpvMulti = val.map(el => {
+                    return !!el.idDataPropVal ? el.idDataPropVal : ''
+                });
                 value = valuesStrMulti.join(',');
-                val.idDataPropVal=idDpvMulti;
-                if (!!value){
+                val.idDataPropVal = idDpvMulti;
+                if (!!value) {
 
-                }else{
-                    val.mode= "del"
+                } else {
+                    val.mode = "del"
                 }
             }
 
-            if(propMetaData.typeProp === 21){
+            if (propMetaData.typeProp === 21) {
 
-                 value=val && val.value;
-                if (!!value){
+                value = val && val.value;
+                if (!!value) {
 
-                }else{
-                    val.mode= "del"
+                } else {
+                    val.mode = "del"
                 }
             }
 
-        } catch(e) {
+        } catch (e) {
             console.warn(key, val);
             console.warn(e);
             return;
@@ -893,7 +898,7 @@ options = {}) {
             //periodType: periodType,
             //dBeg: dBeg,
             //dEnd: dEnd,
-            mode: val.mode? val.mode: val.idDataPropVal  ? 'upd' : 'ins'
+            mode: val.mode ? val.mode : val.idDataPropVal ? 'upd' : 'ins'
         }
     }
 

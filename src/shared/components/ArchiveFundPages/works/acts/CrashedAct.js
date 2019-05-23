@@ -64,8 +64,8 @@ class CrashedAct extends React.Component {
             width: '15%',
             render: (obj, rec) => {
                 var infoAbout = '';
-                infoAbout +=rec.caseNumberOfPages && ['кол-во стр: ' + rec.caseNumberOfPages];
-                infoAbout +=rec.playingTime && [', Время: ' + rec.playingTime];
+                infoAbout += !!rec.caseNumberOfPages ? ['кол-во стр: ' + rec.caseNumberOfPages]:'';
+                infoAbout += !!rec.playingTime ? [', Время: ' + rec.playingTime]:'';
                 return infoAbout;
             }
         },

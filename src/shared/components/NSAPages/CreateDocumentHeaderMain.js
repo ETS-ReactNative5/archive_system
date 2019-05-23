@@ -33,7 +33,20 @@ class CreateDocumentHeaderMain extends React.Component{
       record: {},
     }
   }
-
+  fileToRedux = (val, prevVal, file, str) => {
+       let newFile = val.filter(el => el instanceof File);
+       if (newFile.length > 0) {
+            var copyVal = prevVal ? [...prevVal] : [];
+            newFile.map(el => {
+               copyVal.push({
+                   value: el
+               });
+            });
+            return copyVal;
+       } else {
+            return val.length == 0 ? [] : val;
+       }
+  };
   componentDidMount() {
     if (this.props.record && !isEqual(this.props.record, this.state.record)) {
       this.setState({ record: this.props.record });
@@ -286,6 +299,8 @@ class CreateDocumentHeaderMain extends React.Component{
               disabled={this.state.record.parent !== '0'}
               formItemClass="classificationInfo_uploadBtn"
               value={this.state.record.documentFile}
+              cubeSConst='cubeDocuments'
+              normalize={this.fileToRedux}
               label={'Документ'}
               //onChange={(e) => this.onChangeFile(e, 'documentFile')}
               //onChange={(e) => console.log(e, 'event')}

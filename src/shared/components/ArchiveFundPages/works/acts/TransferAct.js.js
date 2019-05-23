@@ -168,7 +168,8 @@ class TransferAct extends React.Component {
                 style={{textAlign: 'center'}}>(Название передаваемого фонда)</span></Row>
 
             <Row>
-               ________________________________________
+                <span
+                style={{textDecoration: "underline"}}> </span>
                 сдал,<br/>(название организации, сдатчика)</Row>
 
             <Row> <span
@@ -293,7 +294,7 @@ class TransferAct extends React.Component {
                                         propConst: 'caseInventory',
                                         valueRef: {id: String(invId)}
                                     }
-                                }
+                                },
                             ]
                         }
                     ],
@@ -303,7 +304,7 @@ class TransferAct extends React.Component {
                             concatType: "and",
                             conds: [
                                 {
-                                    consts: "caseInventory"
+                                    consts: "caseInventory,fundFeature"
                                 }
                             ]
                         }
@@ -313,7 +314,7 @@ class TransferAct extends React.Component {
                 fd2.append("cubeSConst", 'CubeForAF_Case');
                 fd2.append("filters", JSON.stringify(filters));
                 axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getCubeData`, fd2).then(res => {
-                var countCases=res.data.data.cube.length;
+                var countCases=res.data.data.cube.filter(el=>el.idRef==this.props.tofiConstants.included.id).length;
                 this.setState({
                     countCases:countCases,
                     loading: false

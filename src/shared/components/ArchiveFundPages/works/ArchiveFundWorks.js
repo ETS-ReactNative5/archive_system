@@ -37,6 +37,7 @@ class ArchiveFundWorks extends React.PureComponent {
         super(props);
 
         this.state = {
+            sortState: true,
             visible: false,
             data: [],
             nameFilter:"",
@@ -321,7 +322,11 @@ class ArchiveFundWorks extends React.PureComponent {
             }
         }
     }
-
+    onChange = (pagination, filters, sorter) => {
+        if(sorter.columnKey === "key") {
+            this.setState({sortState: !this.state.sortState});
+        }
+    }
     stopPropagation = e => {
         e.stopPropagation();
     };
@@ -835,10 +840,12 @@ class ArchiveFundWorks extends React.PureComponent {
         const {
             workPlannedEndDate, workAuthor, workRegFund, workRegFundId, workRegInv, workIndexNumber, retirementReason,
             workPriority, workDate, workAssignedTo, workPlannedStartDate, workActualStartDate, workRecipient,
-            workActualEndDate, acceptanceDate, checkingType, workRegCase, intermediateResultDate, deliveryPurpose
+            workActualEndDate, acceptanceDate, checkingType, workRegCase, descriptionDamage,intermediateResultDate, deliveryPurpose,indexDamage
         } = this.props.tofiConstants;
 
         const workPlannedEndDateObj = item.props.find(element => element.prop == workPlannedEndDate.id),
+        indexDamageObj = item.props.find(element => element.prop == indexDamage.id),
+        descriptionDamageObj = item.props.find(element => element.prop == descriptionDamage.id),
         workStatusRegObj = item.props.find(element => element.prop == this.props.tofiConstants[this.clsStatusMap[item.clsORtr]].id),
         workAuthorObj = item.props.find(element => element.prop == workAuthor.id),
         workPriorityObj = item.props.find(element => element.prop == workPriority.id),
@@ -866,6 +873,8 @@ class ArchiveFundWorks extends React.PureComponent {
                 label: this.props.tofiConstants[workTypeClass].name[this.lng],
                 workTypeClass
             } : null,
+           descriptionDamage:descriptionDamageObj && descriptionDamageObj.values && descriptionDamageObj.values.value,
+           indexDamage:indexDamageObj && indexDamageObj.values,
             workPlannedStartDate: !!workPlannedStartDateObj && workPlannedStartDateObj.values ? moment(workPlannedStartDateObj.values.value, 'DD-MM-YYYY') : null,
             workPlannedStartDateObject: !!workPlannedStartDateObj && workPlannedStartDateObj.values ? workPlannedStartDateObj.values : null,
             workPlannedEndDate: !!workPlannedEndDateObj && workPlannedEndDateObj.values ? moment(workPlannedEndDateObj.values.value, 'DD-MM-YYYY') : null,
@@ -892,7 +901,7 @@ class ArchiveFundWorks extends React.PureComponent {
             acceptanceDate: !!acceptanceDateObj && acceptanceDateObj.values ? moment(acceptanceDateObj.values.value, 'DD-MM-YYYY') : null,
             acceptanceDateObject: !!acceptanceDateObj && acceptanceDateObj.values ? acceptanceDateObj.values : null,
             intermediateResultDate: !!intermediateResultDateObj && intermediateResultDateObj.values ? moment(intermediateResultDateObj.values.value, 'DD-MM-YYYY') : null,
-            intermediateResultDateObject: !!intermediateResultDateObj && intermediateResultDateObj.values ? intermediateResultDateObj.values : null
+            intermediateResultDateObject: !!intermediateResultDateObj && intermediateResultDateObj.values ? intermediateResultDateObj.values : null,
         }
     };
     onWorkRegInvChange = data => {
@@ -1134,6 +1143,7 @@ class ArchiveFundWorks extends React.PureComponent {
             <div className="Works__body">
                 <AntTable
                 loading={loading}
+                onChange={this.onChange}
                 rowClassName={rec => {
                     if (rec.workStatusReg != null) {
                         let newClass =
@@ -1163,7 +1173,7 @@ class ArchiveFundWorks extends React.PureComponent {
                         dataIndex: 'key',
                         width: '8%',
                         render: key => key ? key.slice(5, 8) + '-' + key.slice(-4) : '',
-                        sortOrder: 'descend',
+                        sortOrder: this.state.sortState ? 'descend' : 'ascend',
                         sorter: (a, b) => parseInt(a.key.split('_')[1]) - parseInt(b.key.split('_')[1]),
                         filterDropdown: (
                         <div className="custom-filter-dropdown">

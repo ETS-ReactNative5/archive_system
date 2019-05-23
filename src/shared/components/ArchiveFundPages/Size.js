@@ -47,6 +47,7 @@ class Size extends React.Component {
         fundCasesInKazakhLang,
         fundNumberOfOCD,
         fundNumberOfInsurance,
+        fundNumberOfMicrofilms,
         fundNumberOfInsuranceCadre,
         fundNumberOfInsuranceCases,
         fundNumberOfCasesInFundOfUse
@@ -106,11 +107,16 @@ class Size extends React.Component {
               docsType: fundNumberOfMCHD.name[this.lng],
               archiveFundSize: data ? data.fundNumberOfMCHD : ""
             },
-            {
-              key: "fundNumberOfMicroforms",
-              docsType: fundNumberOfMicroforms.name[this.lng],
-              archiveFundSize: data ? data.fundNumberOfMicroforms : ""
-            }
+              {
+                  key: "fundNumberOfMicroforms",
+                  docsType: fundNumberOfMicroforms.name[this.lng],
+                  archiveFundSize: data ? data.fundNumberOfMicroforms : ""
+              },
+              {
+                  key: "fundNumberOfMicrofilms",
+                  docsType: fundNumberOfMicrofilms.name[this.lng],
+                  archiveFundSize: data ? data.fundNumberOfMicrofilms : ""
+              }
           ]
         },
         {

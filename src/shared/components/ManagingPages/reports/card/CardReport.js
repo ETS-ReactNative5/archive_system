@@ -33,45 +33,40 @@ class CardReport_invTypeDigital_uprDoc extends Component {
             .then (async (res)  => {
                 let propsObj =[]
                 let dara = [...res.data.data]
+
+                dara.sort((a,b)=>{
+                        return a.ord- b.ord
+                    })
                 for (let val of dara){
                     let keyType
                     for(let key in val) {
-                        if (String(key) === "factorVal") {
+                        if (String(key) === "factorVal" && val[key] !==0) {
                             keyType = {[key]: val[key]}
                             break
                         }
-                        if (String(key) === "factor") {
+                        if (String(key) === "factor" && val[key] !==0) {
                             keyType = {[key]: val[key]}
                             break
                         }
-                        if (String(key) === "prop") {
+                        if (String(key) === "prop" && val[key] !==0 ) {
                             keyType = {[key]: val[key]}
                             break
                         }
-                        if (String(key) === "obj") {
+                        if (String(key) === "obj" && val[key] !==0) {
                             keyType = {[key]: val[key]}
                             break
                         }
-                        if (String(key) === "cls") {
+
+                        if (String(key) === "typ" && val[key] !==0) {
                             keyType = {[key]: val[key]}
                             break
                         }
-                        if (String(key) === "typ") {
+                        if (String(key) === "cls" && val[key] !==0) {
                             keyType = {[key]: val[key]}
                             break
                         }
                     }
-                    if(val.asgnType !==8) {
-                        propsObj.push({
-                            asgnType: val.asgnType,
-                            name: val.name,
-                            nameParam: val.nameParam,
-                            paramCateg: val.paramCateg,
-                            isUniq: val.isUniq,
-                            keyType:keyType
-                        })
-                    }
-                    else {
+                    if(val.asgnType ===8  || val.asgnType ===7 ) {
                         let da = await this.getPropType(val.prop)
                         propsObj.push({
                             asgnType: val.asgnType,
@@ -84,9 +79,18 @@ class CardReport_invTypeDigital_uprDoc extends Component {
 
                         })
                     }
+                    else {
+
+                        propsObj.push({
+                            asgnType: val.asgnType,
+                            name: val.name,
+                            nameParam: val.nameParam,
+                            paramCateg: val.paramCateg,
+                            isUniq: val.isUniq,
+                            keyType:keyType
+                        })
+                    }
                 }
-
-
                 this.setState({
                     reportTypeOptions:propsObj,
                     loading: false
@@ -109,13 +113,13 @@ class CardReport_invTypeDigital_uprDoc extends Component {
 
 
        let da = !!promResp.data.data?promResp.data.data.typeProp:""
-        return promResp;
+        return da
     }
 
 
 
   render() {
-      const { t, tofiConstants, saveProps, initialValues, keyInv, invType,docType } = this.props;
+      const { t, tofiConstants, saveProps, initialValues,periodType, keyInv, invType,docType } = this.props;
     return <Spin spinning={this.state.loading}>
         <AntTabs
       tabs={[
@@ -125,6 +129,7 @@ class CardReport_invTypeDigital_uprDoc extends Component {
           tabContent: <MainInfoCaseForm
               initialValues={initialValues}
               tofiConstants={tofiConstants}
+              periodType={periodType}
               reportTypeOptions={!!this.state.reportTypeOptions? this.state.reportTypeOptions:[]}
           />
         },

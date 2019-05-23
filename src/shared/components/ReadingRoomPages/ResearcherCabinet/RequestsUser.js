@@ -14,6 +14,7 @@ import Select from "../../Select.js"
 class RequestsUser extends React.Component {
 
     state = {
+        sortState: true,
         search: {
             workDate: {
                 dbeg: null,
@@ -53,7 +54,6 @@ class RequestsUser extends React.Component {
             }
         })
     };
-
     onWorkClassChange = s => {
         this.setState({
             search: {
@@ -202,8 +202,12 @@ class RequestsUser extends React.Component {
         result.workStatusUses = result[this.clsStatusMap[item.clsORtr]];
         result.resultDescription = result.resultDescriptionLng;
         return result;
-    };
-
+    }
+    onChange = (pagination, filters, sorter) => {
+        if(sorter.columnKey === "id") {
+            this.setState({sortState: !this.state.sortState});
+        }
+    }
     render() {
         const {loading, data, search, initialValues} = this.state;
         this.lng = localStorage.getItem('i18nextLng');
@@ -228,12 +232,12 @@ class RequestsUser extends React.Component {
 
         return (
             <div className="CabinetCard">
-
                 <div className="CabinetCard__body">
                     <AntTable
                         loading={this.props.loading}
                         dataSource={this.filteredData}
                         changeSelectedRow={this.changeSelectedRow}
+                        onChange={this.onChange}
                         openedBy="Works"
                         columns={[
                             {
@@ -242,8 +246,8 @@ class RequestsUser extends React.Component {
                                 dataIndex: 'key',
                                 width: '6%',
                                 render: key => key,
-                                sortOrder: 'descend',
                                 sorter: (a, b) => parseInt(a.key.split('_')[1]) - parseInt(b.key.split('_')[1]),
+                                sortOrder: this.state.sortState ? 'ascend' : 'descend',
                                 filterDropdown: (
                                     <div className="custom-filter-dropdown">
                                         <Input
@@ -378,7 +382,6 @@ class RequestsUser extends React.Component {
                                 dataIndex: 'documentFile',
                                 width: '6%',
                                 render: (arr, rec) => {
-
                                     if (arr && arr.length && arr.some(obj => (Number(obj.kz) || Number(obj.ru) || Number(obj.en)))
                                     ) {
                                         return <Button

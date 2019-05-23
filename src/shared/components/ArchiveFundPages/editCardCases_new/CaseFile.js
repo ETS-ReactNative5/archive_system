@@ -69,7 +69,6 @@ class CaseFile extends React.Component {
   handleChange(value, key, column) {
     const newData = [...this.state.data];
     const target = newData.find(item => key === item.key);
-    debugger;
     if (target) {
       if(column === 'fileOrder') {
         let i = 0;

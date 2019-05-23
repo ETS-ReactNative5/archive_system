@@ -510,6 +510,9 @@ return axios.General.propValList(propConst)};
 export const regNewUserSuccess = fd => dispatch => {
     return axios.Auth.regNewUser(fd)
 };
+export const getUserInfo = objUser =>  {
+    return axios.Auth.getUserInfo(objUser)
+};
 export const regNewUserWithECP = fd => {
     return axios.Auth.regNewUserWithECP(fd)
 };

@@ -49,7 +49,6 @@ class WorksPropertyForm extends Component {
     workName = {...this.props.initialValues.workListName} || {kz: '', ru: '', en: ''};
 
     onSubmit = values => {
-        debugger
         if (!this.props.initialValues.key) {
             return this.props.onCreateObj(
                 {

@@ -52,6 +52,7 @@ class RenderCheckbox extends React.Component {
 class ArchiveFundWorksChecking extends React.PureComponent {
 
     state = {
+        sortState: true,
         selectedRow: [],
         selectedWorks: [],
         openCard: false,
@@ -67,6 +68,11 @@ class ArchiveFundWorksChecking extends React.PureComponent {
         workRegInvNumber: '',
     };
 
+    onChange = (pagination, filters, sorter) => {
+        if(sorter.columnKey === "caseNumber") {
+            this.setState({sortState: !this.state.sortState});
+        }
+    }
     openModal = () => {
         this.setState({modal: {...this.state.modal, visible: true}})
     };
@@ -420,6 +426,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
         return (
         <div className="WorksChecking EditCardCases__body">
             <Table
+            onChange={this.onChange}
             columns={[
                 {
                     key: 'numb',
@@ -433,7 +440,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
                     dataIndex: 'caseNumber',
                     width: '5%',
                     sorter: (a, b) => a.caseNumber - b.caseNumber,
-                    sortOrder: "ascend"
+                    sortOrder: this.state.sortState ? 'ascend' : 'descend',
 
                 },
                 {

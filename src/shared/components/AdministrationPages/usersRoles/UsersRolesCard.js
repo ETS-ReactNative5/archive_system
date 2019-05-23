@@ -2,7 +2,7 @@ import React from 'react';
 import {getAllPermis, getRolePermis, savePrivs} from "../../../actions/actions";
 
 import AntTable from "../../AntTable";
-import {Tree, Button} from 'antd';
+import {Tree, message, Button} from 'antd';
 
 const TreeNode = Tree.TreeNode;
 
@@ -110,7 +110,21 @@ class UsersRolesCard extends React.Component {
     render() {
         return <div>
             <h3> - Привелегии роли </h3>
-            <Button type="primary" onClick={ () => savePrivs(this.props.record.key,this.state.checkedKeys.checked.join(','))}>Сохранить</Button>
+            <Button type="primary" onClick={ () => {
+                savePrivs(this.props.record.key, this.state.checkedKeys.checked.join(',')).then((res) => {
+                    if(!!res.data.errors){
+                        for (let item of res.data.errors){
+                            message.error(item.text)
+                        }
+                    }else {
+                        message.success("Роль обновлена")
+
+                    }
+                }).catch(e => {
+                    console.log(e)
+                })
+            }
+            }>Сохранить</Button>
             <Tree
                 checkable
                 onExpand={this.onExpand}
