@@ -13,8 +13,10 @@ import {requiredLabel} from "../../utils/form_validations";
 import {Field, formValueSelector, reduxForm} from "redux-form";
 import { isEmpty, isEqual, map, pickBy, forOwn } from "lodash";
 import connect from "react-redux/es/connect/connect";
-import {getAllObjOfCls, getObjByObjVal, getPropVal, saveValueOfMultiText} from "../../actions/actions";
+import {getAllObjOfCls, getObjByObjVal, getPropVal, saveValueOfMultiText, updateCubeData} from "../../actions/actions";
 import TextArea from 'antd/lib/input/TextArea';
+import {CUBE_FOR_FUND_AND_IK, DO_FOR_FUND_AND_IK} from "../../constants/tofiConstants";
+import * as uuid from "uuid";
 
 const FormItem = Form.Item;
 
@@ -72,9 +74,72 @@ class SearchNSAAnnotation extends React.Component{
     });
   };
   
-  onSave = () => {
-    let hideLoading;
-    hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
+  onSave = (values) => {
+       message.info(this.props.t('UPDATING_PROPS'), 5);
+       let fundAnnotationFile  =[]
+
+      if (!!values.fundAnnotationFile){
+        for (let val of values.fundAnnotationFile){
+            if (!!val.idDataPropVal) continue
+          fundAnnotationFile.push(val.value)
+        }
+      }
+      let invFile  =[]
+      if (!!values.invFile){
+          for (let val of values.invFile){
+              if (!!val.idDataPropVal) continue
+
+              invFile.push(val.value)
+          }
+      }
+      let fundHistoricalNote  =[]
+      if (!!values.fundHistoricalNote){
+          for (let val of values.fundHistoricalNote){
+              if (!!val.idDataPropVal) continue
+
+              fundHistoricalNote.push(val.value)
+          }
+      }
+
+
+      let datas = [];
+      try {
+
+          datas = [{
+              own: [{doConst: DO_FOR_FUND_AND_IK, doItem:this.props.dataRec.key, isRel: "0", objData: {}}],
+              props: [
+
+              ],
+              periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
+          }];
+      } catch (err) {
+
+
+          console.error(err);
+      }
+      updateCubeData(CUBE_FOR_FUND_AND_IK, moment().format('YYYY-MM-DD'), JSON.stringify(datas),{},{
+          fundAnnotationFile,
+          invFile,
+          fundHistoricalNote
+      })
+          .then(res => {
+
+              if (res.success) {
+                  message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+                  this.props.closeCard()
+
+              } else {
+
+                  message.error(this.props.t('PROPS_UPDATING_ERROR'));
+                  if (res.errors) {
+                      res.errors.forEach(err => {
+                          message.error(err.text);
+                      });
+
+                  }
+              }
+          })
+
     const dataToSend = [];
     if (this.state.annotationContentOfDocument !== this.props.annotationContentOfDocument.value) {
       dataToSend.push(
@@ -134,13 +199,15 @@ class SearchNSAAnnotation extends React.Component{
       saveValueOfMultiText(
         this.props.record.key.split('_')[1], JSON.stringify(dataToSend), moment().format('YYYY-DD-MM')
       ).then(res => {
-        hideLoading();
-        //console.log(res)
+          message.success(this.props.t("PROPS_SUCCESSFULLY_UPDATED"));
+          this.props.closeCard()
+
+          //console.log(res)
       }).catch(err => {
         console.warn(err);
       })
     } else {
-      hideLoading();
+
     }
     
     this.setState({flagSave: false});
@@ -183,6 +250,22 @@ class SearchNSAAnnotation extends React.Component{
     });
   };
 
+    fileToRedux = (val, prevVal, file, str) => {
+        let newFile = val.filter(el => el instanceof File);
+        if (newFile.length > 0) {
+            var copyVal = prevVal ? [...prevVal] : [];
+            newFile.map(el => {
+                copyVal.push({
+                    value: el
+                });
+            });
+            return copyVal;
+        } else {
+            return val.length == 0 ? [] : val;
+        }
+    };
+
+
   render() {
     if(!this.props.tofiConstants) return null;
 
@@ -196,9 +279,9 @@ class SearchNSAAnnotation extends React.Component{
       wrapperCol: {
         span: 18
       },
-    }    
+    }
     return (
-      <Form className="antForm-spaceBetween">
+      <Form className="antForm-spaceBetween"  onSubmit={this.props.handleSubmit(this.onSave)}>
         <FormItem
           label={t('ARCHIVE_FUND_NAME')}
           colon={false}
@@ -206,7 +289,8 @@ class SearchNSAAnnotation extends React.Component{
         >
           <Input 
             placeholder="" 
-            readOnly 
+            // readOnly
+              disabled
             value={this.props.record ? this.props.record.fundList: ''}
           />
         </FormItem>        
@@ -220,15 +304,17 @@ class SearchNSAAnnotation extends React.Component{
             value={this.state.annotationContentOfDocument}
             onChange={(e) => this.onChange(e.target.value, 'annotationContentOfDocument')}
           />
-        </FormItem>        
+        </FormItem>
         <Field
           name="fundAnnotationFile"
+          cubeSConst={CUBE_FOR_FUND_AND_IK}
+
           component={ renderFileUploadBtn }
           formItemClass="classificationInfo_uploadBtn"
-          value={this.state.record.documentFile}
           label={''}
-          //onChange={(e) => this.onChangeFile(e, 'documentFile')}
-          onChange={(list) => this.filesListRefresh(list, 'fundAnnotationFile')}
+          normalize={this.fileToRedux}
+
+            //onChange={(e) => this.onChangeFile(e, 'documentFile')}
           formItemLayout={
             {
               labelCol: { span: 10 },
@@ -251,9 +337,10 @@ class SearchNSAAnnotation extends React.Component{
           name="invFile"
           component={ renderFileUploadBtn }
           formItemClass="classificationInfo_uploadBtn"
-          value={this.state.record.documentFile}
           label={''}
-          onChange={(list) => this.filesListRefresh(list, 'invFile')}
+          cubeSConst={CUBE_FOR_FUND_AND_IK}
+
+          normalize={this.fileToRedux}
           formItemLayout={
             {
               labelCol: { span: 10 },
@@ -276,9 +363,10 @@ class SearchNSAAnnotation extends React.Component{
           name="fundHistoricalNote"
           component={ renderFileUploadBtn }
           formItemClass="classificationInfo_uploadBtn"
-          value={this.state.record.documentFile}
           label={''}
-          onChange={(list) => this.filesListRefresh(list, 'fundHistoricalNote')}
+          cubeSConst={CUBE_FOR_FUND_AND_IK}
+
+          normalize={this.fileToRedux}
           formItemLayout={
             {
               labelCol: { span: 10 },
@@ -287,9 +375,9 @@ class SearchNSAAnnotation extends React.Component{
           }
         />
         <br/><br/><br/>        
-        {(flagSave || flagSaveFile) &&
+        {(flagSave || flagSaveFile || this.props.dirty)  &&
           <div className="ant-form-btns">
-            <Button className="signup-form__btn" type="primary" onClick={this.onSave}>
+            <Button className="signup-form__btn" htmlType="submit" type="primary" >
               {t('SAVE')}
             </Button>
           </div>
@@ -301,5 +389,6 @@ class SearchNSAAnnotation extends React.Component{
 
 export default connect(state => {
   return {
+
   }
 }, { getPropVal })(reduxForm({ form: 'SearchNSAAnnotation', enableReinitialize: true })(SearchNSAAnnotation));

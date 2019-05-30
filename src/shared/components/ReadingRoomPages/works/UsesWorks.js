@@ -494,7 +494,7 @@ class Works extends React.PureComponent {
                      this.saveProps({obj}, {
 
                         values: {
-                            [mappedStatus]: {value: this.props.tofiConstants.issued.id,idDataPropVal:target[mappedStatus].idDataPropVal},
+                            [mappedStatus]: target[mappedStatus],
                             permitionDate: moment().format('YYYY-MM-DD')
                         }
                     })
@@ -524,10 +524,10 @@ class Works extends React.PureComponent {
         };
         parseForTable(item.props, this.props.tofiConstants, result, constArr);
         // here goes some data massage
-        result.customerReqs = result.customerReqsLng;
-        result.resultDescription = result.resultDescriptionLng;
-        result.reasonForRefusalCase = result.reasonForRefusalCaseLng;
-        result.reasonForRefusalCaseStorage = result.reasonForRefusalCaseStorageLng;
+        // result.customerReqs = result.customerReqsLng;
+        // result.resultDescription = result.resultDescriptionLng;
+        // result.reasonForRefusalCase = result.reasonForRefusalCaseLng;
+        // result.reasonForRefusalCaseStorage = result.reasonForRefusalCaseStorageLng;
         result.workStatusUses = result[this.clsStatusMap[item.clsORtr]];
         result.propResearcheRequests = result.propResearcheRequests ? result.propResearcheRequests.value : '';
         return result;
@@ -838,8 +838,11 @@ class Works extends React.PureComponent {
                             record.tookUser && record.tookUser.value === user.obj &&
                             <div className="editable-row-operations">
                                 <Button title="Разрешить" icon="check-circle" className='green-btn'
+                                        disabled={record.workAssignedTo !== null ? record.workAssignedTo.value === this.props.user.obj?false:true:true}
+
                                         onClick={this.addSpecialDate(record.key, 'acceptanceDate')}/>
                                 <Button title="CANCEL" icon="close"
+                                        disabled={record.workAssignedTo !== null ? record.workAssignedTo.value === this.props.user.obj?false:true:true}
                                         onClick={this.addSpecialDate(record.key, 'notAccepted')} className='green-btn'/>
                             </div>
                     )

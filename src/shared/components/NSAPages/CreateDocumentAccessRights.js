@@ -68,9 +68,7 @@ class ClassificationInfo extends React.Component{
   
   render() {
     if(!this.props.tofiConstants) return null;
-    
     this.lng = localStorage.getItem('i18nextLng');
-
     const { t, tofiConstants, caseList, record, propAuthenticityOptions, typeOfPaperCarrierOptions } = this.props;
     const { loading } = this.state;
     const formItemLayout={
@@ -121,7 +119,7 @@ class ClassificationInfo extends React.Component{
           <Select 
             name="propAuthenticity"
             //className="long-selected-menu"
-            value={this.state.record.propAuthenticity && this.state.record.propAuthenticity}
+            value={this.state.record.propAuthenticity}
             onChange={(item) => this.onChange(item,'propAuthenticity')}
             onMenuOpen={this.loadOptions('propAuthenticity')}
             isLoading={loading.propAuthenticityLoading}
@@ -137,7 +135,7 @@ class ClassificationInfo extends React.Component{
           <Select 
             name="typeOfPaperCarrier"
             //className="long-selected-menu"
-            value={this.state.record.typeOfPaperCarrier && this.state.record.typeOfPaperCarrier}
+            value={this.state.record.typeOfPaperCarrier}
             onChange={(item) => this.onChange(item,'typeOfPaperCarrier')}
             onMenuOpen={this.loadOptions('typeOfPaperCarrier')}
             isLoading={loading.typeOfPaperCarrierLoading}
@@ -151,6 +149,7 @@ class ClassificationInfo extends React.Component{
 }
 
 export default connect(state => {
+  debugger;
   return {
     propAuthenticityOptions: state.generalData.propAuthenticity,
     typeOfPaperCarrierOptions: state.generalData.typeOfPaperCarrier,

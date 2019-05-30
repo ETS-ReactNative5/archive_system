@@ -186,6 +186,8 @@ class WorksPropertyForm extends Component {
             ...rest,
             workAuthor: String(values.workAuthor.value),
             nsaWorkStatus: values.nsaWorkStatus,
+              workDate: values.workDate
+
           }
         })
     }
@@ -428,7 +430,7 @@ class WorksPropertyForm extends Component {
         {workRegCase && ['documentDescpiption'].includes(workTypeValue.workTypeClass) && <Field
           name="workRegCase"
           component={ renderSelectVirt }
-          normalize={this.selectMultiToRedux}
+          normalize={this.selectToRedux}
           matchProp="label"
           matchPos="start"
           label={workRegCase.name[lng]}
@@ -518,6 +520,11 @@ class WorksPropertyForm extends Component {
           onChange={(e, newValue) => {
             const user = this.props.user;
             if (newValue) {
+                this.props.change('dateAppointment',{
+                    value:moment(),
+                    idDataPropVal: this.props.nsaWorkStatusIDDpv.WorksPropertyForm.values.dateAppointment &&
+                    this.props.nsaWorkStatusIDDpv.WorksPropertyForm.values.dateAppointment.idDataPropVal
+                })
               this.props.change('appointedUser', {value: user.obj, label: user.name,
                   idDataPropVal: this.props.nsaWorkStatusIDDpv.WorksPropertyForm.values.appointedUser &&
                   this.props.nsaWorkStatusIDDpv.WorksPropertyForm.values.appointedUser.idDataPropVal});

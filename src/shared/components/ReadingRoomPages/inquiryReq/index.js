@@ -159,9 +159,9 @@ class InquiryReqs extends React.Component {
     parseForTable(item.props, this.props.tofiConstants, result, constArr);
     // Here goes some data massage
     result.researchTheme = result[this.clsThemeMap[item.clsORtr]];
-    result.theme = result.themeLng;
-    result.documentContent = result.documentContentLng;
-    result.resultDescription = result.resultDescriptionLng;
+
+    // result.documentContent = result.documentContentLng;
+    // result.resultDescription = result.resultDescriptionLng;
     return result;
   };
 
@@ -197,6 +197,7 @@ class InquiryReqs extends React.Component {
       doConst: 'doForWorks',
       dpConst: 'dpForWorks'
     };
+
     const name = {};
     SYSTEM_LANG_ARRAY.forEach(lang => {
       name[lang] = `fromResearch_${objResearch.doItem}`;
@@ -250,6 +251,7 @@ class InquiryReqs extends React.Component {
     }
   };
   onCreateObj = async ({cube, obj}, v) => {
+
     let hideCreateObj;
     try {
       hideCreateObj = message.loading(this.props.t('CREATING_NEW_OBJECT'), 0);
@@ -316,12 +318,12 @@ class InquiryReqs extends React.Component {
       return (
         (filter.researchTypeClass.length === 0 || filter.researchTypeClass.some(p => (p.researchTypeClass == item.researchTypeClass))) &&
         ( item.key ? item.key.toLowerCase().includes(filter.nameResearchers.toLowerCase()) : filter.nameResearchers === '') &&
-        ( !filter.workDate.dbeg || moment(item.workDate, 'DD-MM-YYYY').isSameOrAfter(filter.workDate.dbeg, 'day') ) &&
-        ( !filter.workDate.dend || moment(item.workDate, 'DD-MM-YYYY').isSameOrBefore(filter.workDate.dend, 'day') ) &&
-        ( !filter.workEndDate.dbeg || moment(item.workEndDate, 'DD-MM-YYYY').isSameOrAfter(filter.workEndDate.dbeg, 'day') ) &&
-        ( !filter.workEndDate.dend || moment(item.workEndDate, 'DD-MM-YYYY').isSameOrBefore(filter.workEndDate.dend, 'day') ) &&
-        ( !filter.workPlannedEndDate.dbeg || moment(item.workPlannedEndDate, 'DD-MM-YYYY').isSameOrAfter(filter.workPlannedEndDate.dbeg, 'day') ) &&
-        ( !filter.workPlannedEndDate.dend || moment(item.workPlannedEndDate, 'DD-MM-YYYY').isSameOrBefore(filter.workPlannedEndDate.dend, 'day') )
+        ( !filter.workDate.dbeg || !!item.workDate && moment(item.workDate.value, 'DD-MM-YYYY').isSameOrAfter(filter.workDate.dbeg, 'day') ) &&
+        ( !filter.workDate.dend || !!item.workDate && moment(item.workDate.value, 'DD-MM-YYYY').isSameOrBefore(filter.workDate.dend, 'day') ) &&
+        ( !filter.workEndDate.dbeg || !!item.workEndDate &&  moment(item.workEndDate.value, 'DD-MM-YYYY').isSameOrAfter(filter.workEndDate.dbeg, 'day') ) &&
+        ( !filter.workEndDate.dend || !!item.workEndDate &&  moment(item.workEndDate.value, 'DD-MM-YYYY').isSameOrBefore(filter.workEndDate.dend, 'day') ) &&
+        ( !filter.workPlannedEndDate.dbeg ||  !!item.workPlannedEndDate && moment(item.workPlannedEndDate.value, 'DD-MM-YYYY').isSameOrAfter(filter.workPlannedEndDate.dbeg, 'day') ) &&
+        ( !filter.workPlannedEndDate.dend ||  !!item.workPlannedEndDate &&  moment(item.workPlannedEndDate.value, 'DD-MM-YYYY').isSameOrBefore(filter.workPlannedEndDate.dend, 'day') )
       )
     });
 
@@ -397,7 +399,7 @@ class InquiryReqs extends React.Component {
         ),
         filterIcon: <Icon type="filter" style={{ color: (filter.workDate.dbeg || filter.workDate.dend) ? '#ff9800' : '#aaa' }} />,
         // render: obj => obj && acceptedTOFIDate(obj) && obj.format('DD-MM-YYYY')
-        render: (key, obj) => { return key.value},
+        render: (key, obj) => !!key && key.value ,
       },
       {
         key: 'applicant',
@@ -434,15 +436,27 @@ class InquiryReqs extends React.Component {
           </div>
         ),
         filterIcon: <Icon type="filter" style={{ color: (filter.workPlannedEndDate.dbeg || filter.workPlannedEndDate.dend) ? '#ff9800' : '#aaa' }} />,
-        render: obj =>obj && acceptedTOFIDate(obj) && obj.value
+          render: (key, obj) => !!key && key.value ,
+
       },
-      {
-        key: 'researchTheme',
-        title: propStudy.name[this.lng],
-        dataIndex: 'researchTheme',
-        width: '10%',
-        render: obj => obj && obj.label
-      },
+        {
+            key: 'propStudy',
+            title: propStudy.name[this.lng],
+            dataIndex: 'propStudy',
+            width: '10%',
+            render: obj => {
+              if(!!obj){
+                let newarr =[]
+                for(let item of obj){
+                  newarr.push(item.label)
+                }
+                return newarr.join(",")
+              }else {
+                return ""
+              }
+            }
+        }
+      ,
       /*{
         key: 'researcheStatus',
         title: researcheStatus.name[this.lng],
@@ -475,7 +489,8 @@ class InquiryReqs extends React.Component {
           </div>
         ),
         filterIcon: <Icon type="filter" style={{ color: (filter.workEndDate.dbeg || filter.workEndDate.dend) ? '#ff9800' : '#aaa' }} />,
-        render: obj => obj && acceptedTOFIDate(obj) && obj.format('DD-MM-YYYY')
+          render: (key, obj) => !!key && key.value ,
+
       },
       /*{
         key: 'resultResearch',

@@ -65,8 +65,19 @@ class WorkDescription extends React.PureComponent {
           <Field
             name="customerReqs"
             component={renderTextareaLang}
-            format={value => (!!value ? value[lang.customerReqs] : '')}
-            parse={value => { this.customerReqsValue[lang.customerReqs] = value; return {...this.customerReqsValue} }}
+            format={value => (!!value ? value.valueLng[lang.customerReqs] : '')}
+            // parse={value => { this.customerReqsValue[lang.customerReqs] = value; return {...this.customerReqsValue} }}
+            normalize={(val, prevVal, obj, prevObj) => {
+                let newVal = { ...prevVal };
+                newVal.value = val;
+                if (!!newVal.valueLng) {
+                    newVal.valueLng[lang.customerReqs] = val;
+                } else {
+                    newVal["valueLng"] = { kz: "", en: "", ru: "" };
+                    newVal.valueLng[lang.customerReqs] = val;
+                }
+                return newVal;
+            }}
             label={customerReqs.name[this.lng]}
             formItemClass="with-lang--column"
             changeLang={this.changeLang}
@@ -80,8 +91,19 @@ class WorkDescription extends React.PureComponent {
           <Field
             name="reasonForRefusalCase"
             component={renderTextareaLang}
-            format={value => (!!value ? value[lang.reasonForRefusalCase] : '')}
-            parse={value => { this.reasonForRefusalCaseValue[lang.reasonForRefusalCase] = value; return {...this.reasonForRefusalCaseValue} }}
+            format={value => (!!value ? value.valueLng[lang.reasonForRefusalCase] : '')}
+            // parse={value => { this.reasonForRefusalCaseValue[lang.reasonForRefusalCase] = value; return {...this.reasonForRefusalCaseValue} }}
+            normalize={(val, prevVal, obj, prevObj) => {
+                let newVal = { ...prevVal };
+                newVal.value = val;
+                if (!!newVal.valueLng) {
+                    newVal.valueLng[lang.reasonForRefusalCase] = val;
+                } else {
+                    newVal["valueLng"] = { kz: "", en: "", ru: "" };
+                    newVal.valueLng[lang.reasonForRefusalCase] = val;
+                }
+                return newVal;
+            }}
             label={reasonForRefusalCase.name[this.lng]}
             formItemClass="with-lang--column"
             changeLang={this.changeLang}
@@ -95,8 +117,19 @@ class WorkDescription extends React.PureComponent {
           <Field
             name="reasonForRefusalCaseStorage"
             component={renderTextareaLang}
-            format={value => (!!value ? value[lang.reasonForRefusalCaseStorage] : '')}
-            parse={value => { this.reasonForRefusalCaseStorageValue[lang.reasonForRefusalCaseStorage] = value; return {...this.reasonForRefusalCaseStorageValue} }}
+            format={value => (!!value ? value.valueLng[lang.reasonForRefusalCaseStorage] : '')}
+            // parse={value => { this.reasonForRefusalCaseStorageValue[lang.reasonForRefusalCaseStorage] = value; return {...this.reasonForRefusalCaseStorageValue} }}
+            normalize={(val, prevVal, obj, prevObj) => {
+                let newVal = { ...prevVal };
+                newVal.value = val;
+                if (!!newVal.valueLng) {
+                    newVal.valueLng[lang.reasonForRefusalCaseStorage] = val;
+                } else {
+                    newVal["valueLng"] = { kz: "", en: "", ru: "" };
+                    newVal.valueLng[lang.reasonForRefusalCaseStorage] = val;
+                }
+                return newVal;
+            }}
             label={reasonForRefusalCaseStorage.name[this.lng]}
             formItemClass="with-lang--column"
             changeLang={this.changeLang}

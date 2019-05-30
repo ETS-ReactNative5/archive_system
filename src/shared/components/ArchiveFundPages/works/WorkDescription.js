@@ -5,6 +5,8 @@ import AntTable from "../../AntTable";
 import PrintAct from "./PrintAct.js";
 import axios from 'axios';
 import {parseCube_new, parseForTable} from "../../../utils/cubeParser";
+import SearchDescription from "./SearchDescription";
+import GetWorkDescription from "../../SourcingPages/works/GetWorkDescription";
 
 const TextArea = Input.TextArea;
 const RadioButton = Radio.Button;
@@ -142,7 +144,6 @@ class WorkDescription extends React.PureComponent {
     };
 
     renderIrrDmg = () => {
-        debugger;
         getIdGetObj(this.props.initialValues.workRegCase.value, 'doForCase').then(
         res => {
             var caseId = res.data.idDimObj;
@@ -248,103 +249,156 @@ class WorkDescription extends React.PureComponent {
                 this.props.initialValues.workStatusReg && this.props.initialValues.workStatusReg.value == notFoundId && this.setState({
                     showOnlySearch: true
                 });
-
-
                 console.log(this.props.initialValues);
                 var fundName = this.props.initialValues.workRegFund.labelFull;
-
-
                 var workType = this.props.initialValues.workType.workTypeClass;
                 var filterOfActs = [];
-                workType == 'caseAvailabilityCheck' && filterOfActs.push({
-                    idx: '1',
-                    name: 'Акт проверки наличия и состояния архивных документов: ' + fundName,
-                    actNumber: this.props.initialValues.key.slice(-4) + '_1',
-                    showAct: <Button
-                    onClick={() => this.showAct('damage', this.props.initialValues.key.slice(-4) + '_1')}
-                    type="primary"
-                    shape="circle"><Icon type="eye"/></Button>
-                });
-
-                workType == 'caseAvailabilityCheck' && filterOfActs.push({
-                    idx: '2',
-                    name: 'Акт об обнаружении архивных документов',
-                    actNumber: this.props.initialValues.key.slice(-4) + '_2',
-                    showAct: <Button
-                    onClick={() => this.showAct('irrDamage', this.props.initialValues.key.slice(-4) + '_2')}
-                    type="primary"
-                    shape="circle"><Icon type="eye"/></Button>
-                });
-                if (workType == 'caseExamination' || this.props.initialValues.workType.workTypeClass == 'caseDisposal') {
-                    filterOfActs.push({
-                        idx: '3',
-                        name: 'Акт о выделении к уничтожению документов, не подлежащих хранению',
-                        actNumber: this.props.initialValues.key.slice(-4) + '_3',
+                var parentId = this.props.initialValues.parent;
+                var getParentClass = {
+                    filterDOAnd: [
+                        {
+                            dimConst: 'doForWorks',
+                            concatType: "and",
+                            conds: [
+                                {
+                                    ids: String(parentId),
+                                }
+                            ]
+                        }
+                    ],
+                    filterDPAnd: [
+                        {
+                            dimConst: 'dpForWorks',
+                            concatType: "and",
+                            conds: [
+                                {
+                                    consts: "workDate"
+                                }
+                            ]
+                        }
+                    ],
+                };
+                const fd = new FormData();
+                fd.append("cubeSConst", 'cubeForWorks');
+                fd.append("filters", JSON.stringify(getParentClass));
+                axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getCubeData`, fd).then(res3 => {
+                    console.log(res3);
+                    var workTypeId = res3.data.data['do_' + this.props.tofiConstants.doForWorks.id][0].clsORtr;
+                    var caseSearchId = this.props.tofiConstants.caseSearch.id;
+                    var caseExaminationId = this.props.tofiConstants.caseExamination.id;
+                    workType == 'caseAvailabilityCheck' && filterOfActs.push({
+                        idx: '1',
+                        name: 'Акт проверки наличия и состояния архивных документов: ' + fundName,
+                        actNumber: this.props.initialValues.key.slice(-4) + '_1',
                         showAct: <Button
-                        onClick={() => this.showAct('lightToDestroy', this.props.initialValues.key.slice(-4) + '_3')}
+                        onClick={() => this.showAct('damage', this.props.initialValues.key.slice(-4) + '_1')}
                         type="primary"
                         shape="circle"><Icon type="eye"/></Button>
                     });
-                }
-                if (workType == 'caseExamination' || this.props.initialValues.workType.workTypeClass == 'caseDisposal') {
-                    filterOfActs.push({
-                        idx: '4',
-                        name: 'Акт о неисправимых повреждениях документов',
-                        actNumber: this.props.initialValues.key.slice(-4) + '_4',
+                    workType == 'caseAvailabilityCheck' && filterOfActs.push({
+                        idx: '2',
+                        name: 'Акт об обнаружении архивных документов',
+                        actNumber: this.props.initialValues.key.slice(-4) + '_2',
                         showAct: <Button
-                        onClick={() => this.showAct('CrashedAct', this.props.initialValues.key.slice(-4) + '_4')}
+                        onClick={() => this.showAct('irrDamage', this.props.initialValues.key.slice(-4) + '_2')}
                         type="primary"
                         shape="circle"><Icon type="eye"/></Button>
-                    })
-                }
-
-                (this.state.showOnlyLP === false && workType === 'caseRegistration') && filterOfActs.push({
-                    idx: '5',
-                    name: 'Акт приема-передачи документов на хранение',
-                    actNumber: this.props.initialValues.key.slice(-4) + '_5',
-                    showAct: <Button
-                    onClick={() => this.showAct('TransferAct', this.props.initialValues.key.slice(-4) + '_5')}
-                    type="primary"
-                    shape="circle"><Icon type="eye"/></Button>
+                    });
+                    if (workType == 'caseExamination') {
+                        filterOfActs.push({
+                            idx: '3',
+                            name: 'Акт о выделении к уничтожению документов, не подлежащих хранению',
+                            actNumber: this.props.initialValues.key.slice(-4) + '_3',
+                            showAct: <Button
+                            onClick={() => this.showAct('lightToDestroy', this.props.initialValues.key.slice(-4) + '_3')}
+                            type="primary"
+                            shape="circle"><Icon type="eye"/></Button>
+                        });
+                    }
+                    if (workType == 'caseExamination') {
+                        filterOfActs.push({
+                            idx: '4',
+                            name: 'Акт о неисправимых повреждениях документов',
+                            actNumber: this.props.initialValues.key.slice(-4) + '_4',
+                            showAct: <Button
+                            onClick={() => this.showAct('CrashedAct', this.props.initialValues.key.slice(-4) + '_4')}
+                            type="primary"
+                            shape="circle"><Icon type="eye"/></Button>
+                        })
+                    }
+                    if (workTypeId == caseSearchId && workType == 'caseDisposal') {
+                        filterOfActs.push({
+                            idx: '8',
+                            name: 'Акт о не обнаружении документов, пути розыска которых исчерпаны',
+                            actNumber: parentId.slice(-4) + '_8',
+                            showAct: <Button
+                            onClick={() => this.showAct('SearchAct', parentId.slice(-4) + '_8')}
+                            type="primary"
+                            shape="circle"><Icon type="eye"/></Button>
+                        })
+                    }
+                    ;
+                    if (workTypeId == caseExaminationId && workType == 'caseDisposal') {
+                        filterOfActs.push({
+                            idx: '3',
+                            name: 'Акт о выделении к уничтожению документов, не подлежащих хранению',
+                            actNumber: parentId.slice(-4) + '_3',
+                            showAct: <Button
+                            onClick={() => this.showAct('lightToDestroy', parentId.slice(-4) + '_3')}
+                            type="primary"
+                            shape="circle"><Icon type="eye"/></Button>
+                        });
+                        filterOfActs.push({
+                            idx: '4',
+                            name: 'Акт о неисправимых повреждениях документов',
+                            actNumber: parentId.slice(-4) + '_4',
+                            showAct: <Button
+                            onClick={() => this.showAct('CrashedAct', parentId.slice(-4) + '_4')}
+                            type="primary"
+                            shape="circle"><Icon type="eye"/></Button>
+                        })
+                    }
+                    (this.state.showOnlyLP === false && workType === 'caseRegistration') && filterOfActs.push({
+                        idx: '5',
+                        name: 'Акт приема-передачи документов на хранение',
+                        actNumber: this.props.initialValues.key.slice(-4) + '_5',
+                        showAct: <Button
+                        onClick={() => this.showAct('TransferAct', this.props.initialValues.key.slice(-4) + '_5')}
+                        type="primary"
+                        shape="circle"><Icon type="eye"/></Button>
+                    });
+                    (this.state.showOnlyLP === true && workType === 'caseRegistration') && filterOfActs.push({
+                        idx: '6',
+                        name: 'Акт приема на хранение документов личного происхождения',
+                        actNumber: this.props.initialValues.key.slice(-4) + '_6',
+                        showAct: <Button
+                        onClick={() => this.showAct('TransferLPAct', this.props.initialValues.key.slice(-4) + '_6')}
+                        type="primary"
+                        shape="circle"><Icon type="eye"/></Button>
+                    });
+                    (workType === 'casesForTemporaryUse') && filterOfActs.push({
+                        idx: '7',
+                        name: 'Акт о выдаче архивных документов во временное пользование',
+                        actNumber: this.props.initialValues.key.slice(-4) + '_7',
+                        showAct: <Button
+                        onClick={() => this.showAct('GiveToAct', this.props.initialValues.key.slice(-4) + '_7')}
+                        type="primary"
+                        shape="circle"><Icon type="eye"/></Button>
+                    });
+                    (this.state.showOnlySearch === true && workType === 'caseSearch') && filterOfActs.push({
+                        idx: '8',
+                        name: 'Акт о не обнаружении документов, пути розыска которых исчерпаны',
+                        actNumber: this.props.initialValues.key.slice(-4) + '_8',
+                        showAct: <Button
+                        onClick={() => this.showAct('SearchAct', this.props.initialValues.key.slice(-4) + '_8')}
+                        type="primary"
+                        shape="circle"><Icon type="eye"/></Button>
+                    });
+                    this.setState({
+                        dataSource: filterOfActs
+                    });
                 });
-                (this.state.showOnlyLP === true && workType === 'caseRegistration') && filterOfActs.push({
-                    idx: '6',
-                    name: 'Акт приема на хранение документов личного происхождения',
-                    actNumber: this.props.initialValues.key.slice(-4) + '_6',
-                    showAct: <Button
-                    onClick={() => this.showAct('TransferLPAct', this.props.initialValues.key.slice(-4) + '_6')}
-                    type="primary"
-                    shape="circle"><Icon type="eye"/></Button>
-                });
-
-                (workType === 'casesForTemporaryUse') && filterOfActs.push({
-                    idx: '7',
-                    name: 'Акт о выдаче архивных документов во временное пользование',
-                    actNumber: this.props.initialValues.key.slice(-4) + '_7',
-                    showAct: <Button
-                    onClick={() => this.showAct('GiveToAct', this.props.initialValues.key.slice(-4) + '_7')}
-                    type="primary"
-                    shape="circle"><Icon type="eye"/></Button>
-                });
-
-                (this.state.showOnlySearch === true && workType === 'caseSearch') && filterOfActs.push({
-                    idx: '8',
-                    name: 'Акт о не обнаружении документов, пути розыска которых исчерпаны',
-                    actNumber: this.props.initialValues.key.slice(-4) + '_8',
-                    showAct: <Button
-                    onClick={() => this.showAct('SearchAct', this.props.initialValues.key.slice(-4) + '_8')}
-                    type="primary"
-                    shape="circle"><Icon type="eye"/></Button>
-                });
-
-
-                this.setState({
-                    dataSource: filterOfActs
-                });
-
-
             });
-
         });
 
 
@@ -375,27 +429,19 @@ class WorkDescription extends React.PureComponent {
         return (
         <div>
             <div className="work-description">
-                <RadioGroup onChange={this.onLangChange} value={this.state.lang}>
-                    <RadioButton value="kz">KZ</RadioButton>
-                    <RadioButton value="ru">RU</RadioButton>
-                    <RadioButton value="en">EN</RadioButton>
-                </RadioGroup>
-                <TextArea placeholder="Description" autosize={{minRows: 2}}
-                          value={this.state.workDescription[this.state.lang]}
-                          onChange={this.onChange} style={{marginTop: '10px'}}/>
-                {this.state.dirty && (
-                <div className="ant-form-btns">
-                    <Button className="signup-form__btn" type="primary">
-                        { t('SAVE') }
-                    </Button>
-                    <Button className="signup-form__btn" type="danger"
-                            style={{marginLeft: '10px'}} onClick={this.cancel}>
-                        { t('CANCEL') }
-                    </Button>
-                </div>
-                )}
+                <GetWorkDescription
+                t={t}
+                initialValues={this.props.initialValues}
+                />
             </div>
-
+            {this.props.initialValues.workType.workTypeClass == 'caseSearch' &&
+            <SearchDescription
+            t={t}
+            tofiConstants={this.props.tofiConstants}
+            initialValues={this.props.initialValues}
+            searchStatus={this.props.initialValues.workStatusReg}
+            />
+            }
             {
 
                 this.props.initialValues.workType.workTypeClass == 'casesForTemporaryUse' &&

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Form, Collapse } from "antd";
+import { Button, Form,message, Collapse } from "antd";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import moment from "moment";
 import { isEqual,isEmpty, pickBy } from "lodash";
@@ -21,7 +21,7 @@ import {
   DP_FOR_CASE
 } from "../../constants/tofiConstants";
 import { SYSTEM_LANG_ARRAY } from "../../constants/constants";
-import { getObjChildsByConst,getCube, getPropVal } from "../../actions/actions";
+import { getObjChildsByConst,getCube,getObjListNew, getPropVal } from "../../actions/actions";
 import { requiredLng } from "./../../utils/form_validations";
 import {parseCube_new, parseForTable} from "../../utils/cubeParser";
 
@@ -34,6 +34,7 @@ class MainInfoCaseForm extends Component {
 
     this.state = {
       data:[],
+        Options:[],
         optionMultiSelect:[],
       lang: {
         name: localStorage.getItem("i18nextLng"),
@@ -160,6 +161,21 @@ class MainInfoCaseForm extends Component {
       }
     };
   };
+    loadOptionsGet = async(c, id) => {
+        const fd = new FormData();
+        fd.append('parent', this.props.keyInvFund.split('_')[1]);
+        fd.append('clsConsts', 'structuralSubdivisionList');
+        const res = await getObjListNew(fd);
+        if (!res.success) {
+            res.errors.forEach(err => {
+                message.error(err.text);
+
+            })
+        }
+        this.setState({
+            Options: res.data
+        })
+    };
   loadChilds = (c, props) => {
     return () => {
       if (!this.props[c + "Options"]) {
@@ -848,14 +864,14 @@ class MainInfoCaseForm extends Component {
             }}
             isLoading={loading.caseStructuralSubdivision}
             data={
-                caseStructuralSubdivisionOption
-                ? caseStructuralSubdivisionOption.map(option => ({
+                this.state.Options
+                ? this.state.Options.map(option => ({
                     value: option.id,
                     label: option.name[this.lng]
                   }))
                 : []
             }
-            onMenuOpen={this.loadOptions("caseStructuralSubdivision")}
+            onMenuOpen={()=>this.loadOptionsGet("caseStructuralSubdivision")}
           />
         )}
         {caseNotes && (
@@ -979,14 +995,14 @@ class MainInfoCaseForm extends Component {
             }}
             isLoading={this.state.caseStorageLoading}
             data={
-                bunchCasesOptions
-                ? bunchCasesOptions.map(option => ({
+                this.state.Options
+                ? this.state.Options.map(option => ({
                     value: option.id,
                     label: option.name[this.lng]
                   }))
                 : []
             }
-            onMenuOpen={this.loadOptions(["bunchCases"])}
+            onMenuOpen={()=>this.loadOptionsGet(["bunchCases"])}
             // validate={requiredLabel}
             // colon={true}
           />

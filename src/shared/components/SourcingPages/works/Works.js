@@ -842,6 +842,7 @@ class Works extends React.PureComponent {
                                             <div className="editable-row-operations">
                                                 <Button title="Начать" icon="play-circle"
                                                         onClick={this.addSpecialDate(record.key, 'workActualStartDate')}
+                                                        disabled={!!record.workAssignedTo?record.workAssignedTo.value === this.props.user.obj?false:true:true}
                                                         className='green-btn'/>
                                                 {/*<Button title="CANCEL" icon="close" onClick={this.addSpecialDate(record.key, 'workActualStartDate', 'red')} className='green-btn'/>*/}
                                             </div>
@@ -897,7 +898,8 @@ class Works extends React.PureComponent {
                                             :
                                             <div className="editable-row-operations">
                                                 <Button title="Завершить" icon="poweroff"
-                                                        disabled={!record.workActualStartDate}
+                                                        disabled={!!record.workAssignedTo?record.workAssignedTo.value === this.props.user.obj?false:true:true}
+
                                                         onClick={this.addSpecialDate(record.key, 'workActualEndDate')}
                                                         className='green-btn'/>
                                                 {/*<Button title="CANCEL" icon="close" onClick={this.addSpecialDate(record.key, 'workActualEndDate')} className='green-btn'/>*/}
@@ -993,6 +995,7 @@ class Works extends React.PureComponent {
                             })
                         }}>
                           <Button title="Удалить" icon="delete" onClick={this.stopPropagation}
+
                                   disabled={!!record.workActualStartDate} className='green-btn yellow-bg'/>
                         </Popconfirm>
                       </span>

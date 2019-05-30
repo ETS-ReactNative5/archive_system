@@ -22,6 +22,7 @@ class Applicant extends Component {
   constructor(props) {
     super(props);
     this.state = {
+        optionMultiSelect:[],
       lang: {
         name: localStorage.getItem('i18nextLng')
       },
@@ -141,7 +142,6 @@ class Applicant extends Component {
     userFD.append('datas', JSON.stringify(datas));
 
     getValuesOfObjsWithProps(userFD).then(res=> {
-
       if(res.success === true)
       {
         this.props.change('iin', res.data[0].iin.ru);
@@ -155,6 +155,227 @@ class Applicant extends Component {
     );
   };
 
+    dateToRedux = (val, prev) => {
+        {
+            let coppyPrev = { ...prev };
+
+            if (!!val) {
+                let newDate = moment(val).format("DD-MM-YYYY");
+                if (!!coppyPrev.idDataPropVal) {
+                    coppyPrev.value = newDate;
+                    return coppyPrev;
+                } else {
+                    return {
+                        value: newDate
+                    };
+                }
+            } else {
+                if (!!coppyPrev.value) {
+                    coppyPrev.value = "";
+                    return coppyPrev;
+                } else {
+                    return {};
+                }
+            }
+        }
+    };
+
+    strToRedux = (val, prevVal, obj, prevObj, flag) => {
+        if(!!flag){
+            val = val.replace(/[^\d;]/g, '')
+        }
+        var newVal = { ...prevVal };
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: { kz: val },
+                valueLng: { ru: val },
+                valueLng: { en: val }
+            };
+            return objVal;
+        } else {
+            newVal.value = val;
+            newVal["valueLng"] = { kz: val, ru: val, en: val };
+
+            return newVal;
+        }
+    };
+    fileToRedux = (val, prevVal, file, str) => {
+        let newFile = val.filter(el => el instanceof File);
+        if (newFile.length > 0) {
+            var copyVal = prevVal ? [...prevVal] : [];
+            newFile.map(el => {
+                copyVal.push({
+                    value: el
+                });
+            });
+            return copyVal;
+        } else {
+            return val.length == 0 ? [] : val;
+        }
+    };
+    selectToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val === null) {
+                let newValNull = { ...prevVal };
+                newValNull.label = null;
+                newValNull.labelFull = null;
+                newValNull.value = null;
+                return newValNull;
+            } else {
+                let newVal = { ...prevVal };
+                newVal.value = val.value;
+                newVal.label = val.label;
+                newVal.labelFull = val.label;
+                return newVal;
+            }
+        }
+    };
+    showInput = arr => {
+        return arr.some(
+            el =>
+                el.invType.id === this.props.invType &&
+                el.docType.id === this.props.docType
+        );
+    };
+    selectMultiToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val.length > 0){
+                let coppyPrevVal = prevVal?[...prevVal]:[]
+                let coppyVal = [...val]
+                if (coppyPrevVal.length > 0 ) {
+                    for (let i = 0; i < coppyPrevVal.length; i++) {
+                        if (coppyPrevVal[i].idDataPropVal == undefined) continue
+                        if (coppyPrevVal[i].idDataPropVal !== undefined) {
+                            let findePrevVal = this.state.optionMultiSelect.find((el) => el.idDataPropVal === coppyPrevVal[i].idDataPropVal)
+
+                            if (findePrevVal === undefined) {
+                                setTimeout(() => {
+                                    this.setState({
+                                        optionMultiSelect: this.state.optionMultiSelect.concat(coppyPrevVal[i])
+                                    })
+                                })
+
+                            }
+                        }
+
+                    }
+                }
+
+                for (let i = 0; i < coppyVal.length; i++) {
+                    if (coppyVal[i].idDataPropVal === undefined) {
+                        let findVal = this.state.optionMultiSelect.find((el) => el.value === coppyVal[i].value)
+                        if (findVal !== undefined) {
+                            coppyVal.splice(i, 1)
+                            coppyVal.push(findVal)
+                        }
+                    }
+                }
+                return coppyVal
+            } else {
+                return []
+            }
+        }
+    };
+    checkboxToRedux=(val, prevVal)=>{
+        let newVal = {...prevVal};
+        const {yes,irreparablyDamagedTrue,irreparablyDamagedFalse, no} = this.props.tofiConstants
+        if (prevVal === null) {
+            let objVal ={}
+            if (val=== true ){
+                objVal = {
+                    value: Number(irreparablyDamagedTrue.id),
+                    kFromBase: val
+
+                }
+            }else {
+                objVal = {
+                    value: Number(irreparablyDamagedFalse.id),
+                    kFromBase: val
+                }
+            }
+
+            return (objVal)
+        } else {
+            if (val=== true ){
+                newVal.value = Number(irreparablyDamagedTrue.id)
+                newVal.kFromBase= val
+            }else {
+                newVal.value = Number(irreparablyDamagedFalse.id)
+                newVal.kFromBase= val
+            }
+
+
+            return (newVal)
+
+        }
+    }
+    checkboxToRedux2=(val, prevVal)=>{
+        let newVal = {...prevVal};
+        const {caseInsuranceTrue, caseInsuranceFalce} = this.props.tofiConstants
+        if (prevVal === null) {
+            let objVal ={}
+            if (val=== true ){
+                objVal = {
+                    value: Number(caseInsuranceTrue.id),
+                    kFromBase: val
+
+                }
+            }else {
+                objVal = {
+                    value: Number(caseInsuranceFalce.id),
+                    kFromBase: val
+                }
+            }
+
+            return (objVal)
+        } else {
+            if (val=== true ){
+                newVal.value = Number(caseInsuranceTrue.id)
+                newVal.kFromBase= val
+            }else {
+                newVal.value = Number(caseInsuranceFalce.id)
+                newVal.kFromBase= val
+            }
+
+
+            return (newVal)
+
+        }
+    }
+    checkboxToRedux3=(val, prevVal)=>{
+        let newVal = {...prevVal};
+        const {caseFundOfUseTrue, caseFundOfUseFalce} = this.props.tofiConstants
+        if (prevVal === null) {
+            let objVal ={}
+            if (val=== true ){
+                objVal = {
+                    value: Number(caseFundOfUseTrue.id),
+                    kFromBase: val
+
+                }
+            }else {
+                objVal = {
+                    value: Number(caseFundOfUseFalce.id),
+                    kFromBase: val
+                }
+            }
+
+            return (objVal)
+        } else {
+            if (val=== true ){
+                newVal.value = Number(caseFundOfUseTrue.id)
+                newVal.kFromBase= val
+            }else {
+                newVal.value = Number(caseFundOfUseFalce.id)
+                newVal.kFromBase= val
+            }
+
+
+            return (newVal)
+
+        }
+    }
 
 
 
@@ -174,6 +395,8 @@ class Applicant extends Component {
         {usersOfSystem && <Field
             name="usersOfSystem"
             component={renderSelectVirt}
+            normalize={this.selectToRedux}
+
             isSearchable={true}
             label={usersOfSystem.name[this.lng]}
            disabled={this.props.user.cls==this.props.tofiConstants['clsResearchers'].id}
@@ -190,7 +413,7 @@ class Applicant extends Component {
               label: option.name[this.lng]
             })) : []}
             onFocus={this.loadOptions('usersOfSystem')}
-            onChange={this.handleChangeSelect}
+            // onChange={this.handleChangeSelect}
         />}
 
         {iin && <Field
@@ -204,7 +427,8 @@ class Applicant extends Component {
               wrapperCol: { span: 14 }
             }
           }
-          normalize={digits(12)}
+          normalize={this.strToRedux}
+
         />}
 
         {nameOfOrganizationDeveloper && <Field
@@ -217,6 +441,8 @@ class Applicant extends Component {
               wrapperCol: { span: 14 }
             }
           }
+          normalize={this.strToRedux}
+
         />}
         {personLastName && <Field
           name='personLastName'
@@ -228,6 +454,8 @@ class Applicant extends Component {
               wrapperCol: { span: 14 }
             }
           }
+          normalize={this.strToRedux}
+
         />}
         {personName && <Field
           name='personName'
@@ -239,6 +467,8 @@ class Applicant extends Component {
               wrapperCol: { span: 14 }
             }
           }
+          normalize={this.strToRedux}
+
         />}
         {personPatronymic && <Field
           name='personPatronymic'
@@ -250,6 +480,8 @@ class Applicant extends Component {
               wrapperCol: { span: 14 }
             }
           }
+          normalize={this.strToRedux}
+
         />}
         {/*<Field
           name="name"
@@ -277,6 +509,8 @@ class Applicant extends Component {
               wrapperCol: {span: 14}
             }
           }
+          normalize={this.dateToRedux}
+
         />}
         {nationality && <Field
           name="nationality"
@@ -289,6 +523,8 @@ class Applicant extends Component {
               wrapperCol: {span: 14}
             }
           }
+          normalize={this.selectToRedux}
+
           isLoading={nationalityLoading}
           data={nationalityOptions ? nationalityOptions.map(option => ({
             value: option.id,
@@ -306,6 +542,8 @@ class Applicant extends Component {
               wrapperCol: { span: 14 }
             }
           }
+          normalize={this.strToRedux}
+
         />}
         {personPhone && <Field
           name='personPhone'
@@ -317,7 +555,9 @@ class Applicant extends Component {
               wrapperCol: { span: 14 }
             }
           }
-          normalize={normalizePhone}
+
+          normalize={this.strToRedux}
+
         />}
         {dirty && <Form.Item className="ant-form-btns absolute-bottom">
           <Button className="signup-form__btn" type="primary" htmlType="submit" disabled={submitting}>

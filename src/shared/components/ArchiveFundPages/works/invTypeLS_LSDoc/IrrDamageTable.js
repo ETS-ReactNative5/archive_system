@@ -544,16 +544,16 @@ class IrrDamageTable extends React.Component {
                     <Col span={15}>
                         <select
                         style={{width: '100%', borderRadius: '5px', padding: '6px 4px'}}
-                        defaultValue=''
                         value={this.state.newSelectReason}
                         onChange={this.handleChangeReason}
                         placeholder="Выберите причину">
+                            <option value={''} selected>Выберите причину</option>
                             {this.state.selectReason.map(el => <option
                             value={el.value}>{el.label}</option>)}
                         </select>
                     </Col>
                     <Col span={7}>
-                        <Button type="primary" disabled={!this.state.newSelectReason}
+                        <Button type="primary" disabled={!this.state.newSelectReason || this.state.newSelectReason===''}
                                 onClick={this.saveReason}>Сохранить</Button>
                     </Col>
                 </Row>

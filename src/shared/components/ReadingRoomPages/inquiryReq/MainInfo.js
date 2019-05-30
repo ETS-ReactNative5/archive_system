@@ -60,8 +60,9 @@ class MainInfo extends Component {
       dpConst: 'dpCubeStudy'
     };
     const name = {};
+
     SYSTEM_LANG_ARRAY.forEach(lang => {
-      name[lang] = values.regNumber;
+      name[lang] = !!values.regNumber? values.regNumber.value:"";
     });
     const obj = {
       name,
@@ -69,6 +70,7 @@ class MainInfo extends Component {
       clsConst: values.researchType.researchTypeClass,
       dbeg: moment().format('YYYY-MM-DD'),
     };
+
     if (!this.props.initialValues.key) {
       return this.props.onCreateObj(
         {cube, obj},
@@ -130,7 +132,234 @@ class MainInfo extends Component {
       }
     }
   };
-  render() {
+
+
+    dateToRedux = (val, prev) => {
+        {
+            let coppyPrev = { ...prev };
+
+            if (!!val) {
+                let newDate = moment(val).format("DD-MM-YYYY");
+                if (!!coppyPrev.idDataPropVal) {
+                    coppyPrev.value = newDate;
+                    return coppyPrev;
+                } else {
+                    return {
+                        value: newDate
+                    };
+                }
+            } else {
+                if (!!coppyPrev.value) {
+                    coppyPrev.value = "";
+                    return coppyPrev;
+                } else {
+                    return {};
+                }
+            }
+        }
+    };
+
+    strToRedux = (val, prevVal, obj, prevObj, flag) => {
+        if(!!flag){
+            val = val.replace(/[^\d;]/g, '')
+        }
+        var newVal = { ...prevVal };
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: { kz: val },
+                valueLng: { ru: val },
+                valueLng: { en: val }
+            };
+            return objVal;
+        } else {
+            newVal.value = val;
+            newVal["valueLng"] = { kz: val, ru: val, en: val };
+
+            return newVal;
+        }
+    };
+    fileToRedux = (val, prevVal, file, str) => {
+        let newFile = val.filter(el => el instanceof File);
+        if (newFile.length > 0) {
+            var copyVal = prevVal ? [...prevVal] : [];
+            newFile.map(el => {
+                copyVal.push({
+                    value: el
+                });
+            });
+            return copyVal;
+        } else {
+            return val.length == 0 ? [] : val;
+        }
+    };
+    selectToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val === null) {
+                let newValNull = { ...prevVal };
+                newValNull.label = null;
+                newValNull.labelFull = null;
+                newValNull.value = null;
+                return newValNull;
+            } else {
+                let newVal = { ...prevVal };
+                newVal.value = val.value;
+                newVal.label = val.label;
+                newVal.labelFull = val.label;
+                return newVal;
+            }
+        }
+    };
+    showInput = arr => {
+        return arr.some(
+            el =>
+                el.invType.id === this.props.invType &&
+                el.docType.id === this.props.docType
+        );
+    };
+    selectMultiToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val.length > 0){
+                let coppyPrevVal = prevVal?[...prevVal]:[]
+                let coppyVal = [...val]
+                if (coppyPrevVal.length > 0 ) {
+                    for (let i = 0; i < coppyPrevVal.length; i++) {
+                        if (coppyPrevVal[i].idDataPropVal == undefined) continue
+                        if (coppyPrevVal[i].idDataPropVal !== undefined) {
+                            let findePrevVal = this.state.optionMultiSelect.find((el) => el.idDataPropVal === coppyPrevVal[i].idDataPropVal)
+
+                            if (findePrevVal === undefined) {
+                                setTimeout(() => {
+                                    this.setState({
+                                        optionMultiSelect: this.state.optionMultiSelect.concat(coppyPrevVal[i])
+                                    })
+                                })
+
+                            }
+                        }
+
+                    }
+                }
+
+                for (let i = 0; i < coppyVal.length; i++) {
+                    if (coppyVal[i].idDataPropVal === undefined) {
+                        let findVal = this.state.optionMultiSelect.find((el) => el.value === coppyVal[i].value)
+                        if (findVal !== undefined) {
+                            coppyVal.splice(i, 1)
+                            coppyVal.push(findVal)
+                        }
+                    }
+                }
+                return coppyVal
+            } else {
+                return []
+            }
+        }
+    };
+    checkboxToRedux=(val, prevVal)=>{
+        let newVal = {...prevVal};
+        const {yes,irreparablyDamagedTrue,irreparablyDamagedFalse, no} = this.props.tofiConstants
+        if (prevVal === null) {
+            let objVal ={}
+            if (val=== true ){
+                objVal = {
+                    value: Number(irreparablyDamagedTrue.id),
+                    kFromBase: val
+
+                }
+            }else {
+                objVal = {
+                    value: Number(irreparablyDamagedFalse.id),
+                    kFromBase: val
+                }
+            }
+
+            return (objVal)
+        } else {
+            if (val=== true ){
+                newVal.value = Number(irreparablyDamagedTrue.id)
+                newVal.kFromBase= val
+            }else {
+                newVal.value = Number(irreparablyDamagedFalse.id)
+                newVal.kFromBase= val
+            }
+
+
+            return (newVal)
+
+        }
+    }
+    checkboxToRedux2=(val, prevVal)=>{
+        let newVal = {...prevVal};
+        const {caseInsuranceTrue, caseInsuranceFalce} = this.props.tofiConstants
+        if (prevVal === null) {
+            let objVal ={}
+            if (val=== true ){
+                objVal = {
+                    value: Number(caseInsuranceTrue.id),
+                    kFromBase: val
+
+                }
+            }else {
+                objVal = {
+                    value: Number(caseInsuranceFalce.id),
+                    kFromBase: val
+                }
+            }
+
+            return (objVal)
+        } else {
+            if (val=== true ){
+                newVal.value = Number(caseInsuranceTrue.id)
+                newVal.kFromBase= val
+            }else {
+                newVal.value = Number(caseInsuranceFalce.id)
+                newVal.kFromBase= val
+            }
+
+
+            return (newVal)
+
+        }
+    }
+    checkboxToRedux3=(val, prevVal)=>{
+        let newVal = {...prevVal};
+        const {caseFundOfUseTrue, caseFundOfUseFalce} = this.props.tofiConstants
+        if (prevVal === null) {
+            let objVal ={}
+            if (val=== true ){
+                objVal = {
+                    value: Number(caseFundOfUseTrue.id),
+                    kFromBase: val
+
+                }
+            }else {
+                objVal = {
+                    value: Number(caseFundOfUseFalce.id),
+                    kFromBase: val
+                }
+            }
+
+            return (objVal)
+        } else {
+            if (val=== true ){
+                newVal.value = Number(caseFundOfUseTrue.id)
+                newVal.kFromBase= val
+            }else {
+                newVal.value = Number(caseFundOfUseFalce.id)
+                newVal.kFromBase= val
+            }
+
+
+            return (newVal)
+
+        }
+    }
+
+
+
+
+    render() {
     if (!this.props.tofiConstants) return null;
 
     this.lng = localStorage.getItem('i18nextLng');
@@ -159,6 +388,8 @@ class MainInfo extends Component {
                 wrapperCol: { span: 14 }
               }
             }
+            normalize={this.strToRedux}
+
         />}
 
         <Field
@@ -173,6 +404,8 @@ class MainInfo extends Component {
               wrapperCol: {span: 14}
             }
           }
+
+
           data={['clsResearches', 'clsOrders', 'clsArchivalReferences']
             .map(cns => ({
               value: this.props.tofiConstants[cns].id,
@@ -192,11 +425,15 @@ class MainInfo extends Component {
               wrapperCol: { span: 14 }
             }
           }
+          normalize={this.strToRedux}
+
         />}
         {workDate && <Field
           name="workDate"
           component={renderDatePicker}
           format={null}
+          normalize={this.dateToRedux}
+
           label={t('REG_DATE')}
           formItemLayout={
             {
@@ -216,6 +453,8 @@ class MainInfo extends Component {
               wrapperCol: {span: 14}
             }
           }
+          normalize={this.selectToRedux}
+
           isLoading={requestSourceLoading}
           data={requestSourceOptions ? requestSourceOptions.map(option => ({
             value: option.id,
@@ -234,6 +473,8 @@ class MainInfo extends Component {
               wrapperCol: {span: 14}
             }
           }
+          normalize={this.selectToRedux}
+
           isLoading={requestTypeLoading}
           data={requestTypeOptions ? requestTypeOptions.map(option => ({
             value: option.id,
@@ -245,6 +486,7 @@ class MainInfo extends Component {
           name="caseDocsLang"
           component={renderSelect}
           isSearchable={false}
+          isMulti
           label={t('LANGUAGE_OF_QUERY')}
           formItemLayout={
             {
@@ -252,6 +494,7 @@ class MainInfo extends Component {
               wrapperCol: {span: 14}
             }
           }
+
           isLoading={caseDocsLangLoading}
           data={caseDocsLangOptions ? caseDocsLangOptions.map(option => ({
             value: option.id,
@@ -262,9 +505,20 @@ class MainInfo extends Component {
         {theme && researchTypeValue && ['clsArchivalReferences'].includes(researchTypeValue.researchTypeClass) && <Field
           name="theme"
           component={ renderInputLang }
-          format={value => (!!value ? value[lang.theme] : '')}
-          parse={value => { this.themeValue[lang.theme] = value; return {...this.themeValue} }}
+          format={value => (!!value ?value.valueLng[lang.theme] : '')}
+          // parse={value => { this.themeValue[lang.theme] = value; return {...this.themeValue} }}
           label={theme.name[this.lng]}
+          normalize={(val, prevVal, obj, prevObj) => {
+              let newVal = { ...prevVal };
+              newVal.value = val;
+              if (!!newVal.valueLng) {
+                  newVal.valueLng[lang.theme] = val;
+              } else {
+                  newVal["valueLng"] = { kz: "", en: "", ru: "" };
+                  newVal.valueLng[lang.theme] = val;
+              }
+              return newVal;
+          }}
           formItemClass="with-lang"
           changeLang={this.changeLang}
           formItemLayout={
@@ -278,6 +532,7 @@ class MainInfo extends Component {
           name="propStudy"
           component={renderSelect}
           isSearchable={false}
+          isMulti
           label={propStudy.name[this.lng]}
           formItemLayout={
             {
@@ -321,6 +576,8 @@ class MainInfo extends Component {
               wrapperCol: {span: 14}
             }
           }
+          normalize={this.dateToRedux}
+
         />}
         {caseDend && <Field
           name="caseDend"
@@ -333,10 +590,13 @@ class MainInfo extends Component {
               wrapperCol: {span: 14}
             }
           }
+          normalize={this.dateToRedux}
+
         />}
         {workAuthor && <Field
           name="workAuthor"
-          component={renderSelect}load
+          component={renderSelect}
+          load
           label={workAuthor.name[this.lng]}
           formItemLayout={
             {
@@ -350,6 +610,8 @@ class MainInfo extends Component {
             label: option.name[this.lng]
           })) : []}
           onFocus={this.loadOptions('workAuthor')}
+          normalize={this.selectToRedux}
+
         />}
         {workAssignedTo && <Field
           name="workAssignedTo"
@@ -361,6 +623,8 @@ class MainInfo extends Component {
               wrapperCol: {span: 14}
             }
           }
+          normalize={this.selectToRedux}
+
           isLoading={workAssignedToIPSLoading}
           data={workAssignedToIPSOptions ? [...workAssignedToIPSOptions].map(option => ({
               value: option.id,
@@ -372,6 +636,8 @@ class MainInfo extends Component {
           name="workPlannedEndDate"
           component={renderDatePicker}
           format={null}
+          normalize={this.dateToRedux}
+
           label={t('PLANNED_END_DATE')}
           formItemLayout={
             {
@@ -384,6 +650,8 @@ class MainInfo extends Component {
           name="workEndDate"
           component={renderDatePicker}
           format={null}
+          normalize={this.dateToRedux}
+
           label={t('FACT_END_DATE')}
           formItemLayout={
             {

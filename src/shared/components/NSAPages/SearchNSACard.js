@@ -31,7 +31,7 @@ class FundsListCard extends React.Component {
 
   render() {
     const { t, tofiConstants, onSaveCubeData, initialValues, onCreateObj, 
-      record, dataRec, onEditRecordChange, activeKey, onTabClick, onSave, onSave2,
+      record, dataRec, onEditRecordChange, closeCard,activeKey, onTabClick, onSave, onSave2,
       annotationContentOfDocument, invMulti, fundHistoricalNoteMulti, fundCaseFlags,
     } = this.props;
     return (
@@ -44,6 +44,7 @@ class FundsListCard extends React.Component {
               t={t} 
               tofiConstants={tofiConstants} 
               record={record}
+              initialValues={dataRec}
               onSave={onSave}
             />
           },
@@ -57,7 +58,9 @@ class FundsListCard extends React.Component {
               dataRec={dataRec}
               initialValues={dataRec}
               onSave2={onSave2}
-              annotationContentOfDocument={annotationContentOfDocument} 
+              closeCard={closeCard}
+
+              annotationContentOfDocument={annotationContentOfDocument}
               invMulti={invMulti} 
               fundHistoricalNoteMulti={fundHistoricalNoteMulti}
               withIdDPV = {this.props.withIdDPV}
@@ -103,7 +106,7 @@ class FundsListCard extends React.Component {
             tabContent: <SearchNSAReferenceByType
               t={t}
               tofiConstants={tofiConstants}
-              myValues={dataRec && dataRec.fundToGuidbook}
+              myValues={dataRec && !!dataRec.fundToGuidbook?dataRec.fundToGuidbook:[]}
               constReferenceType={tofiConstants.vidGuidebook}
               myClass={'clsPutev'}
               myType={'vidGuidebook'}

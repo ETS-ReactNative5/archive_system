@@ -109,7 +109,7 @@ class SearchAct extends React.Component {
         });
 
         getValueOfMultiText((this.props.workId).split('_')[1],'absenceCase').then(res=>{
-        var absenceCase = res.data[0].valueMultiStr.ru
+        var absenceCase = !!res.data[0] ? res.data[0].valueMultiStr.ru : ''
         this.setState({
             absenceCase:absenceCase
         })

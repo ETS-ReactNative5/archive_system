@@ -179,6 +179,7 @@ class NSAWorks extends React.PureComponent {
             openCard: true,
             selectedRow: null,
             initialValues: {
+                workDate: moment(),
                 workAuthor: {value: this.props.user.obj, label: this.props.user.name},
                 nsaWorkStatus: {
                     value: this.props.tofiConstants.created.id,
@@ -533,7 +534,6 @@ class NSAWorks extends React.PureComponent {
         } = tofiConstants;
 
         this.filteredData = data.filter(item => {
-            console.log(item);
             return (
                 // item.numb === Number(search) ||
                 (item.workType ? item.workType.label.toLowerCase().includes(search.workType.toLowerCase()) : search.workType === '') &&
@@ -822,6 +822,7 @@ class NSAWorks extends React.PureComponent {
                                                 {record.intermediateResultDate ?
                                                     <Button title={t('CONTINUE')}
                                                             icon="forward"
+                                                            disabled={record.workAssignedTo !== null ? record.workAssignedTo.value === this.props.user.obj?false:true:true}
                                                             onClick={this.addSpecialDate(record.key, 'workActualStartDateContinue')}
                                                             className='green-btn'
                                                     /> :
@@ -831,7 +832,7 @@ class NSAWorks extends React.PureComponent {
                                             <div className="editable-row-operations">
                                                 <Button
                                                     title={record.workType.workTypeClass === 'casesForTemporaryUse' ? t("ISSUED") : t("START")}
-                                                    disabled={!record.workAssignedTo}
+                                                    disabled={record.workAssignedTo !== null ? record.workAssignedTo.value === this.props.user.obj?false:true:true}
                                                     icon={record.workType.workTypeClass === 'casesForTemporaryUse' ? "reload" : "play-circle"}
                                                     onClick={this.addSpecialDate(record.key, 'workActualStartDate')}
                                                     className='green-btn'
@@ -879,7 +880,7 @@ class NSAWorks extends React.PureComponent {
                                                 <Button
                                                     title={record.workType.workTypeClass === 'casesForTemporaryUse' ? t("GET_BACK") : t("COMPLETE")}
                                                     icon={record.workType.workTypeClass === 'casesForTemporaryUse' ? "sync" : "poweroff"}
-                                                    disabled={!record.workActualStartDate}
+                                                    disabled={!record.workActualStartDate || this.props.user.obj != record.workAssignedTo.value}
                                                     onClick={this.addSpecialDate(record.key, 'workActualEndDate')}
                                                     className='green-btn'
                                                 />}

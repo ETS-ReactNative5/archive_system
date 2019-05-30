@@ -26,7 +26,7 @@ class SiderCard extends React.PureComponent {
           {
             tabKey: 'Description',
             tabName: t('DESCRIPTION'),
-            tabContent: <WorkDescription tofiConstants={tofiConstants} t={t}/>
+            tabContent: <WorkDescription  initialValues={initialValues} tofiConstants={tofiConstants} t={t}/>
           }
         ]}/>
       </div>

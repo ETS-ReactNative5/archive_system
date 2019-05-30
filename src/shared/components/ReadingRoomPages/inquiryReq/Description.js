@@ -58,7 +58,57 @@ class Description extends React.PureComponent {
     };
     return this.props.saveProps({cube, obj}, {values: rest, oFiles: {formulationResearch}}, this.props.tofiConstants);
   };
+    strToRedux = (val, prevVal, obj, prevObj, flag) => {
+        if(!!flag){
+            val = val.replace(/[^\d;]/g, '')
+        }
+        var newVal = { ...prevVal };
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: { kz: val },
+                valueLng: { ru: val },
+                valueLng: { en: val }
+            };
+            return objVal;
+        } else {
+            newVal.value = val;
+            newVal["valueLng"] = { kz: val, ru: val, en: val };
 
+            return newVal;
+        }
+    };
+    selectToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val === null) {
+                let newValNull = { ...prevVal };
+                newValNull.label = null;
+                newValNull.labelFull = null;
+                newValNull.value = null;
+                return newValNull;
+            } else {
+                let newVal = { ...prevVal };
+                newVal.value = val.value;
+                newVal.label = val.label;
+                newVal.labelFull = val.label;
+                return newVal;
+            }
+        }
+    };
+    fileToRedux = (val, prevVal, file, str) => {
+        let newFile = val.filter(el => el instanceof File);
+        if (newFile.length > 0) {
+            var copyVal = prevVal ? [...prevVal] : [];
+            newFile.map(el => {
+                copyVal.push({
+                    value: el
+                });
+            });
+            return copyVal;
+        } else {
+            return val.length == 0 ? [] : val;
+        }
+    };
   render() {
     const { lang } = this.state;
     this.lng = localStorage.getItem('i18nextLng');
@@ -72,9 +122,23 @@ class Description extends React.PureComponent {
           <Field
             name="documentContent"
             component={renderTextareaLang}
-            format={value => (!!value ? value[lang.documentContent] : '')}
-            parse={value => { this.documentContentValue[lang.documentContent] = value; return {...this.documentContentValue} }}
+            format={value => (!!value ? value.valueLng[lang.documentContent] : '')}
+            // parse={value => { this.documentContentValue[lang.documentContent] = value; return {...this.documentContentValue} }}
+
+            normalize={(val, prevVal, obj, prevObj) => {
+               let newVal = { ...prevVal };
+                newVal.value = val;
+                if (!!newVal.valueLng) {
+                    newVal.valueLng[lang.documentContent] = val;
+                } else {
+                    newVal["valueLng"] = { kz: "", en: "", ru: "" };
+                    newVal.valueLng[lang.documentContent] = val;
+                }
+                return newVal;
+            }}
+
             label={documentContent.name[this.lng]}
+
             formItemClass="with-lang--column"
             changeLang={this.changeLang}
           />
@@ -95,12 +159,17 @@ class Description extends React.PureComponent {
             value: option.id,
             label: option.name[this.lng]
           })) : []}
+          normalize={this.selectToRedux}
+
           onFocus={this.loadOptions('fundmakerOfIK')}
         />}
         {formulationResearch && <Field
           name="formulationResearch"
           component={ renderFileUploadBtn }
           label={formulationResearch.name[this.lng]}
+          normalize={this.fileToRedux}
+          cubeSConst="cubeStudy"
+
           formItemLayout={
             {
               labelCol: { span: 10 },

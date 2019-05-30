@@ -338,6 +338,7 @@ class CardCase_invTypeLS_LSDoc extends Component {
                                 keyWork={this.props.stateRecord&& String(this.props.stateRecord.key)}
                                 onCreateObj={onCreateObj}
                                 keyInv={this.state.keyInv}
+                                keyInvFund={`1_${stateRecord.workRegInv.value}`}
                                 initialValues={this.state.getInclusive === false? this.state.data[0]:{sd:"t"} }
                             />
                         },

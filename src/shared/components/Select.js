@@ -12,7 +12,7 @@ export const customFilter = createFilter({
 export const MultiValueLabel = props => {
   const { children } = props;
   return (
-    <div title={children} children={!!children && children.slice(0, 5) + '...'} />
+    <div title={children} children={children.slice(0, 5) + '...'} />
   );
 };
 

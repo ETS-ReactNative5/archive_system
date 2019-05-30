@@ -35,7 +35,6 @@ class UploadButton extends React.Component {
       }
   }
     componentDidMount(){
-      console.log(this.props.cubeSConst)
       this.editStateNewgFile()
     }
 

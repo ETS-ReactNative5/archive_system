@@ -148,7 +148,7 @@ class InquiryReqs extends React.Component {
   renderTableData = (item, idx) => {
     const researchTypeClasses = ['clsResearches', 'clsOrders', 'clsArchivalReferences'];
     const constArr = ["workDate","workDescription","workAuthor","workEndDate","resultResearch",
-      "formulationResearch","casesResearch","docsResearch","requestSource",
+      "formulationResearch","casesResearch","outNumber","docsResearch","requestSource",
       "resultDescription","propStudy","regNumber","nameOfOrganizationDeveloper",
       "dateOfBirth","personAddress","personPhone","personEmail","personLastName","personName","personPatronymic",
       "caseDocsLang","requestType","theme","nationality","usersOfSystem","fundmakerOfIK","caseDbeg","caseDend",
@@ -172,9 +172,9 @@ class InquiryReqs extends React.Component {
     parseForTable(item.props, this.props.tofiConstants, result, constArr);
     // Here goes some data massage
     result.researchTheme = result[this.clsThemeMap[item.clsORtr]];
-    result.theme = result.themeLng;
-    result.documentContent = result.documentContentLng;
-    result.resultDescription = result.resultDescriptionLng;
+    // result.theme = result.themeLng;
+    // result.documentContent = result.documentContentLng;
+    // result.resultDescription = result.resultDescriptionLng;
     return result;
   };
 
@@ -322,18 +322,18 @@ class InquiryReqs extends React.Component {
     this.lng = localStorage.getItem('i18nextLng');
     const { loading, data, researchTypeClass, filter } = this.state;
     const { t, tofiConstants, tofiConstants: { workDate, propStudy, researcheStatus,
-      regNumber, workEndDate, resultResearch, workPlannedEndDate } } = this.props;
+      regNumber,outNumber, workEndDate, resultResearch, workPlannedEndDate } } = this.props;
 
     this.filteredData = data.filter(item => {
       return (
           ( item.key.toLowerCase().includes(filter.nameResearchers.toLowerCase()) ) &&
         (filter.researchTypeClass.length === 0 || filter.researchTypeClass.some(p => (p.researchTypeClass == item.researchTypeClass))) &&
-        ( !filter.workDate.dbeg || moment(item.workDate && item.workDate.value).isSameOrAfter(filter.workDate.dbeg, 'day') ) &&
-        ( !filter.workDate.dend || moment(item.workDate && item.workDate.value).isSameOrBefore(filter.workDate.dend, 'day') ) &&
-        ( !filter.workEndDate.dbeg || moment(item.workEndDate && item.workEndDate.value).isSameOrAfter(filter.workEndDate.dbeg, 'day') ) &&
-        ( !filter.workEndDate.dend || moment(item.workEndDate && item.workEndDate.value).isSameOrBefore(filter.workEndDate.dend, 'day') ) &&
-        ( !filter.workPlannedEndDate.dbeg || moment(item.workPlannedEndDate && item.workPlannedEndDate.value).isSameOrAfter(filter.workPlannedEndDate.dbeg, 'day') ) &&
-        ( !filter.workPlannedEndDate.dend || moment(item.workPlannedEndDate && item.workPlannedEndDate.value).isSameOrBefore(filter.workPlannedEndDate.dend, 'day') )
+        ( !filter.workDate.dbeg || !!item.workDate && moment( item.workDate.value, 'DD-MM-YYYY').isSameOrAfter(filter.workDate.dbeg, 'day') ) &&
+        ( !filter.workDate.dend || !!item.workDate && moment( item.workDate.value , 'DD-MM-YYYY').isSameOrBefore(filter.workDate.dend, 'day') ) &&
+        ( !filter.workEndDate.dbeg || !!item.workEndDate && moment(item.workEndDate.value , 'DD-MM-YYYY').isSameOrAfter(filter.workEndDate.dbeg, 'day') ) &&
+        ( !filter.workEndDate.dend || !item.workEndDate && moment(item.workEndDate.value, 'DD-MM-YYYY').isSameOrBefore(filter.workEndDate.dend, 'day') ) &&
+        ( !filter.workPlannedEndDate.dbeg || !!item.workPlannedEndDate && moment(item.workPlannedEndDate.value, 'DD-MM-YYYY').isSameOrAfter(filter.workPlannedEndDate.dbeg, 'day') ) &&
+        ( !filter.workPlannedEndDate.dend || !!item.workPlannedEndDate && moment( item.workPlannedEndDate.value, 'DD-MM-YYYY').isSameOrBefore(filter.workPlannedEndDate.dend, 'day') )
       )
     });
 
@@ -466,12 +466,21 @@ class InquiryReqs extends React.Component {
                 render: obj => obj && obj.value
               },
               {
-                key: 'researchTheme',
+                key: 'propStudy',
                 title: propStudy.name[this.lng],
-                dataIndex: 'researchTheme',
+                dataIndex: 'propStudy',
                 width: '10%',
-                render: obj => obj && obj.label
-              },
+                  render: obj => {
+                      if(!!obj){
+                          let newarr =[]
+                          for(let item of obj){
+                              newarr.push(item.label)
+                          }
+                          return newarr.join(",")
+                      }else {
+                          return ""
+                      }
+                  }              },
               {
                 key: 'researcheStatus',
                 title: researcheStatus.name[this.lng],

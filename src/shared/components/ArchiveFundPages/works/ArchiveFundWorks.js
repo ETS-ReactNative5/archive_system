@@ -1,5 +1,15 @@
 import React from 'react';
-import {Button, Input, Popconfirm, Icon, Dropdown, Menu, Modal, DatePicker, message} from 'antd';
+import {
+    Button,
+    Input,
+    Popconfirm,
+    Icon,
+    Dropdown,
+    Menu,
+    Modal,
+    DatePicker,
+    message
+} from 'antd';
 import Select from '../../Select';
 import SelectVirt from "../../SelectVirt";
 import {connect} from 'react-redux';
@@ -40,9 +50,9 @@ class ArchiveFundWorks extends React.PureComponent {
             sortState: true,
             visible: false,
             data: [],
-            nameFilter:"",
-            maxValue:"",
-            minValue:'',
+            nameFilter: "",
+            maxValue: "",
+            minValue: '',
             priority: [],
             listWorksDP: '',
             filteredlistWorks: '',
@@ -105,40 +115,41 @@ class ArchiveFundWorks extends React.PureComponent {
             workRegInvSelected: null
         };
     }
-    onWeekDate=()=>{
+
+    onWeekDate = () => {
         this.setState({
-            maxValue:moment().format("YYYY-MM-DD"),
-            minValue:moment().add(-1,"W").format("YYYY-MM-DD"),
-            nameFilter:"Неделя"
-        },()=>this.getCubeAct())
+            maxValue: moment().format("YYYY-MM-DD"),
+            minValue: moment().add(-1, "W").format("YYYY-MM-DD"),
+            nameFilter: "Неделя"
+        }, () => this.getCubeAct())
     }
-    onMonthThreeDate=()=>{
+    onMonthThreeDate = () => {
         this.setState({
-            maxValue:moment().format("YYYY-MM-DD"),
-            minValue:moment().add(-3,"M").startOf("month").format("YYYY-MM-DD"),
-            nameFilter:"3 Месяца"
-        },()=>this.getCubeAct())
+            maxValue: moment().format("YYYY-MM-DD"),
+            minValue: moment().add(-3, "M").startOf("month").format("YYYY-MM-DD"),
+            nameFilter: "3 Месяца"
+        }, () => this.getCubeAct())
     }
-    onMonthOneDate=()=>{
+    onMonthOneDate = () => {
         this.setState({
-            maxValue:moment().startOf("month").format("YYYY-MM-DD"),
-            minValue:moment().add(-1,"M").startOf("month").format("YYYY-MM-DD"),
-            nameFilter:moment().add(-1,"M").format("MMMM")
-        },()=>this.getCubeAct())
+            maxValue: moment().startOf("month").format("YYYY-MM-DD"),
+            minValue: moment().add(-1, "M").startOf("month").format("YYYY-MM-DD"),
+            nameFilter: moment().add(-1, "M").format("MMMM")
+        }, () => this.getCubeAct())
     }
-    onMonthDate=()=>{
+    onMonthDate = () => {
         this.setState({
-            maxValue:moment().format("YYYY-MM-DD"),
-            minValue:moment().startOf("month").format("YYYY-MM-DD"),
-            nameFilter:moment().format("MMMM")
-        },()=>this.getCubeAct())
+            maxValue: moment().format("YYYY-MM-DD"),
+            minValue: moment().startOf("month").format("YYYY-MM-DD"),
+            nameFilter: moment().format("MMMM")
+        }, () => this.getCubeAct())
     }
-    onYearDate=()=>{
+    onYearDate = () => {
         this.setState({
-            maxValue:moment().format("YYYY-MM-DD"),
-            minValue:moment().add(-1,"Y").format("YYYY-MM-DD"),
-            nameFilter:"Год"
-        },()=>this.getCubeAct())
+            maxValue: moment().format("YYYY-MM-DD"),
+            minValue: moment().add(-1, "Y").format("YYYY-MM-DD"),
+            nameFilter: "Год"
+        }, () => this.getCubeAct())
     }
 
     showModalDate = () => {
@@ -150,13 +161,13 @@ class ArchiveFundWorks extends React.PureComponent {
         console.log(e);
         this.setState({
             visible: false,
-            nameFilter:`С ${this.state.minValue} По ${this.state.maxValue}`
-        },()=>this.getCubeAct());
+            nameFilter: `С ${this.state.minValue} По ${this.state.maxValue}`
+        }, () => this.getCubeAct());
     }
     handleCancel = (e) => {
         this.setState({
-            maxValue:moment().format("YYYY-MM-DD"),
-            minValue:moment().startOf('month').format("YYYY-MM-DD"),
+            maxValue: moment().format("YYYY-MM-DD"),
+            minValue: moment().startOf('month').format("YYYY-MM-DD"),
             visible: false,
         });
     }
@@ -181,15 +192,19 @@ class ArchiveFundWorks extends React.PureComponent {
         if ((isEmpty(this.state.selectedRow) && !this.state.openCard) || (!isEqual(this.state.selectedRow, rec) && !this.state.openCard)) {
             this.setState({selectedRow: rec})
         } else {
-            let initialValues={...rec}
+            let initialValues = {...rec}
             initialValues.workPlannedStartDate = rec.workPlannedStartDateObject
-            initialValues.workPlannedEndDate= rec.workPlannedEndDateOject
+            initialValues.workPlannedEndDate = rec.workPlannedEndDateOject
             initialValues.workDate = rec.workDateObject
             initialValues.workActualStartDate = rec.workActualStartDateObject
             initialValues.workActualEndDate = rec.workActualEndDateObject
             initialValues.acceptanceDate = rec.acceptanceDateObject
             initialValues.intermediateResultDate = rec.intermediateResultDateObject
-            this.setState({initialValues: initialValues, openCard: true, selectedRow: rec})
+            this.setState({
+                initialValues: initialValues,
+                openCard: true,
+                selectedRow: rec
+            })
         }
     };
 
@@ -198,10 +213,10 @@ class ArchiveFundWorks extends React.PureComponent {
             openCard: true,
             selectedRow: null,
             initialValues: {
-                workAuthor:{
-                    label:this.props.user.name,
-                    value:this.props.user.obj
-                } ,
+                workAuthor: {
+                    label: this.props.user.name,
+                    value: this.props.user.obj
+                },
                 workDate: moment().startOf('day'),
                 // workStatusReg: {value: this.props.tofiConstants.appointed.id, label: this.props.tofiConstants.appointed.name[this.lng]}
             }
@@ -226,10 +241,10 @@ class ArchiveFundWorks extends React.PureComponent {
     componentDidMount() {
         if (isEmpty(this.props.tofiConstants)) return;
         this.setState({
-            maxValue:moment().format("YYYY-MM-DD"),
-            minValue:moment().startOf('month').format("YYYY-MM-DD"),
-            nameFilter:moment().format("MMMM")
-        },()=>this.getCubeAct())
+            maxValue: moment().format("YYYY-MM-DD"),
+            minValue: moment().startOf('month').format("YYYY-MM-DD"),
+            nameFilter: moment().format("MMMM")
+        }, () => this.getCubeAct())
 
 
         const getClsId = c => this.props.tofiConstants[c].id;
@@ -285,7 +300,10 @@ class ArchiveFundWorks extends React.PureComponent {
                                 typeRef: 'factorVal',
                                 dimPropConst: "dpForWorks",
                                 propConst: "workDate",
-                                values: {minValue: this.state.minValue, maxValue: this.state.maxValue}
+                                values: {
+                                    minValue: this.state.minValue,
+                                    maxValue: this.state.maxValue
+                                }
                             }
                         }
                     ]
@@ -322,8 +340,9 @@ class ArchiveFundWorks extends React.PureComponent {
             }
         }
     }
+
     onChange = (pagination, filters, sorter) => {
-        if(sorter.columnKey === "key") {
+        if (sorter.columnKey === "key") {
             this.setState({sortState: !this.state.sortState});
         }
     }
@@ -384,7 +403,7 @@ class ArchiveFundWorks extends React.PureComponent {
 
         };
 
-        this.props.getCube('CubeForAF_Case', JSON.stringify(worksIDfilters),{customKey:'listCases'});
+        this.props.getCube('CubeForAF_Case', JSON.stringify(worksIDfilters), {customKey: 'listCases'});
     };
 
 
@@ -439,34 +458,34 @@ class ArchiveFundWorks extends React.PureComponent {
             console.error(err)
         })
     };
-    onSaveCubeData2 = async(values, doItemProp, objDataProp)=>{
+    onSaveCubeData2 = async (values, doItemProp, objDataProp) => {
 
         let hideLoading
         try {
-            const c ={
-                cube:{
+            const c = {
+                cube: {
                     cubeSConst: CUBE_FOR_WORKS,
                     doConst: DO_FOR_WORKS,
                     dpConst: DP_FOR_WORKS,
-                    data:this.props.works
+                    data: this.props.works
                 },
-                obj:{
-                    doItem:doItemProp
+                obj: {
+                    doItem: doItemProp
                 }
             }
-            const v ={
-                values:values,
-                complex:"",
-                oFiles:{}
+            const v = {
+                values: values,
+                complex: "",
+                oFiles: {}
             }
             const objData = objDataProp
-            const  t = this.props.tofiConstants
-            this.setState({loading: true, });
+            const t = this.props.tofiConstants
+            this.setState({loading: true,});
 
             hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
             const resSave = await onSaveCubeData(c, v, t, objData);
             hideLoading();
-            if(!resSave.success) {
+            if (!resSave.success) {
                 message.error(this.props.t('PROPS_UPDATING_ERROR'));
                 resSave.errors.forEach(err => {
                     message.error(err.text)
@@ -475,15 +494,15 @@ class ArchiveFundWorks extends React.PureComponent {
             }
             message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
             return this.props.getCube(CUBE_FOR_WORKS, JSON.stringify(this.filters))
-                .then(() => {
-                    this.setState({loading: false, openCard: false});
-                    return {success: true}
-                })
+            .then(() => {
+                this.setState({loading: false, openCard: false});
+                return {success: true}
+            })
 
 
-        } catch (e) {
+        } catch(e) {
             typeof hideLoading === 'function' && hideLoading();
-            this.setState({ loading: false });
+            this.setState({loading: false});
             console.warn(e);
         }
     }
@@ -579,7 +598,7 @@ class ArchiveFundWorks extends React.PureComponent {
         })
     };
 
-    addSpecialDate = (key,  name ,stateRecord) => {
+    addSpecialDate = (key, name, stateRecord) => {
         return e => {
             e.stopPropagation();
             const newData = this.state.data.slice();
@@ -638,7 +657,7 @@ class ArchiveFundWorks extends React.PureComponent {
                                                 pathname: `/archiveFund/works/accounting/${target.workRegFund.value}_${target.workRegInv ? target.workRegInv.value : ''}`,
                                                 state: {
                                                     workId: key,
-                                                    data: res.data ,
+                                                    data: res.data,
                                                     stateRecord
                                                 }
                                             })
@@ -804,6 +823,10 @@ class ArchiveFundWorks extends React.PureComponent {
                             acceptanceDate: moment().format('YYYY-MM-DD')
                         }, key, {})
                         .then(() => {
+                            var newTarget = {...target};
+                            delete newTarget.workRegFund.idDataPropVal;
+                            delete newTarget.workRegInv.idDataPropVal;
+                            delete newTarget.workRegCase.idDataPropVal;
                             this.onCreateObj({
                                 parent: key.split('_')[1],
                                 workType: {
@@ -813,6 +836,8 @@ class ArchiveFundWorks extends React.PureComponent {
                                 workStatusReg: {value: this.props.tofiConstants.appointmentProcess.id},
                                 workRegFund: target.workRegFund,
                                 workRegInv: target.workRegInv,
+                                workAuthor: {value: this.props.user.obj},
+                                workDate: moment().format('YYYY-MM-DD'),
                                 workRegCase: target.workRegCase,
                                 retirementReason: String(this.props.tofiConstants.noResults.id)
                             })
@@ -840,7 +865,7 @@ class ArchiveFundWorks extends React.PureComponent {
         const {
             workPlannedEndDate, workAuthor, workRegFund, workRegFundId, workRegInv, workIndexNumber, retirementReason,
             workPriority, workDate, workAssignedTo, workPlannedStartDate, workActualStartDate, workRecipient,
-            workActualEndDate, acceptanceDate, checkingType, workRegCase, descriptionDamage,intermediateResultDate, deliveryPurpose,indexDamage
+            workActualEndDate, acceptanceDate, checkingType, dateNumberOrder, orderDirectorFile, dateAndNumberDeregistration, derigistrationFile, workRegCase, descriptionDamage, intermediateResultDate, deliveryPurpose, indexDamage
         } = this.props.tofiConstants;
 
         const workPlannedEndDateObj = item.props.find(element => element.prop == workPlannedEndDate.id),
@@ -864,36 +889,46 @@ class ArchiveFundWorks extends React.PureComponent {
         workIndexNumberObj = item.props.find(element => element.prop == workIndexNumber.id),
         retirementReasonObj = item.props.find(element => element.prop == retirementReason.id),
         deliveryPurposeObj = item.props.find(element => element.prop == deliveryPurpose.id),
-        workTypeClass = workTypeClasses.find(cls => this.props.tofiConstants[cls].id == item.clsORtr);
+        workTypeClass = workTypeClasses.find(cls => this.props.tofiConstants[cls].id == item.clsORtr),
+        dateNumberOrderObj = item.props.find(element => element.prop == dateNumberOrder.id),
+        orderDirectorFileObj = item.props.find(element => element.prop == orderDirectorFile.id),
+        dateAndNumberDeregistrationObj = item.props.find(element => element.prop == dateAndNumberDeregistration.id),
+        derigistrationFileObj = item.props.find(element => element.prop == derigistrationFile.id);
         return {
             key: item.id,
             numb: idx + 1,
+            parent: item.parent,
             workType: workTypeClass ? {
                 value: this.props.tofiConstants[workTypeClass].id,
                 label: this.props.tofiConstants[workTypeClass].name[this.lng],
                 workTypeClass
             } : null,
-           descriptionDamage:descriptionDamageObj && descriptionDamageObj.values && descriptionDamageObj.values.value,
-           indexDamage:indexDamageObj && indexDamageObj.values,
+
+            dateNumberOrder: dateNumberOrderObj,
+            orderDirectorFile: orderDirectorFileObj,
+            dateAndNumberDeregistration: dateAndNumberDeregistrationObj,
+            derigistrationFile: derigistrationFileObj,
+            descriptionDamage: descriptionDamageObj && descriptionDamageObj.values && descriptionDamageObj.values.value,
+            indexDamage: indexDamageObj && indexDamageObj.values,
             workPlannedStartDate: !!workPlannedStartDateObj && workPlannedStartDateObj.values ? moment(workPlannedStartDateObj.values.value, 'DD-MM-YYYY') : null,
             workPlannedStartDateObject: !!workPlannedStartDateObj && workPlannedStartDateObj.values ? workPlannedStartDateObj.values : null,
             workPlannedEndDate: !!workPlannedEndDateObj && workPlannedEndDateObj.values ? moment(workPlannedEndDateObj.values.value, 'DD-MM-YYYY') : null,
-            workPlannedEndDateOject: !!workPlannedEndDateObj && workPlannedEndDateObj.values ? workPlannedEndDateObj.values  : null,
-            workStatusReg: workStatusRegObj && workStatusRegObj.values ? workStatusRegObj.values  : null,
+            workPlannedEndDateOject: !!workPlannedEndDateObj && workPlannedEndDateObj.values ? workPlannedEndDateObj.values : null,
+            workStatusReg: workStatusRegObj && workStatusRegObj.values ? workStatusRegObj.values : null,
             checkingType: checkingTypeObj && checkingTypeObj.values ? checkingTypeObj.values : null,
-            retirementReason: retirementReasonObj && retirementReasonObj.values ? retirementReasonObj.values   : null,
+            retirementReason: retirementReasonObj && retirementReasonObj.values ? retirementReasonObj.values : null,
             deliveryPurpose: deliveryPurposeObj && deliveryPurposeObj.values ? deliveryPurposeObj.values : null,
             workListName: item.name,
             workPriority: workPriorityObj && workPriorityObj.values ? workPriorityObj.values : null,
-            workRegFund: !!workRegFundObj && workRegFundObj.values  ? workRegFundObj.values : null,
-            workRegInv: !!workRegInvObj && workRegInvObj.values  ? workRegInvObj.values  : null,
-            workRegCase: !!workRegCaseObj && workRegCaseObj.values  ? workRegCaseObj.values : null,
-            workAuthor: !!workAuthorObj && workAuthorObj.values  ? workAuthorObj.values || '' : '',
+            workRegFund: !!workRegFundObj && workRegFundObj.values ? workRegFundObj.values : null,
+            workRegInv: !!workRegInvObj && workRegInvObj.values ? workRegInvObj.values : null,
+            workRegCase: !!workRegCaseObj && workRegCaseObj.values ? workRegCaseObj.values : null,
+            workAuthor: !!workAuthorObj && workAuthorObj.values ? workAuthorObj.values || '' : '',
             workIndexNumber: !!workIndexNumberObj && workIndexNumberObj.values ? String(workIndexNumberObj.values.value) : '',
             workDate: !!workDateObj && workDateObj.values ? moment(workDateObj.values.value, 'DD-MM-YYYY') : null,
-            workDateObject: !!workDateObj && workDateObj.values ? workDateObj.values  : null,
+            workDateObject: !!workDateObj && workDateObj.values ? workDateObj.values : null,
             workAssignedTo: !!workAssignedToObj && workAssignedToObj.values ? workAssignedToObj.values : null,
-            workRecipient: !!workRecipientObj && workRecipientObj.values ? workRecipientObj.values   : null,
+            workRecipient: !!workRecipientObj && workRecipientObj.values ? workRecipientObj.values : null,
             workActualStartDate: !!workActualStartDateObj && workActualStartDateObj.values ? moment(workActualStartDateObj.values.value, 'DD-MM-YYYY') : null,
             workActualStartDateObject: !!workActualStartDateObj && workActualStartDateObj.values ? workActualStartDateObj.values : null,
             workActualEndDate: !!workActualEndDateObj && workActualEndDateObj.values ? moment(workActualEndDateObj.values.value, 'DD-MM-YYYY') : null,
@@ -961,28 +996,31 @@ class ArchiveFundWorks extends React.PureComponent {
 
     render() {
         const menu = (
-            <Menu>
-                <Menu.Item>
-                    <p className="work-date-option" onClick={this.onWeekDate}>Неделя </p>
-                </Menu.Item>
-                <Menu.Item>
-                    <p className="work-date-option" onClick={this.onMonthThreeDate}>3 месяца</p>
-                </Menu.Item>
-                <Menu.Item>
-                    <p className="work-date-option" onClick={this.onMonthOneDate} >{moment().add(-1,"M").format("MMMM") } </p>
-                </Menu.Item>
-                <Menu.Item>
-                    <p className="work-date-option" onClick={this.onMonthDate} >{moment().format("MMMM") } </p>
-                </Menu.Item>
-                <Menu.Item>
-                    <p className="work-date-option" onClick={this.onYearDate}>Год</p>
-                </Menu.Item>
-                <Menu.Item>
-                    <p className="work-date-option "  onClick={this.showModalDate} >
-                        Указать период
-                    </p>
-                </Menu.Item>
-            </Menu>
+        <Menu>
+            <Menu.Item>
+                <p className="work-date-option" onClick={this.onWeekDate}>Неделя </p>
+            </Menu.Item>
+            <Menu.Item>
+                <p className="work-date-option" onClick={this.onMonthThreeDate}>3
+                    месяца</p>
+            </Menu.Item>
+            <Menu.Item>
+                <p className="work-date-option"
+                   onClick={this.onMonthOneDate}>{moment().add(-1, "M").format("MMMM") } </p>
+            </Menu.Item>
+            <Menu.Item>
+                <p className="work-date-option"
+                   onClick={this.onMonthDate}>{moment().format("MMMM") } </p>
+            </Menu.Item>
+            <Menu.Item>
+                <p className="work-date-option" onClick={this.onYearDate}>Год</p>
+            </Menu.Item>
+            <Menu.Item>
+                <p className="work-date-option " onClick={this.showModalDate}>
+                    Указать период
+                </p>
+            </Menu.Item>
+        </Menu>
         );
         const {
             search, loading, performer, status, priority, workPriorityLoading, staff,
@@ -1025,34 +1063,34 @@ class ArchiveFundWorks extends React.PureComponent {
         return (
         <div className="Works">
             <Modal
-                title="Выбрать период"
-                visible={this.state.visible}
-                onOk={this.handleOk}
-                onCancel={this.handleCancel}
+            title="Выбрать период"
+            visible={this.state.visible}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
             >
-                <span>С </span> <DatePicker onChange={(e)=>{
-                if (e === null){
+                <span>С </span> <DatePicker onChange={(e) => {
+                if (e === null) {
                     return false
                 }
                 this.setState({
-                    minValue:moment(e._d).format("YYYY-MM-DD")
+                    minValue: moment(e._d).format("YYYY-MM-DD")
                 })
             }}/>
-                <span>До </span> <DatePicker DatePicker onChange={(e)=>{
-                if (e === null){
+                <span>До </span> <DatePicker DatePicker onChange={(e) => {
+                if (e === null) {
                     return false
                 }
                 this.setState({
-                    maxValue:moment(e._d).format("YYYY-MM-DD")
+                    maxValue: moment(e._d).format("YYYY-MM-DD")
                 })
-            }} />
+            }}/>
 
             </Modal>
             <div className="title-works">
                 <h2>Работы по учету и хранению</h2>
                 <Dropdown overlay={menu} trigger={['click']}>
-                    <p className="ant-dropdown-link work-date" >
-                        {this.state.nameFilter} <Icon type="down" />
+                    <p className="ant-dropdown-link work-date">
+                        {this.state.nameFilter} <Icon type="down"/>
                     </p>
                 </Dropdown>
             </div>
@@ -1232,72 +1270,72 @@ class ArchiveFundWorks extends React.PureComponent {
                         dataIndex: 'key',
                         width: '14%',
                         render: key => {
-                            if(!!this.props.listCases && !!this.state.filteredlistWorks){
-                                var refId = this.state.filteredlistWorks.find(item => item['do_'+this.props.tofiConstants['doForWorks'].id] == key);
+                            if (!!this.props.listCases && !!this.state.filteredlistWorks) {
+                                var refId = this.state.filteredlistWorks.find(item => item['do_' + this.props.tofiConstants['doForWorks'].id] == key);
                                 var result;
-                                refId ? result = this.props.listCases.cube.find(itemDelo => itemDelo['do_'+this.props.tofiConstants['doForCase'].id].split('_')[1]==[refId.idRef]) : result ='Нет шифра';
+                                refId ? result = this.props.listCases.cube.find(itemDelo => itemDelo['do_' + this.props.tofiConstants['doForCase'].id].split('_')[1] == [refId.idRef]) : result = 'Нет шифра';
                                 return result ? result.valueStr ? result.valueStr[this.lng] : 'Нет шифра' : 'Нет шифра';
                             }
 
 
                         }
                     },
-  /*                  {
-                        key: 'workRegFund',
-                        title: workRegFund.name[this.lng],
-                        dataIndex: 'workRegFund',
-                        width: '9%',
-                        filterDropdown: (
-                        <div className="custom-filter-dropdown">
-                            <Input
-                            name="workRegFund"
-                            suffix={search.workRegFund ?
-                            <Icon type="close-circle" data-name="workRegFund"
-                                  onClick={this.emitEmpty}/> : null}
-                            ref={ele => this.workRegFund = ele}
-                            placeholder="Поиск"
-                            value={search.workRegFund}
-                            onChange={this.onInputChange}
-                            />
-                        </div>
-                        ),
-                        filterIcon: <Icon type="filter"
-                                          style={{color: search.workRegFund ? '#ff9800' : '#aaa'}}/>,
-                        onFilterDropdownVisibleChange: (visible) => {
-                            this.setState({
-                                filterDropdownVisible: visible,
-                            }, () => this.workRegFund.focus());
-                        },
-                        render: text => (text ? text.label : '')
-                    },
-                    {
-                        key: 'workRegInv',
-                        title: workRegInv.name[this.lng],
-                        dataIndex: 'workRegInv',
-                        width: '9%',
-                        filterDropdown: (
-                        <div className="custom-filter-dropdown">
-                            <Input
-                            name="workRegInv"
-                            suffix={search.workRegInv ?
-                            <Icon type="close-circle" data-name="workRegInv"
-                                  onClick={this.emitEmpty}/> : null}
-                            ref={ele => this.workRegInv = ele}
-                            placeholder="Поиск"
-                            value={search.workRegInv}
-                            onChange={this.onInputChange}
-                            />
-                        </div>
-                        ),
-                        filterIcon: <Icon type="filter"
-                                          style={{color: search.workRegInv ? '#ff9800' : '#aaa'}}/>,
-                        onFilterDropdownVisibleChange: (visible) => {
-                            this.setState({
-                                filterDropdownVisible: visible,
-                            }, () => this.workRegInv.focus());
-                        },
-                        render: text => (text ? text.label : '')
-                    },  */
+                    /*                  {
+                     key: 'workRegFund',
+                     title: workRegFund.name[this.lng],
+                     dataIndex: 'workRegFund',
+                     width: '9%',
+                     filterDropdown: (
+                     <div className="custom-filter-dropdown">
+                     <Input
+                     name="workRegFund"
+                     suffix={search.workRegFund ?
+                     <Icon type="close-circle" data-name="workRegFund"
+                     onClick={this.emitEmpty}/> : null}
+                     ref={ele => this.workRegFund = ele}
+                     placeholder="Поиск"
+                     value={search.workRegFund}
+                     onChange={this.onInputChange}
+                     />
+                     </div>
+                     ),
+                     filterIcon: <Icon type="filter"
+                     style={{color: search.workRegFund ? '#ff9800' : '#aaa'}}/>,
+                     onFilterDropdownVisibleChange: (visible) => {
+                     this.setState({
+                     filterDropdownVisible: visible,
+                     }, () => this.workRegFund.focus());
+                     },
+                     render: text => (text ? text.label : '')
+                     },
+                     {
+                     key: 'workRegInv',
+                     title: workRegInv.name[this.lng],
+                     dataIndex: 'workRegInv',
+                     width: '9%',
+                     filterDropdown: (
+                     <div className="custom-filter-dropdown">
+                     <Input
+                     name="workRegInv"
+                     suffix={search.workRegInv ?
+                     <Icon type="close-circle" data-name="workRegInv"
+                     onClick={this.emitEmpty}/> : null}
+                     ref={ele => this.workRegInv = ele}
+                     placeholder="Поиск"
+                     value={search.workRegInv}
+                     onChange={this.onInputChange}
+                     />
+                     </div>
+                     ),
+                     filterIcon: <Icon type="filter"
+                     style={{color: search.workRegInv ? '#ff9800' : '#aaa'}}/>,
+                     onFilterDropdownVisibleChange: (visible) => {
+                     this.setState({
+                     filterDropdownVisible: visible,
+                     }, () => this.workRegInv.focus());
+                     },
+                     render: text => (text ? text.label : '')
+                     },  */
                     {
                         key: 'tp_ukz',
                         title: 'Топографический указатель',
@@ -1312,11 +1350,11 @@ class ArchiveFundWorks extends React.PureComponent {
                         width: '10',
                         render: key => {
 
-                           let finds=  this.state.data.find((item)=>{
+                            let finds = this.state.data.find((item) => {
                                 return item.key === key
 
                             })
-                           return finds.workAuthor.label
+                            return finds.workAuthor.label
                         }
                     },
                     {
@@ -1408,7 +1446,9 @@ class ArchiveFundWorks extends React.PureComponent {
                                 { record.intermediateResultDate ?
                                 <Button title={t('CONTINUE')}
                                         icon="forward"
-                                        onClick={this.addSpecialDate(record.key,  'workActualStartDateContinue', record)}
+                                        disabled={record.workAssignedTo !== null ? record.workAssignedTo.value === this.props.user.obj ? false : true : true}
+
+                                        onClick={this.addSpecialDate(record.key, 'workActualStartDateContinue', record)}
                                         className='green-btn'
                                 /> :
                                 text.format('DD-MM-YYYY') || ' ' }
@@ -1426,9 +1466,9 @@ class ArchiveFundWorks extends React.PureComponent {
                             <div className="editable-row-operations">
                                 <Button
                                 title={record.workType.workTypeClass === 'casesForTemporaryUse' ? t("ISSUED") : t("START")}
-                                disabled={!record.workAssignedTo}
+                                disabled={!record.workAssignedTo && record.workAssignedTo !== null ? record.workAssignedTo.value === this.props.user.obj ? false : true : true}
                                 icon={record.workType.workTypeClass === 'casesForTemporaryUse' ? "reload" : "play-circle"}
-                                onClick={this.addSpecialDate(record.key,'workActualStartDate',record)}
+                                onClick={this.addSpecialDate(record.key, 'workActualStartDate', record)}
                                 className='green-btn'
                                 />
                                 {/*<Button title="CANCEL" icon="close" onClick={this.addSpecialDate(record.key, 'workActualStartDate', 'red')} className='green-btn'/>*/}
@@ -1484,8 +1524,8 @@ class ArchiveFundWorks extends React.PureComponent {
                                 <Button
                                 title={record.workType.workTypeClass === 'casesForTemporaryUse' ? t("GET_BACK") : t("COMPLETE")}
                                 icon={record.workType.workTypeClass === 'casesForTemporaryUse' ? "sync" : "poweroff"}
-                                disabled={!record.workActualStartDate}
-                                onClick={this.addSpecialDate(record.key, 'workActualEndDate',record)}
+                                disabled={!record.workActualStartDate && record.workAssignedTo !== null ? record.workAssignedTo.value === this.props.user.obj ? false : true : true}
+                                onClick={this.addSpecialDate(record.key, 'workActualEndDate', record)}
                                 className='green-btn'
                                 />}
                                 {/*<Button title="CANCEL" icon="close" onClick={this.addSpecialDate(record.key, 'workActualEndDate')} className='green-btn'/>*/}
@@ -1546,11 +1586,11 @@ class ArchiveFundWorks extends React.PureComponent {
                                 <Button disabled={!record.workActualEndDate}
                                         title={record.workType.workTypeClass === 'caseSearch' ? t('FOUND') : t("ACCEPT")}
                                         icon="check-circle" className='green-btn'
-                                        onClick={this.addSpecialDate(record.key, 'acceptanceDate',record)}/>
+                                        onClick={this.addSpecialDate(record.key, 'acceptanceDate', record)}/>
                                 <Button disabled={!record.workActualEndDate}
                                         title={record.workType.workTypeClass === 'caseSearch' ? t('NOT_FOUND') : t("DECLINE")}
                                         icon="close"
-                                        onClick={this.addSpecialDate(record.key, 'notAccepted',record)}
+                                        onClick={this.addSpecialDate(record.key, 'notAccepted', record)}
                                         className='green-btn'/>
                             </div>
                             )

@@ -1,6 +1,7 @@
 import React from 'react';
 import {Button, Input, Radio} from 'antd';
 import { getPropValByConst } from '../../../actions/actions'
+import GetWorkDescription from "./GetWorkDescription";
 
 const TextArea = Input.TextArea;
 const RadioButton = Radio.Button;
@@ -33,9 +34,7 @@ class WorkDescription extends React.PureComponent {
   };
 
   componentDidMount() {
-    getPropValByConst('workDescription')
-      .then(data => console.log(data))
-      .catch(err => console.error(err))
+
   }
 
   initialState = this.state;
@@ -47,24 +46,12 @@ class WorkDescription extends React.PureComponent {
   render() {
     const { t } = this.props;
     return (
-      <div className="work-description">
-        <RadioGroup onChange={this.onLangChange} value={this.state.lang}>
-          <RadioButton value="kz">KZ</RadioButton>
-          <RadioButton value="ru">RU</RadioButton>
-          <RadioButton value="en">EN</RadioButton>
-        </RadioGroup>
-        <TextArea placeholder="Description" autosize={{ minRows: 2 }} value={this.state.workDescription[this.state.lang]} onChange={this.onChange} style={{marginTop: '10px'}}/>
-        {this.state.dirty && (
-          <div className="ant-form-btns">
-            <Button className="signup-form__btn" type="primary">
-              { t('SAVE') }
-            </Button>
-            <Button className="signup-form__btn" type="danger"style={{marginLeft: '10px'}} onClick={this.cancel}>
-              { t('CANCEL') }
-            </Button>
-          </div>
-        )}
-      </div>
+        <div>
+          <GetWorkDescription
+              initialValues={this.props.initialValues}
+          t={t}
+          />
+        </div>
     )
   }
 }

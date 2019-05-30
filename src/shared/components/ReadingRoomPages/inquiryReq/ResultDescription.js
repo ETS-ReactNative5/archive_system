@@ -43,6 +43,20 @@ class ResultDescription extends React.PureComponent {
     };
     return this.props.saveProps({cube, obj}, {values: rest, oFiles: {resultResearch}}, this.props.tofiConstants);
   };
+    fileToRedux = (val, prevVal, file, str) => {
+        let newFile = val.filter(el => el instanceof File);
+        if (newFile.length > 0) {
+            var copyVal = prevVal ? [...prevVal] : [];
+            newFile.map(el => {
+                copyVal.push({
+                    value: el
+                });
+            });
+            return copyVal;
+        } else {
+            return val.length == 0 ? [] : val;
+        }
+    };
 
   render() {
     const { lang } = this.state;
@@ -57,9 +71,20 @@ class ResultDescription extends React.PureComponent {
           <Field
             name="resultDescription"
             component={renderTextareaLang}
-            format={value => (!!value ? value[lang.resultDescription] : '')}
-            parse={value => { this.resultDescriptionValue[lang.resultDescription] = value; return {...this.resultDescriptionValue} }}
+            format={value => (!!value ? value.valueLng[lang.resultDescription] : '')}
             label={resultDescription.name[this.lng]}
+
+            normalize={(val, prevVal, obj, prevObj) => {
+                let newVal = { ...prevVal };
+                newVal.value = val;
+                if (!!newVal.valueLng) {
+                    newVal.valueLng[lang.resultDescription] = val;
+                } else {
+                    newVal["valueLng"] = { kz: "", en: "", ru: "" };
+                    newVal.valueLng[lang.resultDescription] = val;
+                }
+                return newVal;
+            }}
             formItemClass="with-lang--column"
             changeLang={this.changeLang}
           />
@@ -67,6 +92,8 @@ class ResultDescription extends React.PureComponent {
         {resultResearch && <Field
           name="resultResearch"
           component={ renderFileUploadBtn }
+          cubeSConst="cubeStudy"
+
           label={resultResearch.name[this.lng]}
           formItemLayout={
             {
@@ -74,6 +101,8 @@ class ResultDescription extends React.PureComponent {
               wrapperCol: { span: 14 }
             }
           }
+          normalize={this.fileToRedux}
+
         />}
         {dirty && <Form.Item className="ant-form-btns absolute-bottom">
           <Button className="signup-form__btn" type="primary" htmlType="submit" disabled={submitting}>

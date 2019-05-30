@@ -315,7 +315,6 @@ class CreateDocument extends React.Component {
         const linkToKatalogObj = item.props.find(element => element.prop === linkToKatalog.id);
         const linkToUkazObj = item.props.find(element => element.prop === linkToUkaz.id);
         const linkToObzorObj = item.props.find(element => element.prop === linkToObzor.id);
-
         return {
             key: item.id,
             parent: item.parent && item.parent !== 'null' ? item.parent : '0',
@@ -369,13 +368,13 @@ class CreateDocument extends React.Component {
             organizationsMentioned: !!organizationsMentionedObj ? organizationsMentionedObj.values || '' : '',
             documentKeywords: !!documentKeywordsObj ? documentKeywordsObj.values || '' : '',
             //
-            propAuthenticity: !!propAuthenticityObj && propAuthenticityObj.refId ? {
-                value: propAuthenticityObj.prop,
-                label: propAuthenticityObj.value
+            propAuthenticity: !!propAuthenticityObj && propAuthenticityObj.values ? {
+                value: propAuthenticityObj.values.value,
+                label: propAuthenticityObj.values.label
             } : null,
-            typeOfPaperCarrier: !!typeOfPaperCarrierObj && typeOfPaperCarrierObj.refId ? {
-                value: typeOfPaperCarrierObj.prop,
-                label: typeOfPaperCarrierObj.value
+            typeOfPaperCarrier: !!typeOfPaperCarrierObj && typeOfPaperCarrierObj.values ? {
+                value: typeOfPaperCarrierObj.values.value,
+                label: typeOfPaperCarrierObj.values.label
             } : null,
             //
             objectCode: !!objectCodeObj && objectCodeObj.value ? objectCodeObj.values : '',
@@ -1084,7 +1083,6 @@ class CreateDocument extends React.Component {
     };
 
     refreshRecord = () => {
-        debugger;
         const values = pickBy(this.state.changedRow, (val, key) => !isEqual(val, this.state.selectedRow[key]))
         const surnameOriginator = this.props.user ? String(this.props.user.obj) : '';
         const nomenLastChangeDate = moment().format('YYYY-MM-DD');
@@ -1447,15 +1445,14 @@ class CreateDocument extends React.Component {
                         title: t('DATE_CREATED'),
                         dataIndex: 'dateForming',
                         width: '15%',
-                        render: (obj, record) => this.renderDateColumns(obj, record, 'dateForming'),
-                        //render: val => val && val.format('DD-MM-YYYY'),
+                        render: val => val && moment(val).format('DD-MM-YYYY'),
                     },
                     {
                         key: 'nomenLastChangeDate',
                         title: t('DATE_CHANGED'),
                         dataIndex: 'nomenLastChangeDate',
                         width: '15%',
-                        render: val => val && val.value && val.value.format('DD-MM-YYYY')
+                        render: val =>   val &&  moment(val).format('DD-MM-YYYY')
                     },
                     {
                         key: 'action',

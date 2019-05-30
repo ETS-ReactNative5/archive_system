@@ -276,6 +276,7 @@ class FundsList extends Component {
     id,
     objData
   ) => {
+    debugger
     let hideLoading;
     try {
       const cube = {

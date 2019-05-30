@@ -57,7 +57,20 @@ class ResultDescription extends React.PureComponent {
     };
     return this.props.saveProps({cube, obj}, {values: rest, oFiles: {resultResearch}}, this.props.tofiConstants);
   };
-
+    fileToRedux = (val, prevVal, file, str) => {
+        let newFile = val.filter(el => el instanceof File);
+        if (newFile.length > 0) {
+            var copyVal = prevVal ? [...prevVal] : [];
+            newFile.map(el => {
+                copyVal.push({
+                    value: el
+                });
+            });
+            return copyVal;
+        } else {
+            return val.length == 0 ? [] : val;
+        }
+    };
   submitSign = async () => {
     const { resultDescription, resultResearch } = this.props.initialValues;
     const data = { resultDescription };
@@ -79,10 +92,21 @@ class ResultDescription extends React.PureComponent {
           <Field
             name="resultDescription"
             component={renderTextareaLang}
-            format={value => (!!value ? value[lang.resultDescription] : '')}
-            parse={value => {
-              this.resultDescriptionValue[lang.resultDescription] = value;
-              return {...this.resultDescriptionValue}
+            format={value => (!!value ? value.valueLng[lang.resultDescription] : '')}
+            // parse={value => {
+            //   this.resultDescriptionValue[lang.resultDescription] = value;
+            //   return {...this.resultDescriptionValue}
+            // }}
+            normalize={(val, prevVal, obj, prevObj) => {
+                let newVal = { ...prevVal };
+                newVal.value = val;
+                if (!!newVal.valueLng) {
+                    newVal.valueLng[lang.resultDescription] = val;
+                } else {
+                    newVal["valueLng"] = { kz: "", en: "", ru: "" };
+                    newVal.valueLng[lang.resultDescription] = val;
+                }
+                return newVal;
             }}
             label={resultDescription.name[this.lng]}
             formItemClass="with-lang--column"
@@ -92,7 +116,10 @@ class ResultDescription extends React.PureComponent {
         {resultResearch && <Field
           name="resultResearch"
           component={renderFileUploadBtn}
+          normalize={this.fileToRedux}
           label={resultResearch.name[this.lng]}
+          cubeSConst="cubeForWorks"
+
           formItemLayout={
             {
               labelCol: {span: 10},
@@ -113,7 +140,7 @@ class ResultDescription extends React.PureComponent {
                 {submitting ? t('LOADING...') : t('CANCEL')}
               </Button>
             </div>}
-            <Button type='primary' onClick={catchErrors(this.submitSign)}>{t('SIGN')}</Button>
+            {/*<Button type='primary' onClick={catchErrors(this.submitSign)}>{t('SIGN')}</Button>*/}
             {error && <span className="message-error"><i className="icon-error"/>{error}</span>}
           </div>
         </Form.Item>

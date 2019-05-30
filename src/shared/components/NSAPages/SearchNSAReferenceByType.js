@@ -50,6 +50,7 @@ class ClassificationInfo extends React.Component{
     }
   };
   componentDidMount(){
+
     this.setState({ tableLoading: true, myValues: this.props.myValues });
     this.props.getAllObjOfCls(this.props.myClass, moment().format('YYYY-MM-DD'), this.props.myType)
       .then(res => {
@@ -82,26 +83,30 @@ class ClassificationInfo extends React.Component{
     getObjList(fd)
       .then(res => {
         if(res.success) {
-            this.setState({ treeLoading: false, treeData: res.data.map(o => {
-              const item = {
-                key: moment.now() + o.id,
-                id: o.id,
-                title: o.name[this.lng],
-                isLeaf: !o.hasChild
-              }
-              if (o.hasChild) {
-                item.children =[];
-              } else {
-                item.markbox = false;
-                for (let i=0; i < this.state.myValues.length; i++) {
-                  const o = this.state.myValues[i];
-                  if (o.value === item.id) {
-                    item.markbox = true; break;
-                  }
+           let newArr = res.data.map(o => {
+               let item = {
+                    key: moment.now() + o.id,
+                    id: o.id,
+                    title: o.name[this.lng],
+                    isLeaf: !o.hasChild
+                };
+                if (o.hasChild) {
+                    item.children =[];
+                } else {
+                    item.markbox = false;
+                    console.log(this.state.myValues)
+                    for (let val of this.state.myValues) {
+
+                        if (Number(val.value) == Number(item.id)) {
+                            item.markbox = true;
+
+                        }
+                    }
                 }
-              }
-              return item;
-           }) })
+                return item
+
+            })
+            this.setState({ treeLoading: false, treeData:newArr  })
         } else {
            this.setState({ treeLoading: false, treeData: [] })
         }
@@ -142,7 +147,7 @@ class ClassificationInfo extends React.Component{
       fd.append('parent', record.id);
       getObjList(fd)
         .then(res => {
-          console.log(res)
+
           if(res.success) {
             const children = res.data.map(o => {
               const item = {
@@ -151,16 +156,18 @@ class ClassificationInfo extends React.Component{
                 title: o.name[this.lng],
                 isLeaf: !o.hasChild
               }
-              if (o.hasChild) {
+                if (o.hasChild) {
                 item.children =[];
               } else {
                 item.markbox = false;
-                for (let i=0; i < this.state.myValues.length; i++) {
-                  const o = this.state.myValues[i];
-                  if (o.value === item.id) {
-                    item.markbox = true; break;
-                  }
-                }
+
+                   for (let val of this.state.myValues) {
+
+                        if (Number(val.value) == Number(item.id)) {
+                            item.markbox = true;
+
+                        }
+                    }
               }
               return item;
             });
@@ -255,7 +262,7 @@ class ClassificationInfo extends React.Component{
       },
     ];
     
-    //console.log(this.props.myValues);
+    console.log(this.state.treeData);
     
     return (
       <div className="searchNSAReferenceByTypeMainDiv">

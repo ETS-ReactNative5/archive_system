@@ -69,20 +69,62 @@ class ClassificationInfo extends React.Component{
   }
   
   onChange(value, name) {
-    this.setState({dataRec: { ...this.state.dataRec, [name]: value }}, () => {
-      this.setState({flagSave: !isEqual(this.props.dataRec, this.state.dataRec)})
+      let newVal = {...this.state.dataRec}
+      if (newVal.accessDocument === null){
+          newVal.accessDocument={}
+      }
+      if (value === null){
+          newVal.accessDocument["label"] = ""
+          newVal.accessDocument["value"] = ""
+      }else{
+          newVal.accessDocument["label"] = value.label
+          newVal.accessDocument["value"] = value.value
+      }
+
+
+    this.setState({dataRec: { ...this.state.dataRec, [name]: newVal[name] }}, () => {
+      this.setState({flagSave:true })
     })
   };
-  
-  onSave = () => {
+
+    onChange2(value, name) {
+        let newVal = {...this.state.dataRec}
+        if (newVal[name] === null){
+            newVal[name]={}
+        }
+        if (value === null){
+            newVal[name]["value"] = ""
+            newVal[name]['valueLng']={
+                kz:value,
+                ru:value,
+                en:value
+            }
+        }else {
+            newVal[name]["value"] = value
+            newVal[name]['valueLng']={
+                kz:value,
+                ru:value,
+                en:value
+            }
+        }
+
+
+        this.setState({dataRec: { ...this.state.dataRec, [name]: newVal[name] }}, () => {
+            this.setState({flagSave:true })
+        })
+    };
+
+
+    onSave = () => {
 
     let data = {};
-    if (!isEqual(this.props.dataRec.accessDocument, this.state.dataRec.accessDocument)) {
-      data.accessDocument = this.state.dataRec.accessDocument;
-    };
-    if (this.props.dataRec.locationOfSupplementaryMaterials !== this.state.dataRec.locationOfSupplementaryMaterials) {
-      data.locationOfSupplementaryMaterials = this.state.dataRec.locationOfSupplementaryMaterials;
-    };
+      if (!!this.state.dataRec.accessDocument){
+          data.accessDocument = this.state.dataRec.accessDocument;
+
+      }
+      if(!!this.state.dataRec.locationOfSupplementaryMaterials){
+          data.locationOfSupplementaryMaterials = this.state.dataRec.locationOfSupplementaryMaterials ;
+      }
 
     this.props.onSave(data);
   };
@@ -112,28 +154,37 @@ class ClassificationInfo extends React.Component{
         >
           <Input 
             placeholder="" 
-            readOnly 
+            // readOnly
+              disabled
             value={this.state.record.fundList}
           />
         </FormItem>        
         <FormItem>
           <Checkbox
-            checked={fundCaseFlags.caseOCD}
+              disabled
+
+              checked={fundCaseFlags.caseOCD}
           >имеются особо ценные документы</Checkbox>
         </FormItem>        
         <FormItem>
           <Checkbox
-            checked={fundCaseFlags.irreparablyDamaged}
+              disabled
+
+              checked={fundCaseFlags.irreparablyDamaged}
             >имеются дела в неудовлетворительном физическом состоянии</Checkbox>
         </FormItem>        
         <FormItem>
           <Checkbox
-            checked={fundCaseFlags.caseFundOfUse}
+              disabled
+
+              checked={fundCaseFlags.caseFundOfUse}
             >присутствует в фонде использования</Checkbox>
         </FormItem>        
         <FormItem>
           <Checkbox
-            checked={record && record.fundToGuidbook && record.fundToGuidbook.length > 0}
+              disabled
+
+              checked={record && record.fundToGuidbook && record.fundToGuidbook.length > 0}
           >включен в систему НСА</Checkbox>
         </FormItem>        
         <FormItem
@@ -159,8 +210,8 @@ class ClassificationInfo extends React.Component{
         >
           <Input
             name="locationOfSupplementaryMaterials" 
-            value={dataRec.locationOfSupplementaryMaterials && dataRec.locationOfSupplementaryMaterials}
-            onChange={(item) => this.onChange(item.target.value,'locationOfSupplementaryMaterials')}
+            value={dataRec.locationOfSupplementaryMaterials && dataRec.locationOfSupplementaryMaterials.value}
+            onChange={(item) => this.onChange2(item.target.value,'locationOfSupplementaryMaterials')}
             placeholder={''}
           />
         </FormItem>        

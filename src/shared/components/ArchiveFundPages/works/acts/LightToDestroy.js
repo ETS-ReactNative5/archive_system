@@ -35,7 +35,7 @@ class LightToDestroy extends React.Component {
             key: 'idx',
             width: '5%',
             render: (obj, rec, i) => {
-                return '1'
+                return i+1
             }
         }, {
             title: 'Названия групп документов',
@@ -44,25 +44,27 @@ class LightToDestroy extends React.Component {
             width: '20%'
         }, {
             title: 'Крайние даты',
-            dataIndex: 'invDates',
-            key: 'invDates',
-            width: '15%'
+            dataIndex: 'caseDbeg',
+            key: 'caseDbeg',
+            width: '15%',
+            render:(obj,rec)=>{return [rec.caseDbeg +'-'+rec.caseDend]}
         }, {
             title: 'Номера описей',
             dataIndex: 'invNumber',
             key: 'invNumber',
-            width: '15%'
+            width: '15%',
+            render: ()=>this.props.initialValues.workRegInv.label
         }, {
             title: 'Номера ед.хр. по описям',
-            dataIndex: 'numberCases',
-            key: 'numberCases',
+            dataIndex: 'caseNumber',
+            key: 'caseNumber',
             width: '15%',
-            render: obj => obj && obj.join(', '),
         }, {
             title: 'Кол-во ед.хр',
             dataIndex: 'countCases',
             key: 'countCases',
-            width: '15%'
+            width: '15%',
+            render: ()=>'1'
         },
             {
                 title: 'Примечание',
@@ -125,8 +127,7 @@ class LightToDestroy extends React.Component {
             <br/>
             <Row>
                 Итого <span
-            style={{textDecoration: "underline"}}>{this.state.total}</span> ед.хр. за
-                <span style={{textDecoration: "underline"}}>{this.state.year}</span>
+            style={{textDecoration: "underline"}}>{this.state.total}</span> ед.хр. за <span style={{textDecoration: "underline"}}> {this.state.year}</span>
                 год(ы)
             </Row>
             <Row>
@@ -183,9 +184,6 @@ class LightToDestroy extends React.Component {
         lightToDestroy((this.props.workId).split('_')[1]).then(res => {
             let data = res.data;
             var arrObj = [];
-            var obj = JSON.stringify(data, function(key, value) {
-                arrObj.push(value);
-            });
 
             /*getCountsOfCaseInInv*/
             const filters = {
@@ -231,15 +229,13 @@ class LightToDestroy extends React.Component {
                 fundNumber: data.fundNumber,
                 fundArchive: data.fundArchive.ru,
                 caseAvailabilityCheck: this.props.initialValues.workType.label,
-                tableData: arrObj,
+                tableData: data.cases,
                 total: data.countCases,
                 orgName: data.ik.ru,
                 loading: false,
-
             })
         });
     }
-
 
     componentDidUpdate(prevProps) {
 
@@ -249,7 +245,6 @@ class LightToDestroy extends React.Component {
         const {t, tofiConstants, initialValues, workId} = this.props;
         var fundName = initialValues.workRegFund.labelFull;
         return (
-
         <div className="act_print">
             <Button type='primary' onClick={() => this.toPrint(this.printContent())}>Распечатать</Button>
             {this.printContent()}

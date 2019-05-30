@@ -81,7 +81,7 @@ class InqueryRegCard extends React.PureComponent {
             tofiConstants={tofiConstants}
             t={t}
             saveProps={saveProps}
-            initialValues={this.state.result}
+            initialValues={initialValues}
           />
         },
         {
