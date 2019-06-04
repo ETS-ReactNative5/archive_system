@@ -59,6 +59,7 @@ class FundsList extends Component {
       selectedRow: {},
       siderCardChild: null,
       search: "",
+        idFundLisrIk:"",
       loading: true,
       errors: {},
       openCard: false,
@@ -106,7 +107,7 @@ class FundsList extends Component {
           conds: [
             {
               consts:
-                "fundArchive,fundNumber,fundIndex,fundDbeg,fundDend,fundCategory,fundType,fundFeature,isActive"
+                "fundArchive,fundNumber,fundIndex,fundDbeg,fundDend,fundCategory,fundType,fundFeature,isActive,fundmakerOfIK"
             }
           ]
         }
@@ -152,7 +153,11 @@ class FundsList extends Component {
 
   componentDidMount() {
     if (isEmpty(this.props.tofiConstants)) return;
-
+    if (!!this.props.location.state){
+      this.setState({
+          idFundLisrIk:this.props.location.state.data
+      })
+    }
     this.setState({
       filter: {
         ...this.state.filter,
@@ -276,7 +281,6 @@ class FundsList extends Component {
     id,
     objData
   ) => {
-    debugger
     let hideLoading;
     try {
       const cube = {
@@ -598,21 +602,45 @@ class FundsList extends Component {
       }
     } = this.props;
 
-    this.filteredData = data.map(this.renderTableData).filter(item => {
-      return (
-        (!filter.fundNumber ||!item.fundNumber ||item.fundNumber.value == filter.fundNumber) &&
-        (item.fundIndex ? item.fundIndex.value.toLowerCase().includes(filter.fundIndex.toLowerCase()) : filter.fundIndex === "") &&
-        (!item.key|| item.key ? item.key.toLowerCase().includes(filter.nameResearchers.toLowerCase()) : filter.nameResearchers === "") &&
-        item.fundList.toLowerCase().includes(filter.fundList.toLowerCase()) &&
-        ( item.fundDbeg ? item.fundDbeg.value.toLowerCase().includes(filter.fundDbeg.toLowerCase()) : true) &&
-        ( item.fundDend ? item.fundDend.value.toLowerCase().includes(filter.fundDend.toLowerCase()) : true) &&
-        (filter.fundCategory.length === 0 || filter.fundCategory.some(p => item.fundCategory && p.value == item.fundCategory.value)) &&
-          (filter.fundArchive.length === 0 || filter.fundArchive.some( p => item.fundArchive && p.value == item.fundArchive.value )) &&
-          (filter.fundFeature.length === 0 ||filter.fundFeature.some(p => item.fundFeature && p.value == item.fundFeature.value)) &&
-          (filter.fundType.length === 0 ||filter.fundType.some(p => item.fundType && p.value == item.fundType.value)) &&
-          (filter.fundIndustryObj.length === 0 || filter.fundIndustryObj.some(p => p.value == item.fundIndustry.value))
-      );
-    });
+    if (!!this.state.idFundLisrIk ){
+
+        this.filteredData = data.map(this.renderTableData).filter(item => {
+
+            return (
+                (!filter.fundNumber ||!item.fundNumber ||item.fundNumber.value == filter.fundNumber) &&
+                item.fundmakerOfIK&& String( item.fundmakerOfIK.value).toLowerCase().includes(String(this.props.location.state.data).toLowerCase()) &&
+                (item.fundIndex ? item.fundIndex.value.toLowerCase().includes(filter.fundIndex.toLowerCase()) : filter.fundIndex === "") &&
+                (!item.key|| item.key ? item.key.toLowerCase().includes(filter.nameResearchers.toLowerCase()) : filter.nameResearchers === "") &&
+                item.fundList.toLowerCase().includes(filter.fundList.toLowerCase()) &&
+                ( item.fundDbeg ? item.fundDbeg.value.toLowerCase().includes(filter.fundDbeg.toLowerCase()) : true) &&
+                ( item.fundDend ? item.fundDend.value.toLowerCase().includes(filter.fundDend.toLowerCase()) : true) &&
+                (filter.fundCategory.length === 0 || filter.fundCategory.some(p => item.fundCategory && p.value == item.fundCategory.value)) &&
+                (filter.fundArchive.length === 0 || filter.fundArchive.some( p => item.fundArchive && p.value == item.fundArchive.value )) &&
+                (filter.fundFeature.length === 0 ||filter.fundFeature.some(p => item.fundFeature && p.value == item.fundFeature.value)) &&
+                (filter.fundType.length === 0 ||filter.fundType.some(p => item.fundType && p.value == item.fundType.value)) &&
+                (filter.fundIndustryObj.length === 0 || filter.fundIndustryObj.some(p => p.value == item.fundIndustry.value))
+            );
+        });
+
+    }else {
+        this.filteredData = data.map(this.renderTableData).filter(item => {
+            return (
+                (!filter.fundNumber ||!item.fundNumber ||item.fundNumber.value == filter.fundNumber) &&
+                (item.fundIndex ? item.fundIndex.value.toLowerCase().includes(filter.fundIndex.toLowerCase()) : filter.fundIndex === "") &&
+                (!item.key|| item.key ? item.key.toLowerCase().includes(filter.nameResearchers.toLowerCase()) : filter.nameResearchers === "") &&
+                item.fundList.toLowerCase().includes(filter.fundList.toLowerCase()) &&
+                ( item.fundDbeg ? item.fundDbeg.value.toLowerCase().includes(filter.fundDbeg.toLowerCase()) : true) &&
+                ( item.fundDend ? item.fundDend.value.toLowerCase().includes(filter.fundDend.toLowerCase()) : true) &&
+                (filter.fundCategory.length === 0 || filter.fundCategory.some(p => item.fundCategory && p.value == item.fundCategory.value)) &&
+                (filter.fundArchive.length === 0 || filter.fundArchive.some( p => item.fundArchive && p.value == item.fundArchive.value )) &&
+                (filter.fundFeature.length === 0 ||filter.fundFeature.some(p => item.fundFeature && p.value == item.fundFeature.value)) &&
+                (filter.fundType.length === 0 ||filter.fundType.some(p => item.fundType && p.value == item.fundType.value)) &&
+                (filter.fundIndustryObj.length === 0 || filter.fundIndustryObj.some(p => p.value == item.fundIndustry.value))
+            );
+        });
+
+    }
+
 
     if (this.newObj) {
       this.newObjIdx = this.filteredData.findIndex(

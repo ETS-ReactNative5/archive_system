@@ -41,6 +41,7 @@ class FundMaker extends React.PureComponent {
 
         this.state = {
             data: [],
+            idfunMarker:"",
             filter: {
                 name: '',
                 legalStatus: [],
@@ -196,8 +197,22 @@ class FundMaker extends React.PureComponent {
             this.props.cubeForOrgFundmaker[`dp_${dpForOrgFundmakers.id}`],
             `do_${doForOrgFundmakers.id}`,
             `dp_${dpForOrgFundmakers.id}`).map(this.renderTableData)
-        }
+        },()=>{
+                if (this.props.idfunMarker){
+                    let data = this.state.data
+                    let newobj = data.find(el=>el.key === this.props.idfunMarker)
+                    this.setState({
+                        selectedRow:newobj,
+
+                    },()=>{
+                        this.changeSelectedRow(newobj)
+                    })
+
+                }
+            }
         )
+
+
     }
 
     componentWillReceiveProps(nextProps) {
@@ -215,8 +230,22 @@ class FundMaker extends React.PureComponent {
                 nextProps.cubeForOrgFundmaker[`dp_${dpForOrgFundmakers.id}`],
                 `do_${doForOrgFundmakers.id}`,
                 `dp_${dpForOrgFundmakers.id}`).map(this.renderTableData)
+            },()=>{
+                if (this.props.idfunMarker){
+                    let data = this.state.data
+                    let newobj = data.find(el=>el.key === this.props.idfunMarker)
+                    this.setState({
+                        selectedRow:newobj,
+                    },()=>{
+                        this.changeSelectedRow(newobj)
+
+                    })
+
+                }
             })
+
         }
+
     }
 
     renderTableData = (item, idx) => {
@@ -394,23 +423,40 @@ class FundMaker extends React.PureComponent {
     render() {
 
         if (isEmpty(this.props.tofiConstants) || isEmpty(this.props.accessLevelOptions)) return null;
-        const {filter, data, loading} = this.state;
+        const {filter, data,idfunMarker, loading} = this.state;
         const {t, tofiConstants, legalStatusOptions, fundmakerArchiveOptions, orgIndustryOptions, formOfAdmissionOptions, isActiveOptions} = this.props;
 
         this.lng = localStorage.getItem('i18nextLng');
         const {legalStatus, formOfAdmission, orgIndustry, fundmakerArchive, isActive} = tofiConstants;
+        if (!!this.props.idfunMarker){
+            this.filteredData = data.filter(item => {
+                return (
+                    item.name[this.lng].toLowerCase().includes(filter.name.toLowerCase()) &&
+                    item.key.toLowerCase().includes(this.props.idfunMarker.toLowerCase()) &&
+                    ( filter.formOfAdmission.length === 0 || item.formOfAdmission && filter.formOfAdmission.some(p => p.value == item.formOfAdmission.value) ) &&
+                    item.isActive &&
+                    ( filter.isActive.length === 0 || item.isActive && filter.isActive.some(p => p.value == item.isActive.value) ) &&
+                    ( filter.legalStatus.length === 0 || item.legalStatus && filter.legalStatus.some(p => p.value == item.legalStatus.value) ) &&
+                    ( filter.fundmakerArchive.length === 0 || item.fundmakerArchive && filter.fundmakerArchive.some(p => p.value == item.fundmakerArchive.value) ) &&
+                    ( filter.orgIndustryChildren.length === 0 || item.orgIndustry && filter.orgIndustryChildren.some(p => p.value == item.orgIndustry.value) )
+                )
+            }).map((item, idx) => ({...item, numb: idx + 1}));
+        }else{
 
-        this.filteredData = data.filter(item => {
-            return (
-            item.name[this.lng].toLowerCase().includes(filter.name.toLowerCase()) &&
-            ( filter.formOfAdmission.length === 0 || item.formOfAdmission && filter.formOfAdmission.some(p => p.value == item.formOfAdmission.value) ) &&
-            item.isActive &&
-            ( filter.isActive.length === 0 || item.isActive && filter.isActive.some(p => p.value == item.isActive.value) ) &&
-            ( filter.legalStatus.length === 0 || item.legalStatus && filter.legalStatus.some(p => p.value == item.legalStatus.value) ) &&
-            ( filter.fundmakerArchive.length === 0 || item.fundmakerArchive && filter.fundmakerArchive.some(p => p.value == item.fundmakerArchive.value) ) &&
-            ( filter.orgIndustryChildren.length === 0 || item.orgIndustry && filter.orgIndustryChildren.some(p => p.value == item.orgIndustry.value) )
-            )
-        }).map((item, idx) => ({...item, numb: idx + 1}));
+            this.filteredData = data.filter(item => {
+                return (
+                    item.name[this.lng].toLowerCase().includes(filter.name.toLowerCase()) &&
+                    // item.key.toLowerCase().includes(this.props.idfunMarker.toLowerCase()) &&
+                    ( filter.formOfAdmission.length === 0 || item.formOfAdmission && filter.formOfAdmission.some(p => p.value == item.formOfAdmission.value) ) &&
+                    item.isActive &&
+                    ( filter.isActive.length === 0 || item.isActive && filter.isActive.some(p => p.value == item.isActive.value) ) &&
+                    ( filter.legalStatus.length === 0 || item.legalStatus && filter.legalStatus.some(p => p.value == item.legalStatus.value) ) &&
+                    ( filter.fundmakerArchive.length === 0 || item.fundmakerArchive && filter.fundmakerArchive.some(p => p.value == item.fundmakerArchive.value) ) &&
+                    ( filter.orgIndustryChildren.length === 0 || item.orgIndustry && filter.orgIndustryChildren.some(p => p.value == item.orgIndustry.value) )
+                )
+            }).map((item, idx) => ({...item, numb: idx + 1}));
+        }
+
         if (this.newObj) {
             this.newObjIdx = this.filteredData.findIndex(obj => obj.key === this.newObj);
         }

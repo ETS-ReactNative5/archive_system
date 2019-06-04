@@ -6,6 +6,10 @@ import DatePicker from "antd/es/date-picker/index";
 import Input from "antd/es/input/Input";
 import {onSaveCubeData} from '../../../utils/cubeParser';
 import {connect} from "react-redux";
+import {renderFileUploadBtn, renderInput} from "../../../utils/form_components";
+import Field from "redux-form/es/Field";
+import reduxForm from "redux-form/es/reduxForm";
+import {isEqual, pickBy} from "lodash";
 
 class SearchDescription extends React.Component {
     state = {
@@ -23,61 +27,19 @@ class SearchDescription extends React.Component {
         data: {}
     };
 
-    dateAndNumberDeregistrationValue = (e) => {
-        console.log(e.target.value);
-        this.setState({
-            dateAndNumberDeregistration: e.target.value,
 
-        });
-        let data = {...this.state.data};
-        if (!!data.dateAndNumberDeregistration.values) {
-            data.dateAndNumberDeregistration.values.value = e.target.value;
-            data.dateAndNumberDeregistration.values.valueLng = {
-                en: e.target.value,
-                kz: e.target.value,
-                ru: e.target.value
-            }
+    saveSearchDescription = async ({orderDirectorFile,derigistrationFile,...values}) => {
 
-        } else {
-            data.dateAndNumberDeregistration.values = {};
-            data.dateAndNumberDeregistration.values.value = e.target.value;
-            data.dateAndNumberDeregistration.values.valueLng = {
-                en: e.target.value,
-                kz: e.target.value,
-                ru: e.target.value
-            }
+
+        const {name, accessLevel, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]))
+        const objData = {};
+        if (name) {
+            objData.name = name;
+            objData.fullName = name;
         }
-        this.setState({
-            data: data
-        })
-    };
-    dateNumberOrderValue = (e) => {
-        let data = {...this.state.data};
-        if (!!data.dateNumberOrder.values) {
-            data.dateNumberOrder.values.value = e.target.value;
-            data.dateNumberOrder.values.valueLng = {
-                en: e.target.value,
-                kz: e.target.value,
-                ru: e.target.value
-            }
-        } else {
-            data.dateNumberOrder.values = {};
-            data.dateNumberOrder.values.value = e.target.value;
-            data.dateNumberOrder.values.valueLng = {
-                en: e.target.value,
-                kz: e.target.value,
-                ru: e.target.value
-            }
-        }
-        this.setState({
-            data: data
-        })
-    };
-    saveSearchDescription = async () => {
-        let values = {
-            dateAndNumberDeregistration: this.state.data.dateAndNumberDeregistration.values,
-            dateNumberOrder: this.state.data.dateNumberOrder.values
-        };
+        if (accessLevel) objData.accessLevel = accessLevel;
+
+
 
 
         console.log('save');
@@ -107,12 +69,13 @@ class SearchDescription extends React.Component {
             };
 
             const v = {
-                values: values,
+                values: rest,
                 complex: "",
+
                 oFiles: {
-                    derigistrationFile: derigistrationFileNew,
-                    orderDirectorFile: orderDirectorFileNew
-                }
+                    orderDirectorFile: orderDirectorFile,
+                    derigistrationFile: derigistrationFile
+            }
             };
 
             const objData = {};
@@ -143,19 +106,48 @@ class SearchDescription extends React.Component {
         }
     };
 
+
+    strToRedux = (val, prevVal, obj, prevObj) => {
+        var newVal = {...prevVal};
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: {kz: val},
+                valueLng: {ru: val},
+                valueLng: {en: val}
+            }
+            return objVal
+        } else {
+            newVal.value = val;
+            newVal['valueLng'] = {kz: val, ru: val, en: val}
+
+            return (newVal)
+
+        }
+    };
+
+    fileToRedux = (val, prevVal, file, str) => {
+        let newFile = val.filter(el => el instanceof File);
+        if (newFile.length > 0) {
+            var copyVal = prevVal ? [...prevVal] : []
+            newFile.map(el => {
+                copyVal.push({
+                    value: el
+                })
+            });
+            return copyVal
+        } else {
+            return val.length == 0 ? [] : val
+        }
+    };
+
+
     componentDidMount() {
 
-        var derigistrationFile=[];
-        derigistrationFile = this.props.initialValues.derigistrationFile && this.props.initialValues.derigistrationFile.values && this.props.initialValues.derigistrationFile.values.map(el=>{
-            return el.value;
-        });
 
         this.setState({
             data: this.props.initialValues,
-            derigistrationFile:derigistrationFile
         });
-
-
 
 
     }
@@ -169,126 +161,111 @@ class SearchDescription extends React.Component {
         }
     }
 
+
+    
     render() {
         this.lng = localStorage.getItem('i18nextLng');
-
-        const formItemLayout = {
-            labelCol: {
-                xs: {span: 24},
-                sm: {span: 8},
-            },
-            wrapperCol: {
-                xs: {span: 24},
-                sm: {span: 16},
-            },
-        };
-        const orderDirectorFileProps = {
-            action: '//file/set',
-            accept: 'image/*, application/pdf',
-            onRemove: (file) => {
-                this.setState(({orderDirectorFile}) => {
-                    const index = orderDirectorFile.indexOf(file);
-                    const newOrderDirectorFile = orderDirectorFile.slice();
-                    newOrderDirectorFile.splice(index, 1);
-                    return {
-                        orderDirectorFile: newOrderDirectorFile,
-                    };
-                });
-            },
-            beforeUpload: (file) => {
-                this.setState(({orderDirectorFile}) => ({
-                    orderDirectorFile: [...orderDirectorFile, file],
-                }));
-                return false;
-            },
-            orderDirectorFile: this.state.orderDirectorFile,
-        };
-
-        console.log(this.state.derigistrationFile);
-        const derigistrationFileProps = {
-
-            action: '//file/set',
-            accept: 'image/*, application/pdf',
-            onRemove: (file) => {
-                this.setState(({derigistrationFile}) => {
-                    const index = derigistrationFile.indexOf(file);
-                    const newDerigistrationFile = derigistrationFile.slice();
-                    newDerigistrationFile.splice(index, 1);
-                    return {
-                        derigistrationFile: newDerigistrationFile,
-                    };
-                });
-            },
-            beforeUpload: (file) => {
-                this.setState(({derigistrationFile}) => ({
-                    derigistrationFile: [...derigistrationFile, file],
-                }));
-                return false;
-            },
-            derigistrationFile: this.state.derigistrationFile,
-        };
-        console.log(derigistrationFileProps);
-
-        const {searchStatus, tofiConstants, t} = this.props;
+        const {searchStatus, submitting,error,reset,handleSubmit, dirty, tofiConstants, t} = this.props;
+        const {orderDirectorFile, derigistrationFile, dateNumberOrder,casesRecovery, dateAndNumberDeregistration} = this.props.tofiConstants;
         return (
         <div>
             <hr/>
             <h2>Описание результатов работы</h2>
             {  searchStatus.value == tofiConstants.notFound.id &&
             <div>
-                <Form>
-                    { /*Разрешение  уполномоченного  органа на снятие с учета*/}
-                    <FormItem
-                    label={tofiConstants.derigistrationFile.name[this.lng]}
-                    {...formItemLayout}>
-                        <Upload
-                        onPreview={this.handlePreview}  {...derigistrationFileProps}>
-                            <Button>
-                                <Icon type="upload"/> Выберите файл
-                            </Button>
-                        </Upload>
-                    </FormItem>
 
-                    Дата и номер разрешения
-                    <FormItem
-                    label={tofiConstants.dateAndNumberDeregistration.name[this.lng]}
-                    {...formItemLayout}>
-                        <Input
-                        value={this.state.data.dateAndNumberDeregistration && this.state.data.dateAndNumberDeregistration.values ? this.state.data.dateAndNumberDeregistration.values.value : ''}
-                        onChange={this.dateAndNumberDeregistrationValue}/>
-                    </FormItem>
+                <Form className="antForm-spaceBetween"
+                      onSubmit={handleSubmit(this.saveSearchDescription)}
+                      style={dirty ? {paddingBottom: '43px'} : {}}>
 
-                         приказ директора
-                    <FormItem
-                    label={tofiConstants.orderDirectorFile.name[this.lng]}
-                    {...formItemLayout}>
-                        <Upload
-                        onPreview={this.handlePreview}  {...orderDirectorFileProps}>
-                            <Button>
-                                <Icon type="upload"/> Выберите файл
-                            </Button>
-                        </Upload>
-                    </FormItem>
 
-                    Дата и Номер приказа
-                    <FormItem
-                    label={tofiConstants.dateNumberOrder.name[this.lng]}
-                    {...formItemLayout}>
-                        <Input
-                        value={this.state.data.dateNumberOrder && this.state.data.dateNumberOrder.values ? this.state.data.dateNumberOrder.values.value : ''}
-                        onChange={this.dateNumberOrderValue}/>
-                    </FormItem>
-                    <FormItem>
-                        <Button style={{
-                            marginRight: 'auto',
-                            marginBottom: '15px',
-                            marginTop: '5px'
-                        }} onClick={this.saveSearchDescription}
-                                className="signup-form__btn" type="primary">
-                            {t('SAVE')}
+                    {derigistrationFile && <Field
+                    name='derigistrationFile'
+                    component={renderFileUploadBtn}
+                    cubeSConst='cubeForWorks'
+                    label={derigistrationFile.name[this.lng]}
+                    normalize={this.fileToRedux}
+                    formItemLayout={
+                        {
+                            labelCol: {span: 10},
+                            wrapperCol: {span: 14}
+                        }
+                    }
+                    />}
+
+
+                    {dateAndNumberDeregistration && <Field
+                    name='dateAndNumberDeregistration'
+                    normalize={this.strToRedux}
+                    component={renderInput}
+                           label={dateAndNumberDeregistration.name[this.lng]}
+                    formItemLayout={
+                        {
+                            labelCol: {span: 10},
+                            wrapperCol: {span: 14}
+                        }
+                    }
+                    />}
+
+
+                    {orderDirectorFile && <Field
+                    name='orderDirectorFile'
+                    component={renderFileUploadBtn}
+                    cubeSConst='cubeForWorks'
+                    label={orderDirectorFile.name[this.lng]}
+                    normalize={this.fileToRedux}
+                    formItemLayout={
+                        {
+                            labelCol: {span: 10},
+                            wrapperCol: {span: 14}
+                        }
+                    }
+                    />}
+
+
+                    {dateNumberOrder && <Field
+                    name='dateNumberOrder'
+                    component={renderInput}
+                    normalize={this.strToRedux}
+                    label={dateNumberOrder.name[this.lng]}
+                    formItemLayout={
+                        {
+                            labelCol: {span: 10},
+                            wrapperCol: {span: 14}
+                        }
+                    }
+
+                    />}
+
+                    {casesRecovery && <Field
+                    name='casesRecovery'
+                    component={renderInput}
+                    normalize={this.strToRedux}
+                    label={casesRecovery.name[this.lng]}
+                    formItemLayout={
+                        {
+                            labelCol: {span: 10},
+                            wrapperCol: {span: 14}
+                        }
+                    }
+
+
+                    />}
+
+                    {dirty && <Form.Item className="ant-form-btns">
+                        <Button className="signup-form__btn" type="primary" htmlType="submit" disabled={submitting}>
+                            {submitting ? t('LOADING...') : t('SAVE')}
                         </Button>
-                    </FormItem>
+                        <Button className="signup-form__btn" type="danger" htmlType="button" disabled={submitting}
+                                style={{marginLeft: '10px'}} onClick={reset}>
+                            {submitting ? t('LOADING...') : t('CANCEL')}
+                        </Button>
+                        {error && <span className="message-error"><i className="icon-error"/>{error}</span>}
+                    </Form.Item>}
+
                 </Form>
+
+
             </div>
             }
         </div>
@@ -297,11 +274,14 @@ class SearchDescription extends React.Component {
 }
 
 
-function mapStateToProps(state) {
+export default connect(state => {
     return {
         tofiConstants: state.generalData.tofiConstants,
         cubeForWorks: state.cubes.cubeForWorks
     }
-}
+}, {})(reduxForm({
+    form: 'SearchDescriptionForm',
+    enableReinitialize: true
+})(SearchDescription));
 
-export default connect(mapStateToProps, {})(SearchDescription);
+

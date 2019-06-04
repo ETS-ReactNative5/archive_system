@@ -408,7 +408,7 @@ class WorkDescription extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.initialValues !== this.props.initialValues) {
+        if (prevProps.initialValues.key !== this.props.initialValues.key) {
             console.log(document.getElementById("root"));
         }
     }
@@ -424,7 +424,9 @@ class WorkDescription extends React.PureComponent {
         this.setState({selectedRow: record})
     };
 
+
     render() {
+        this.lng = localStorage.getItem('i18nextLng');
         const {t} = this.props;
         return (
         <div>

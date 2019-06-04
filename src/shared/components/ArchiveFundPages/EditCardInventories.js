@@ -509,34 +509,34 @@ class EditCardInventories extends Component {
                                     },
                                     render: obj => obj && obj[this.lng]
                                 },
-                                // {
-                                //     key: 'invDates',
-                                //     title: invDates.name[lng],
-                                //     dataIndex: 'invDates',
-                                //     width: '10%',
-                                //
-                                //     filterDropdown: (
-                                //         <div className="custom-filter-dropdown">
-                                //             <Input
-                                //                 name="invDates"
-                                //                 suffix={filter.invDates ? <Icon type="close-circle" data-name="invDates"
-                                //                                                 onClick={this.emitEmpty}/> : null}
-                                //                 ref={ele => this.invDates = ele}
-                                //                 placeholder="Поиск"
-                                //                 value={filter.invDates}
-                                //                 onChange={this.onInputChange}
-                                //             />
-                                //         </div>
-                                //     ),
-                                //     filterIcon: <Icon type="filter"
-                                //                       style={{color: filter.invDates ? '#ff9800' : '#aaa'}}/>,
-                                //     onFilterDropdownVisibleChange: (visible) => {
-                                //         this.setState({
-                                //             filterDropdownVisible: visible,
-                                //         }, () => this.invDates.focus());
-                                //     },
-                                //     render: arr => arr && arr.map(o => o.value.value).join(', ')
-                                // },
+                                {
+                                    key: 'invDates',
+                                    title: invDates.name[lng],
+                                    dataIndex: 'invDates',
+                                    width: '10%',
+
+                                    filterDropdown: (
+                                        <div className="custom-filter-dropdown">
+                                            <Input
+                                                name="invDates"
+                                                suffix={filter.invDates ? <Icon type="close-circle" data-name="invDates"
+                                                                                onClick={this.emitEmpty}/> : null}
+                                                ref={ele => this.invDates = ele}
+                                                placeholder="Поиск"
+                                                value={filter.invDates}
+                                                onChange={this.onInputChange}
+                                            />
+                                        </div>
+                                    ),
+                                    filterIcon: <Icon type="filter"
+                                                      style={{color: filter.invDates ? '#ff9800' : '#aaa'}}/>,
+                                    onFilterDropdownVisibleChange: (visible) => {
+                                        this.setState({
+                                            filterDropdownVisible: visible,
+                                        }, () => this.invDates.focus());
+                                    },
+                                    render: arr => arr && arr.map(o => o.value.value).join(', ')
+                                },
                                 {
                                     key: 'invType',
                                     title: invType.name[lng],

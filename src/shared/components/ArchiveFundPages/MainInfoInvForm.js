@@ -437,23 +437,23 @@ class MainInfoFundForm extends React.Component {
                     colon
                     validate={requiredLabel}
                 />}
-                {/*{invDates && <Field*/}
-                    {/*name='invDates'*/}
-                    {/*component={renderInput}*/}
-                    {/*label={invDates.name[this.lng]}*/}
+                {invDates && <Field
+                    name='invDates'
+                    component={renderTaggedSelect}
+                    label={invDates.name[this.lng]}
 
-                    {/*// //parse={val => {debugger; val && val.map(str => ({value: str, mode: 'ins'}))}}*/}
-                    {/*formItemLayout={*/}
-                        {/*{*/}
-                            {/*labelCol: {span: 10},*/}
-                            {/*wrapperCol: {span: 14}*/}
-                        {/*}*/}
-                    {/*}*/}
-                    {/*normalize={this.}*/}
+                    // format={val => { val && val.map(str => str.value)}}
+                    formItemLayout={
+                        {
+                            labelCol: {span: 10},
+                            wrapperCol: {span: 14}
+                        }
+                    }
+                     normalize={this.taggedSelectToRedux}
 
-                     {/*colon={true}*/}
-                     {/*required={requiredArr}*/}
-                {/*/>}*/}
+                     colon={true}
+                     required={requiredArr}
+                />}
                 {fundFeature && <Field
                     name="fundFeature"
                     component={renderSelect}

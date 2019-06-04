@@ -242,6 +242,11 @@ export const renderCreatableSelect = ({input, meta: {submitFailed, error}, formI
 };
 
 export const renderTaggedSelect = ({input, meta: {submitFailed, error}, formItemLayout, colon, ...rest}) => {
+    let newarrVal = []
+    for (let val of input.value){
+        if(val.value.value =="") continue
+        newarrVal.push(val.value.value)
+    }
     return (
     <FormItem
     colon={colon || false}
@@ -252,7 +257,7 @@ export const renderTaggedSelect = ({input, meta: {submitFailed, error}, formItem
         <AntSelect
         {...input}
         {...rest}
-        value={input.value ? input.value : []}
+        value={newarrVal ? newarrVal : []}
         mode="tags"
         style={{width: '100%'}}
         tokenSeparators={[',', ' ']}

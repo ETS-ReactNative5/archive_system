@@ -13,6 +13,7 @@ class FundsListCard extends React.Component {
   state = {
     sizeLoading: false,
     sizeData: [],
+
   };
 
   componentDidMount() {
@@ -30,7 +31,7 @@ class FundsListCard extends React.Component {
   }
 
   render() {
-    const { t, tofiConstants, onSaveCubeData, initialValues, onCreateObj, 
+    const { t, tofiConstants, onSaveCubeData, initialValues, onCreateObj,
       record, dataRec, onEditRecordChange, closeCard,activeKey, onTabClick, onSave, onSave2,
       annotationContentOfDocument, invMulti, fundHistoricalNoteMulti, fundCaseFlags,
     } = this.props;
@@ -44,7 +45,7 @@ class FundsListCard extends React.Component {
               t={t} 
               tofiConstants={tofiConstants} 
               record={record}
-              initialValues={dataRec}
+              initialValues={initialValues}
               onSave={onSave}
             />
           },
@@ -117,7 +118,7 @@ class FundsListCard extends React.Component {
           },
         ]} 
       />
-    )
+    );
   }
 }
 

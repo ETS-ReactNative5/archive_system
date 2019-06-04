@@ -12,6 +12,7 @@ import {connect} from 'react-redux';
 import Schedule from '../components/SourcingPages/schedule/Schedule';
 import FundMakerPage from '../components/SourcingPages/fundMaker/FundMakerPage';
 import SourcesMaintenancePage from '../components/SourcingPages/sources/SourcesMaintenancePage';
+import SourcesMaintenancePage2 from '../components/sourcesMaintenance2';
 import CheckingPlan from '../components/SourcingPages/checking/CheckingPlan';
 import WorksChecking from '../components/SourcingPages/works/WorksChecking';
 import AcquisitionReports from '../components/SourcingPages/Reports/AcquisitionReports';
@@ -33,6 +34,7 @@ class Sourcing extends Component {
           {/*<Route exact path="/sourcing/works" render={props => <Works t={t} {...props}/>} />*/}
           <Route exact path="/sourcing/works/checking/:sourcing" render={props => <WorksChecking t={t} {...props}/>} />
           <Route path="/sourcing/sourcesMaintenance" render={props => <SourcesMaintenancePage t={t} {...props}/>} />
+          <Route path="/sourcing/sourcesMaintenance2" render={props => <SourcesMaintenancePage2 t={t} {...props}/>} />
           <Route exact path="/sourcing/schedule" render={props => <Schedule t={t} {...props}/>} />
           <Route exact path="/sourcing/checking" render={props => <CheckingPlan t={t} {...props} tofiConstants={tofiConstants}/>} />
           <Route exact path="/sourcing/fundMaker" render={props => <FundMakerPage t={t} {...props}/>} />

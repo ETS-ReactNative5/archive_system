@@ -17,6 +17,7 @@ import moment from 'moment';
 class FundMakerPage extends React.PureComponent {
 
   state = {
+      idfunMarker:"",
     globalDate: moment()
   };
 
@@ -38,6 +39,11 @@ class FundMakerPage extends React.PureComponent {
     if(!this.props.cubeForOrgFundmaker) {
       this.loadOrgFundmaker()
     }
+      let idfunMarker = this.props.location.state && this.props.location.state.data.idDimObj
+      this.setState({
+          idfunMarker
+      })
+
   }
 
   // Загрузка данных из куба
@@ -92,6 +98,7 @@ class FundMakerPage extends React.PureComponent {
             tabName: t('ORGANIZATIONS'),
             tabContent: <FundMaker
               t={t}
+              idfunMarker={this.state.idfunMarker}
               cubeForOrgFundmaker={cubeForOrgFundmaker}
               tofiConstants={tofiConstants}
               loadOrgFundmaker={this.loadOrgFundmaker}

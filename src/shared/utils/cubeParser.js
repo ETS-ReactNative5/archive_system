@@ -9,6 +9,31 @@ import {removeFilesWithIdDPV} from "./index";
 
 const oneLevelCopy = (object) => ({...object});
 
+export const parseForTableComplex = (cube, doConst, dpConst, dtConst, tofiConstants, arrConst, globalDate) => {
+    var cubeData = cube;
+    var dpComplex = cubeData['dp_' + tofiConstants[dpConst].id];
+    var dtId = 'dt_' + tofiConstants[dtConst].id;
+    var cubeComplex = cubeData['cube'];
+    var parentObjs = cubeComplex.filter(el => el.parentDataPropVal == null && !!el.valueStr);
+    var year = globalDate ? globalDate.slice(-4) : '';
+    var yearParnets = parentObjs.filter(el => el[dtId].startsWith(year));
+
+    var complexForTable = yearParnets.map(el => {
+        var complexObj = {};
+        complexObj.key = el.idDataPropVal;
+        complexObj.name = el.valueStr;
+        complexObj.doObj = el['do_' + tofiConstants['doForFundAndIK'].id];
+        arrConst.forEach(arrEl => {
+            var arrElId = dpComplex.find(prop => prop.prop == tofiConstants[arrEl].id).id;
+            return complexObj[arrEl] = cubeComplex.find(chl => chl.parentDataPropVal == el.idDataPropVal && chl['dp_' + tofiConstants[dpConst].id] == arrElId)
+    })
+        ;
+        return complexObj;
+    });
+    return complexForTable;
+
+};
+
 export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable, dpTable, doConst, dpConst) => {
     try {
         const doTableWithProps = doTable.map(item => ({
@@ -816,7 +841,11 @@ export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFile
                         }
                     }
                     let newob = {
-                        val: item.value.value,
+                        val:{
+                            ru:item.value.value,
+                            kz:item.value.value,
+                            en:item.value.value
+                        } ,
                         idDataPropVal: item.value.idDataPropVal ? item.value.idDataPropVal : "",
                         mode: mode
                     }
@@ -850,7 +879,7 @@ export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFile
                     value = val.value ? moment(val.value).format('YYYY-MM-DD') : moment(val).format('YYYY-MM-DD')
 
                 } else {
-                    value = val.value ? moment(val.value, 'DD-MM-YYYY').format('YYYY-MM-DD') : val[2] == '-' ? moment(val, 'DD-MM-YYYY').format('YYYY-MM-DD') : val instanceof Object ? "": val
+                    value = val.value ? moment(val.value, 'DD-MM-YYYY').format('YYYY-MM-DD') : val[2] == '-' ? moment(val, 'DD-MM-YYYY').format('YYYY-MM-DD') : val instanceof Object ? "" : val
 
                 }
                 if (!!value) {

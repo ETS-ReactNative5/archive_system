@@ -3,6 +3,12 @@
   .ant-tabs-nav-wrap .ant-tabs-tab {
     margin-right: 7px !important; }
 
+.w1200 {
+  width: 1200px; }
+
+.dBlock .ant-row {
+  display: block !important; }
+
 .ant-form-item-label {
   padding-right: 4px; }
 

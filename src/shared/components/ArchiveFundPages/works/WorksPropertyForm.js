@@ -1,15 +1,21 @@
 import React, {Component} from 'react';
-import {Button, Form} from 'antd';
+import {Button, Form, Input} from 'antd';
 import {Field, reduxForm, formValueSelector} from 'redux-form';
 import {
     renderDatePicker, renderInput, renderSelect, renderSelectVirt
 } from '../../../utils/form_components';
 import {connect} from 'react-redux';
 import moment from 'moment';
-import {getAllObjOfCls, getObjByObjVal, getObjByProp, getPropVal} from '../../../actions/actions';
+import {
+    getAllObjOfCls, getIdGetObj, getObjByObjVal, getObjByProp,
+    getPropVal
+} from '../../../actions/actions';
 import {isEqual, pickBy} from 'lodash';
 import {requiredDate, requiredLabel} from '../../../utils/form_validations';
 import {WORK_PRIORITY} from '../../../constants/tofiConstants';
+import {parseCube_new, parseForTable} from "../../../utils/cubeParser";
+import axios from "axios";
+import FormItem from "antd/es/form/FormItem";
 
 /*eslint eqeqeq:0*/
 class WorksPropertyForm extends Component {
@@ -38,7 +44,10 @@ class WorksPropertyForm extends Component {
                 staffLoading: false
             },
             workRegInvOptions: [],
-            workRegCaseOptions: []
+            workRegCaseOptions: [],
+            caseNumberOfPages: '',
+            caseDbeg: '',
+            caseDend: ''
         };
     }
 
@@ -51,12 +60,12 @@ class WorksPropertyForm extends Component {
     onSubmit = values => {
         if (!this.props.initialValues.key) {
             return this.props.onCreateObj(
-                {
-                    ...pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key])),
-                    workStatusReg: values.workStatusReg,
-                    workDate: values.workDate,
-                    workAuthor:values.workAuthor
-                })
+            {
+                ...pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key])),
+                workStatusReg: values.workStatusReg,
+                workDate: values.workDate,
+                workAuthor: values.workAuthor
+            })
         } else {
             let workStatusReg = values.workStatusReg;
             if (['caseSearch', 'caseDisposal', 'caseRegistration', 'descriptionOfValuableDocs'].includes(values.workType.workTypeClass)) {
@@ -68,20 +77,30 @@ class WorksPropertyForm extends Component {
 
             return this.props.onSaveCubeData({
                 ...pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key])),
-             //   workType: values.workType,
-               // workStatusReg,
+                //   workType: values.workType,
+                // workStatusReg,
                 //workDate: moment().format('YYYY-MM-DD'),
 
-            },this.props.initialValues.key);
+            }, this.props.initialValues.key);
         }
     };
     loadClsObj = (cArr, propConsts, dte = moment().format('YYYY-MM-DD')) => {
         return () => {
             cArr.forEach(c => {
                 if (!this.props[c + 'Options']) {
-                    this.setState({loading: {...this.state.loading, [c + 'Loading']: true}});
+                    this.setState({
+                        loading: {
+                            ...this.state.loading,
+                            [c + 'Loading']: true
+                        }
+                    });
                     this.props.getAllObjOfCls(c, dte, propConsts)
-                        .then(() => this.setState({loading: {...this.state.loading, [c + 'Loading']: false}}))
+                    .then(() => this.setState({
+                        loading: {
+                            ...this.state.loading,
+                            [c + 'Loading']: false
+                        }
+                    }))
                 }
             })
         }
@@ -91,7 +110,12 @@ class WorksPropertyForm extends Component {
             if (!this.props[c + 'Options']) {
                 this.setState({loading: {...this.state.loading, [c + 'Loading']: true}});
                 this.props.getPropVal(c)
-                    .then(() => this.setState({loading: {...this.state.loading, [c + 'Loading']: false}}))
+                .then(() => this.setState({
+                    loading: {
+                        ...this.state.loading,
+                        [c + 'Loading']: false
+                    }
+                }))
             }
         }
     };
@@ -99,9 +123,19 @@ class WorksPropertyForm extends Component {
         return () => {
             cArr.forEach(c => {
                 if (!this.props[c + 'Options']) {
-                    this.setState({loading: {...this.state.loading, [c + 'Loading']: true}});
+                    this.setState({
+                        loading: {
+                            ...this.state.loading,
+                            [c + 'Loading']: true
+                        }
+                    });
                     this.props.getPropVal(c)
-                        .then(() => this.setState({loading: {...this.state.loading, [c + 'Loading']: false}}))
+                    .then(() => this.setState({
+                        loading: {
+                            ...this.state.loading,
+                            [c + 'Loading']: false
+                        }
+                    }))
                 }
             });
         }
@@ -123,30 +157,32 @@ class WorksPropertyForm extends Component {
         return endValue.valueOf() <= startValue.valueOf();
     };
 
-    dateToRedux=(val , prev)=>{{
-        let coppyPrev = {...prev}
+    dateToRedux = (val, prev) => {
+        {
+            let coppyPrev = {...prev}
 
-        if (!!val){
-            let newDate = moment(val).format("DD-MM-YYYY")
-            if (!!coppyPrev.idDataPropVal){
-                coppyPrev.value = newDate
-                return coppyPrev
-            }else {
-                return {
-                    value:newDate
+            if (!!val) {
+                let newDate = moment(val).format("DD-MM-YYYY")
+                if (!!coppyPrev.idDataPropVal) {
+                    coppyPrev.value = newDate
+                    return coppyPrev
+                } else {
+                    return {
+                        value: newDate
+                    }
                 }
-            }
-        }else{
-            if (!!coppyPrev.value){
-                coppyPrev.value=""
-                return coppyPrev
-            }else{
-                return {}
+            } else {
+                if (!!coppyPrev.value) {
+                    coppyPrev.value = ""
+                    return coppyPrev
+                } else {
+                    return {}
+                }
+
             }
 
         }
-
-    }}
+    }
     strToRedux = (val, prevVal, obj, prevObj) => {
         var newVal = {...prevVal};
         if (prevVal === null) {
@@ -159,7 +195,7 @@ class WorksPropertyForm extends Component {
             return objVal
         } else {
             newVal.value = val;
-            newVal['valueLng']={kz:val,ru:val,en:val}
+            newVal['valueLng'] = {kz: val, ru: val, en: val}
             return (newVal)
 
         }
@@ -183,7 +219,93 @@ class WorksPropertyForm extends Component {
 
         }
     };
+
+    renderTableData = (item, idx) => {
+        const constArr = ['caseDbeg', 'caseDend', 'caseNumberOfPages'];
+        const result = {
+            idx: idx + 1,
+            id: item.id,
+            name: item.name.ru
+        };
+        parseForTable(item.props, this.props.tofiConstants, result, constArr);
+        return result;
+    };
+
+    componentDidMount() {
+        if (!!this.props.initialValues.workType && this.props.initialValues.workType.value == this.props.tofiConstants.caseSearch.id) {
+
+            !!this.props.initialValues.workRegCase && !!this.props.initialValues.workRegCase.value &&
+            getIdGetObj(this.props.initialValues.workRegCase.value, 'doForCase').then(res2 => {
+                const filters = {
+                    filterDOAnd: [
+                        {
+                            dimConst: 'doForCase',
+                            concatType: "and",
+                            conds: [
+                                {
+                                    ids: String(res2.data.idDimObj)
+                                }
+                            ]
+                        }
+                    ],
+                    filterDPAnd: [
+                        {
+                            dimConst: 'dpForCase',
+                            concatType: "and",
+                            conds: [
+                                {
+                                    consts: "caseDbeg,caseDend,caseNumberOfPages"
+                                }
+                            ]
+                        }
+                    ]
+                };
+
+                const fd = new FormData();
+                fd.append("cubeSConst", 'CubeForAF_Case');
+                fd.append("filters", JSON.stringify(filters));
+                axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getCubeData`, fd).then(res => {
+                    var cubeData = res.data.data;
+                    const parsedCube = parseCube_new(
+                    cubeData["cube"],
+                    [],
+                    "dp",
+                    "do",
+                    cubeData['do_' + this.props.tofiConstants.doForCase.id],
+                    cubeData['dp_' + this.props.tofiConstants.dpForCase.id],
+                    ['do_' + this.props.tofiConstants.doForCase.id],
+                    ['dp_' + this.props.tofiConstants.dpForCase.id]
+                    );
+
+                    var tableData = parsedCube.map(this.renderTableData);
+                    var caseNumberOfPages = tableData[0].caseNumberOfPages.value;
+                    var caseDbeg = tableData[0].caseDbeg.value;
+                    var caseDend = tableData[0].caseDend.value;
+
+                    this.setState({
+                        tableData: tableData,
+                        caseNumberOfPages: caseNumberOfPages,
+                        caseDbeg: caseDbeg,
+                        caseDend: caseDend
+                    });
+                });
+            }
+            );
+        }
+    }
+
     render() {
+        this.lng = localStorage.getItem("i18nextLng");
+        const formItemLayout = {
+            labelCol: {
+                xs: {span: 24},
+                sm: {span: 10},
+            },
+            wrapperCol: {
+                xs: {span: 24},
+                sm: {span: 14},
+            },
+        };
         if (!this.props.tofiConstants) return null;
 
         this.lng = localStorage.getItem('i18nextLng');
@@ -191,6 +313,7 @@ class WorksPropertyForm extends Component {
             t, handleSubmit, reset, dirty, error, submitting, workTypeValue, fundOrgOptions, fundLPOptions, collectionOrgOptions, staffOptions,
             collectionLPOptions, jointOrgOptions, jointLPOptions, checkingTypeOptions, workAssignedToRegOptions, workPriorityOptions, deliveryPurposeOptions,
             tofiConstants: {
+                caseNumberOfPages, caseDbeg, caseDend,
                 workPlannedEndDate, check, workPriority, workRegFund, workAuthor, workDate, workAssignedTo, checkingType, workRegInv,
                 workPlannedStartDate, workRegCase, deliveryPurpose, workRecipient, retirementReason
             }
@@ -198,372 +321,398 @@ class WorksPropertyForm extends Component {
         const {loading: {workAssignedToRegLoading, workPriorityLoading, deliveryPurposeLoading, staffLoading}} = this.state;
 
         return (
-            <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)}
-                  style={dirty ? {paddingBottom: '43px'} : {}}>
-                <Field
-                    name="workType"
-                    component={ renderSelect }
-                    disabled={!!this.props.initialValues.key}
-                    isSearchable={false}
-                    label={t('WORK_TYPE')}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                    onChange={(e, newValue) => {
-                        if (newValue) {
-                            const statusConst = this.props.tofiConstants[this.props.clsFirstStatusMap[newValue.value]];
-                            this.props.change('workStatusReg', {
-                                value: statusConst.id,
-                                label: statusConst.name[this.lng],
-                                workType: workTypeValue
-                            });
-                        } else {
-                            reset();
-                        }
-                    }}
-                    data={['caseRegistration', 'caseDisposal', 'descriptionOfValuableDocs', 'caseAvailabilityCheck', 'casesForTemporaryUse', 'caseExamination', 'processedCases', 'caseSearch']
-                        .map(cns => ({
-                            value: this.props.tofiConstants[cns].id,
-                            label: this.props.tofiConstants[cns].name[this.lng],
-                            workTypeClass: cns
-                        }))}
-                    validate={requiredLabel}
-                    colon={true}
-                />
-                {workRegFund && <Field
-                    name="workRegFund"
-                    disabled={!!this.props.initialValues.workActualStartDate}
-                    component={ renderSelectVirt }
-                    normalize={this.selectToRedux}
-                    matchProp="label"
-                    matchPos="start"
-                    label={workRegFund.name[this.lng]}
-                    optionHeight={40}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                    isLoading={['fundOrg', 'fundLP', 'collectionOrg', 'collectionLP', 'jointOrg', 'jointLP'].some(c => this.state.loading[c + 'Loading'])}
-                    onFocus={ this.loadClsObj(['fundOrg', 'fundLP', 'collectionOrg', 'collectionLP', 'jointOrg', 'jointLP'], 'fundNumber,fundIndex,fundFeature') }
-                    options={fundOrgOptions && fundLPOptions && collectionOrgOptions && collectionLPOptions && jointOrgOptions && jointLPOptions ?
-                        [...fundOrgOptions, ...fundLPOptions, ...collectionOrgOptions, ...collectionLPOptions, ...jointOrgOptions, ...jointLPOptions]
-                            .reduce((filtered, option) => {
-                                if (option.fundFeature.idRef == this.props.tofiConstants.included.id) {
-                                    filtered.push({
-                                        value: option.id,
-                                        label: `${option.fundNumber[this.lng] + option.fundIndex[this.lng]} - ${option.name[this.lng]}`
-                                    })
-                                }
-                                function compare(a, b) {
-                                    if (parseInt(a.label) < parseInt(b.label))
-                                        return -1;
-                                    if (parseInt(a.label) > parseInt(b.label))
-                                        return 1;
-                                    return 0;
-                                }
-                                filtered.sort(compare);
-                                return filtered
-                            }, []) : []}
-                    validate={requiredLabel}
-                    colon={true}
-                />}
-                {workRegInv && <Field
-                    name="workRegInv"
-                    component={ renderSelectVirt }
-                    normalize={this.selectToRedux}
-                    matchProp="label"
-                    matchPos="start"
-                    label={workRegInv.name[this.lng]}
-                    disabled={!this.props.workRegFundValue || !!this.props.initialValues.workActualStartDate}
-                    optionHeight={40}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                    isLoading={this.state.loading.workRegInvLoading}
-                    onFocus={() => {
-                        const fd = new FormData();
-                        fd.append('clsConsts', 'invList');
-                        fd.append('propConst', 'invFund');
-                        fd.append('withProps', 'invNumber,fundFeature');
-                        fd.append('value', this.props.workRegFundValue.value);
-                        getObjByProp(fd)
-                            .then(res => {
-                                if (res.success) {
-                                    this.setState({workRegInvOptions: res.data.filter(option => option.fundFeature.idRef == this.props.tofiConstants.included.id)})
-                                } else {
-                                    throw res
-                                }
-                            }).catch(err => console.log(err))
-                    }}
-                    options={this.state.workRegInvOptions.map(option => ({
+        <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)}
+              style={dirty ? {paddingBottom: '43px'} : {}}>
+            <Field
+            name="workType"
+            component={ renderSelect }
+            disabled={!!this.props.initialValues.key}
+            isSearchable={false}
+            label={t('WORK_TYPE')}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            onChange={(e, newValue) => {
+                if (newValue) {
+                    const statusConst = this.props.tofiConstants[this.props.clsFirstStatusMap[newValue.value]];
+                    this.props.change('workStatusReg', {
+                        value: statusConst.id,
+                        label: statusConst.name[this.lng],
+                        workType: workTypeValue
+                    });
+                } else {
+                    reset();
+                }
+            }}
+            data={['caseRegistration', 'caseDisposal', 'descriptionOfValuableDocs', 'caseAvailabilityCheck', 'casesForTemporaryUse', 'caseExamination', 'processedCases', 'caseSearch']
+            .map(cns => ({
+                value: this.props.tofiConstants[cns].id,
+                label: this.props.tofiConstants[cns].name[this.lng],
+                workTypeClass: cns
+            }))}
+            validate={requiredLabel}
+            colon={true}
+            />
+            {workRegFund && <Field
+            name="workRegFund"
+            disabled={!!this.props.initialValues.workActualStartDate}
+            component={ renderSelectVirt }
+            normalize={this.selectToRedux}
+            matchProp="label"
+            matchPos="start"
+            label={workRegFund.name[this.lng]}
+            optionHeight={40}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            isLoading={['fundOrg', 'fundLP', 'collectionOrg', 'collectionLP', 'jointOrg', 'jointLP'].some(c => this.state.loading[c + 'Loading'])}
+            onFocus={ this.loadClsObj(['fundOrg', 'fundLP', 'collectionOrg', 'collectionLP', 'jointOrg', 'jointLP'], 'fundNumber,fundIndex,fundFeature') }
+            options={fundOrgOptions && fundLPOptions && collectionOrgOptions && collectionLPOptions && jointOrgOptions && jointLPOptions ?
+            [...fundOrgOptions, ...fundLPOptions, ...collectionOrgOptions, ...collectionLPOptions, ...jointOrgOptions, ...jointLPOptions]
+            .reduce((filtered, option) => {
+                if (option.fundFeature.idRef == this.props.tofiConstants.included.id) {
+                    filtered.push({
                         value: option.id,
-                        label: `${option.invNumber[this.lng]} - ${option.name[this.lng]}`
-                    }))}
-                    validate={requiredLabel}
-                    colon={true}
-                />}
-                {workRegCase && workTypeValue && (workTypeValue.value == this.props.tofiConstants.casesForTemporaryUse.id ||
-                workTypeValue.value == this.props.tofiConstants.caseSearch.id ||
-                workTypeValue.value == this.props.tofiConstants.caseDisposal.id) && <Field
-                    name="workRegCase"
-                    component={ renderSelectVirt }
-                    normalize={this.selectToRedux}
-                    matchProp="label"
-                    matchPos="start"
-                    label={workRegCase.name[this.lng]}
-                    disabled={!this.props.workRegInvValue || !!this.props.initialValues.workActualStartDate}
-                    optionHeight={40}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                    isLoading={this.state.loading.workRegCaseLoading}
-                    onFocus={() => {
-                        const fd = new FormData();
-                        fd.append('clsConsts', 'caseList');
-                        fd.append('propConst', 'caseInventory');
-                        fd.append('withProps', 'fundNumber,fundFeature');
-                        fd.append('value', this.props.workRegInvValue.value);
-                        getObjByProp(fd)
-                            .then(res => {
-                                if (res.success) {
-                                    this.setState({workRegCaseOptions: res.data.filter(option => option.fundFeature.idRef == this.props.tofiConstants.included.id)})
-                                } else {
-                                    throw res
-                                }
-                            }).catch(err => console.log(err))
-                    }}
-                    options={this.state.workRegCaseOptions.map(option => ({
-                        value: option.id,
-                        label: `${option.fundNumber[this.lng]} - ${option.name[this.lng]}`
-                    }))}
-                    // validate={requiredLabel}
-                    // colon={true}
-                />}
-                {workPlannedStartDate && <Field
-                    name="workPlannedStartDate"
-                    disabledDate={this.disabledStartDate}
-                    component={renderDatePicker}
-                    normalize={this.dateToRedux}
+                        label: `${option.fundNumber[this.lng] + option.fundIndex[this.lng]} - ${option.name[this.lng]}`
+                    })
+                }
+                function compare(a, b) {
+                    if (parseInt(a.label) < parseInt(b.label))
+                        return -1;
+                    if (parseInt(a.label) > parseInt(b.label))
+                        return 1;
+                    return 0;
+                }
 
-                    disabled={!!this.props.initialValues.workActualStartDate}
-                    format={null}
-                    label={workPlannedStartDate.name[this.lng]}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
+                filtered.sort(compare);
+                return filtered
+            }, []) : []}
+            validate={requiredLabel}
+            colon={true}
+            />}
+            {workRegInv && <Field
+            name="workRegInv"
+            component={ renderSelectVirt }
+            normalize={this.selectToRedux}
+            matchProp="label"
+            matchPos="start"
+            label={workRegInv.name[this.lng]}
+            disabled={!this.props.workRegFundValue || !!this.props.initialValues.workActualStartDate}
+            optionHeight={40}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            isLoading={this.state.loading.workRegInvLoading}
+            onFocus={() => {
+                const fd = new FormData();
+                fd.append('clsConsts', 'invList');
+                fd.append('propConst', 'invFund');
+                fd.append('withProps', 'invNumber,fundFeature');
+                fd.append('value', this.props.workRegFundValue.value);
+                getObjByProp(fd)
+                .then(res => {
+                    if (res.success) {
+                        this.setState({workRegInvOptions: res.data.filter(option => option.fundFeature.idRef == this.props.tofiConstants.included.id)})
+                    } else {
+                        throw res
                     }
-                />}
-                {workPlannedEndDate && <Field
-                    name="workPlannedEndDate"
-                    disabledDate={this.disabledEndDate}
-                    component={ renderDatePicker }
-                    normalize={this.dateToRedux}
-                    disabled={!!this.props.initialValues.workActualStartDate}
-                    format={null}
-                    isSearchable={false}
-                    label={workPlannedEndDate.name[this.lng]}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
+                }).catch(err => console.log(err))
+            }}
+            options={this.state.workRegInvOptions.map(option => ({
+                value: option.id,
+                label: `${option.invNumber[this.lng]} - ${option.name[this.lng]}`
+            }))}
+            validate={requiredLabel}
+            colon={true}
+            />}
+            {workRegCase && workTypeValue && (workTypeValue.value == this.props.tofiConstants.casesForTemporaryUse.id ||
+            workTypeValue.value == this.props.tofiConstants.caseSearch.id ||
+            workTypeValue.value == this.props.tofiConstants.caseDisposal.id) && <Field
+            name="workRegCase"
+            component={ renderSelectVirt }
+            normalize={this.selectToRedux}
+            matchProp="label"
+            matchPos="start"
+            label={workRegCase.name[this.lng]}
+            disabled={!this.props.workRegInvValue || !!this.props.initialValues.workActualStartDate}
+            optionHeight={40}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            isLoading={this.state.loading.workRegCaseLoading}
+            onFocus={() => {
+                const fd = new FormData();
+                fd.append('clsConsts', 'caseList');
+                fd.append('propConst', 'caseInventory');
+                fd.append('withProps', 'fundNumber,fundFeature');
+                fd.append('value', this.props.workRegInvValue.value);
+                getObjByProp(fd)
+                .then(res => {
+                    if (res.success) {
+                        this.setState({workRegCaseOptions: res.data.filter(option => option.fundFeature.idRef == this.props.tofiConstants.included.id)})
+                    } else {
+                        throw res
                     }
-                />}
-                {workAssignedTo && <Field
-                    name="workAssignedTo"
-                    component={renderSelect}
-                    normalize={this.selectToRedux}
-                    disabled={!!this.props.initialValues.workActualStartDate}
-                    label={workAssignedTo.name[this.lng]}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                    isLoading={workAssignedToRegLoading}
-                    data={workAssignedToRegOptions ? workAssignedToRegOptions.map(option => ({
-                        value: option.id,
-                        label: option.name[this.lng]
-                    })) : []}
-                    onFocus={this.loadClsObj(['workAssignedToReg'])}
-                />}
-                {retirementReason && workTypeValue && workTypeValue.value == this.props.tofiConstants.caseDisposal.id &&
-                <Field
-                    name="retirementReason"
-                    component={renderSelect}
-                    normalize={this.selectToRedux}
-                    disabled
-                    label={retirementReason.name[this.lng]}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                    // validate={requiredDate}
-                    // colon={true}
-                />}
-                {deliveryPurpose && workTypeValue && workTypeValue.value == this.props.tofiConstants.casesForTemporaryUse.id &&
-                <Field
-                    name="deliveryPurpose"
-                    component={renderSelect}
-                    normalize={this.selectToRedux}
-                    disabled={(this.props.initialValues && !!this.props.initialValues.key) || !!this.props.initialValues.workActualStartDate}
-                    label={deliveryPurpose.name[this.lng]}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                    isLoading={deliveryPurposeLoading}
-                    data={deliveryPurposeOptions ? deliveryPurposeOptions.map(option => ({
-                        value: option.id,
-                        label: option.name[this.lng]
-                    })) : []}
-                    onFocus={this.loadOptions('deliveryPurpose')}
-                />}
-                {workRecipient && workTypeValue && workTypeValue.value == this.props.tofiConstants.casesForTemporaryUse.id &&
-                <Field
-                    name="workRecipient"
-                    component={renderSelect}
-                    normalize={this.selectToRedux}
-                    disabled={!!this.props.initialValues.workActualStartDate}
-                    label={workRecipient.name[this.lng]}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                    isLoading={staffLoading}
-                    data={staffOptions ? staffOptions.map(option => ({
-                        value: option.id,
-                        label: option.name[this.lng]
-                    })) : []}
-                    onFocus={this.loadClsObj(['staff'])}
-                />}
-                {workPriority && <Field
-                    name="workPriority"
-                    component={ renderSelect }
-                    normalize={this.selectToRedux}
-                    disabled={!!this.props.initialValues.workActualStartDate}
-                    isSearchable={false}
-                    label={workPriority.name[this.lng]}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                    isLoading={workPriorityLoading}
-                    data={workPriorityOptions ? workPriorityOptions.map(option => ({
-                        value: option.id,
-                        label: option.name[this.lng]
-                    })) : []}
-                    onFocus={this.loadOptions('workPriority')}
-                    // validate={requiredLabel}
-                    // colon={true}
-                />}
-                {workTypeValue && workTypeValue.value == check.id && checkingType && <Field //eslint-disable-line
-                    name="checkingType"
-                    component={ renderSelect }
-                    normalize={this.selectToRedux}
-                    disabled={!!this.props.initialValues.workActualStartDate}
-                    isSearchable={false}
-                    label={checkingType.name[this.lng]}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                    onFocus={this.loadOptions('checkingType')}
-                    // validate={requiredLabel}
-                    // colon={true}
-                    data={checkingTypeOptions ? checkingTypeOptions.map(option => ({
-                        value: option.id,
-                        label: option.name[this.lng]
-                    })) : []}
-                />}
-                <Field
-                    name="workStatusReg"
-                    disabled
-                    component={ renderSelect }
-                    normalize={this.selectToRedux}
-                    isSearchable={false}
-                    label={t('WORK_STATUS_REG')}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                    // onFocus={ this.loadOptionsArr(['workStatusDelivery','workStatusAdmissionAndExpertise','workStatusSearch','workStatusOCD','workStatusAvailabilityCheck']) }
-                    // validate={requiredLabel}
-                    // colon={true}
-                    /*data={workTypeValue && workTypeValue.value == this.props.tofiConstants.caseRegistration.id ?
-                     ( workStatusAddmissionAndExpertiseOptions ? workStatusAddmissionAndExpertiseOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : [] ) :
-                     workTypeValue && workTypeValue.value == this.props.tofiConstants.caseDisposal.id ?
-                     ( workStatusRetirementOptions ? workStatusRetirementOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : [] ) :
-                     workTypeValue && workTypeValue.value == this.props.tofiConstants.descriptionOfValuableDocs.id ?
-                     ( workStatusRetirementOptions ? workStatusRetirementOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : [] ) :
-                     }*/
-                />
-                {workDate && <Field
-                    name="workDate"
-                    component={renderDatePicker}
-                    disabled
-                    format={null}
-                    label={workDate.name[this.lng]}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                    // defaultValue={moment()}
-                    // validate={requiredDate}
-                    // colon={true}
-                />}
-                {workAuthor && <Field
-                    name="workAuthor"
-                    component={ renderSelect }
-                    disabled
-                    placeholder={t('USER_FIO_PLACEHOLDER')}
-                    label={workAuthor.name[this.lng]}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                />}
-                {dirty && <Form.Item className="ant-form-btns">
-                    <Button className="signup-form__btn" type="primary" htmlType="submit" disabled={submitting}>
-                        {submitting ? t('LOADING...') : t('SAVE') }
-                    </Button>
-                    <Button className="signup-form__btn" type="danger" htmlType="button" disabled={submitting}
-                            style={{marginLeft: '10px'}} onClick={reset}>
-                        {submitting ? t('LOADING...') : t('CANCEL') }
-                    </Button>
-                    {error && <span className="message-error"><i className="icon-error"/>{error}</span>}
-                </Form.Item>}
-            </Form>
+                }).catch(err => console.log(err))
+            }}
+            options={this.state.workRegCaseOptions.map(option => ({
+                value: option.id,
+                label: `${option.fundNumber[this.lng]} - ${option.name[this.lng]}`
+            }))}
+            // validate={requiredLabel}
+            // colon={true}
+            />}
+
+
+            <FormItem
+            {...formItemLayout}
+            label={caseNumberOfPages.name[this.lng]}>
+                <Input disabled
+                       value={this.state.caseNumberOfPages}/>
+            </FormItem>
+            <FormItem
+            {...formItemLayout}
+            label={caseDbeg.name[this.lng]}>
+                <Input disabled value={this.state.caseDbeg}/>
+            </FormItem>
+            <FormItem
+            {...formItemLayout}
+            label={caseDend.name[this.lng]}
+            >
+                <Input disabled value={this.state.caseDend}/>
+            </FormItem>
+
+
+            {workPlannedStartDate && <Field
+            name="workPlannedStartDate"
+            disabledDate={this.disabledStartDate}
+            component={renderDatePicker}
+            normalize={this.dateToRedux}
+
+            disabled={!!this.props.initialValues.workActualStartDate}
+            format={null}
+            label={workPlannedStartDate.name[this.lng]}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            />}
+            {workPlannedEndDate && <Field
+            name="workPlannedEndDate"
+            disabledDate={this.disabledEndDate}
+            component={ renderDatePicker }
+            normalize={this.dateToRedux}
+            disabled={!!this.props.initialValues.workActualStartDate}
+            format={null}
+            isSearchable={false}
+            label={workPlannedEndDate.name[this.lng]}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            />}
+            {workAssignedTo && <Field
+            name="workAssignedTo"
+            component={renderSelect}
+            normalize={this.selectToRedux}
+            disabled={!!this.props.initialValues.workActualStartDate}
+            label={workAssignedTo.name[this.lng]}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            isLoading={workAssignedToRegLoading}
+            data={workAssignedToRegOptions ? workAssignedToRegOptions.map(option => ({
+                value: option.id,
+                label: option.name[this.lng]
+            })) : []}
+            onFocus={this.loadClsObj(['workAssignedToReg'])}
+            />}
+            {retirementReason && workTypeValue && workTypeValue.value == this.props.tofiConstants.caseDisposal.id &&
+            <Field
+            name="retirementReason"
+            component={renderSelect}
+            normalize={this.selectToRedux}
+            disabled
+            label={retirementReason.name[this.lng]}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            // validate={requiredDate}
+            // colon={true}
+            />}
+            {deliveryPurpose && workTypeValue && workTypeValue.value == this.props.tofiConstants.casesForTemporaryUse.id &&
+            <Field
+            name="deliveryPurpose"
+            component={renderSelect}
+            normalize={this.selectToRedux}
+            disabled={(this.props.initialValues && !!this.props.initialValues.key) || !!this.props.initialValues.workActualStartDate}
+            label={deliveryPurpose.name[this.lng]}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            isLoading={deliveryPurposeLoading}
+            data={deliveryPurposeOptions ? deliveryPurposeOptions.map(option => ({
+                value: option.id,
+                label: option.name[this.lng]
+            })) : []}
+            onFocus={this.loadOptions('deliveryPurpose')}
+            />}
+            {workRecipient && workTypeValue && workTypeValue.value == this.props.tofiConstants.casesForTemporaryUse.id &&
+            <Field
+            name="workRecipient"
+            component={renderSelect}
+            normalize={this.selectToRedux}
+            disabled={!!this.props.initialValues.workActualStartDate}
+            label={workRecipient.name[this.lng]}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            isLoading={staffLoading}
+            data={staffOptions ? staffOptions.map(option => ({
+                value: option.id,
+                label: option.name[this.lng]
+            })) : []}
+            onFocus={this.loadClsObj(['staff'])}
+            />}
+            {workPriority && <Field
+            name="workPriority"
+            component={ renderSelect }
+            normalize={this.selectToRedux}
+            disabled={!!this.props.initialValues.workActualStartDate}
+            isSearchable={false}
+            label={workPriority.name[this.lng]}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            isLoading={workPriorityLoading}
+            data={workPriorityOptions ? workPriorityOptions.map(option => ({
+                value: option.id,
+                label: option.name[this.lng]
+            })) : []}
+            onFocus={this.loadOptions('workPriority')}
+            // validate={requiredLabel}
+            // colon={true}
+            />}
+            {workTypeValue && workTypeValue.value == check.id && checkingType &&
+            <Field //eslint-disable-line
+            name="checkingType"
+            component={ renderSelect }
+            normalize={this.selectToRedux}
+            disabled={!!this.props.initialValues.workActualStartDate}
+            isSearchable={false}
+            label={checkingType.name[this.lng]}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            onFocus={this.loadOptions('checkingType')}
+            // validate={requiredLabel}
+            // colon={true}
+            data={checkingTypeOptions ? checkingTypeOptions.map(option => ({
+                value: option.id,
+                label: option.name[this.lng]
+            })) : []}
+            />}
+            <Field
+            name="workStatusReg"
+            disabled
+            component={ renderSelect }
+            normalize={this.selectToRedux}
+            isSearchable={false}
+            label={t('WORK_STATUS_REG')}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            // onFocus={ this.loadOptionsArr(['workStatusDelivery','workStatusAdmissionAndExpertise','workStatusSearch','workStatusOCD','workStatusAvailabilityCheck']) }
+            // validate={requiredLabel}
+            // colon={true}
+            /*data={workTypeValue && workTypeValue.value == this.props.tofiConstants.caseRegistration.id ?
+             ( workStatusAddmissionAndExpertiseOptions ? workStatusAddmissionAndExpertiseOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : [] ) :
+             workTypeValue && workTypeValue.value == this.props.tofiConstants.caseDisposal.id ?
+             ( workStatusRetirementOptions ? workStatusRetirementOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : [] ) :
+             workTypeValue && workTypeValue.value == this.props.tofiConstants.descriptionOfValuableDocs.id ?
+             ( workStatusRetirementOptions ? workStatusRetirementOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : [] ) :
+             }*/
+            />
+            {workDate && <Field
+            name="workDate"
+            component={renderDatePicker}
+            disabled
+            format={null}
+            label={workDate.name[this.lng]}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            // defaultValue={moment()}
+            // validate={requiredDate}
+            // colon={true}
+            />}
+            {workAuthor && <Field
+            name="workAuthor"
+            component={ renderSelect }
+            disabled
+            placeholder={t('USER_FIO_PLACEHOLDER')}
+            label={workAuthor.name[this.lng]}
+            formItemLayout={
+                {
+                    labelCol: {span: 10},
+                    wrapperCol: {span: 14}
+                }
+            }
+            />}
+            {dirty && <Form.Item className="ant-form-btns">
+                <Button className="signup-form__btn" type="primary" htmlType="submit"
+                        disabled={submitting}>
+                    {submitting ? t('LOADING...') : t('SAVE') }
+                </Button>
+                <Button className="signup-form__btn" type="danger" htmlType="button"
+                        disabled={submitting}
+                        style={{marginLeft: '10px'}} onClick={reset}>
+                    {submitting ? t('LOADING...') : t('CANCEL') }
+                </Button>
+                {error &&
+                <span className="message-error"><i className="icon-error"/>{error}</span>}
+            </Form.Item>}
+        </Form>
         )
     }
 }

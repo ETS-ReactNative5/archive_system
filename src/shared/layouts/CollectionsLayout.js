@@ -26,7 +26,9 @@ let AsyncSignupForm,
   AsyncProfileScreen,
   AsyncNSA,
   AsyncSourcing,
-  AsyncUsesRoutes,
+  AsyncSourcing2,
+
+    AsyncUsesRoutes,
   AsyncArchiveFundRoutes,
   AsyncManagingRoutes,
   AsyncWorksRoutes,
@@ -56,6 +58,10 @@ try {
     loader: () => import('../containers/Sourcing'),
     loading: () => <Spin style={{ position: 'absolute', left: '50%', top: '50%', transform: "translateX(-50%)" }}/>
   });
+    AsyncSourcing2 = Loadable({
+        loader: () => import('../containers/Sourcing'),
+        loading: () => <Spin style={{ position: 'absolute', left: '50%', top: '50%', transform: "translateX(-50%)" }}/>
+    });
   AsyncUsesRoutes = Loadable({
     loader: () => import('../components/ReadingRoomPages/UsesRoutes'),
     loading: () => <Spin style={{ position: 'absolute', left: '50%', top: '50%', transform: "translateX(-50%)" }}/>
@@ -138,6 +144,12 @@ class CollectionsLayout extends Component {
             path: '/sourcing/sourcesMaintenance',
             priv: 'sourceacquisition'
           },
+            {
+                name: `${t('SOURCE_ACQUISITION')}2`, // Источники комплектования2
+                path: '/sourcing/sourcesMaintenance2',
+                priv: 'sourceacquisition'
+
+            },
           {
             name: t('RECEIVING_SCHEDULE'), // График приема архивных документов
             path: '/sourcing/schedule',
@@ -384,6 +396,7 @@ class CollectionsLayout extends Component {
               <Route path="/admin" render={props => user ? <AsyncAdminRoutes tofiConstants={tofiConstants} {...props} /> : <Redirect to='/' />} />
               <Route path="/managing" render={props => user ? <AsyncManagingRoutes tofiConstants={tofiConstants} {...props} /> : <Redirect to='/' />} />
               <Route path="/sourcing" render={props => user ? <AsyncSourcing {...props} /> : <Redirect to='/' />} />
+              <Route path="/sourcing" render={props => user ? <AsyncSourcing2 {...props} /> : <Redirect to='/' />} />
               <Route path="/sra" render={props => user ? <AsyncNSA tofiConstants={tofiConstants} {...props} /> : <Redirect to='/' />} />
               <Route path="/works" render={props => user ? <AsyncWorksRoutes tofiConstants={tofiConstants} {...props} /> : <Redirect to='/' />}/>
               <Route path="/users-roles" render={props => user ? <UsersRoles t={t} tofiConstants={tofiConstants} {...props} /> : <Redirect to='/' />}/>

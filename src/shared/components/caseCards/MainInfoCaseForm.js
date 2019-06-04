@@ -72,7 +72,6 @@ class MainInfoCaseForm extends Component {
   };
 
   onSubmit = ({ name,documentFile, ...values }) => {
-    console.log(this.props.initialValues)
     if (!this.props.initialValues.key) {
       return this.props.onCreateObj({
           ...pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key])),

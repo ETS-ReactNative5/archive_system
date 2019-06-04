@@ -863,7 +863,7 @@ class ArchiveFundWorks extends React.PureComponent {
     renderTableData = (item, idx) => {
         const workTypeClasses = ['caseRegistration', 'caseDisposal', 'descriptionOfValuableDocs', 'caseAvailabilityCheck', 'casesForTemporaryUse', 'caseExamination', 'processedCases', 'caseSearch'];
         const {
-            workPlannedEndDate, workAuthor, workRegFund, workRegFundId, workRegInv, workIndexNumber, retirementReason,
+            workPlannedEndDate,casesRecovery, workAuthor, workRegFund, workRegFundId, workRegInv, workIndexNumber, retirementReason,
             workPriority, workDate, workAssignedTo, workPlannedStartDate, workActualStartDate, workRecipient,
             workActualEndDate, acceptanceDate, checkingType, dateNumberOrder, orderDirectorFile, dateAndNumberDeregistration, derigistrationFile, workRegCase, descriptionDamage, intermediateResultDate, deliveryPurpose, indexDamage
         } = this.props.tofiConstants;
@@ -893,7 +893,8 @@ class ArchiveFundWorks extends React.PureComponent {
         dateNumberOrderObj = item.props.find(element => element.prop == dateNumberOrder.id),
         orderDirectorFileObj = item.props.find(element => element.prop == orderDirectorFile.id),
         dateAndNumberDeregistrationObj = item.props.find(element => element.prop == dateAndNumberDeregistration.id),
-        derigistrationFileObj = item.props.find(element => element.prop == derigistrationFile.id);
+        derigistrationFileObj = item.props.find(element => element.prop == derigistrationFile.id),
+        casesRecoveryObj = item.props.find(element => element.prop == casesRecovery.id);
         return {
             key: item.id,
             numb: idx + 1,
@@ -903,11 +904,11 @@ class ArchiveFundWorks extends React.PureComponent {
                 label: this.props.tofiConstants[workTypeClass].name[this.lng],
                 workTypeClass
             } : null,
-
-            dateNumberOrder: dateNumberOrderObj,
-            orderDirectorFile: orderDirectorFileObj,
-            dateAndNumberDeregistration: dateAndNumberDeregistrationObj,
-            derigistrationFile: derigistrationFileObj,
+            casesRecovery:casesRecoveryObj && casesRecoveryObj.values,
+            dateNumberOrder: dateNumberOrderObj && dateNumberOrderObj.values,
+            orderDirectorFile: orderDirectorFileObj && orderDirectorFileObj.values,
+            dateAndNumberDeregistration: dateAndNumberDeregistrationObj && dateAndNumberDeregistrationObj.values,
+            derigistrationFile: derigistrationFileObj && derigistrationFileObj.values,
             descriptionDamage: descriptionDamageObj && descriptionDamageObj.values && descriptionDamageObj.values.value,
             indexDamage: indexDamageObj && indexDamageObj.values,
             workPlannedStartDate: !!workPlannedStartDateObj && workPlannedStartDateObj.values ? moment(workPlannedStartDateObj.values.value, 'DD-MM-YYYY') : null,
