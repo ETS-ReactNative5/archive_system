@@ -7,7 +7,7 @@ import {Field, reduxForm} from "redux-form";
 import {Button, Col} from "antd";
 import {onSaveCubeData, parseCube_new, parseForTable, parseForTableComplex} from "../../../utils/cubeParser";
 import {isEqual, pickBy} from 'lodash';
-import {message} from "antd";
+import {message, } from "antd";
 import {connect} from "react-redux";
 import axios from 'axios';
 import moment from "moment";
@@ -23,15 +23,18 @@ class PiNMD_IK extends React.Component {
     };
 
     componentDidMount() {
-        const {normativeDocType, docFile, archiveInfoDate1, archiveInfoDate2, file3} = this.props.tofiConstants;
-        const filters = {
+        this.updateCube()
+    }
+updateCube=()=>{
+    const {normativeDocType, doForFundAndIK, dpForFundAndIK,  docFile, archiveInfoDate1, archiveInfoDate2, file3} = this.props.tofiConstants;
+    const filters = {
             filterDPAnd: [
                 {
                     dimConst: 'dpForFundAndIK',
                     concatType: "and",
                     conds: [
                         {
-                            consts: "normativeDocType,docFile,archiveInfoDate1,archiveInfoDate2,file3,normMethDocs"
+                            consts: "normativeDocType,docFile,archiveInfoDate1,archiveInfoDate2,file3,normMethDocs,numberNmd"
                         }
                     ]
                 }
@@ -46,28 +49,56 @@ class PiNMD_IK extends React.Component {
                         }
                     ]
                 }
-            ]
-        };
-        const fd = new FormData();
-        fd.append("cubeSConst", 'cubeForFundAndIK');
-        fd.append("filters", JSON.stringify(filters));
-        axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getCubeData`, fd).then(res => {
-            var cubeData = res.data.data;
-            var arrConst = ['normativeDocType', 'docFile', 'archiveInfoDate1', 'archiveInfoDate2', 'file3'];
-            var result = parseForTableComplex(cubeData, 'doForFundAndIK', 'dpForFundAndIK', 'dtForFundAndIK', this.props.tofiConstants, arrConst, this.props.dateIncludeOfIk);
-            this.setState({
-                data:result
-            })
+            ],
+        filterDTOr: [
+            {
+                dimConst: 'dtForFundAndIK',
+                conds: [
+                    {
+                        ids: String(this.props.dateIncludeOfIk.slice(-4)) + '0101' + String(this.props.dateIncludeOfIk.slice(-4)) + '1231'
+                    }
+                ]
+            }
+        ]
+        }
+        debugger
+    ;
+    const fd = new FormData();
+    fd.append("cubeSConst", 'cubeForFundAndIK');
+    fd.append("filters", JSON.stringify(filters));
+    axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getCubeData`, fd).then(res => {
+        var cubeData = res.data.data;
+        let parseCube = parseCube_new(
+            cubeData.cube,
+            [],
+            'dp',
+            'do',
+            cubeData[`do_${doForFundAndIK.id}`],
+            cubeData[`dp_${dpForFundAndIK.id}`],
+            `do_${doForFundAndIK.id}`, `dp_${dpForFundAndIK.id}`)
 
-        }).catch(e=>{
-            console.log(e)
-        });
-    }
+        let tableData = parseCube.map(this.renderTableData);
+        debugger
+        // var arrConst = ['normativeDocType', 'docFile', 'archiveInfoDate1', 'archiveInfoDate2', 'file3','numberNmd'];
+        // var result = parseForTableComplex(cubeData, 'doForFundAndIK', 'dpForFundAndIK', 'dtForFundAndIK', this.props.tofiConstants, arrConst, this.props.dateIncludeOfIk);
+        // this.setState({
+        //     data:result
+        // })
 
+    }).catch(e=>{
+        console.log(e)
+    });
+}
+    renderTableData = item => {
+        const result = {};
+        const constArr = ['normativeDocType', 'docFile', 'archiveInfoDate1', 'archiveInfoDate2', 'file3','numberNmd'];
+        parseForTable(item.props, this.props.tofiConstants, result, constArr);
+        return result;
+    };
 
     render() {
         return (
-            <PiNMD_IK_FORM data={this.state.data}/>
+            <PiNMD_IK_FORM updateCube={this.updateCube} data={this.state.data} {...this.props}/>
         )
     }
 

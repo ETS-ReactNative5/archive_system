@@ -10,6 +10,7 @@ import {
     DatePicker,
     Upload,
     Select,
+    Popover,
     Collapse
 } from "antd";
 import axios from "axios"
@@ -17,6 +18,8 @@ import moment from "moment";
 import SourcesMaintenanceForm from "./Characteristic_IK";
 import PiNMD_IK from "./PiNMD_IK";
 import Contact_IK from "./Contact_IK";
+import Chat_FundMaker from "../../SourcingPages/fundMaker/Chat_FundMaker";
+import StorageOptions_IK from "./StorageOptions_IK";
 
 class Card extends Component {
     state = {
@@ -25,7 +28,7 @@ class Card extends Component {
         reportTypeOptions: [],
 
         loading: false
-    }
+    };
 
 
     render() {
@@ -56,8 +59,35 @@ class Card extends Component {
                 },
                 {
                     tabKey: 'PiNMD',
-                    tabName: 'ПиНМД',
-                    tabContent: <PiNMD_IK
+                    tabName:
+                        <Popover content={""} title="Правовая и нормативно-методическая документация">
+
+                        'ПиНМД'
+                        </Popover>
+
+                    ,
+                    tabContent:
+                        <PiNMD_IK
+                    t={t}
+                    selectedIK={initialValues}
+                    tofiConstants={tofiConstants}
+                    dateIncludeOfIk={dateIncludeOfIk}
+                    />
+                },
+                {
+                    tabKey: 'Chat',
+                    tabName: 'Переписка',
+                    tabContent: <Chat_FundMaker
+                    t={t}
+                    initialValues={initialValues}
+                    tofiConstants={tofiConstants}
+                    dateIncludeOfIk={dateIncludeOfIk}
+                    />
+                },
+                {
+                    tabKey: 'StorageOptions',
+                    tabName: 'Условия хранения',
+                    tabContent: <StorageOptions_IK
                     t={t}
                     selectedIK={initialValues}
                     tofiConstants={tofiConstants}

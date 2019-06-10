@@ -527,7 +527,7 @@ class MainInfoReportForm extends Component {
                         }
                     }
                 fd.append("periodType",this.props.periodType)
-
+                fd.append("dte",this.props.dateReport)
                 fd.append("formReport",this.props.initialValues.id)
                 let config = {
                     headers:{
@@ -611,7 +611,6 @@ class MainInfoReportForm extends Component {
     render() {
         const {getFieldDecorator} = this.props.form;
         this.lng = localStorage.getItem("i18nextLng");
-
         return (
             <Spin spinning={this.state.loading}>
             <Row>

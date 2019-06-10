@@ -14,26 +14,29 @@ import {Field, formValueSelector, reduxForm} from "redux-form";
 import {isEmpty, isEqual, map, pickBy, forOwn} from "lodash";
 import connect from "react-redux/es/connect/connect";
 import {
-    createObj,
-    getAllObjOfCls, getCasesCount,
     getCube,
-    getObjByObjVal,
+    getValueOfMultiText,
+    saveValueOfMultiText,
     getObjChildsByConst,
-    getPropVal
+    getPropVal,
 } from "../../actions/actions";
-import TextArea from 'antd/lib/input/TextArea';
 import {
     CUBE_FOR_AF_CASE,
-    CUBE_FOR_AF_INV,
+    CUBE_FOR_AF_INV, CUBE_FOR_FUND_AND_IK,
     DO_FOR_CASE, DO_FOR_FUND_AND_IK,
     DO_FOR_INV,
     DP_FOR_CASE,
     DP_FOR_FUND_AND_IK, DT_FOR_FUND_AND_IK
 } from "../../constants/tofiConstants";
 import AntTable from "../AntTable";
-import {parseCube_new, parseForTable, parseForTableComplex} from "../../utils/cubeParser";
+import {onSaveCubeData, parseCube_new, parseForTable, parseForTableComplex} from "../../utils/cubeParser";
 import axios from "axios";
-import moment from "../ArchiveFundPages/MainInfoInvForm";
+import moment from 'moment';
+import SearchNSACard from "./SearchNSACard";
+import SearchNSA from "./SearchNSA";
+import RadioGroup from "antd/es/radio/group";
+import RadioButton from "antd/es/radio/radioButton";
+import TextArea from "antd/es/input/TextArea";
 
 const FormItem = Form.Item;
 
@@ -43,23 +46,31 @@ class SearchNSAArchiveFund extends React.Component {
         super(props);
 
         this.state = {
+            flaot: false,
+            fundHistoricalNoteMulti: {
+                kz: '',
+                en: '',
+                ru: ''
+            },
             lang: {
                 name: localStorage.getItem("i18nextLng"),
-                foundHistoricalNoteMulti: localStorage.getItem("i18nextLng")
+                fundHistoricalNoteMulti: localStorage.getItem("i18nextLng")
             },
+            lange: localStorage.getItem('i18nextLng'),
             tableData:'',
             loading: {},
+            multiTextDPV: '',
             tableLoader:false,
-            record: {}
+            record: {},
+            fundList:'',
+            sidebarActiveKey: 'archiveFund',
         }
     }
-
-
     componentDidMount() {
         this.buildComponent()
-    }
 
-    buildComponent=()=>{
+    }
+   buildComponent=()=>{
         this.setState({
             tableLoader:true
         });
@@ -112,7 +123,63 @@ class SearchNSAArchiveFund extends React.Component {
                 tableLoader:false
             })
         })
+
+       getValueOfMultiText(String(this.props.initialValues.key.split('_')[1]), 'fundHistoricalNoteMulti').then(
+           res => {
+               !!res.data[0] && this.setState({
+                   multiTextDPV: res.data[0].idDataPropVal,
+                   fundHistoricalNoteMulti: {
+                       kz: res.data[0].valueMultiStr.kz,
+                       en: res.data[0].valueMultiStr.en,
+                       ru: res.data[0].valueMultiStr.ru
+                   },
+
+               })
+           }
+       )
     }
+
+    changeLang = e => {
+        this.setState({
+            fundHistoricalNoteMulti: {
+                ...this.state.fundHistoricalNoteMulti,
+                [this.state.lange]: e.target.value
+            },
+            dirty: true
+        })
+    };
+    savefundHistoricalNoteMulti = () => {
+        const dataToSend = [];
+        var mod = 'ins';
+        if (!!this.state.multiTextDPV) {
+            mod = 'upd'
+        }
+        ;
+        dataToSend.push(
+            {
+                propConst: 'fundHistoricalNoteMulti',
+                vals: [
+                    {
+                        idDataPropVal: this.state.multiTextDPV,
+                        mode: mod,
+                        val: {
+                            kz: this.state.fundHistoricalNoteMulti.kz,
+                            ru: this.state.fundHistoricalNoteMulti.ru,
+                            en: this.state.fundHistoricalNoteMulti.en,
+                        }
+                    }
+                ],
+            },
+        );
+        if (dataToSend.length > 0) {
+            let data = JSON.stringify(dataToSend);
+            saveValueOfMultiText(this.props.initialValues.key.split('_')[1], data, moment().format('YYYY-DD-MM')).then(res => {
+                message.success(this.props.t("PROPS_SUCCESSFULLY_UPDATED"));
+            }).catch(err => {
+                console.warn(err);
+            })
+        }
+    };
 
     componentDidUpdate(prevProps){
         if(prevProps.initialValues.key!==this.props.initialValues.key){
@@ -132,50 +199,26 @@ class SearchNSAArchiveFund extends React.Component {
 
     };
 
-    onChange(value, name) {
-        this.setState({record: {...this.state.record, [name]: value}}, () => {
-            this.props.onChange(name, value)
-        })
-    };
-
-    changeLang = e => {
-        this.setState({
-            lang: {...this.state.lang, [e.target.name]: e.target.value}
-        });
-    };
-
-    onSubmit = ({name, documentFile, ...values}) => {
+    onSubmit = ({fundHistoricalNote, ...values}) => {
         if (!this.props.initialValues.key) {
-            return this.props.onCreateObj({
-                ...pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key])),
-
-                name: name,
-                documentFile: documentFile,
-                caseInventory: this.props.keyInv,
-                caseWorkProp: this.props.keyWork.split("_")[1]
-            });
         } else {
             const cube = {
-                cubeSConst: CUBE_FOR_AF_CASE,
-                doConst: DO_FOR_CASE,
-                dpConst: DP_FOR_CASE,
+                cubeSConst: CUBE_FOR_FUND_AND_IK,
+                doConst: DO_FOR_FUND_AND_IK,
+                dpConst: DP_FOR_FUND_AND_IK,
             };
             const objData = {};
             const props = pickBy(
                 values,
                 (val, key) => !isEqual(val, this.props.initialValues[key])
             );
-            if (name) {
-                objData.name = name;
-                objData.fullName = name;
-            }
             let val = {
                 values: props,
                 oFiles: {
-                    documentFile: documentFile
+                    fundHistoricalNote: fundHistoricalNote
                 }
             }
-            return this.props.saveProps(
+            return this.saveProps(
                 {
                     cube,
                 },
@@ -186,38 +229,51 @@ class SearchNSAArchiveFund extends React.Component {
             );
         }
     };
-
-    onCreateObj = ({name, accessLevel, ...values}) => {
-
-        const cube = {
-            cubeSConst: CUBE_FOR_AF_INV
-        };
-
-        const obj = {
-            name: name,
-            fullName: name,
-            clsConst: 'invList',
-            accessLevel
-        };
-
-        const hideCreateObj = message.loading(this.props.t('CREATING_NEW_OBJECT'), 0);
-        return createObj(cube, obj)
-            .then(res => {
-                hideCreateObj();
-                if (res.success) {
-                    return this.onSaveCubeData(values, res.data.idItemDO, {})
-                } else {
-                    if (res.errors) {
-                        res.errors.forEach(err => {
-                            message.error(err.text)
-                        })
-                    }
-                }
-            }).catch(err => {
-                console.error(err)
-            })
+    onChange = e => {
+        this.setState({
+            float: true,
+            fundHistoricalNoteMulti: {
+                ...this.state.fundHistoricalNoteMulti,
+                [this.state.lange]: e.target.value
+            },
+            dirty: true
+        })
     };
-
+    onLangChange = e => {
+        this.setState({lange: e.target.value})
+    };
+    saveProps = async (c, v, t = this.props.tofiConstants, objData, key) => {
+        let hideLoading;
+        try {
+            if (!c.cube) c.cube = {
+                cubeSConst: CUBE_FOR_FUND_AND_IK,
+                doConst: DO_FOR_FUND_AND_IK,
+                dpConst: DP_FOR_FUND_AND_IK,
+            };
+            if (!c.cube.data) c.cube.data = this.props.cubeForFundAndIK;
+            c["obj"] = {
+                doItem: key
+            }
+            hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
+            const resSave = await onSaveCubeData(c, v, t, objData);
+            hideLoading();
+            if (!resSave.success) {
+                message.error(this.props.t('PROPS_UPDATING_ERROR'));
+                resSave.errors.forEach(err => {
+                    message.error(err.text)
+                });
+                return Promise.reject(resSave);
+            }
+            this.savefundHistoricalNoteMulti()
+            message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+            return resSave;
+        }
+        catch (e) {
+            typeof hideLoading === 'function' && hideLoading();
+            this.setState({loading: false});
+            console.warn(e);
+        }
+    };
 
     fileToRedux = (val, prevVal, file, str) => {
         let newFile = val.filter(el => el instanceof File);
@@ -236,7 +292,6 @@ class SearchNSAArchiveFund extends React.Component {
 
     dateToRedux=(val , prev)=>{{
         let coppyPrev = {...prev}
-
         if (!!val){
             let newDate = moment(val).format("DD-MM-YYYY")
             if (!!coppyPrev.idDataPropVal){
@@ -268,87 +323,22 @@ class SearchNSAArchiveFund extends React.Component {
             fundHistoricalNote,
             fundHistoricalNoteMulti,
             lastChangeDateScheme,
-            invFound
+            invFound,
         } = this.props.tofiConstants;
         const {
+            handleSubmit,
+            reset,
+            submitting,
+            error,
+            t,
+            dirty,
             tofiConstants:
                 {
                     invList
                 },
-            submitting,
-            error,
-            t,
-            dirty
         } = this.props;
-
-        console.log('fundHistoricalNoteMulti:', fundHistoricalNoteMulti);
         return (
-                <Form
-                    className="antForm-spaceBetween"
-                    style={dirty ? {paddingBottom: "43px"} : {}}
-                >
-                    <FormItem
-                        label={t('ARCHIVE_FUND_NAME')}
-                        colon={false}
-                    >
-                        <Input
-                            placeholder=""
-                            disabled
-                            value={this.state.record.fundList}
-                        />
-                    </FormItem>
-                    {fundHistoricalNoteMulti && (
-                        <Field
-                            name="fundHistoricalNoteMulti"
-                            component={renderTextareaLang}
-                            format={value => (!!value ? value.valueLng[lang.fundHistoricalNoteMulti] : "")}
-                            normalize={(val, prevVal, obj, prevObj) => {
-                                let newVal = {...prevVal};
-                                newVal.value = val;
-                                if (!!newVal.valueLng) {
-                                    newVal.valueLng[lang.fundHistoricalNoteMulti] = val;
-                                } else {
-                                    newVal["valueLng"] = {kz: "", en: "", ru: ""};
-                                    newVal.valueLng[lang.fundHistoricalNoteMulti] = val;
-                                }
-                                return newVal;
-                            }}
-                            label={fundHistoricalNoteMulti.name[this.lng]}
-                            formItemClass="with-lang"
-                            changeLang={this.changeLang}
-                            formItemLayout={{
-                                labelCol: {span: 10},
-                                wrapperCol: {span: 14}
-                            }}
-                        />
-                    )}
-                    {lastChangeDateScheme && (
-                        <Field
-                            name="lastChangeDateScheme"
-                            component={renderDatePicker}
-                            format={null}
-                            value = {moment().format('DD-MM-YYYY')}
-                            normalize={this.dateToRedux}
-                            label={lastChangeDateScheme.name[this.lng]}
-                            formItemLayout={{
-                                labelCol: {span: 10},
-                                wrapperCol: {span: 14}
-                            }}
-                        />
-                    )}
-                    {fundHistoricalNote && (
-                        <Field
-                            name="documentFile"
-                            component={renderFileUploadBtn}
-                            normalize={this.fileToRedux}
-                            cubeSConst="CubeForAF_Case"
-                            label={fundHistoricalNote.name[this.lng]}
-                            formItemLayout={{
-                                labelCol: {span: 10},
-                                wrapperCol: {span: 14}
-                            }}
-                        />
-                    )}
+            <div>
                     <span>Перечень внутрифондового НСА</span>
                     <AntTable
                         style={{margin: '0.5vw'}}
@@ -373,7 +363,39 @@ class SearchNSAArchiveFund extends React.Component {
                             ]
                         }
                     />
-                    {dirty && (
+                <Form
+                    className="antForm-spaceBetween"
+                    style={dirty ? {paddingBottom: "43px"} : {}}
+                    onSubmit={handleSubmit(this.onSubmit)}
+                >
+                    {lastChangeDateScheme && (
+                        <Field
+                            name="lastChangeDateScheme"
+                            component={renderDatePicker}
+                            format={null}
+                            normalize={this.dateToRedux}
+                            onTabClick={this.onSideBarTabClick}
+                            label={lastChangeDateScheme.name[this.lng]}
+                            formItemLayout={{
+                                labelCol: {span: 10},
+                                wrapperCol: {span: 14}
+                            }}
+                        />
+                    )}
+                    {fundHistoricalNote && (
+                        <Field
+                            name="fundHistoricalNote"
+                            component={renderFileUploadBtn}
+                            normalize={this.fileToRedux}
+                            cubeSConst="CubeForAF_Case"
+                            label={fundHistoricalNote.name[this.lng]}
+                            formItemLayout={{
+                                labelCol: {span: 10},
+                                wrapperCol: {span: 14}
+                            }}
+                        />
+                    )}
+                    {(dirty || this.state.float) && (
                         <Form.Item className="ant-form-btns absolute-bottom">
                             <Button
                                 className="signup-form__btn"
@@ -383,15 +405,36 @@ class SearchNSAArchiveFund extends React.Component {
                             >
                                 {submitting ? t("LOADING...") : t("SAVE")}
                             </Button>
+                            <Button
+                                className="signup-form__btn"
+                                type="danger"
+                                htmlType="button"
+                                disabled={submitting}
+                                style={{ marginLeft: "10px" }}
+                                onClick={reset}
+                            >
+                                {submitting ? t("LOADING...") : t("CANCEL")}
+                            </Button>
                             {error && (
                                 <span className="message-error">
-                    <i className="icon-error"/>
+                                    <i className="icon-error"/>
                                     {error}
-                  </span>
+                                </span>
                             )}
                         </Form.Item>
                     )}
                 </Form>
+                <div className="work-description">
+                    <RadioGroup onChange={this.onLangChange} defaultValue="ru" size="large">
+                        <RadioButton value="kz">KZ</RadioButton>
+                        <RadioButton value="ru">RU</RadioButton>
+                        <RadioButton value="en">EN</RadioButton>
+                    </RadioGroup>
+                    <TextArea placeholder="Description" autosize={{minRows: 2}}
+                              value={this.state.fundHistoricalNoteMulti[this.state.lange]} onChange={this.onChange}
+                              style={{marginTop: '10px'}}/>
+                </div>
+            </div>
         )
     }
 }
@@ -400,6 +443,7 @@ function mapStateToProps(state) {
     return {
         tofiConstants: state.generalData.tofiConstants,
         CubeForAF_Inv: state.cubes[CUBE_FOR_AF_INV],
+        cubeForFundAndIK: state.cubes["cubeForFundAndIK"],
         accessLevelOptions: state.generalData.accessLevel,
         invTypeOptions: state.generalData.invType,
         documentTypeOptions: state.generalData.documentType,

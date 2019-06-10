@@ -119,7 +119,7 @@ class CardReport_invTypeDigital_uprDoc extends Component {
 
 
   render() {
-      const { t, tofiConstants, saveProps, initialValues,periodType, keyInv, invType,docType } = this.props;
+      const { t, tofiConstants, saveProps,dateReport, initialValues,periodType, keyInv, invType,docType } = this.props;
     return <Spin spinning={this.state.loading}>
         <AntTabs
       tabs={[
@@ -130,6 +130,7 @@ class CardReport_invTypeDigital_uprDoc extends Component {
               initialValues={initialValues}
               tofiConstants={tofiConstants}
               periodType={periodType}
+              dateReport={dateReport}
               reportTypeOptions={!!this.state.reportTypeOptions? this.state.reportTypeOptions:[]}
           />
         },

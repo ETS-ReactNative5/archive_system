@@ -77,12 +77,12 @@ class Chat_FundMaker extends React.PureComponent {
     };
 
     componentDidMount() {
-        this.getListChat(this.props.initialValues.key);
+        this.getListChat(this.props.initialValues.id);
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.initialValues !== this.props.initialValues) {
-            this.getListChat(this.props.initialValues.key);
+            this.getListChat(this.props.initialValues.id);
         }
     }
 
@@ -96,7 +96,7 @@ class Chat_FundMaker extends React.PureComponent {
         const filters = {
             filterDOAnd: [
                 {
-                    dimConst: 'doForOrgFundmakers',
+                    dimConst: 'doForFundAndIK',
                     concatType: "and",
                     conds: [
                         {
@@ -107,7 +107,7 @@ class Chat_FundMaker extends React.PureComponent {
             ],
             filterDPAnd: [
                 {
-                    dimConst: 'dpForOrgFundmakers',
+                    dimConst: 'dpForFundAndIK',
                     concatType: "and",
                     conds: [
                         {
@@ -121,13 +121,13 @@ class Chat_FundMaker extends React.PureComponent {
             loading: true
         });
 
-        axios.getCube('cubeForOrgFundmaker', JSON.stringify(filters), '', '').then(res => {
+        axios.getCube('cubeForFundAndIK', JSON.stringify(filters), '', '').then(res => {
             this.setState({
                 cubeChat: res.data,
                 loading: false
             });
-            var dpForOrgFM = this.props.tofiConstants['dpForOrgFundmakers'].id;
-            var doForOrgFM = this.props.tofiConstants['doForOrgFundmakers'].id;
+            var dpForOrgFM = this.props.tofiConstants['dpForFundAndIK'].id;
+            var doForOrgFM = this.props.tofiConstants['doForFundAndIK'].id;
             var corresOrgId = this.state.cubeChat['dp_' + dpForOrgFM].find(obj => obj.prop == this.props.tofiConstants['corresOrg'].id).id;
             var cubeChat = this.state.cubeChat;
             var cpxCorresID = cubeChat.cube.filter(el => el['dp_' + dpForOrgFM] == corresOrgId);
@@ -208,10 +208,11 @@ class Chat_FundMaker extends React.PureComponent {
 
 
     deleteRow = (rec) => {
+       const  showDel = message.loading('Удаление',0);
         var data = [
             {
                 own: [{
-                    doConst: 'doForOrgFundmakers',
+                    doConst: 'doForFundAndIK',
                     doItem: String(rec.doObj),
                     isRel: "0",
                     objData: {}
@@ -236,11 +237,12 @@ class Chat_FundMaker extends React.PureComponent {
         ];
 
         updateCubeData2(
-        'cubeForOrgFundmaker',
+        'cubeForFundAndIK',
         moment().format('YYYY-MM-DD'),
         JSON.stringify(data),
         {},
         {}).then(res => {
+            showDel();
             if (res.success) {
                 message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
             } else {
@@ -252,17 +254,18 @@ class Chat_FundMaker extends React.PureComponent {
                     return {success: false}
                 }
             }
-            this.getListChat(this.props.initialValues.key)
+            this.getListChat(this.props.initialValues.id)
         });
     };
 
     addChatRow = () => {
-        console.log(this.props.initialValues.key)
+        const showLoad = message.loading('Сохранение',0);
+        console.log(this.props.initialValues.id)
         var data = [
             {
                 own: [{
-                    doConst: 'doForOrgFundmakers',
-                    doItem: String(this.props.initialValues.key),
+                    doConst: 'doForFundAndIK',
+                    doItem: String(this.props.initialValues.id),
                     isRel: "0",
                     objData: {}
                 }
@@ -270,9 +273,9 @@ class Chat_FundMaker extends React.PureComponent {
                 props: [{
                     propConst: "corresOrg",
                     val: {
-                        kz: `${this.state.initialValues.key}_${uuid()}`,
-                        ru: `${this.state.initialValues.key}_${uuid()}`,
-                        en: `${this.state.initialValues.key}_${uuid()}`
+                        kz: `${this.state.initialValues.id}_${uuid()}`,
+                        ru: `${this.state.initialValues.id}_${uuid()}`,
+                        en: `${this.state.initialValues.id}_${uuid()}`
                     },
                     typeProp: "71",
                     periodDepend: "2",
@@ -301,13 +304,14 @@ class Chat_FundMaker extends React.PureComponent {
         ];
 
         updateCubeData2(
-        'cubeForOrgFundmaker',
+        'cubeForFundAndIK',
         moment().format('YYYY-MM-DD'),
         JSON.stringify(data),
         {},
         {
             ['__Q__corresOrgFile']: Array.from(this.state.newFileArr)
         }).then(res => {
+            showLoad();
             if (res.success) {
                 message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
             } else {
@@ -319,7 +323,7 @@ class Chat_FundMaker extends React.PureComponent {
                     return {success: false}
                 }
             }
-            this.getListChat(this.props.initialValues.key)
+            this.getListChat(this.props.initialValues.id)
         });
 
 
@@ -432,7 +436,7 @@ class Chat_FundMaker extends React.PureComponent {
                             color: '#f14c34',
                             marginLeft: '10px',
                             fontSize: '14px'
-                        }}><Icon type="delete" className="editable-cell-icon"/></a>
+                        }}><Icon type="delete"/></a>
                       </Popconfirm>
                     </span>
                                 }

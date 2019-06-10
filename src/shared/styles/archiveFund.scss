@@ -9,6 +9,21 @@
 }
 
 
+.minW900px{
+  min-width: 900px !important;
+}
+.borderGroup{
+  border: 1px solid #e4e4e4;
+  padding: 5px 10px;
+}
+.borderGroupTitle{
+position: relative;
+top: -16px;
+background-color: #fff;
+padding: 0 15px;
+font-weight: bold;
+}
+
 .w1200{
   width: 1200px;
 }

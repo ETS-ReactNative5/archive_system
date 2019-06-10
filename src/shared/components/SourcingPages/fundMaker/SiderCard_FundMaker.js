@@ -161,18 +161,7 @@ class SiderCard_FundMaker extends React.PureComponent {
                 tofiConstants={tofiConstants}
                 t={t}
                 id={initialValues && initialValues.key}/>
-            },
-              {
-                  tabKey: 'chat',
-                  disabled: initialValues && !initialValues.key,
-                  tabName: t('CHAT'),
-                  id: initialValues && initialValues.key,
-                  tabContent: <Chat_FundMaker
-                  tofiConstants={tofiConstants}
-                  t={t}
-                  //withIdDPV={this.withIdDPV}
-                  initialValues={initialValues} />,
-              }
+            }
           ]}
           //onChange={this.handleTabChange}
         />

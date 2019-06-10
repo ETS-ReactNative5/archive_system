@@ -277,13 +277,7 @@ class TablelegalEntities extends React.Component {
         });
         return (
             <div className='Works' >
-                {this.state.loading ?
-                    <Spin style={{
-                        height: "calc(100vh - 81px)"
-                    }}/> :
-                    <div style={{
-                        height:"100%"
-                    }}>
+
                         <div className="Works__heading ">
                             <div className="table-header ">
 
@@ -335,14 +329,11 @@ class TablelegalEntities extends React.Component {
                                 </div>
                             </div>
                         </div>
-                        < div className='LegalEntities__body' style={{
-                            height: "100%"
-                        }}>
+                        <div className='LegalEntities__body' >
 
                             <AntTable
 
-                                loading={false}
-                                columns={[{
+ columns={[{
                                     title: '№',
                                     className: 'column-money',
                                     dataIndex: 'idx',
@@ -407,7 +398,7 @@ class TablelegalEntities extends React.Component {
                                 dataSource={this.filteredData}
                                 bordered
                                 footer={this.renderTableFooter}
-
+                                loading={this.state.loading}
                                 onRowClick={this.changeSelectedRow}
                                 rowClassName={record => {
                                     return !!this.state.selectedRow && this.state.selectedRow.id === record.id ? 'row-selected' : ''
@@ -422,7 +413,7 @@ class TablelegalEntities extends React.Component {
                                 classNames="card"
                                 unmountOnExit
                             >
-                                <SiderCard
+                                <SiderCard  className="minW900px"
                                     closer={
                                         <Button
                                             type="danger"
@@ -433,14 +424,13 @@ class TablelegalEntities extends React.Component {
                                         />
                                     }
                                 >
-                                    <Card initialValues={this.state.selectedRow} {...this.props}
+                                    <Card className="minW900px" initialValues={this.state.selectedRow} {...this.props}
                                           dateIncludeOfIk={this.state.dateReport}/>
                                 </SiderCard>
                             </CSSTransition>
 
 
                         </div>
-                    </div>
 
                 }
 

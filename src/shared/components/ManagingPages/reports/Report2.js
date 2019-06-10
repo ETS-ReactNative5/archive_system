@@ -416,7 +416,7 @@ class Report2 extends React.Component {
                                     />
                                 }
                             >
-                                <Card periodType={this.state.quarter}
+                                <Card periodType={this.state.quarter} dateReport={this.state.dateReport}
                                       initialValues={this.state.selectedRow} {...this.props}/>
 
                             </SiderCard>

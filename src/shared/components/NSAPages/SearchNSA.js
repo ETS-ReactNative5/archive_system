@@ -27,7 +27,7 @@ import Select from "../Select";
 import SiderCard from "../SiderCard";
 import {CSSTransition} from "react-transition-group";
 import SearchNSACard from "./SearchNSACard";
-
+import SearchNSAArchiveFund from "./SearchNSAArchiveFund";
 const confirm = Modal.confirm;
 
 /* eslint eqeqeq:0 */
@@ -78,6 +78,7 @@ class SearchNSA extends Component {
             annotationContentOfDocument: '',
             invMulti: '',
             fundHistoricalNoteMulti: '',
+            lastChangeDateScheme: '',
             fundCaseFlags: {
                 caseOCD: false,
                 irreparablyDamaged: false,
@@ -97,7 +98,7 @@ class SearchNSA extends Component {
                     concatType: "and",
                     conds: [
                         {
-                            consts: 'fundNumber,fundIndex,fundDbeg,fundDend,fundCategory,fundFeature,fundArchive'
+                            consts: 'fundNumber,fundHistoricalNote,fundHistoricalNoteMulti,lastChangeDateScheme,invFound,fundIndex,fundDbeg,fundDend,fundCategory,fundFeature,fundArchive'
                         }
                     ]
                 }
@@ -592,8 +593,8 @@ class SearchNSA extends Component {
             fundDbeg, fundDend, fundNumber, fundIndex, fundCategory, fundFeature,
             fundIndustry, fundmakerOfIK, fundmakerMulti, fundExitDate, fundExitReason, fundToGuidbook,
             fundFirstDocFlow, fundDateOfLastCheck, collectionCreateDate, creationConds,
-            creationReason, creationPrinciple, collectionLocation,
-            caseOCD, irreparablyDamaged, caseFundOfUse, propAuthenticity, typeOfPaperCarrier,
+            creationReason, creationPrinciple, collectionLocation,lastChangeDateScheme,
+            caseOCD, irreparablyDamaged, caseFundOfUse, propAuthenticity, typeOfPaperCarrier,fundHistoricalNoteMulti,
             // fundAnnotationFile, invFile,
         } = this.props.tofiConstants;
         const fundNumbObj = item.props.find(element => element.prop == fundNumber.id).values,
@@ -615,6 +616,8 @@ class SearchNSA extends Component {
             creationReasonObj = item.props.find(element => element.prop == creationReason.id),
             creationPrincipleObj = item.props.find(element => element.prop == creationPrinciple.id),
             collectionLocationObj = item.props.find(element => element.prop == collectionLocation.id),
+            lastChangeDateSchemeObj=item.props.find(element => element.prop == lastChangeDateScheme.id),
+            fundHistoricalNoteMultiObj= item.props.find(element => element.prop == fundHistoricalNoteMulti.id),
             fundTypeObj = this.props.tofiConstants[
                 ['fundOrg', 'fundLP', 'collectionOrg', 'collectionLP', 'jointOrg', 'jointLP']
                     .find(c => this.props.tofiConstants[c].id == item.clsORtr)];
@@ -626,6 +629,7 @@ class SearchNSA extends Component {
         const caseFundOfUseObj = item.props.find(element => element.prop === caseFundOfUse.id);
         const propAuthenticityObj = item.props.find(element => element.prop === propAuthenticity.id);
         const typeOfPaperCarrierObj = item.props.find(element => element.prop === typeOfPaperCarrier.id);
+        debugger;
         return {
             key: item.id,
             shortName: item.name,
@@ -659,11 +663,14 @@ class SearchNSA extends Component {
             creationPrinciple: creationPrincipleObj && creationPrincipleObj.valueLng,
             collectionLocation: collectionLocationObj && collectionLocationObj.valueLng,
             fundIndustry: fundIndustryObj && fundIndustryObj.values && fundIndustryObj.values.length > 0 ? fundIndustryObj.values.sort((a, b) => a.value > b.value)[fundIndustryObj.values.length - 1] : {},
+            lastChangeDateScheme:lastChangeDateSchemeObj && lastChangeDateSchemeObj.value ? moment(lastChangeDateSchemeObj.value, 'DD-MM-YYYY') : null,
+            fundHistoricalNoteMulti:fundHistoricalNoteMultiObj && fundHistoricalNoteMultiObj.values ? fundHistoricalNoteMultiObj.values : [],
+     //       'fundHistoricalNote','fundHistoricalNoteMulti',''
         }
     };
     renderRecordData = (item) => {
         const constArr = ['fundToGuidbook', 'accessDocument', 'locationOfSupplementaryMaterials',
-            'fundAnnotationFile', 'invFile', 'fundHistoricalNote'];
+            'fundAnnotationFile', 'invFile', 'fundHistoricalNote','fundHistoricalNote','fundHistoricalNoteMulti','lastChangeDateScheme','invFound'];
         const result = {
             key: item.id
         };
@@ -743,7 +750,7 @@ class SearchNSA extends Component {
     render() {
         if (isEmpty(this.props.tofiConstants)) return null;
         const {loading, selectedRow, data, filter, fundCaseFlags} = this.state;
-        const {annotationContentOfDocument, invMulti, fundHistoricalNoteMulti} = this.state;
+        const {annotationContentOfDocument, invMulti, fundHistoricalNoteMulti,lastChangeDateScheme} = this.state;
         const {
             t, tofiConstants,
             tofiConstants: {fundNumber, fundDbeg, fundDend, fundIndex, fundCategory, fundFeature, fundIndustry}

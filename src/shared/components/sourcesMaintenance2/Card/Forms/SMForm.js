@@ -248,7 +248,7 @@ class SMForm extends React.Component {
                         normalize={this.dateToRedux}
                         format={null}
                         formItemLayout={formItemLayout}
-                        />}
+                    />}
                     </Col>
 
                     <Col span={6}>
