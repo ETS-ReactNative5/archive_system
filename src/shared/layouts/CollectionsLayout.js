@@ -27,7 +27,7 @@ let AsyncSignupForm,
   AsyncNSA,
   AsyncSourcing,
   AsyncSourcing2,
-
+    Inventory,
     AsyncUsesRoutes,
   AsyncArchiveFundRoutes,
   AsyncManagingRoutes,
@@ -59,6 +59,10 @@ try {
     loading: () => <Spin style={{ position: 'absolute', left: '50%', top: '50%', transform: "translateX(-50%)" }}/>
   });
     AsyncSourcing2 = Loadable({
+        loader: () => import('../containers/Sourcing'),
+        loading: () => <Spin style={{ position: 'absolute', left: '50%', top: '50%', transform: "translateX(-50%)" }}/>
+    });
+    Inventory = Loadable({
         loader: () => import('../containers/Sourcing'),
         loading: () => <Spin style={{ position: 'absolute', left: '50%', top: '50%', transform: "translateX(-50%)" }}/>
     });
@@ -147,6 +151,12 @@ class CollectionsLayout extends Component {
             {
                 name: `${t('SOURCE_ACQUISITION')}2`, // Источники комплектования2
                 path: '/sourcing/sourcesMaintenance2',
+                priv: 'sourceacquisition'
+
+            },
+            {
+                name:  t("INVENTORY"),
+                path: '/sourcing/inventory',
                 priv: 'sourceacquisition'
 
             },
@@ -397,6 +407,7 @@ class CollectionsLayout extends Component {
               <Route path="/managing" render={props => user ? <AsyncManagingRoutes tofiConstants={tofiConstants} {...props} /> : <Redirect to='/' />} />
               <Route path="/sourcing" render={props => user ? <AsyncSourcing {...props} /> : <Redirect to='/' />} />
               <Route path="/sourcing" render={props => user ? <AsyncSourcing2 {...props} /> : <Redirect to='/' />} />
+              <Route path="/sourcing" render={props => user ? <Inventory {...props} /> : <Redirect to='/' />} />
               <Route path="/sra" render={props => user ? <AsyncNSA tofiConstants={tofiConstants} {...props} /> : <Redirect to='/' />} />
               <Route path="/works" render={props => user ? <AsyncWorksRoutes tofiConstants={tofiConstants} {...props} /> : <Redirect to='/' />}/>
               <Route path="/users-roles" render={props => user ? <UsersRoles t={t} tofiConstants={tofiConstants} {...props} /> : <Redirect to='/' />}/>

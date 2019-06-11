@@ -240,7 +240,7 @@ class SMForm extends React.Component {
                   style={dirty ? {paddingBottom: '43px'} : {}}>
 
                 <Row>
-                    <Col span={6}>
+                    <Col span={5}>
                         {dateIncludeOfIk && <Field
                         name='dateIncludeOfIk'
                         component={renderDatePicker}
@@ -251,7 +251,7 @@ class SMForm extends React.Component {
                     />}
                     </Col>
 
-                    <Col span={6}>
+                    <Col span={5}>
                         {reasonInclusion && <Field
                         name='reasonInclusion'
                         normalize={this.strToRedux}
@@ -272,7 +272,7 @@ class SMForm extends React.Component {
                         />}
                     </Col>
 
-                    <Col span={6}>
+                    <Col span={4}>
                         {numberOfIK && <Field
                         name='numberOfIK'
                         normalize={this.strToRedux}
@@ -282,7 +282,7 @@ class SMForm extends React.Component {
                         />}
                     </Col>
 
-                    <Col span={6}>
+                    <Col span={4}>
                         {indexOfIK && <Field
                         name='indexOfIK'
                         normalize={this.strToRedux}

@@ -21,7 +21,7 @@ export const parseForTableComplex = (cube, doConst, dpConst, dtConst, tofiConsta
     var complexObj = {};
     complexObj.key = el.idDataPropVal;
     complexObj.name = el.valueStr;
-    complexObj.doObj = el['do_' + tofiConstants['doForFundAndIK'].id];
+    complexObj.doObj = el['do_' + tofiConstants[doConst].id];
     arrConst.forEach(arrEl => {
       var arrElId = dpComplex.find(prop => prop.prop == tofiConstants[arrEl].id).id;
       return complexObj[arrEl] = cubeComplex.find(chl => chl.parentDataPropVal == el.idDataPropVal && chl['dp_' + tofiConstants[dpConst].id] == arrElId)
@@ -35,13 +35,26 @@ export const parseForTableComplex = (cube, doConst, dpConst, dtConst, tofiConsta
 
 export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable, dpTable, doConst, dpConst) => {
   try {
+
+
+    const doTableWithComplexChilds = doTable.map(item => ({
+      ...item,
+      childProps: dpTable.map(oneLevelCopy).filter(el => el.parent)
+    }));
+
     const doTableWithProps = doTable.map(item => ({
       ...item,
-      props: dpTable.map(oneLevelCopy)
+      props: dpTable.map(oneLevelCopy).filter(el => !el.parent)
     }));
+
+
     cubeVal.forEach(cubeValItem => {
-      const prop = doTableWithProps.find(doItem => doItem['id'] === cubeValItem[doConst])['props'].find(dpItem => dpItem['id'] === cubeValItem[dpConst]);
+      const prop = doTableWithProps.find(doItem => doItem['id'] === cubeValItem[doConst])['props'].find(dpItem => dpItem['id'] === cubeValItem[dpConst]) ?
+        doTableWithProps.find(doItem => doItem['id'] === cubeValItem[doConst])['props'].find(dpItem => dpItem['id'] === cubeValItem[dpConst]) :
+        doTableWithComplexChilds.find(doItem => doItem['id'] === cubeValItem[doConst])['childProps'].find(dpItem => dpItem['id'] === cubeValItem[dpConst]);
+
       const propType = prop['typeProp'];
+
       switch (true) {
         case (propType === 1) :
           return;
@@ -547,7 +560,23 @@ export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable
           return;
       }
     });
-    console.log('doTableWithProps', doTableWithProps);
+
+
+
+    doTableWithProps.forEach(obj => obj.props.filter(
+      prop=>prop.typeProp == '71').forEach(
+      complexProp => complexProp.values && complexProp.values.forEach(val => {
+      doTableWithComplexChilds.find(obj2 => !!obj2.childProps && obj2.id == obj.id).childProps.forEach(childProp => {
+        let childPropVal = [];
+        childProp.complexChildValues && childProp.complexChildValues.forEach(cmpxChildVal => {
+          if (cmpxChildVal.parentDataPropVal == val.idDataPropVal) {
+            childPropVal.push(cmpxChildVal)
+          }
+        })
+        val[childProp.prop] = childPropVal
+      });
+    })));
+
     return doTableWithProps;
   } catch (err) {
     console.warn(err);
@@ -560,6 +589,7 @@ export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable
  * result - object
  * */
 export const parseForTable = (props, tofiConstants, result, constArr) => {
+
   const keys = constArr ? constArr : Object.keys(tofiConstants);
   try {
     props.forEach(dp => {

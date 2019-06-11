@@ -594,7 +594,7 @@ class SearchNSA extends Component {
             fundIndustry, fundmakerOfIK, fundmakerMulti, fundExitDate, fundExitReason, fundToGuidbook,
             fundFirstDocFlow, fundDateOfLastCheck, collectionCreateDate, creationConds,
             creationReason, creationPrinciple, collectionLocation,lastChangeDateScheme,
-            caseOCD, irreparablyDamaged, caseFundOfUse, propAuthenticity, typeOfPaperCarrier,fundHistoricalNoteMulti,
+            caseOCD, irreparablyDamaged, caseFundOfUse, propAuthenticity, typeOfPaperCarrier,fundHistoricalNoteMulti,fundHistoricalNote,
             // fundAnnotationFile, invFile,
         } = this.props.tofiConstants;
         const fundNumbObj = item.props.find(element => element.prop == fundNumber.id).values,
@@ -617,6 +617,7 @@ class SearchNSA extends Component {
             creationPrincipleObj = item.props.find(element => element.prop == creationPrinciple.id),
             collectionLocationObj = item.props.find(element => element.prop == collectionLocation.id),
             lastChangeDateSchemeObj=item.props.find(element => element.prop == lastChangeDateScheme.id),
+            fundHistoricalNoteObj=item.props.find(element => element.prop ==  fundHistoricalNote.id),
             fundHistoricalNoteMultiObj= item.props.find(element => element.prop == fundHistoricalNoteMulti.id),
             fundTypeObj = this.props.tofiConstants[
                 ['fundOrg', 'fundLP', 'collectionOrg', 'collectionLP', 'jointOrg', 'jointLP']
@@ -629,7 +630,6 @@ class SearchNSA extends Component {
         const caseFundOfUseObj = item.props.find(element => element.prop === caseFundOfUse.id);
         const propAuthenticityObj = item.props.find(element => element.prop === propAuthenticity.id);
         const typeOfPaperCarrierObj = item.props.find(element => element.prop === typeOfPaperCarrier.id);
-        debugger;
         return {
             key: item.id,
             shortName: item.name,
@@ -663,8 +663,9 @@ class SearchNSA extends Component {
             creationPrinciple: creationPrincipleObj && creationPrincipleObj.valueLng,
             collectionLocation: collectionLocationObj && collectionLocationObj.valueLng,
             fundIndustry: fundIndustryObj && fundIndustryObj.values && fundIndustryObj.values.length > 0 ? fundIndustryObj.values.sort((a, b) => a.value > b.value)[fundIndustryObj.values.length - 1] : {},
-            lastChangeDateScheme:lastChangeDateSchemeObj && lastChangeDateSchemeObj.value ? moment(lastChangeDateSchemeObj.value, 'DD-MM-YYYY') : null,
+            lastChangeDateScheme:lastChangeDateSchemeObj && lastChangeDateSchemeObj.values ? lastChangeDateSchemeObj.values : '',
             fundHistoricalNoteMulti:fundHistoricalNoteMultiObj && fundHistoricalNoteMultiObj.values ? fundHistoricalNoteMultiObj.values : [],
+            fundHistoricalNote:fundHistoricalNoteObj && fundHistoricalNoteObj.values ? fundHistoricalNoteObj.values : [],
      //       'fundHistoricalNote','fundHistoricalNoteMulti',''
         }
     };

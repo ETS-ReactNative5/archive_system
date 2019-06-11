@@ -23,9 +23,9 @@ class StorageOptionsForm extends React.Component {
         loading: {
             fundArchiveLoading: false,
             orgDocTypeLoading: false,
-            lightingTypeLoading:false,
-            materialOfLockersLoading:false,
-            shelvingLoading:false
+            lightingTypeLoading: false,
+            materialOfLockersLoading: false,
+            shelvingLoading: false
 
         },
         optionMultiSelect: []
@@ -255,7 +255,7 @@ class StorageOptionsForm extends React.Component {
 
     render() {
         this.lng = localStorage.getItem('i18nextLng');
-        const {submitting, error, reset, handleSubmit, dirty, tofiConstants, t, fundArchiveOptions, orgDocTypeOption, initialValues,shelvingOptions, lightingTypeOptions,materialOfLockersOptions} = this.props;
+        const {submitting, error, reset, handleSubmit, dirty, tofiConstants, t, fundArchiveOptions, orgDocTypeOption, initialValues, shelvingOptions, lightingTypeOptions, materialOfLockersOptions} = this.props;
         const {hasArchiveStore, fireExtTools, irreparablyDamagedTrue, roomHeating, hasFireAlarm, hasSecurityAlarmSystem, hasDevices, lighting, lockers, hasReadingRoom, numberOfRooms, roomArea, roomOccupancy, lightingType, materialOfLockers, shelving} = this.props.tofiConstants;
 
         const formItemLayout = {
@@ -440,8 +440,8 @@ class StorageOptionsForm extends React.Component {
                             normalize={this.selectToRedux}
                             label={lightingType.name[this.lng]}
                             formItemLayout={{
-                                labelCol: { span: 10 },
-                                wrapperCol: { span: 14 }
+                                labelCol: {span: 10},
+                                wrapperCol: {span: 14}
                             }}
                             isLoading={this.state.lightingTypeLoading}
                             data={
@@ -457,23 +457,6 @@ class StorageOptionsForm extends React.Component {
                             // colon={true}
                             />
                             )}
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-
-
-
-
 
                             {materialOfLockers && <Field
                             name="materialOfLockers"
@@ -492,17 +475,6 @@ class StorageOptionsForm extends React.Component {
                             })) : []}
                             onMenuOpen={this.loadOptions('materialOfLockers')}
                             />}
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
-                            
 
                             {shelving && (
                             <Field
@@ -511,8 +483,8 @@ class StorageOptionsForm extends React.Component {
                             normalize={this.selectToRedux}
                             label={shelving.name[this.lng]}
                             formItemLayout={{
-                                labelCol: { span: 10 },
-                                wrapperCol: { span: 14 }
+                                labelCol: {span: 10},
+                                wrapperCol: {span: 14}
                             }}
                             isLoading={this.state.shelvingLoading}
                             data={
@@ -528,7 +500,7 @@ class StorageOptionsForm extends React.Component {
                             // colon={true}
                             />
                             )}
-                            
+
                         </div>
                     </Col>
                 </Row>
@@ -556,8 +528,8 @@ class StorageOptionsForm extends React.Component {
 export default connect(state => {
     return {
         lightingTypeOptions: state.generalData.lightingType,
-        shelvingOptions:state.generalData.shelving,
-        materialOfLockersOptions:state.generalData.materialOfLockers,
+        shelvingOptions: state.generalData.shelving,
+        materialOfLockersOptions: state.generalData.materialOfLockers,
         tofiConstants: state.generalData.tofiConstants,
         fundArchiveOptions: state.generalData.fundArchive,
         orgDocTypeOption: state.generalData.orgDocType

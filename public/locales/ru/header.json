@@ -55,5 +55,6 @@
   "CANCEL":"Отменить",
   "ACQUISITION_REPORTS": "Отчеты по комплектованию",
   "STORAGE_REPORTS": "Отчеты по учету и хранению",
-  "STATUS":"Статус"
+  "STATUS":"Статус",
+  "INVENTORY": "Описи"
 }

@@ -15,7 +15,7 @@ import Form from "antd/es/form/Form";
 import Row from "antd/es/grid/row";
 import {requiredArr, requiredLabel} from "../../../../utils/form_validations";
 import {getPropVal} from "../../../../actions/actions";
-import ComplexContactTable from "./ComplexContactTable";
+import ComplexContactTable2 from "./ComplexContactTable2";
 
 class ContactForm extends React.Component {
     state = {
@@ -225,7 +225,7 @@ class ContactForm extends React.Component {
         const {loading} = this.state;
         return (
         <div>
-            <ComplexContactTable
+            <ComplexContactTable2
             selectedIK={this.props.selectedIK}
             tofiConstants={this.props.tofiConstants}
             cubeData={this.state.cubeData}

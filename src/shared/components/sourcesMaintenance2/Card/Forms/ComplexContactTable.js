@@ -1,7 +1,7 @@
 import React from "react"
 import AntTable from "../../../AntTable";
 import axios from 'axios';
-import {onSaveCubeData, parseCube_new, parseForTableComplex} from "../../../../utils/cubeParser";
+import {onSaveCubeData, parseForTableComplex} from "../../../../utils/cubeParser";
 import {Icon, Popconfirm, Spin, Button, Col, Row} from "antd";
 import EditableCell from "../../../SourcingPages/sources/EditableCell";
 import Input from "antd/es/input/Input";
@@ -39,12 +39,13 @@ class ComplexContactTable extends React.Component {
     };
 
     check = (obj, c) => {
-        //console.log(obj);
         let editable = {...this.state.editable};
         let oldTableData = [...this.state.oldTableData];
         let cell = oldTableData.find(el => el[c].idDataPropVal == obj.idDataPropVal);
-        if (cell[c].valueStr !== obj.valueStr) {
-            console.log('save');
+
+        var val1 = JSON.stringify(cell[c].valueStr);
+        var val2 = JSON.stringify(obj.valueStr);
+        if (val1 !== val2) {
             var data = [
                 {
                     own: [{
@@ -76,7 +77,7 @@ class ComplexContactTable extends React.Component {
             {}).then(res => res.success == true ? message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED')) : message.error(res.errors[0].text))
         }
         else {
-            console.log('equal');
+
         }
         editable[obj.idDataPropVal] = false;
         this.setState({editable: editable});
@@ -99,7 +100,6 @@ class ComplexContactTable extends React.Component {
 
         }
 
-        console.log(nextnumber);
         var data = [
             {
                 own: [{
@@ -230,16 +230,16 @@ class ComplexContactTable extends React.Component {
                     ]
                 }
             ],
-          filterDTOr: [
-            {
-                dimConst: 'dtForFundAndIK',
-              conds: [
+            filterDTOr: [
                 {
-                  ids: String(this.props.dateIncludeOfIk.slice(-4)) + '0101' + String(this.props.dateIncludeOfIk.slice(-4)) + '1231'
+                    dimConst: 'dtForFundAndIK',
+                    conds: [
+                        {
+                            ids: String(this.props.dateIncludeOfIk.slice(-4)) + '0101' + String(this.props.dateIncludeOfIk.slice(-4)) + '1231'
+                        }
+                    ]
                 }
-              ]
-            }
-          ]
+            ]
         };
 
         const fd = new FormData();
@@ -250,15 +250,7 @@ class ComplexContactTable extends React.Component {
             var arrConst = ['contactPersonsComplexNum', 'contactPersonsComplex', 'contactPersonsComplexFio', 'contactPersonsComplexPosition', 'contactPersonsComplexPhone', 'contactPersonsComplexEmail'];
             var tofiConstants = this.props.tofiConstants;
             var dateIncludeOfIk = this.props.dateIncludeOfIk;
-            var result = parseCube_new(
-              cubeData.cube, [], 'dp', 'do',
-              cubeData['do_1009'],
-              cubeData['dp_1011'],
-              'do_1009',
-              'dp_1011');
-            console.log('*****************', result);
-            debugger;
-            //var result = parseForTableComplex(cubeData, 'doForFundAndIK', 'dpForFundAndIK', 'dtForFundAndIK', tofiConstants, arrConst, dateIncludeOfIk);
+            var result = parseForTableComplex(cubeData, 'doForFundAndIK', 'dpForFundAndIK', 'dtForFundAndIK', tofiConstants, arrConst, dateIncludeOfIk);
 
 
             var oldTableData = JSON.parse(JSON.stringify(result));
@@ -370,7 +362,8 @@ class ComplexContactTable extends React.Component {
                                     onPressEnter={() => this.check(obj, 'contactPersonsComplexFio')}
                                     />
                                 </Col>
-                                <Col span={4} style={{textAlign:'right',paddingTop:'6px'}}>
+                                <Col span={4}
+                                     style={{textAlign: 'right', paddingTop: '6px'}}>
                                     <Icon
                                     type="check"
                                     className="editable-cell-icon-check"
@@ -404,16 +397,22 @@ class ComplexContactTable extends React.Component {
 
                         obj && this.state.editable[obj.idDataPropVal] ?
                         <div className="editable-cell-input-wrapper">
-                            <Input
-                            value={obj ? obj.valueStr ? obj.valueStr[this.lng] : '' : ''}
-                            onChange={(e) => this.handleChange(e, obj.idDataPropVal, 'contactPersonsComplexPosition')}
-                            onPressEnter={() => this.check(obj, 'contactPersonsComplexPosition')}
-                            />
-                            <Icon
-                            type="check"
-                            className="editable-cell-icon-check"
-                            onClick={() => this.check(obj, 'contactPersonsComplexPosition')}
-                            />
+                            <Row>
+                                <Col span={20}>
+                                    <Input
+                                    value={obj ? obj.valueStr ? obj.valueStr[this.lng] : '' : ''}
+                                    onChange={(e) => this.handleChange(e, obj.idDataPropVal, 'contactPersonsComplexPosition')}
+                                    onPressEnter={() => this.check(obj, 'contactPersonsComplexPosition')}
+                                    />
+                                </Col>
+                                <Col span={4}>
+                                    <Icon
+                                    type="check"
+                                    className="editable-cell-icon-check"
+                                    onClick={() => this.check(obj, 'contactPersonsComplexPosition')}
+                                    />
+                                </Col>
+                            </Row>
                         </div>
                         :
                         <div className="editable-cell-text-wrapper">
@@ -438,16 +437,23 @@ class ComplexContactTable extends React.Component {
 
                         obj && this.state.editable[obj.idDataPropVal] ?
                         <div className="editable-cell-input-wrapper">
-                            <Input
-                            value={obj ? obj.valueStr ? obj.valueStr[this.lng] : '' : ''}
-                            onChange={(e) => this.handleChange(e, obj.idDataPropVal, 'contactPersonsComplexPhone')}
-                            onPressEnter={() => this.check(obj, 'contactPersonsComplexPhone')}
-                            />
-                            <Icon
-                            type="check"
-                            className="editable-cell-icon-check"
-                            onClick={() => this.check(obj, 'contactPersonsComplexPhone')}
-                            />
+
+                            <Row>
+                                <Col span={20}>
+                                    <Input
+                                    value={obj ? obj.valueStr ? obj.valueStr[this.lng] : '' : ''}
+                                    onChange={(e) => this.handleChange(e, obj.idDataPropVal, 'contactPersonsComplexPhone')}
+                                    onPressEnter={() => this.check(obj, 'contactPersonsComplexPhone')}
+                                    />
+                                </Col>
+                                <Col span={4}>
+                                    <Icon
+                                    type="check"
+                                    className="editable-cell-icon-check"
+                                    onClick={() => this.check(obj, 'contactPersonsComplexPhone')}
+                                    />
+                                </Col>
+                            </Row>
                         </div>
                         :
                         <div className="editable-cell-text-wrapper">
@@ -472,16 +478,22 @@ class ComplexContactTable extends React.Component {
 
                         obj && this.state.editable[obj.idDataPropVal] ?
                         <div className="editable-cell-input-wrapper">
-                            <Input
-                            value={obj ? obj.valueStr ? obj.valueStr[this.lng] : '' : ''}
-                            onChange={(e) => this.handleChange(e, obj.idDataPropVal, 'contactPersonsComplexEmail')}
-                            onPressEnter={() => this.check(obj, 'contactPersonsComplexEmail')}
-                            />
-                            <Icon
-                            type="check"
-                            className="editable-cell-icon-check"
-                            onClick={() => this.check(obj, 'contactPersonsComplexEmail')}
-                            />
+                            <Row>
+                                <Col span={20}>
+                                    <Input
+                                    value={obj ? obj.valueStr ? obj.valueStr[this.lng] : '' : ''}
+                                    onChange={(e) => this.handleChange(e, obj.idDataPropVal, 'contactPersonsComplexEmail')}
+                                    onPressEnter={() => this.check(obj, 'contactPersonsComplexEmail')}
+                                    />
+                                </Col>
+                                <Col span={4}>
+                                    <Icon
+                                    type="check"
+                                    className="editable-cell-icon-check"
+                                    onClick={() => this.check(obj, 'contactPersonsComplexEmail')}
+                                    />
+                                </Col>
+                            </Row>
                         </div>
                         :
                         <div className="editable-cell-text-wrapper">
@@ -524,17 +536,13 @@ class ComplexContactTable extends React.Component {
         <div>
             <br/><br/>
             <h2>{contactPersonsComplex.name[this.lng]}</h2>
-
-            <AntTable loading={this.state.loading} columns={columns}
-                      hidePagination
-                      dataSource={this.state.tableData}/>
-            <Button type="primary" icon="plus-circle-o" loading={this.state.iconLoading}
+            <Button type="primary" icon="plus-circle-o" loading={this.state.iconLoading} style={{margin:'5px'}}
                     onClick={this.addRow}>
                 Добавить контакт
             </Button>
-
-
-            <hr/>
+            <AntTable className="fixHeight" loading={this.state.loading} columns={columns}
+                      hidePagination
+                      dataSource={this.state.tableData}/>
         </div>
         )
     }

@@ -173,7 +173,7 @@ class Guides extends React.Component {
           conds: [{
             data: {
               dimPropConst: 'dpForFundAndIK',
-              propConst: 'fundToGuidebook',
+              propConst: 'fundToGuidbook',
               valueRef: { id: rec.key },
               condType: '='
             }

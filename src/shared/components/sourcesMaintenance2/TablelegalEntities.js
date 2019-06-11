@@ -50,7 +50,7 @@ class TablelegalEntities extends React.Component {
     renderTableData = (item, idx) => {
         const constArr = ["numberOfIK", "orgDocType", "formOfAdmission", "fundArchive", "dateIncludeOfIk", "dateExcludeOfIk","fundmakerOfIK"];
         const result = {
-            idx: idx + 1,
+            idss: idx + 1,
             id: item.id,
             name: item.name,
 
@@ -333,13 +333,12 @@ class TablelegalEntities extends React.Component {
 
                             <AntTable
 
- columns={[{
+                                columns={[{
                                     title: '№',
                                     className: 'column-money',
-                                    dataIndex: 'idx',
-                                    key: "idx",
+                                    dataIndex: 'idss',
+                                    key: "idss",
                                     width: '5%',
-                                    render: key => key && key,
                                     sorter: (a, b) => a - b,
                                     sortOrder: 'ascend'
                                 },
@@ -385,7 +384,10 @@ class TablelegalEntities extends React.Component {
                                                     for (let val of obj) {
                                                         newArr.push(val.label)
                                                     }
-                                                    return newArr.join(",")
+                                                    let  unique = newArr.filter(function(elem, index, self) {
+                                                        return index === self.indexOf(elem);
+                                                    })
+                                                    return unique.join(",")
 
                                                 }
                                             }
@@ -432,7 +434,7 @@ class TablelegalEntities extends React.Component {
 
                         </div>
 
-                }
+                
 
 
             </div>

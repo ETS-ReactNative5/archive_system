@@ -49,6 +49,8 @@
   "EXIT": "Exit",
   "SAVE": "Save",
   "ACQUISITION_REPORTS": "Acquisition reports",
-  "STORAGE_REPORTS": "Storage reports"
+  "STORAGE_REPORTS": "Storage reports",
+  "INVENTORY": "Inventory"
+
 
 }

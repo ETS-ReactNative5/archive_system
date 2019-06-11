@@ -137,6 +137,9 @@ class SearchNSAArchiveFund extends React.Component {
                })
            }
        )
+       if (this.props.record && !isEqual(this.props.record, this.state.record)) {
+                 this.setState({ record: this.props.record });
+       }
     }
 
     changeLang = e => {
@@ -198,6 +201,11 @@ class SearchNSAArchiveFund extends React.Component {
         return result;
 
     };
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.record && !isEqual(nextProps.record, this.state.record)) {
+            this.setState({record: nextProps.record});
+        }
+    }
 
     onSubmit = ({fundHistoricalNote, ...values}) => {
         if (!this.props.initialValues.key) {
@@ -243,6 +251,7 @@ class SearchNSAArchiveFund extends React.Component {
         this.setState({lange: e.target.value})
     };
     saveProps = async (c, v, t = this.props.tofiConstants, objData, key) => {
+        debugger;
         let hideLoading;
         try {
             if (!c.cube) c.cube = {
@@ -339,9 +348,31 @@ class SearchNSAArchiveFund extends React.Component {
         } = this.props;
         return (
             <div>
+                <Form className="antForm-spaceBetween">
+                    <FormItem
+                        label={t('ARCHIVE_FUND_NAME')}
+                        colon={false}
+                    >
+                        <Input
+                            placeholder=""
+                            disabled
+                            value={this.state.record.fundList}
+                        />
+                    </FormItem>
+                </Form>
+                <div className="work-description" style={{ marginLeft: '.5vw', marginRight: '.5vw'}}>
+                    <TextArea placeholder="Description" autosize={{minRows: 2}}
+                              value={this.state.fundHistoricalNoteMulti[this.state.lange]} onChange={this.onChange}
+                              style={{marginTop: '10px'}}/>
+                    <RadioGroup onChange={this.onLangChange} style={{marginTop: '0.5vw'}} defaultValue="ru" size="large">
+                        <RadioButton value="kz">KZ</RadioButton>
+                        <RadioButton value="ru">RU</RadioButton>
+                        <RadioButton value="en">EN</RadioButton>
+                    </RadioGroup>
+                </div>
+                <div style={{marginTop: '1vw', marginLeft: '1vw', marginRight: '1vw'}}>
                     <span>Перечень внутрифондового НСА</span>
                     <AntTable
-                        style={{margin: '0.5vw'}}
                         loading={this.state.tableLoader}
                         dataSource={this.state.tableData}
                         columns={
@@ -363,11 +394,25 @@ class SearchNSAArchiveFund extends React.Component {
                             ]
                         }
                     />
+                </div>
                 <Form
                     className="antForm-spaceBetween"
                     style={dirty ? {paddingBottom: "43px"} : {}}
                     onSubmit={handleSubmit(this.onSubmit)}
                 >
+                    {fundHistoricalNote && (
+                        <Field
+                            name="fundHistoricalNote"
+                            component={renderFileUploadBtn}
+                            normalize={this.fileToRedux}
+                            cubeSConst="CubeForAF_Case"
+                            label={fundHistoricalNote.name[this.lng]}
+                            formItemLayout={{
+                                labelCol: {span: 10},
+                                wrapperCol: {span: 14}
+                            }}
+                        />
+                    )}
                     {lastChangeDateScheme && (
                         <Field
                             name="lastChangeDateScheme"
@@ -376,19 +421,6 @@ class SearchNSAArchiveFund extends React.Component {
                             normalize={this.dateToRedux}
                             onTabClick={this.onSideBarTabClick}
                             label={lastChangeDateScheme.name[this.lng]}
-                            formItemLayout={{
-                                labelCol: {span: 10},
-                                wrapperCol: {span: 14}
-                            }}
-                        />
-                    )}
-                    {fundHistoricalNote && (
-                        <Field
-                            name="fundHistoricalNote"
-                            component={renderFileUploadBtn}
-                            normalize={this.fileToRedux}
-                            cubeSConst="CubeForAF_Case"
-                            label={fundHistoricalNote.name[this.lng]}
                             formItemLayout={{
                                 labelCol: {span: 10},
                                 wrapperCol: {span: 14}
@@ -424,16 +456,6 @@ class SearchNSAArchiveFund extends React.Component {
                         </Form.Item>
                     )}
                 </Form>
-                <div className="work-description">
-                    <RadioGroup onChange={this.onLangChange} defaultValue="ru" size="large">
-                        <RadioButton value="kz">KZ</RadioButton>
-                        <RadioButton value="ru">RU</RadioButton>
-                        <RadioButton value="en">EN</RadioButton>
-                    </RadioGroup>
-                    <TextArea placeholder="Description" autosize={{minRows: 2}}
-                              value={this.state.fundHistoricalNoteMulti[this.state.lange]} onChange={this.onChange}
-                              style={{marginTop: '10px'}}/>
-                </div>
             </div>
         )
     }

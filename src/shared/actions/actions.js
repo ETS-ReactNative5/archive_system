@@ -314,7 +314,10 @@ export const onAppLoad = () => dispatch => {
 
 export const getFile = (id, type = '') =>
     axios.General.getFile(id, type);
-
+export const getFileResolve = (id, type = 'filestorage') =>
+    axios.General.getFileResolve(id, type);
+export const getFileData = (id,  viewtype="image",rotate="") =>
+    axios.General.getFileData(id,viewtype, '1', rotate);
 export const dFile = (id, cubeConst) =>
     axios.General.dFile(id, cubeConst);
 

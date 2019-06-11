@@ -16,7 +16,7 @@ import SourcesMaintenancePage2 from '../components/sourcesMaintenance2';
 import CheckingPlan from '../components/SourcingPages/checking/CheckingPlan';
 import WorksChecking from '../components/SourcingPages/works/WorksChecking';
 import AcquisitionReports from '../components/SourcingPages/Reports/AcquisitionReports';
-
+import Inventory from "../components/InventoryIk"
 class Sourcing extends Component {
 
   /*shouldComponentUpdate(nextProps) {
@@ -35,6 +35,7 @@ class Sourcing extends Component {
           <Route exact path="/sourcing/works/checking/:sourcing" render={props => <WorksChecking t={t} {...props}/>} />
           <Route path="/sourcing/sourcesMaintenance" render={props => <SourcesMaintenancePage t={t} {...props}/>} />
           <Route path="/sourcing/sourcesMaintenance2" render={props => <SourcesMaintenancePage2 t={t} {...props}/>} />
+          <Route path="/sourcing/inventory" render={props => <Inventory t={t} {...props}/>} />
           <Route exact path="/sourcing/schedule" render={props => <Schedule t={t} {...props}/>} />
           <Route exact path="/sourcing/checking" render={props => <CheckingPlan t={t} {...props} tofiConstants={tofiConstants}/>} />
           <Route exact path="/sourcing/fundMaker" render={props => <FundMakerPage t={t} {...props}/>} />

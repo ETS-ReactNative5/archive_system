@@ -1,9 +1,12 @@
 import React from "react"
-import {Table, Input, message, DatePicker, Badge,  Row, Col, Icon, Button, Modal, Popconfirm} from 'antd';
+import {Table, Input, message, DatePicker, Badge, Row, Col, Icon, Button, Modal, Popconfirm} from 'antd';
 import Select from "../../../Select";
 import {connect} from "react-redux";
 import "./PiNMD_IK_FORM.css"
-import {getFile, getObjChildsByConst, getPropVal, dFile, updateCubeData2} from "../../../../actions/actions";
+import {
+    getFile, getObjChildsByConst, getPropVal, dFile, updateCubeData2,
+    getFileResolve, getFileData
+} from "../../../../actions/actions";
 import moment from "moment";
 import * as uuid from "uuid";
 
@@ -13,11 +16,11 @@ class PiNMD_IK_FORM extends React.Component {
 
         this.state = {
             value: this.props.value,
-            editable: false,
+            editable: [],
             dataSource: [],
             tableData: [],
             newFileArr: [],
-            newFile: {},
+            newFile: [],
             oldTableData: [],
             modalOpen: false
         };
@@ -26,13 +29,9 @@ class PiNMD_IK_FORM extends React.Component {
     handleChange = (e, idDataPropVal, c) => {
 
         let tableData = [...this.state.tableData];
-        let cell = tableData.find(el => el[c].idDataPropVal == idDataPropVal);
+        let cell = tableData.find(el => el[this.props.tofiConstants[c].id].length>0&& el[this.props.tofiConstants[c].id][0].idDataPropVal == idDataPropVal);
 
-        cell[c].valueStr = {
-            kz: e.target.value,
-            ru: e.target.value,
-            en: e.target.value
-        };
+        cell[this.props.tofiConstants[c].id][0].value = e.target.value
         this.setState({
             tableData: tableData
         })
@@ -41,13 +40,8 @@ class PiNMD_IK_FORM extends React.Component {
         if (!!e) {
             let val = moment(e).format("DD-MM-YYYY")
             let tableData = [...this.state.tableData];
-            let cell = tableData.find(el => el[c].idDataPropVal == idDataPropVal);
-
-            cell[c].valueStr = {
-                kz: val,
-                ru: val,
-                en: val
-            };
+            let cell = tableData.find(el => el[this.props.tofiConstants[c].id].length>0&& el[this.props.tofiConstants[c].id][0].idDataPropVal == idDataPropVal);
+            cell[this.props.tofiConstants[c].id][0].value = val
             this.setState({
                 tableData: tableData
             })
@@ -56,27 +50,18 @@ class PiNMD_IK_FORM extends React.Component {
     handleChangeSelect = (e, idDataPropVal, c) => {
         if (!!e) {
             let tableData = [...this.state.tableData];
-            let cell = tableData.find(el => el[c].idDataPropVal == idDataPropVal);
+            let cell = tableData.find(el => el[this.props.tofiConstants[c].id].length>0&& el[this.props.tofiConstants[c].id][0].idDataPropVal == idDataPropVal);
 
-            cell[c].name = {
-                kz: e.label,
-                ru: e.label,
-                en: e.label
-            };
-            cell[c].idRef = e.value;
+            cell[this.props.tofiConstants[c].id][0].label =e.label
+            cell[this.props.tofiConstants[c].id][0].value = e.value;
             this.setState({
                 tableData: tableData
             })
         } else {
             let tableData = [...this.state.tableData];
-            let cell = tableData.find(el => el[c].idDataPropVal == idDataPropVal);
-
-            cell[c].name = {
-                kz: "Нет данных",
-                ru: "Нет данных",
-                en: "Нет данных"
-            };
-            cell[c].idRef = "";
+            let cell = tableData.find(el => el[this.props.tofiConstants[c].id][0].idDataPropVal == idDataPropVal);
+            cell[this.props.tofiConstants[c].id][0].label =""
+            cell[this.props.tofiConstants[c].id][0].value =""
             this.setState({
                 tableData: tableData
             })
@@ -85,40 +70,28 @@ class PiNMD_IK_FORM extends React.Component {
 
     };
     showFile = (key) => {
-
-        if (!!key.name){
-            let typeFile = key.name.ru.split(".")[1]
-            getFile(key.valueFile.ru).then(blob => {
-                if (typeFile === "pdf") {
-                    const url = URL.createObjectURL(new Blob([blob.data], {type: 'application/pdf'}));
-
-                    this.setState({
-                        modalOpen: true,
-                        file: <iframe src={`${url}#toolbar=0`} frameBorder="0"/>
-                    })
-                }
-                if (typeFile === "png") {
-                    const url = URL.createObjectURL(new Blob([blob.data], {type: 'application/png'}));
-
+        debugger
+        if (!!key.value) {
+            let typeFile = ''//key.name.ru.split(".")[1]
+            getFileResolve(key.value.name).then(res => {
+                debugger
+                getFileData(res.data.id).then(resove =>{
+                    debugger
+                    let blob =resove.data
+                    const url = URL.createObjectURL(new Blob([blob], {type: 'image/png'}));
                     this.setState({
                         modalOpen: true,
                         file: <img src={`${url}#toolbar=0`}/>
                     })
-                }
-                if (typeFile === "jpg") {
-                    const url = URL.createObjectURL(new Blob([blob.data], {type: 'application/jpg'}));
 
-                    this.setState({
-                        modalOpen: true,
-                        file: <img src={`${url}#toolbar=0`}/>
-                    })
-                }
+                })
+
 
             }).catch(e => {
                 console.log(e)
                 message.error("Файл не найден")
             })
-        }else {
+        } else {
             message.error("Файл не найден")
         }
 
@@ -143,10 +116,10 @@ class PiNMD_IK_FORM extends React.Component {
     };
 
     check = (obj, c) => {
-        let editable = {...this.state.tableData};
+        let editable = {...this.state.editable};
         let oldTableData = [...this.state.oldTableData];
-        let cell = oldTableData.find(el => el[c].idDataPropVal == obj.idDataPropVal);
-        if (cell[c] !== obj || c === "docFile" || c === "file3") {
+        let cell = oldTableData.find(el => el[this.props.tofiConstants[c].id].length>0 && el[this.props.tofiConstants[c].id][0].idDataPropVal == obj.idDataPropVal);
+        if ( cell[this.props.tofiConstants[c].id][0] !== obj || c === "docFile" || c === "file3") {
             let data = []
 
 
@@ -190,12 +163,12 @@ class PiNMD_IK_FORM extends React.Component {
                         {
                             [`${c}`]: [this.state.newFile[c]]
                         },
-                    ).then(res =>{
-                        if (res.success == true){
+                    ).then(res => {
+                        if (res.success == true) {
                             message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'))
                             this.props.updateCube()
 
-                        }else {
+                        } else {
                             message.error(res.errors[0].text)
                         }
 
@@ -245,12 +218,12 @@ class PiNMD_IK_FORM extends React.Component {
                         {
                             [`${c}`]: [this.state.newFile[c]]
                         },
-                    ).then(res =>{
-                        if (res.success == true){
+                    ).then(res => {
+                        if (res.success == true) {
                             message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'))
                             this.props.updateCube()
 
-                        }else {
+                        } else {
                             message.error(res.errors[0].text)
                         }
 
@@ -276,7 +249,11 @@ class PiNMD_IK_FORM extends React.Component {
                             {
                                 propConst: c,
                                 idDataPropVal: obj.idDataPropVal,
-                                val: obj.valueStr,
+                                val: {
+                                    kz: obj.value,
+                                    ru: obj.value,
+                                    en: obj.value
+                                },
                                 typeProp: "315",
                                 periodDepend: "2",
                                 isUniq: "1",
@@ -297,8 +274,6 @@ class PiNMD_IK_FORM extends React.Component {
             }
 
             if (c === "normativeDocType") {
-
-
                 data = [
                     {
                         own: [{
@@ -312,15 +287,13 @@ class PiNMD_IK_FORM extends React.Component {
                             {
                                 propConst: c,
                                 idDataPropVal: obj.idDataPropVal,
-                                val: String(obj.idRef),
+                                val: String(obj.value),
                                 typeProp: "11",
                                 periodDepend: "2",
                                 isUniq: "1",
                                 mode: "upd",
                             }
                         ],
-
-
                         periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
                     }
                 ];
@@ -332,10 +305,7 @@ class PiNMD_IK_FORM extends React.Component {
                     {}).then(res => res.success == true ? message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED')) : message.error(res.errors[0].text))
             }
 
-
             if (c === "archiveInfoDate2") {
-
-
                 data = [
                     {
                         own: [{
@@ -349,7 +319,11 @@ class PiNMD_IK_FORM extends React.Component {
                             {
                                 propConst: c,
                                 idDataPropVal: obj.idDataPropVal,
-                                val: obj.valueStr,
+                                val: {
+                                    kz: obj.value,
+                                    ru: obj.value,
+                                    en: obj.value
+                                },
                                 typeProp: "315",
                                 periodDepend: "2",
                                 isUniq: "1",
@@ -407,8 +381,6 @@ class PiNMD_IK_FORM extends React.Component {
         };
     }
     onDelete = (rec) => {
-        const tableData = [...this.state.tableData];
-        this.setState({tableData: tableData.filter(item => item.key !== rec.key)});
         const showDelete = message.loading('Удаление');
 
         var data = [
@@ -422,11 +394,11 @@ class PiNMD_IK_FORM extends React.Component {
                 ],
                 props: [{
                     propConst: "normMethDocs",
-                    idDataPropVal: rec.key,
+                    idDataPropVal: rec.idDataPropVal,
                     val: {
-                        kz: String(rec.idName),
-                        ru: String(rec.idName),
-                        en: String(rec.idName)
+                        kz: String(rec.value),
+                        ru: String(rec.value),
+                        en: String(rec.value)
                     },
                     typeProp: "71",
                     periodDepend: "2",
@@ -447,6 +419,9 @@ class PiNMD_IK_FORM extends React.Component {
             if (res.success) {
                 showDelete();
                 message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+                this.props.updateCube()
+
+
             } else {
                 showDelete();
                 message.error(this.props.t('PROPS_UPDATING_ERROR'));
@@ -461,11 +436,11 @@ class PiNMD_IK_FORM extends React.Component {
     }
     handleAdd = () => {
         const showLoad = message.loading('Сохранение', 0);
-
+debugger
         var nextnumber = 1;
         if (this.state.tableData.length > 0) {
             var numbArr = [...this.state.tableData.map(el => {
-                return el['numberNmd'].valueStr.ru
+                return el[this.props.tofiConstants["numberNmd"].id][0].value
             })
             ];
             nextnumber = Math.max(...numbArr) + 1;
@@ -508,15 +483,9 @@ class PiNMD_IK_FORM extends React.Component {
                             isUniq: "1"
                         },
                         {
-
-
                             propConst: "normativeDocType",
-                            val: {
-                                kz: 'Нет данных',
-                                ru: 'Нет данных',
-                                en: 'No data'
-                            },
-                            typeProp: "315",
+                            val:String(1088),
+                            typeProp: "11",
                             periodDepend: "2",
                             isUniq: "1"
                         },
@@ -534,9 +503,9 @@ class PiNMD_IK_FORM extends React.Component {
                         {
                             propConst: "archiveInfoDate1",
                             val: {
-                                kz:  moment().format("YYYY-MM-DD"),
-                                ru:  moment().format("YYYY-MM-DD"),
-                                en: moment().format("YYYY-MM-DD"),
+                                kz:"_",
+                                ru: "_",
+                                en: "_",
                             },
 
                             typeProp: "315",
@@ -608,12 +577,33 @@ class PiNMD_IK_FORM extends React.Component {
             }
         };
     };
-    onChangeFile = (e, c) => {
-
+    onChangeFile = (e, c, i) => {
         let newFile = [...this.state.newFile];
         let newFileArr = [...this.state.newFileArr];
-        newFile[c] = e.target.files[0]
-        newFileArr[c] = e.target.files
+        if (newFile.length !== 0) {
+            if (!!newFile[i]&& !!newFile[i][`${c}${i}`]) {
+                newFile[i][`${c}${i}`] = e.target.files[0]
+            } else {
+                newFile.push({
+                    [`${c}${i}`]: e.target.files[0]
+                })
+            }
+        }
+        else {
+            newFile.push({[`${c}${i}`]: e.target.files[0]})
+        }
+
+        if (newFileArr.length !== 0) {
+                if (!!newFileArr[i] && !!newFileArr[i][`${c}${i}`]) {
+                    newFileArr[i][`${c}${i}`] = e.target.files
+                } else {
+                    newFileArr.push({
+                        [`${c}${i}`]: e.target.files
+                    })
+                }
+        } else {
+            newFileArr.push({[`${c}${i}`] : e.target.files})
+        }
         this.setState({
             newFileArr: newFileArr,
             newFile: newFile
@@ -627,27 +617,29 @@ class PiNMD_IK_FORM extends React.Component {
         const {tableData} = this.state;
         const columns = [
             {
-                key: 'numberNmd',
+                key: this.props.tofiConstants["numberNmd"].id,
                 title: '#',
-                dataIndex: 'numberNmd',
+                dataIndex: this.props.tofiConstants["numberNmd"].id,
                 width: '5%',
-                render: (obj, rec, i) => obj && obj.valueStr && obj.valueStr[this.lng],
-                sorter: (a, b) => a.numberNmd && b.numberNmd && parseInt(a.numberNmd.valueStr.ru) - parseInt(b.numberNmd.valueStr.ru),
+                render: (obj, rec, i) => {return obj.length>0 && obj[0].value },
+                sorter: (a, b) => { return a[this.props.tofiConstants["numberNmd"].id][0] && b[this.props.tofiConstants["numberNmd"].id][0] && parseInt(a[this.props.tofiConstants["numberNmd"].id][0].value) - parseInt(b[this.props.tofiConstants["numberNmd"].id][0].value)},
                 sortOrder: 'ascend'
-            }, {
-                key: 'normativeDocType',
+             },
+            {
+                key: this.props.tofiConstants["normativeDocType"].id,
                 title: 'Вид ПиНМД',
                 width: '20%',
-
-                dataIndex: 'normativeDocType',
-                render: (obj, rec) => ( <div className="editable-cell">
+                dataIndex: this.props.tofiConstants["normativeDocType"].id,
+                render: (obj, rec) => { return(
+                    <div className="editable-cell">
                         {
-
-                            obj && this.state.editable[obj.idDataPropVal] ?
+                            obj.length>0&& obj[0] && this.state.editable[obj[0].idDataPropVal] ?
                                 <div className="editable-cell-input-wrapper">
-                                     <Select
+                                    <Row>
+                                        <Col span={20}>
+                                    <Select
                                         name="normativeDocType"
-                                        onChange={(e) => this.handleChangeSelect(e, obj.idDataPropVal, 'normativeDocType')}
+                                        onChange={(e) => this.handleChangeSelect(e, obj[0].idDataPropVal, 'normativeDocType')}
                                         onMenuOpen={this.loadChilds("normativeDocType")}
 
                                         options={
@@ -659,59 +651,66 @@ class PiNMD_IK_FORM extends React.Component {
                                                 : []
                                         }
                                     />
+                                        </Col>
+                                        <Col span={4} style={{textAlign:'right',paddingTop:'6px'}}>
 
                                     <Icon
                                         type="check"
                                         className="editable-cell-icon-check"
-                                        onClick={() => this.check(obj, 'normativeDocType')}
+                                        onClick={() => this.check(obj[0], 'normativeDocType')}
                                     />
-
+                                        </Col>
+                                    </Row>
                                 </div>
                                 :
                                 <div className="editable-cell-text-wrapper">
-                                    {obj ? obj.name ? obj.name[this.lng] : '' : ''}
+                                    {obj[0] ? obj[0].label  : ''}
                                     <Icon
                                         type="edit"
                                         className="editable-cell-icon"
-                                        onClick={() => this.edit(obj.idDataPropVal)}
+                                        onClick={() => this.edit(obj[0].idDataPropVal)}
                                     />
                                 </div>
-                        }
+                            }
                     </div>
-                )
-
-
-            }, {
-                key: "docFile",
+                )}
+            },
+            {
+                key: this.props.tofiConstants["docFile"].id,
                 title: 'Фаил документа',
-                dataIndex: 'docFile',
-                render: (obj, rec) => ( <div className="editable-cell">
+                dataIndex: this.props.tofiConstants["docFile"].id,
+                render: (obj, rec, i) => { return( <div className="editable-cell">
                         {
-                            obj && this.state.editable[obj.idDataPropVal] ?
+                            obj.length>0 && obj[0] && this.state.editable[obj[0].idDataPropVal] ?
                                 <div className="editable-cell-input-wrapper">
-
+                                    <Row>
+                                        <Col span={20}>
                                     <label>
                                         <input
                                             type="file"
                                             style={{display: 'none'}}
-                                            onChange={(e) => this.onChangeFile(e, "docFile")}/>
+                                            onChange={(e) => this.onChangeFile(e, "docFile", i)}/>
                                         <span className='ant-btn ant-btn-primary'><Icon
                                             type='upload'/>
                         <Badge className="badgeInputFile"
-                               count={this.state.newFileArr["docFile"] && this.state.newFileArr['docFile'].length}>
+                               count={this.state.newFileArr[i] && this.state.newFileArr[i][`docFile${i}`] && this.state.newFileArr[i][`docFile${i}`].length}>
                     </Badge>
                         <span>{this.props.t('UPLOAD_FILE')}</span></span>
                                     </label>
+                                        </Col>
+                                        <Col span={4} style={{textAlign:'right',paddingTop:'6px'}}>
 
-                                    <Icon
+                                        <Icon
                                         type="check"
                                         className="editable-cell-icon-check"
-                                        onClick={() => this.check(obj, 'docFile')}
+                                        onClick={() => this.check(obj[0], 'docFile')}
                                     />
+                                        </Col>
+                                    </Row>
                                 </div>
                                 :
                                 <div className="editable-cell-text-wrapper">
-                                    {!!obj.name ?
+                                    {obj.length>0 ?
                                         <Button type="primary"
                                                 className="centerIcon"
                                                 icon="eye"
@@ -722,102 +721,114 @@ class PiNMD_IK_FORM extends React.Component {
                                                     alignItems: 'center',
                                                     marginRight: '10px'
                                                 }}
-                                                onClick={() => this.showFile(obj)}> </Button> : ""
+                                                onClick={() => this.showFile(obj[0])}> </Button> : ""
                                     }
 
                                     <Icon
                                         type="edit"
                                         className="editable-cell-icon"
-                                        onClick={() => this.edit(obj.idDataPropVal)}
+                                        onClick={() => this.edit(obj[0].idDataPropVal)}
                                     />
                                 </div>
                         }
                     </div>
-                )
-
-
+                )}
             },
 
 
             {
-                key: "archiveInfoDate1",
+                key:this.props.tofiConstants["archiveInfoDate1"].id,
                 title: 'Дата согласования',
-                dataIndex: 'archiveInfoDate1',
-                render: (obj, rec) => ( <div className="editable-cell">
+                dataIndex: this.props.tofiConstants["archiveInfoDate1"].id,
+                render: (obj, rec) => { return( <div className="editable-cell">
                         {
-                            obj && this.state.editable[obj.idDataPropVal] ?
+                            obj.length>0 &&  obj[0] && this.state.editable[obj[0].idDataPropVal] ?
                                 <div className="editable-cell-input-wrapper">
+                                    <Row>
+                                        <Col span={20}>
                                     <DatePicker
                                         format="DD-MM-YYYY"
-                                        value={moment(obj.valueStr[this.lng], "DD-MM-YYYY")}
-                                        onChange={(e) => this.handleChangeDate(e, obj.idDataPropVal, 'archiveInfoDate1')}
-                                        onPressEnter={() => this.check(obj)}
+                                        value={obj[0].value !=="_"?  moment(obj[0].value, "DD-MM-YYYY"):""}
+                                        onChange={(e) => this.handleChangeDate(e, obj[0].idDataPropVal, 'archiveInfoDate1')}
+                                        onPressEnter={() => this.check(obj[0])}
                                     />
+                                        </Col>
+                                        <Col span={4} style={{textAlign:'right',paddingTop:'6px'}}>
 
-                                    <Icon
+                                        <Icon
                                         type="check"
                                         className="editable-cell-icon-check"
-                                        onClick={() => this.check(obj, 'archiveInfoDate1')}
+                                        onClick={() => this.check(obj[0], 'archiveInfoDate1')}
                                     />
+                                        </Col>
+                                    </Row>
                                 </div>
                                 :
                                 <div className="editable-cell-text-wrapper">
-                                    {obj ? obj.valueStr ? obj.valueStr[this.lng] : '' : ''}
+                                    {obj.length>0 && obj[0] ? obj[0].value ? obj[0].value!=="_"?obj[0].value:""  : '' : ''}
                                     <Icon
                                         type="edit"
                                         className="editable-cell-icon"
-                                        onClick={() => this.edit(obj.idDataPropVal)}
+                                        onClick={() => this.edit(obj[0].idDataPropVal)}
                                     />
                                 </div>
                         }
                     </div>
-                )
+                )}
             },
             {
-                key: "archiveInfoDate2",
+                key:this.props.tofiConstants["archiveInfoDate2"].id,
                 title: '№ протокола согласования',
 
-                dataIndex: 'archiveInfoDate2',
-                render: (obj, rec) => ( <div className="editable-cell">
+                dataIndex: this.props.tofiConstants["archiveInfoDate2"].id,
+                render: (obj, rec) => { return( <div className="editable-cell">
                         {
 
-                            this.state.editable[obj.idDataPropVal] ?
+                            obj.length>0 &&  obj[0] && this.state.editable[obj[0].idDataPropVal] ?
                                 <div className="editable-cell-input-wrapper">
+                                    <Row>
+                                        <Col span={20}>
                                     <Input
-                                        value={obj ? obj.valueStr ? obj.valueStr[this.lng] : '' : ''}
-                                        onChange={(e) => this.handleChange(e, obj.idDataPropVal, 'archiveInfoDate2')}
-                                        onPressEnter={() => this.check(obj)}
+                                        value={obj[0] ? obj[0].value ? obj[0].value: '' : ''}
+                                        onChange={(e) => this.handleChange(e, obj[0].idDataPropVal, 'archiveInfoDate2')}
+                                        onPressEnter={() => this.check(obj[0])}
                                     />
-                                    <Icon
+                                        </Col>
+                                        <Col span={4} style={{textAlign:'right',paddingTop:'6px'}}>
+
+                                        <Icon
                                         type="check"
                                         className="editable-cell-icon-check"
-                                        onClick={() => this.check(obj, 'archiveInfoDate2')}
+                                        onClick={() => this.check(obj[0], 'archiveInfoDate2')}
                                     />
+                                        </Col>
+                                    </Row>
                                 </div>
                                 :
                                 <div className="editable-cell-text-wrapper">
-                                    {obj ? obj.valueStr ? obj.valueStr[this.lng] : '' : ''}
+                                    {obj.length>0 && obj[0] ? obj[0].value ? obj[0].value : '' : ''}
                                     <Icon
                                         type="edit"
                                         className="editable-cell-icon"
-                                        onClick={() => this.edit(obj.idDataPropVal)}
+                                        onClick={() => this.edit(obj[0].idDataPropVal)}
                                     />
                                 </div>
                         }
                     </div>
-                )
+                )}
 
             },
             {
-                key: "file3",
-
-
+                key:  this.props.tofiConstants["file3"].id,
                 title: 'Фаил протокола',
-                dataIndex: 'file3',
+                dataIndex: this.props.tofiConstants["file3"].id,
                 render: (obj, rec) => ( <div className="editable-cell">
                         {
-                            obj && this.state.editable[obj.idDataPropVal] ?
+
+                           obj.length>0 && obj[0] && this.state.editable[obj[0].idDataPropVal] ?
                                 <div className="editable-cell-input-wrapper">
+                                    <Row>
+                                        <Col span={20}>
                                     <label>
                                         <input
                                             type="file"
@@ -830,16 +841,20 @@ class PiNMD_IK_FORM extends React.Component {
                     </Badge>
                         <span>{this.props.t('UPLOAD_FILE')}</span></span>
                                     </label>
+                                        </Col>
+                                        <Col span={4} style={{textAlign:'right',paddingTop:'6px'}}>
 
-                                    <Icon
+                                        <Icon
                                         type="check"
                                         className="editable-cell-icon-check"
-                                        onClick={() => this.check(obj, 'file3')}
+                                        onClick={() => this.check(obj[0], 'file3')}
                                     />
+                                        </Col>
+                                    </Row>
                                 </div>
                                 :
                                 <div className="editable-cell-text-wrapper">
-                                    {!!obj.name?
+                                    {obj.length>0 ?
                                         <Button type="primary"
                                                 className="centerIcon"
                                                 icon="eye"
@@ -850,21 +865,20 @@ class PiNMD_IK_FORM extends React.Component {
                                                     alignItems: 'center',
                                                     marginRight: '10px'
                                                 }}
-                                                onClick={() => this.showFile(obj)}> </Button>:""
+                                                onClick={() => this.showFile(obj[0])}> </Button> : ""
                                     }
 
                                     <Icon
                                         type="edit"
                                         className="editable-cell-icon"
-                                        onClick={() => this.edit(obj.idDataPropVal)}
+                                        onClick={() => this.edit(obj[0].idDataPropVal)}
                                     />
                                 </div>
                         }
                     </div>
                 )
-
-
             },
+
             {
                 key: "delpost",
                 title: 'Удалить запись',
@@ -886,8 +900,9 @@ class PiNMD_IK_FORM extends React.Component {
             }];
         return (
             <div>
-                <Button className="editable-add-btn" onClick={this.handleAdd} style={{marginTop: 30}}>Добавить</Button>
-                <Table bordered dataSource={tableData} columns={columns}/>
+                <Button type="primary" icon="plus-circle-o"  onClick={this.handleAdd} style={{marginTop: 40, marginBottom:10}}>Добавить</Button>
+
+                <Table className="tablepnd" bordered dataSource={tableData} columns={columns}/>
                 <Modal visible={this.state.modalOpen}
                        onOk={this.handleOk}
                        onCancel={this.handleCancel}
@@ -897,6 +912,7 @@ class PiNMD_IK_FORM extends React.Component {
                         {this.state.file}
                     </div>
                 </Modal>
+
             </div>
         );
     }
