@@ -589,6 +589,7 @@ class ClassificationInfo extends React.Component{
           component={ renderFileUploadBtn }
           disabled={!isEmpty(this.props.initialValues.approvalDateMetodika)}
           formItemClass="classificationInfo_uploadBtn"
+          cubeSConst = "csClassificationShem"
           label={tofiConstants.method.name[this.lng]}
           formItemLayout={
             {
@@ -634,7 +635,7 @@ class ClassificationInfo extends React.Component{
           formItemClass="classificationInfo_uploadBtn"
           label={tofiConstants.protocol.name[this.lng]}
           normalize={this.fileToRedux}
-
+          cubeSConst = "csClassificationShem"
           formItemLayout={
             {
               labelCol: { span: 10 },

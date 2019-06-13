@@ -1,11 +1,11 @@
 import React from 'react';
 import AntTabs from "../AntTabs";
 import MainInfoInvForm from "./MainInfoInvForm";
-
+import StricturaInv from "./StruturInv"
 class InventoriesListCard extends React.Component {
 
     render() {
-        const { t, tofiConstants, onSaveCubeData, initialValues, onCreateObj } = this.props;
+        const { t, tofiConstants,icConst, onSaveCubeData, initialValues, onCreateObj } = this.props;
         return (
             <AntTabs
                 tabs={[
@@ -20,15 +20,16 @@ class InventoriesListCard extends React.Component {
                             onCreateObj={onCreateObj}
                         />
                     },
-                    /*{
-                      tabKey: 'descriptiveInfo',
-                      tabName: t('DESCRIPTIVE_INFO'),
-                      tabContent: <DescriptiveInfo
+                    {
+                      tabKey: 'StricturaInv',
+                      tabName: "Структура описи",
+                      tabContent: <StricturaInv
                         tofiConstants={tofiConstants}
                         initialValues={initialValues}
                         t={t}
+                        icConst={icConst}
                       />
-                    }*/
+                    }
                 ]}
             />
         )

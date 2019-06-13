@@ -1,8 +1,6 @@
 import React, {useRef} from 'react';
 import {getAct1, getCube, getIdGetObj} from "../../../../actions/actions";
 import {Button, Col, Row} from "antd";
-import moment from "moment";
-import {PrintTool} from "react-print-tool";
 import ReactDOMServer from 'react-dom/server';
 import AntTable from "../../../AntTable";
 import {parseCube_new, parseForTable} from "../../../../utils/cubeParser";

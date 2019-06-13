@@ -44,7 +44,7 @@ class MainInfoFundMaker extends Component {
                 orgAddress: lng,
                 orgFormationDoc: lng,
                 orgReorganizationDoc: lng,
-                orgLiquidationDoc: lng,
+                departmentalAccessory: lng,
             },
             loading: {
                 legalStatusLoading: false,
@@ -239,7 +239,7 @@ class MainInfoFundMaker extends Component {
         ru: '',
         en: ''
     };
-    orgLiquidationDocValue = {...this.props.initialValues.orgLiquidationDoc} || {
+    departmentalAccessoryValue = {...this.props.initialValues.departmentalAccessory} || {
         kz: '',
         ru: '',
         en: ''
@@ -273,7 +273,7 @@ class MainInfoFundMaker extends Component {
                 ru: '',
                 en: ''
             };
-            this.orgLiquidationDocValue = {...this.props.initialValues.orgLiquidationDoc} || {
+            this.departmentalAccessoryValue = {...this.props.initialValues.departmentalAccessory} || {
                 kz: '',
                 ru: '',
                 en: ''
@@ -286,7 +286,7 @@ class MainInfoFundMaker extends Component {
 
 
         const {doForFundAndIK, dpForFundAndIK} = this.props.tofiConstants;
-        const {shortName, name, dbeg, dend, accessLevel, orgFunction, structure, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
+        const {shortName,dateFormation, name, dbeg, dend, accessLevel, orgFunction, structure, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
         const cube = {
             cubeSConst: 'cubeForOrgFundmaker',
             doConst: 'doForOrgFundmakers',
@@ -425,37 +425,32 @@ class MainInfoFundMaker extends Component {
         const lng = localStorage.getItem('i18nextLng');
         const {
             tofiConstants: {
-                legalStatus, fundNumber, formOfAdmission, orgIndustry, isActive, fundmakerArchive, orgPhone, orgFax,
+                legalStatus, fundNumber, formOfAdmission, departmentalAccessory, orgIndustry, isActive, fundmakerArchive, orgPhone, orgFax,dateFormation,
                 orgEmail, orgAddress, orgFormationDoc, orgReorganizationDoc, orgLiquidationDoc, contractNumber, orgDocType,
                 subordination, jurisdiction, orgFunction, structure
             }, t, handleSubmit, reset, dirty, error, submitting, legalStatusOptions, accessLevelOptions, orgDocTypeOptions,
             formOfAdmissionOptions, orgIndustryOptions, isActiveOptions, fundmakerArchiveOptions, cubeSConst,
-            objSubordinationOptions
+            objSubordinationOptions,departmentalAccessoryOptions
         } = this.props;
         const {lang, loading} = this.state;
         return (
         <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)}
               style={dirty ? {paddingBottom: '43px'} : {}}>
-            <Field
-            name="shortName"
-            component={renderInputLang}
-            format={value => (!!value ? value[lang.shortName] : '')}
-            parse={value => {
-                this.shortNameValue[lang.shortName] = value;
-                return {...this.shortNameValue}
-            }}
-            label={t('SHORT_NAME')}
-            formItemClass="with-lang"
-            changeLang={this.changeLang}
-            formItemLayout={
-                {
-                    labelCol: {span: 10},
-                    wrapperCol: {span: 14}
+            {
+                dateFormation && <Field
+                name="dateFormation"
+                component={renderDatePicker}
+                disabledDate={this.disabledStartDate}
+                label={dateFormation.name[lng]}
+                format={null}
+                formItemLayout={
+                    {
+                        labelCol: {span: 10},
+                        wrapperCol: {span: 14}
+                    }
                 }
+                />
             }
-            validate={requiredLng}
-            colon={true}
-            />
             <Field
             name="name"
             component={renderInputLang}
@@ -476,7 +471,117 @@ class MainInfoFundMaker extends Component {
             validate={requiredLng}
             colon={true}
             />
-            {fundNumber && <Field
+            <Field
+                name="shortName"
+                component={renderInputLang}
+                format={value => (!!value ? value[lang.shortName] : '')}
+                parse={value => {
+                    this.shortNameValue[lang.shortName] = value;
+                    return {...this.shortNameValue}
+                }}
+                label={t('SHORT_NAME')}
+                formItemClass="with-lang"
+                changeLang={this.changeLang}
+                formItemLayout={
+                    {
+                        labelCol: {span: 10},
+                        wrapperCol: {span: 14}
+                    }
+                }
+                validate={requiredLng}
+                colon={true}
+            />
+            {orgIndustry && <Field
+                name="orgIndustry"
+                component={renderSelect}
+                normalize={this.selectMultiToRedux}
+                label={orgIndustry.name[lng]}
+                isMulti
+                formItemLayout={
+                    {
+                        labelCol: {span: 10},
+                        wrapperCol: {span: 14}
+                    }
+                }
+                isSearchable={false}
+                data={orgIndustryOptions || []}
+                onMenuOpen={this.loadOptions(ORG_INDUSTRY, true)}
+                isLoading={loading.orgIndustryLoading}
+                validate={requiredArr}
+                colon={true}
+            />}
+            {legalStatus && <Field
+                name="legalStatus"
+                component={renderSelect}
+                normalize={this.selectToRedux}
+                label={legalStatus.name[lng]}
+                formItemLayout={
+                    {
+                        labelCol: {span: 10},
+                        wrapperCol: {span: 14}
+                    }
+                }
+                isSearchable={false}
+                data={legalStatusOptions ? legalStatusOptions.map(option => ({
+                    value: option.id,
+                    label: option.name[lng]
+                })) : []}
+                onMenuOpen={this.loadOptions(LEGAL_STATUS)}
+                isLoading={loading.legalStatusLoading}
+                validate={requiredLabel}
+                colon={true}
+            />}
+            {structure && <Field
+                name="structure"
+                component={renderFileUploadBtn}
+                cubeSConst='cubeForOrgFundmaker'
+                label={structure.name[lng]}
+                normalize={this.fileToRedux}
+                formItemLayout={
+                    {
+                        labelCol: {span: 10},
+                        wrapperCol: {span: 14}
+                    }
+                }
+                // validate={requiredLabel}
+                // colon={true}
+            />}
+            {orgFunction && <Field
+                name="orgFunction"
+                component={renderFileUploadBtn}
+                cubeSConst='cubeForOrgFundmaker'
+                label={orgFunction.name[lng]}
+                normalize={this.fileToRedux}
+                formItemLayout={
+                    {
+                        labelCol: {span: 10},
+                        wrapperCol: {span: 14}
+                    }
+                }
+                // validate={requiredLabel}
+                // colon={true}
+            />}
+            {departmentalAccessory && <Field
+                name="departmentalAccessory"
+                component={renderInputLang}
+                format={value => (!!value ? value.valueLng[lang.departmentalAccessory] : '')}
+                normalize={(val, prevVal, obj, prevObj) => {
+                    let newVal = {...prevVal}; newVal.value = val;
+                    if (!!newVal.valueLng){newVal.valueLng[lang.departmentalAccessory] = val;}else
+                    {newVal['valueLng']={kz:'',en:'',ru:''};newVal.valueLng[lang.departmentalAccessory] = val;}
+                    return newVal;
+                }}
+                label={departmentalAccessory.name[lng]}
+                formItemClass="with-lang"
+                changeLang={this.changeLang}
+                formItemLayout={
+                    {
+                        labelCol: {span: 10},
+                        wrapperCol: {span: 14}
+                    }
+                }
+            />}
+            {/*fundNumber && <Field
             name="fundNumber"
             component={renderInput}
             placeholder={t('NUMB_OF_IK')}
@@ -550,29 +655,9 @@ class MainInfoFundMaker extends Component {
                     wrapperCol: {span: 14}
                 }
             }
-            />}
-            {legalStatus && <Field
-            name="legalStatus"
-            component={renderSelect}
-            normalize={this.selectToRedux}
-            label={legalStatus.name[lng]}
-            formItemLayout={
-                {
-                    labelCol: {span: 10},
-                    wrapperCol: {span: 14}
-                }
-            }
-            isSearchable={false}
-            data={legalStatusOptions ? legalStatusOptions.map(option => ({
-                value: option.id,
-                label: option.name[lng]
-            })) : []}
-            onMenuOpen={this.loadOptions(LEGAL_STATUS)}
-            isLoading={loading.legalStatusLoading}
-            validate={requiredLabel}
-            colon={true}
-            />}
-            {formOfAdmission && <Field
+            />*/}
+
+            {/*formOfAdmission && <Field
             name="formOfAdmission"
             normalize={this.selectToRedux}
             component={renderSelect}
@@ -612,25 +697,6 @@ class MainInfoFundMaker extends Component {
             })) : []}
             onMenuOpen={this.loadOptions('orgDocType')}
             isLoading={loading.orgDocTypeLoading}
-            validate={requiredArr}
-            colon={true}
-            />}
-            {orgIndustry && <Field
-            name="orgIndustry"
-            component={renderSelect}
-            normalize={this.selectMultiToRedux}
-            label={orgIndustry.name[lng]}
-            isMulti
-            formItemLayout={
-                {
-                    labelCol: {span: 10},
-                    wrapperCol: {span: 14}
-                }
-            }
-            isSearchable={false}
-            data={orgIndustryOptions || []}
-            onMenuOpen={this.loadOptions(ORG_INDUSTRY, true)}
-            isLoading={loading.orgIndustryLoading}
             validate={requiredArr}
             colon={true}
             />}
@@ -708,37 +774,7 @@ class MainInfoFundMaker extends Component {
              isLoading={loading.objSubordinationLoading}
              // validate={requiredLabel}
              // colon={true}
-             />}*/}
-            {orgFunction && <Field
-            name="orgFunction"
-            component={renderFileUploadBtn}
-            cubeSConst='cubeForOrgFundmaker'
-            label={orgFunction.name[lng]}
-            normalize={this.fileToRedux}
-            formItemLayout={
-                {
-                    labelCol: {span: 10},
-                    wrapperCol: {span: 14}
-                }
-            }
-            // validate={requiredLabel}
-            // colon={true}
-            />}
-            {structure && <Field
-            name="structure"
-            component={renderFileUploadBtn}
-            cubeSConst='cubeForOrgFundmaker'
-            label={structure.name[lng]}
-            normalize={this.fileToRedux}
-            formItemLayout={
-                {
-                    labelCol: {span: 10},
-                    wrapperCol: {span: 14}
-                }
-            }
-            // validate={requiredLabel}
-            // colon={true}
-            />}
+             />}}
             {orgAddress && <Field
             name="orgAddress"
             component={renderInputLang}
@@ -860,7 +896,7 @@ class MainInfoFundMaker extends Component {
                     wrapperCol: {span: 14}
                 }
             }
-            />}
+            />*/}
             {dirty && <Form.Item className="ant-form-btns absolute-bottom">
                 <Button className="signup-form__btn" type="primary" htmlType="submit"
                         disabled={submitting}>

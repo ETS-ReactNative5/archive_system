@@ -439,8 +439,8 @@ class ArchiveFundWorksChecking extends React.PureComponent {
                     title: caseNumber.name[this.lng],
                     dataIndex: 'caseNumber',
                     width: '5%',
-                    sorter: (a, b) => a.caseNumber - b.caseNumber,
-                    sortOrder: this.state.sortState ? 'ascend' : 'descend',
+                    sorter: (a, b) => parseInt(a.caseNumber) - parseInt(b.caseNumber),
+                    // sortOrder: this.state.sortState ? 'ascend' : 'descend',
 
                 },
                 {

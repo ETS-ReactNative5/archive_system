@@ -755,7 +755,7 @@ export const getPropMeta = (cubeProps, cnst) => {
 export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFiles = {}},
                                tofiConstants,
                                objData = {},
-                               periods,
+                               periods="11",
                                dte = moment().format('YYYY-MM-DD'),
                                options = {}) {
 
@@ -813,7 +813,7 @@ export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFile
   const datas = [{
     own: [{doConst: cube.doConst, doItem: obj.doItem, isRel: "0", objData}],
     props: [...valuesArr, ...complexArr],
-    periods: periods || [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
+    periods: /*periods ||*/ [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
   }];
 
   function buildProps(val, key) {
@@ -960,6 +960,23 @@ export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFile
       console.warn(e);
       return;
     }
+
+    if (propMetaData.periodDepend ===1){
+        return {
+            propConst: key,
+            val: value,
+            idDataPropVal: val.idDataPropVal,
+            typeProp: String(propMetaData.typeProp),
+            periodDepend: String(propMetaData.periodDepend),
+            isUniq: String(propMetaData.isUniq),
+            periodType: periods,
+            dte:dte,
+            ///dBeg:  ?moment().format("DD-MM-YYYY"):null,
+            //dEnd: dEnd,
+            mode: val.mode ? val.mode : val.idDataPropVal ? 'upd' : 'ins'
+        }
+    }
+
     return {
       propConst: key,
       val: value,
@@ -968,7 +985,7 @@ export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFile
       periodDepend: String(propMetaData.periodDepend),
       isUniq: String(propMetaData.isUniq),
       //periodType: periodType,
-      //dBeg: dBeg,
+      // dBeg:  ?moment().format("DD-MM-YYYY"):null,
       //dEnd: dEnd,
       mode: val.mode ? val.mode : val.idDataPropVal ? 'upd' : 'ins'
     }

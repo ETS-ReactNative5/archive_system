@@ -17,7 +17,7 @@ class NSA extends Component {
     return (
       <div className="NSA">
         <Switch>
-          {/*<Route exact path="/sra/works" render={props => <NSAWorks t={t} {...props}/>} />*/}
+          {/*<Route exact path="/sra/works" render={props => <NSAWorks t={t} {...pifirops}/>} />*/}
           <Route exact path="/sra/classificationSchemas" render={props => <ClassificationSchemas t={t} {...props}/> }/>
           <Route exact path="/sra/searchPage" render={props => <SearchNSA t={t} {...props}/> } />
           <Route exact path="/sra/createDocument" render={props => <CreateDocument t={t} {...props}/> } />

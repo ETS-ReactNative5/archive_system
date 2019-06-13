@@ -48,7 +48,7 @@ class MainInfoFundForm extends React.Component {
                     accessLevel: values.accessLevel,
                     fundFeature: values.fundFeature,
                     invType: values.invType,
-                    invFund: {value: this.props.initialValues.fundId.split('_')[1]} //selected fond ID
+                    invFund: values.invFund
                 })
         } else {
             const {name, accessLevel, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]))
@@ -126,6 +126,7 @@ class MainInfoFundForm extends React.Component {
     }
 
     taggedSelectToRedux = (val, prevVal) => {
+debugger
         if (!!val) {
             if (val.length > 0) {
                 let coppyPrevVal = [...prevVal]
@@ -154,7 +155,9 @@ class MainInfoFundForm extends React.Component {
                         // let selectArr = this.state.optionMultiSelect;
                         let selectArr = arrState;
                         let findVal = selectArr.find((el) => el.value.value === coppyVal[i])
+
                         if (findVal !== undefined) {
+
 
                             newArr.push(findVal)
                         } else {
@@ -324,20 +327,21 @@ class MainInfoFundForm extends React.Component {
             t, handleSubmit, reset, dirty, error, submitting, fundFeatureOptions, caseStorageMultiOptions, rackMultiOptions, sectionMultiOptions, shelfMultiOptions,
             documentTypeOptions, invTypeOptions, accessLevelOptions, invCaseSystemOptions,
             tofiConstants: {
-                invNumber, invDates, invCaseSystem, documentType, invType, invApprovalDate2, invApprovalDate1,
-                invTypeValue, invAgreement2Date, fundFeature, invAgreementDate, invTypePerm, invFile, invStorage, invCont,
-                agreementProtocol, agreement2Protocol, approvalProtocol, caseStorageMulti, rackMulti, sectionMulti, shelfMulti
+                invNumber, invDates, invCaseSystem, documentType, invType,  invApprovalDate1,
+                invTypeValue, invAgreement2Date,invDeadline,invAgreementNumber, fundFeature, invAgreementDate, invTypePerm, invFile, invStorage, invCont,
+                agreementProtocol,fundNumberOfCases, agreement2Protocol, approvalProtocol,invApprovalDate2, caseStorageMulti, rackMulti, sectionMulti, shelfMulti
             }
         } = this.props;
         const {lang, loading} = this.state;
 
         return (
             <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)}
-                  style={dirty ? {paddingBottom: '43px'} : {}}>
+                  style={dirty ? {paddingBottom: '43px', marginLeft:10, marginRight:10} : {marginLeft:10, marginRight:10}}>
                 {invNumber && <Field
                     name='invNumber'
                     normalize={this.strToRedux}
                     colon
+                     disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
                     component={renderInput}
                     label={invNumber.name[this.lng]}
                     formItemLayout={
@@ -348,19 +352,19 @@ class MainInfoFundForm extends React.Component {
                     }
                     validate={requiredLng}
                 />}
-                {invCont &&
-                <Field
-                    name="invCont"
-                    component={renderCheckbox}
-                    format={v => v && v.value}
-                    normalize={this.checkboxToRedux}
-                    label={invCont.name[this.lng]}
-                    formItemLayout={{
-                        labelCol: {span: 10},
-                        wrapperCol: {span: 14}
-                    }}
-                />
-                }
+                {/*{invCont &&*/}
+                {/*<Field*/}
+                    {/*name="invCont"*/}
+                    {/*component={renderCheckbox}*/}
+                    {/*format={v => v && v.value}*/}
+                    {/*normalize={this.checkboxToRedux}*/}
+                    {/*label={invCont.name[this.lng]}*/}
+                    {/*formItemLayout={{*/}
+                        {/*labelCol: {span: 10},*/}
+                        {/*wrapperCol: {span: 14}*/}
+                    {/*}}*/}
+                {/*/>  */}
+                {/*}*/}
                 <Field
                     name="name"
                     component={renderInputLang}
@@ -369,6 +373,8 @@ class MainInfoFundForm extends React.Component {
                         this.nameValue[lang.name] = value;
                         return {...this.nameValue}
                     }}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
+
                     label={t('NAME')}
                     formItemClass="with-lang"
                     changeLang={this.changeLang}
@@ -386,6 +392,8 @@ class MainInfoFundForm extends React.Component {
                     component={renderSelect}
                     label={t('ACCESS_LEVEL')}
                     normalize={this.selectToRedux}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
+
                     formItemLayout={{
                         labelCol: {span: 10},
                         wrapperCol: {span: 14}
@@ -403,6 +411,8 @@ class MainInfoFundForm extends React.Component {
                     name='invType'
                     component={renderSelect}
                     label={invType.name[this.lng]}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
+
                     normalize={this.selectToRedux}
                     formItemLayout={
                         {
@@ -423,6 +433,8 @@ class MainInfoFundForm extends React.Component {
                     component={renderSelect}
                     normalize={this.selectToRedux}
                     label={documentType.name[this.lng]}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
+
                     formItemLayout={
                         {
                             labelCol: {span: 10},
@@ -437,10 +449,28 @@ class MainInfoFundForm extends React.Component {
                     colon
                     validate={requiredLabel}
                 />}
+
+                {fundNumberOfCases && <Field
+                    name='fundNumberOfCases'
+                    normalize={this.strToRedux}
+                    component={renderInput}
+                    label={fundNumberOfCases.name[this.lng]}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
+
+                    formItemLayout={
+                        {
+                            labelCol: {span: 10},
+                            wrapperCol: {span: 14}
+                        }
+                    }
+
+                />}
+
                 {invDates && <Field
                     name='invDates'
                     component={renderTaggedSelect}
                     label={invDates.name[this.lng]}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
 
                     // format={val => { val && val.map(str => str.value)}}
                     formItemLayout={
@@ -454,100 +484,12 @@ class MainInfoFundForm extends React.Component {
                     colon={true}
                     required={requiredArr}
                 />}
-                {fundFeature && <Field
-                    name="fundFeature"
-                    component={renderSelect}
-                    label={fundFeature.name[this.lng]}
-                    normalize={this.selectToRedux}
-                    formItemLayout={{
-                        labelCol: {span: 10},
-                        wrapperCol: {span: 14}
-                    }}
-                    isLoading={loading.fundFeatureLoading}
-                    data={fundFeatureOptions ? fundFeatureOptions.map(option => ({
-                        value: option.id,
-                        label: option.name[this.lng]
-                    })) : []}
-                    onMenuOpen={this.loadOptions('fundFeature')}
-                    validate={requiredLabel}
-                    colon={true}
-                />}
-                {caseStorageMulti && <Field
-                    name="caseStorageMulti"
-                    component={renderSelect}
-                    isMulti
-                    normalize={this.selectMultiToRedux}
-                    label={caseStorageMulti.name[this.lng]}
-                    formItemLayout={{
-                        labelCol: {span: 10},
-                        wrapperCol: {span: 14}
-                    }}
-                    isLoading={loading.caseStorageMultiLoading}
-                    data={caseStorageMultiOptions ? caseStorageMultiOptions.map(option => ({
-                        value: option.id,
-                        label: option.name[this.lng]
-                    })) : []}
-                    onMenuOpen={this.loadOptions('caseStorageMulti')}
-                />}
-                {rackMulti && <Field
-                    name="rackMulti"
-                    component={renderSelect}
-                    isMulti
-                    normalize={this.selectMultiToRedux}
-                    label={rackMulti.name[this.lng]}
-                    formItemLayout={{
-                        labelCol: {span: 10},
-                        wrapperCol: {span: 14}
-                    }}
-                    isLoading={loading.rackMultiLoading}
-                    data={rackMultiOptions ? rackMultiOptions.map(option => ({
-                        value: option.id,
-                        label: option.name[this.lng]
-                    })) : []}
-                    onMenuOpen={this.loadOptions('rackMulti')}
-
-                />}
-                {sectionMulti && <Field
-                    name="sectionMulti"
-                    component={renderSelect}
-                    isMulti
-                    normalize={this.selectMultiToRedux}
-                    label={sectionMulti.name[this.lng]}
-                    formItemLayout={{
-                        labelCol: {span: 10},
-                        wrapperCol: {span: 14}
-                    }}
-                    isLoading={loading.sectionMultiLoading}
-                    data={sectionMultiOptions ? sectionMultiOptions.map(option => ({
-                        value: option.id,
-                        label: option.name[this.lng]
-                    })) : []}
-                    onMenuOpen={this.loadOptions('sectionMulti')}
-
-                />}
-                {shelfMulti && <Field
-                    name="shelfMulti"
-                    component={renderSelect}
-                    isMulti
-                    normalize={this.selectMultiToRedux}
-
-                    label={shelfMulti.name[this.lng]}
-                    formItemLayout={{
-                        labelCol: {span: 10},
-                        wrapperCol: {span: 14}
-                    }}
-                    isLoading={loading.shelfMultiLoading}
-                    data={shelfMultiOptions ? shelfMultiOptions.map(option => ({
-                        value: option.id,
-                        label: option.name[this.lng]
-                    })) : []}
-                    onMenuOpen={this.loadOptions('shelfMulti')}
-
-                />}
                 {invCaseSystem && <Field
                     name="invCaseSystem"
                     component={renderSelect}
                     label={invCaseSystem.name[this.lng]}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
+
                     formItemLayout={{
                         labelCol: {span: 10},
                         wrapperCol: {span: 14}
@@ -562,13 +504,30 @@ class MainInfoFundForm extends React.Component {
                     normalize={this.selectToRedux}
                     colon={true}
                 />}
+
+                {invDeadline && <Field
+                    name='invDeadline'
+                    component={renderDatePicker}
+                    format={val=> {return val && val.value}}
+                    normalize={this.dateToRedux}
+                    label={invDeadline.name[this.lng]}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
+
+                    formItemLayout={
+                        {
+                            labelCol: {span: 10},
+                            wrapperCol: {span: 14}
+                        }
+                    }
+                />}
                 {invAgreementDate && <Field
                     name='invAgreementDate'
                     component={renderDatePicker}
-                    disabled={!!this.props.initialValues.key}
+                    // disabled={!!this.props.initialValues.key}
                     format={val=> {return val && val.value}}
                     normalize={this.dateToRedux}
                     label={invAgreementDate.name[this.lng]}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
                     formItemLayout={
                         {
                             labelCol: {span: 10},
@@ -579,9 +538,10 @@ class MainInfoFundForm extends React.Component {
                 {invAgreement2Date && <Field
                     name='invAgreement2Date'
                     component={renderDatePicker}
-                    disabled={!!this.props.initialValues.key}
+                    // disabled={!!this.props.initialValues.key}
                     format={val=> {return val && val.value}}
                     normalize={this.dateToRedux}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
                     label={invAgreement2Date.name[this.lng]}
                     formItemLayout={
                         {
@@ -590,12 +550,31 @@ class MainInfoFundForm extends React.Component {
                         }
                     }
                 />}
-                {invTypeValue && invTypeValue.value == invTypePerm.id && invApprovalDate1 && <Field
+
+
+                {invAgreementNumber && <Field
+                    name='invAgreementNumber'
+                    normalize={this.strToRedux}
+                    component={renderInput}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
+
+                    label={invAgreementNumber.name[this.lng]}
+                    formItemLayout={
+                        {
+                            labelCol: {span: 10},
+                            wrapperCol: {span: 14}
+                        }
+                    }
+
+                />}
+                {/*invTypeValue && invTypeValue.value == invTypePerm.id &&*/ invApprovalDate1 && <Field
                     name='invApprovalDate1'
                     component={renderDatePicker}
-                    disabled={!!this.props.initialValues.key}
+                    // disabled={!!this.props.initialValues.key}
                     format={val=> {return val && val.value}}
                     normalize={this.dateToRedux}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
+
                     label={invApprovalDate1.name[this.lng]}
                     formItemLayout={
                         {
@@ -604,13 +583,14 @@ class MainInfoFundForm extends React.Component {
                         }
                     }
                 />}
-                {invApprovalDate2 && <Field
+                {/*invTypeValue && invTypeValue.value == invTypePerm.id &&*/ invApprovalDate2 && <Field
                     name='invApprovalDate2'
                     component={renderDatePicker}
-                    disabled={!!this.props.initialValues.key}
+                    // disabled={!!this.props.initialValues.key}
                     format={val=> {return val && val.value}}
                     normalize={this.dateToRedux}
                     label={invApprovalDate2.name[this.lng]}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
                     formItemLayout={
                         {
                             labelCol: {span: 10},
@@ -618,12 +598,15 @@ class MainInfoFundForm extends React.Component {
                         }
                     }
                 />}
+
                 {agreementProtocol && <Field
                     name='agreementProtocol'
                     component={renderFileUploadBtn}
                     cubeSConst='CubeForAF_Inv'
                     label={agreementProtocol.name[this.lng]}
                     normalize={this.fileToRedux}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
+
                     formItemLayout={
                         {
                             labelCol: {span: 10},
@@ -631,11 +614,14 @@ class MainInfoFundForm extends React.Component {
                         }
                     }
                 />}
+
                 {agreement2Protocol && <Field
                     name='agreement2Protocol'
                     component={renderFileUploadBtn}
                     cubeSConst='CubeForAF_Inv'
                     normalize={this.fileToRedux}
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
+
                     label={agreement2Protocol.name[this.lng]}
                     formItemLayout={
                         {
@@ -644,11 +630,14 @@ class MainInfoFundForm extends React.Component {
                         }
                     }
                 />}
+
                 {approvalProtocol && <Field
                     name='approvalProtocol'
                     component={renderFileUploadBtn}
                     normalize={this.fileToRedux}
                     cubeSConst='CubeForAF_Inv'
+                    disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
+
                     label={approvalProtocol.name[this.lng]}
                     formItemLayout={
                         {
@@ -657,32 +646,8 @@ class MainInfoFundForm extends React.Component {
                         }
                     }
                 />}
-                {invFile && <Field
-                    name='invFile'
-                    component={renderFileUploadBtn}
-                    normalize={this.fileToRedux}
-                    cubeSConst='CubeForAF_Inv'
-                    label={invFile.name[this.lng]}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                />}
-                {invStorage && <Field
-                    name='invStorage'
-                    component={renderInput}
-                    disabled
 
-                    label={invStorage.name[this.lng]}
-                    formItemLayout={
-                        {
-                            labelCol: {span: 10},
-                            wrapperCol: {span: 14}
-                        }
-                    }
-                />}
+
                 {dirty && <Form.Item className="ant-form-btns">
                     <Button className="signup-form__btn" type="primary" htmlType="submit" disabled={submitting}>
                         {submitting ? t('LOADING...') : t('SAVE')}

@@ -188,10 +188,19 @@ export const General = {
   // receiving blob of file by id.
     getFile: (id, type) =>
         axios.get(`/${localStorage.getItem('i18nextLng')}/entity/getFile?idFile=${id}&type=${type}`, {responseType: 'blob'}),
-    getFileResolve: (id, type) =>
-        axios.get(`/${localStorage.getItem('i18nextLng')}/fileviewer/resolve?path=${id}&provider=${type}`),
-    getFileData: (id, viewtype, page, rotate) =>
+
+    getFileResolve: (path, provider) =>
+        axios.get(`/${localStorage.getItem('i18nextLng')}/fileviewer/resolve?path=${path}&provider=${provider}`),
+
+    getFileInfo: (id, viewtype) =>
+        axios.get(`/${localStorage.getItem('i18nextLng')}/fileviewer/info?id=${id}&viewtype=${viewtype}`),
+
+    getFileCheckdata: (id, viewtype) =>
+        axios.get(`/${localStorage.getItem('i18nextLng')}/fileviewer/checkdata?id=${id}&viewtype=${viewtype}`),
+
+    getFileData: (id, page, rotate, viewtype) =>
         axios.get(`/${localStorage.getItem('i18nextLng')}/fileviewer/data?id=${id}&viewtype=${viewtype}&page=${page}&rotate=${rotate}`),
+
   //delete file from db and cube
   dFile: (id, cubeSConst) =>
     axios.get(`/${localStorage.getItem('i18nextLng')}/entity/dFile?idFile=${id}&cubeSConst=${cubeSConst}`)

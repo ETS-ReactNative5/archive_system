@@ -249,7 +249,7 @@ class FundMaker extends React.PureComponent {
     }
 
     renderTableData = (item, idx) => {
-        const constArr = ['legalStatus', 'formOfAdmission', 'orgIndustry', 'fundmakerArchive',
+        const constArr = ['legalStatus', 'dateFormation', 'formOfAdmission', 'orgIndustry', 'fundmakerArchive',
             'isActive', 'orgAddress', 'orgPhone', 'orgFax', 'orgEmail', 'orgFormationDoc', 'orgReorganizationDoc', 'orgLiquidationDoc',
             'leaderFIO', 'leaderPosition', 'leaderPhone', 'depLeaderFIO', 'depLeaderPosition', 'depLeaderPhone', 'responsibleFIO', 'responsiblePosition', 'responsiblePhone',
             'responsibleAppointmentDate', 'archiveLeaderFIO', 'archiveLeaderPosition', 'archiveLeaderPhone', 'archiveLeaderAppointmentDate', 'subordination', 'jurisdiction',
@@ -263,6 +263,7 @@ class FundMaker extends React.PureComponent {
             name: item.fullName ? item.fullName : {kz: '', ru: '', en: ''},
             dbeg: item.dbeg && moment(item.dbeg).isAfter('1800-01-01') ? moment(item.dbeg) : null,
             dend: item.dend && moment(item.dend).isBefore('3333-12-31') ? moment(item.dend) : null,
+            dateFormation:  item.dateFormation ? item.dateFormation : null,
             accessLevel: accessLevelObj && {
                 value: accessLevelObj.id,
                 label: accessLevelObj.name[this.lng]
@@ -466,91 +467,39 @@ class FundMaker extends React.PureComponent {
                 <div className="table-header">
                     <div className="table-header-btns">
                         <Button onClick={this.openCard}>{this.props.t('ADD')}</Button>
-                    </div>
-                    <div className="label-select">
-                        <Select
-                        name="formOfAdmission"
-                        isMulti
-                        isSearchable={false}
-                        value={filter.formOfAdmission}
-                        onChange={this.onFormOfAdmissionChange}
-                        onMenuOpen={this.loadOptions(FORM_OF_ADMISSION)}
-                        isLoading={filter.formOfAdmissionLoading}
-                        options={formOfAdmissionOptions ? formOfAdmissionOptions.map(option => ({
-                            value: option.id,
-                            label: option.name[this.lng]
-                        })) : []}
-                        placeholder={t('FORM_OF_ADMISSION')}
-                        />
-                    </div>
-                    <div className="label-select">
-                        <Select
-                        name="legalStatus"
-                        isMulti
-                        isSearchable={false}
-                        value={filter.legalStatus}
-                        onChange={this.onLegalStatusChange}
-                        isLoading={filter.legalStatusLoading}
-                        options={legalStatusOptions ? legalStatusOptions.map(option => ({
-                            value: option.id,
-                            label: option.name[this.lng]
-                        })) : []}
-                        placeholder={legalStatus.name[this.lng]}
-                        onMenuOpen={this.loadOptions(LEGAL_STATUS)}
-                        menuStyle={{minWidth: 200}}
-                        menuContainerStyle={{minWidth: 202}}
-                        />
-                    </div>
-                    <div className="label-select">
-                        <Select
-                        name="fundmakerArchive"
-                        isMulti
-                        isSearchable={false}
-                        optionHeight={40}
-                        isLoading={filter.fundmakerArchiveLoading}
-                        onMenuOpen={this.loadOptions(FUND_MAKER_ARCHIVE)}
-                        value={filter.fundmakerArchive}
-                        onChange={this.onOrgLocationChange}
-                        options={fundmakerArchiveOptions ? fundmakerArchiveOptions.map(option => ({
-                            value: option.id,
-                            label: option.name[this.lng]
-                        })) : []}
-                        menuStyle={{minWidth: 200}}
-                        menuContainerStyle={{minWidth: 202}}
-                        placeholder={fundmakerArchive.name[this.lng]}
-                        />
+                        <Button onClick={this.openCard}>{this.props.t('DELETE')}</Button>
+                        <Button onClick={this.openCard}>{this.props.t('Источник комплектования')}</Button>
+                        <Button onClick={this.openCard}>{this.props.t('Фонд')}</Button>
                     </div>
                     <div className="label-select">
                         <SelectVirt
-                        selectClassName='long-selected-menu'
-                        name="orgIndustry"
-                        isMulti
-                        isLoading={filter.orgIndustryLoading}
-                        onMenuOpen={this.loadOptions(ORG_INDUSTRY, true)}
-                        value={filter.orgIndustry}
-                        onChange={this.onOrgIndustryChange}
-                        options={orgIndustryOptions || []}
-                        menuStyle={{minWidth: 200}}
-                        menuContainerStyle={{minWidth: 202}}
-                        placeholder={orgIndustry.name[this.lng]}
+                            selectClassName='long-selected-menu'
+                            name="orgIndustry"
+                            isMulti
+                            isLoading={filter.orgIndustryLoading}
+                            onMenuOpen={this.loadOptions(ORG_INDUSTRY, true)}
+                            value={filter.orgIndustry}
+                            onChange={this.onOrgIndustryChange}
+                            options={orgIndustryOptions || []}
+                            menuStyle={{minWidth: 200}}
+                            menuContainerStyle={{minWidth: 202}}
+                            placeholder={orgIndustry.name[this.lng]}
                         />
-                    </div>
-                    <div className="label-select">
                         <Select
-                        name="isActive"
-                        isMulti
-                        isSearchable={false}
-                        isLoading={filter.isActiveLoading}
-                        onMenuOpen={this.loadOptions(IS_ACTIVE)}
-                        value={filter.isActive}
-                        onChange={this.onIsActiveChange}
-                        options={isActiveOptions ? isActiveOptions.map(option => ({
-                            value: option.id,
-                            label: option.name[this.lng]
-                        })) : []}
-                        menuStyle={{minWidth: 200}}
-                        menuContainerStyle={{minWidth: 202}}
-                        placeholder={isActive.name[this.lng]}
+                            name="legalStatus"
+                            isMulti
+                            isSearchable={false}
+                            value={filter.legalStatus}
+                            onChange={this.onLegalStatusChange}
+                            isLoading={filter.legalStatusLoading}
+                            options={legalStatusOptions ? legalStatusOptions.map(option => ({
+                                value: option.id,
+                                label: option.name[this.lng]
+                            })) : []}
+                            placeholder={legalStatus.name[this.lng]}
+                            onMenuOpen={this.loadOptions(LEGAL_STATUS)}
+                            menuStyle={{minWidth: 200}}
+                            menuContainerStyle={{minWidth: 202}}
                         />
                     </div>
                 </div>
@@ -595,65 +544,50 @@ class FundMaker extends React.PureComponent {
                         render: obj => obj && obj[this.lng]
                     },
                     {
-                        key: 'legalStatus',
-                        title: legalStatus.name[this.lng],
-                        dataIndex: 'legalStatus',
-                        width: '19%',
-                        render: obj => obj && obj.label
-                    },
-                    {
-                        key: 'formOfAdmission',
-                        title: formOfAdmission.name[this.lng],
-                        dataIndex: 'formOfAdmission',
-                        width: '19%',
-                        render: obj => obj && obj.label
-                    },
-                    {
                         key: 'orgIndustry',
                         title: orgIndustry.name[this.lng],
                         dataIndex: 'orgIndustry',
                         width: '19%',
-                        render: value => value && value.label
-                    },
-                    {
+                        render: value => value && value.label,
+                    },{
                         key: 'action',
                         title: '',
                         dataIndex: '',
                         width: '3%',
                         render: (text, record) => {
                             return (
-                            <div className="editable-row-operations">
-                                <Popconfirm title={this.props.t('CONFIRM_REMOVE')}
-                                            onConfirm={() => {
-                                                const hideLoading = message.loading(this.props.t('REMOVING'), 30);
-                                                dFundMaker(record.key.split('_')[1])
-                                                .then(res => {
-                                                    hideLoading();
-                                                    if (res.success) {
-                                                        message.success(this.props.t('SUCCESSFULLY_REMOVED'));
-                                                        this.remove(record.key)
-                                                    } else {
-                                                        throw res
-                                                    }
-                                                }).catch(err => {
-                                                    hideLoading();
-                                                    console.error(err);
-                                                    if (err.funds) {
-                                                        err.funds.forEach(err => message.error(`${t('EXISTS_FUND_1')} ${err.name[this.lng]} ${t('EXISTS_FUND_2')}`, 8))
-                                                    } else {
-                                                        message.error(this.props.t('REMOVING_ERROR'))
-                                                    }
-                                                })
-                                            }}>
-                                    <a style={{
-                                        color: '#f14c34',
-                                        marginLeft: '10px',
-                                        fontSize: '14px'
-                                    }}
-                                       onClick={this.stopPropagation}><Icon type="delete"
-                                                                            className="editable-cell-icon"/></a>
-                                </Popconfirm>
-                            </div>
+                                <div className="editable-row-operations">
+                                    <Popconfirm title={this.props.t('CONFIRM_REMOVE')}
+                                                onConfirm={() => {
+                                                    const hideLoading = message.loading(this.props.t('REMOVING'), 30);
+                                                    dFundMaker(record.key.split('_')[1])
+                                                        .then(res => {
+                                                            hideLoading();
+                                                            if (res.success) {
+                                                                message.success(this.props.t('SUCCESSFULLY_REMOVED'));
+                                                                this.remove(record.key)
+                                                            } else {
+                                                                throw res
+                                                            }
+                                                        }).catch(err => {
+                                                        hideLoading();
+                                                        console.error(err);
+                                                        if (err.funds) {
+                                                            err.funds.forEach(err => message.error(`${t('EXISTS_FUND_1')} ${err.name[this.lng]} ${t('EXISTS_FUND_2')}`, 8))
+                                                        } else {
+                                                            message.error(this.props.t('REMOVING_ERROR'))
+                                                        }
+                                                    })
+                                                }}>
+                                        <a style={{
+                                            color: '#f14c34',
+                                            marginLeft: '10px',
+                                            fontSize: '14px'
+                                        }}
+                                           onClick={this.stopPropagation}><Icon type="delete"
+                                                                                className="editable-cell-icon"/></a>
+                                    </Popconfirm>
+                                </div>
                             );
                         },
                     }

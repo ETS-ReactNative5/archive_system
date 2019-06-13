@@ -196,7 +196,8 @@ class ArchiveFundWorksExpertize extends React.PureComponent {
               key: 'caseNumber',
               title: caseNumber.name[this.lng],
               dataIndex: 'caseNumber',
-              width: '10%'
+              width: '10%',
+              sorter: (a, b) => parseInt(a.caseNumber) - parseInt(b.caseNumber),
             },
             {
               key: 'cases',

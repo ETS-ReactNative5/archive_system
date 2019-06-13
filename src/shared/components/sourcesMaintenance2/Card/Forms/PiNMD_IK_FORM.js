@@ -70,7 +70,6 @@ class PiNMD_IK_FORM extends React.Component {
 
     };
     showFile = (key) => {
-        debugger
         if (!!key.value) {
             let typeFile = ''//key.name.ru.split(".")[1]
             getFileResolve(key.value.name).then(res => {
@@ -78,7 +77,7 @@ class PiNMD_IK_FORM extends React.Component {
                 getFileData(res.data.id).then(resove =>{
                     debugger
                     let blob =resove.data
-                    const url = URL.createObjectURL(new Blob([blob], {type: 'image/png'}));
+                    const url = URL.createObjectURL(new Blob([blob]));
                     this.setState({
                         modalOpen: true,
                         file: <img src={`${url}#toolbar=0`}/>

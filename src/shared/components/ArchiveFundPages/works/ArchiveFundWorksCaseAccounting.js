@@ -201,7 +201,8 @@ class ArchiveFundWorksCaseAccounting extends React.PureComponent {
               key: 'caseNumber',
               title: caseNumber.name[this.lng],
               dataIndex: 'caseNumber',
-              width: '5%'
+              width: '5%',
+              sorter: (a, b) => parseInt(a.caseNumber) - parseInt(b.caseNumber),
             },
             {
               key: 'cases',

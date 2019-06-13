@@ -96,7 +96,7 @@ class SearchNSAArchiveFund extends React.Component {
                     concatType: "and",
                     conds: [
                         {
-                            consts: "invFund,fundNumber"
+                            consts: "invFund,fundNumber,surnameOriginator"
                         }
                     ]
                 }
@@ -123,20 +123,6 @@ class SearchNSAArchiveFund extends React.Component {
                 tableLoader:false
             })
         })
-
-       getValueOfMultiText(String(this.props.initialValues.key.split('_')[1]), 'fundHistoricalNoteMulti').then(
-           res => {
-               !!res.data[0] && this.setState({
-                   multiTextDPV: res.data[0].idDataPropVal,
-                   fundHistoricalNoteMulti: {
-                       kz: res.data[0].valueMultiStr.kz,
-                       en: res.data[0].valueMultiStr.en,
-                       ru: res.data[0].valueMultiStr.ru
-                   },
-
-               })
-           }
-       )
        if (this.props.record && !isEqual(this.props.record, this.state.record)) {
                  this.setState({ record: this.props.record });
        }
@@ -150,38 +136,6 @@ class SearchNSAArchiveFund extends React.Component {
             },
             dirty: true
         })
-    };
-    savefundHistoricalNoteMulti = () => {
-        const dataToSend = [];
-        var mod = 'ins';
-        if (!!this.state.multiTextDPV) {
-            mod = 'upd'
-        }
-        ;
-        dataToSend.push(
-            {
-                propConst: 'fundHistoricalNoteMulti',
-                vals: [
-                    {
-                        idDataPropVal: this.state.multiTextDPV,
-                        mode: mod,
-                        val: {
-                            kz: this.state.fundHistoricalNoteMulti.kz,
-                            ru: this.state.fundHistoricalNoteMulti.ru,
-                            en: this.state.fundHistoricalNoteMulti.en,
-                        }
-                    }
-                ],
-            },
-        );
-        if (dataToSend.length > 0) {
-            let data = JSON.stringify(dataToSend);
-            saveValueOfMultiText(this.props.initialValues.key.split('_')[1], data, moment().format('YYYY-DD-MM')).then(res => {
-                message.success(this.props.t("PROPS_SUCCESSFULLY_UPDATED"));
-            }).catch(err => {
-                console.warn(err);
-            })
-        }
     };
 
     componentDidUpdate(prevProps){
@@ -216,15 +170,25 @@ class SearchNSAArchiveFund extends React.Component {
                 dpConst: DP_FOR_FUND_AND_IK,
             };
             const objData = {};
-            const props = pickBy(
+            let props = pickBy(
                 values,
                 (val, key) => !isEqual(val, this.props.initialValues[key])
             );
+
+
             let val = {
                 values: props,
                 oFiles: {
                     fundHistoricalNote: fundHistoricalNote
                 }
+            }
+
+            if(this.props.initialValues.lastChangeDateScheme && this.props.initialValues.lastChangeDateScheme.idDataPropVal){
+                val.values.lastChangeDateScheme={...this.props.initialValues.lastChangeDateScheme};
+                val.values.lastChangeDateScheme.value=moment();
+            }else{
+                val.values.lastChangeDateScheme={};
+                 val.values.lastChangeDateScheme.value=moment();
             }
             return this.saveProps(
                 {
@@ -237,21 +201,7 @@ class SearchNSAArchiveFund extends React.Component {
             );
         }
     };
-    onChange = e => {
-        this.setState({
-            float: true,
-            fundHistoricalNoteMulti: {
-                ...this.state.fundHistoricalNoteMulti,
-                [this.state.lange]: e.target.value
-            },
-            dirty: true
-        })
-    };
-    onLangChange = e => {
-        this.setState({lange: e.target.value})
-    };
     saveProps = async (c, v, t = this.props.tofiConstants, objData, key) => {
-        debugger;
         let hideLoading;
         try {
             if (!c.cube) c.cube = {
@@ -273,29 +223,11 @@ class SearchNSAArchiveFund extends React.Component {
                 });
                 return Promise.reject(resSave);
             }
-            this.savefundHistoricalNoteMulti()
-            message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
-            return resSave;
         }
         catch (e) {
             typeof hideLoading === 'function' && hideLoading();
             this.setState({loading: false});
             console.warn(e);
-        }
-    };
-
-    fileToRedux = (val, prevVal, file, str) => {
-        let newFile = val.filter(el => el instanceof File);
-        if (newFile.length > 0) {
-            var copyVal = prevVal ? [...prevVal] : [];
-            newFile.map(el => {
-                copyVal.push({
-                    value: el
-                });
-            });
-            return copyVal;
-        } else {
-            return val.length == 0 ? [] : val;
         }
     };
 
@@ -329,10 +261,8 @@ class SearchNSAArchiveFund extends React.Component {
         const lng = localStorage.getItem('i18nextLng');
         this.lng = localStorage.getItem("i18nextLng");
         const {
-            fundHistoricalNote,
-            fundHistoricalNoteMulti,
             lastChangeDateScheme,
-            invFound,
+            surnameOriginator,
         } = this.props.tofiConstants;
         const {
             handleSubmit,
@@ -360,16 +290,6 @@ class SearchNSAArchiveFund extends React.Component {
                         />
                     </FormItem>
                 </Form>
-                <div className="work-description" style={{ marginLeft: '.5vw', marginRight: '.5vw'}}>
-                    <TextArea placeholder="Description" autosize={{minRows: 2}}
-                              value={this.state.fundHistoricalNoteMulti[this.state.lange]} onChange={this.onChange}
-                              style={{marginTop: '10px'}}/>
-                    <RadioGroup onChange={this.onLangChange} style={{marginTop: '0.5vw'}} defaultValue="ru" size="large">
-                        <RadioButton value="kz">KZ</RadioButton>
-                        <RadioButton value="ru">RU</RadioButton>
-                        <RadioButton value="en">EN</RadioButton>
-                    </RadioGroup>
-                </div>
                 <div style={{marginTop: '1vw', marginLeft: '1vw', marginRight: '1vw'}}>
                     <span>Перечень внутрифондового НСА</span>
                     <AntTable
@@ -400,24 +320,25 @@ class SearchNSAArchiveFund extends React.Component {
                     style={dirty ? {paddingBottom: "43px"} : {}}
                     onSubmit={handleSubmit(this.onSubmit)}
                 >
-                    {fundHistoricalNote && (
+                    {surnameOriginator &&
                         <Field
-                            name="fundHistoricalNote"
-                            component={renderFileUploadBtn}
-                            normalize={this.fileToRedux}
-                            cubeSConst="CubeForAF_Case"
-                            label={fundHistoricalNote.name[this.lng]}
-                            formItemLayout={{
-                                labelCol: {span: 10},
-                                wrapperCol: {span: 14}
-                            }}
-                        />
-                    )}
+                            name="surnameOriginator"
+                            component={renderInput}
+                            label={surnameOriginator.name[this.lng]}
+                            disabled
+                            formItemLayout={
+                                {
+                                    labelCol: { span: 10 },
+                                    wrapperCol: { span: 14 }
+                                }
+                            }
+                        />}
                     {lastChangeDateScheme && (
                         <Field
                             name="lastChangeDateScheme"
                             component={renderDatePicker}
                             format={null}
+                            disabled
                             normalize={this.dateToRedux}
                             onTabClick={this.onSideBarTabClick}
                             label={lastChangeDateScheme.name[this.lng]}

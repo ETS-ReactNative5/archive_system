@@ -61,6 +61,7 @@ class SearchNSA extends Component {
                 fundNumber: '',
                 fundList: '',
                 fundIndex: '',
+                surnameOriginator:'',
                 fundDbeg: '',
                 fundDend: '',
                 fundIndustryObj: [],
@@ -98,7 +99,7 @@ class SearchNSA extends Component {
                     concatType: "and",
                     conds: [
                         {
-                            consts: 'fundNumber,fundHistoricalNote,fundHistoricalNoteMulti,lastChangeDateScheme,invFound,fundIndex,fundDbeg,fundDend,fundCategory,fundFeature,fundArchive'
+                            consts: 'fundNumber,fundHistoricalNote,fundHistoricalNoteMulti,lastChangeDateScheme,invFound,fundIndex,fundDbeg,fundDend,fundCategory,fundFeature,fundArchive,surnameOriginator',
                         }
                     ]
                 }
@@ -589,12 +590,13 @@ class SearchNSA extends Component {
     };
 
     renderTableData = (item, idx) => {
+        debugger;
         const {
             fundDbeg, fundDend, fundNumber, fundIndex, fundCategory, fundFeature,
             fundIndustry, fundmakerOfIK, fundmakerMulti, fundExitDate, fundExitReason, fundToGuidbook,
             fundFirstDocFlow, fundDateOfLastCheck, collectionCreateDate, creationConds,
             creationReason, creationPrinciple, collectionLocation,lastChangeDateScheme,
-            caseOCD, irreparablyDamaged, caseFundOfUse, propAuthenticity, typeOfPaperCarrier,fundHistoricalNoteMulti,fundHistoricalNote,
+            caseOCD, irreparablyDamaged, caseFundOfUse, propAuthenticity, typeOfPaperCarrier,fundHistoricalNoteMulti,fundHistoricalNote,surnameOriginator,
             // fundAnnotationFile, invFile,
         } = this.props.tofiConstants;
         const fundNumbObj = item.props.find(element => element.prop == fundNumber.id).values,
@@ -619,6 +621,7 @@ class SearchNSA extends Component {
             lastChangeDateSchemeObj=item.props.find(element => element.prop == lastChangeDateScheme.id),
             fundHistoricalNoteObj=item.props.find(element => element.prop ==  fundHistoricalNote.id),
             fundHistoricalNoteMultiObj= item.props.find(element => element.prop == fundHistoricalNoteMulti.id),
+            surnameOriginatorObj = item.props.find(element => element.prop === surnameOriginator.id),
             fundTypeObj = this.props.tofiConstants[
                 ['fundOrg', 'fundLP', 'collectionOrg', 'collectionLP', 'jointOrg', 'jointLP']
                     .find(c => this.props.tofiConstants[c].id == item.clsORtr)];
@@ -629,7 +632,6 @@ class SearchNSA extends Component {
         const irreparablyDamagedObj = item.props.find(element => element.prop === irreparablyDamaged.id);
         const caseFundOfUseObj = item.props.find(element => element.prop === caseFundOfUse.id);
         const propAuthenticityObj = item.props.find(element => element.prop === propAuthenticity.id);
-        const typeOfPaperCarrierObj = item.props.find(element => element.prop === typeOfPaperCarrier.id);
         return {
             key: item.id,
             shortName: item.name,
@@ -663,10 +665,10 @@ class SearchNSA extends Component {
             creationPrinciple: creationPrincipleObj && creationPrincipleObj.valueLng,
             collectionLocation: collectionLocationObj && collectionLocationObj.valueLng,
             fundIndustry: fundIndustryObj && fundIndustryObj.values && fundIndustryObj.values.length > 0 ? fundIndustryObj.values.sort((a, b) => a.value > b.value)[fundIndustryObj.values.length - 1] : {},
-            lastChangeDateScheme:lastChangeDateSchemeObj && lastChangeDateSchemeObj.values ? lastChangeDateSchemeObj.values : '',
+            lastChangeDateScheme:lastChangeDateSchemeObj && lastChangeDateSchemeObj.values ? lastChangeDateSchemeObj.values : {value : moment().format("DD-MM-YYYY")},
             fundHistoricalNoteMulti:fundHistoricalNoteMultiObj && fundHistoricalNoteMultiObj.values ? fundHistoricalNoteMultiObj.values : [],
             fundHistoricalNote:fundHistoricalNoteObj && fundHistoricalNoteObj.values ? fundHistoricalNoteObj.values : [],
-     //       'fundHistoricalNote','fundHistoricalNoteMulti',''
+            surnameOriginator: surnameOriginatorObj && surnameOriginatorObj.values ? surnameOriginatorObj.values.label : surnameOriginatorObj,
         }
     };
     renderRecordData = (item) => {

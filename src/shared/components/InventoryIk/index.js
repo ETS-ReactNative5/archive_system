@@ -15,7 +15,7 @@ import {CSSTransition} from "react-transition-group";
 import SiderCard from "../SiderCard";
 
 import AntTable from "../AntTable";
-import {Spin, Icon, Input, Checkbox,Popconfirm, Button, message, DatePicker} from 'antd';
+import {Spin, Modal, Icon, Input, Checkbox, Popconfirm, Button, message, DatePicker} from 'antd';
 import moment from "moment";
 import axios from "axios"
 import {parseCube_new, onSaveCubeData, parseForTable} from "../../utils/cubeParser";
@@ -32,8 +32,10 @@ class TablelegalEntities extends React.Component {
         selectedRow: null,
         data: [],
         numberFull: [],
-
-        dataInv:[],
+        chek:false,
+        visible: false,
+        globalDate:moment().format("YYYY-MM-DD"),
+        dataInv: [],
         ikNameOptopns: [],
         filter: {
             name: '',
@@ -109,9 +111,9 @@ class TablelegalEntities extends React.Component {
                     conds: [
                         {
                             data: {
-                                valueRef: {
-                                    id: this.props.match.params.idFundCard
-                                }
+                                dimPropConst:'dpForInv',
+                                propConst:'invFund',
+                                valueRef: {id: String(this.state.filter.ikName.value)}
                             }
                         }
                     ]
@@ -124,7 +126,7 @@ class TablelegalEntities extends React.Component {
                     cubeSConst: CUBE_FOR_AF_INV,
                     doConst: DO_FOR_INV,
                     dpConst: DP_FOR_INV,
-                    data: this.props.CubeForAF_Inv
+                    data: this.props.InvItem
                 },
                 obj: {
                     doItem: doItemProp
@@ -146,7 +148,7 @@ class TablelegalEntities extends React.Component {
             this.setState({loading: true,});
 
             hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
-            const resSave = await onSaveCubeData(c, v, t, objData);
+            const resSave = await onSaveCubeData(c, v, t, objData, "11",this.state.globalDate);
             hideLoading();
             if (!resSave.success) {
                 message.error(this.props.t('PROPS_UPDATING_ERROR'));
@@ -156,7 +158,7 @@ class TablelegalEntities extends React.Component {
                 return Promise.reject(resSave);
             }
             message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
-            return this.props.getCube('CubeForAF_Inv', JSON.stringify(filters), {customKey: 'InvItem'}).then(() => this.setState({loading: false}))
+            return this.props.getCube('CubeForAF_Inv', JSON.stringify(filters), {customKey: 'InvItem'}).then(() => this.setState({loading: false,openCard:false}))
                 .catch(err => {
                     console.error(err);
                     this.setState({loading: false})
@@ -215,46 +217,33 @@ class TablelegalEntities extends React.Component {
         ).map(this.renderTableData);
         this.setState({
             data: parsedCube,
+            visible: true
         })
     }
 
     componentWillReceiveProps(nextProps) {
 
         // Typical usage (don't forget to compare props):
-        if (nextProps.InvItem !== this.props.InvItem)  {
-            const {doForInv, dpForInv} =nextProps.tofiConstants;
+        if (nextProps.InvItem !== this.props.InvItem) {
+            const {doForInv, dpForInv} = nextProps.tofiConstants;
             let parserCube = parseCube_new(nextProps.InvItem['cube'], [], 'dp', 'do', nextProps.InvItem [`do_${doForInv.id}`], nextProps.InvItem [`dp_${dpForInv.id}`], `do_${doForInv.id}`, `dp_${dpForInv.id}`).map(this.renderTableDataInv);
-           this.setState({
-               dataInv:parserCube
-           },() => {
-               this.state.dataInv.map((el) => {
-                   let fdGetCountFund = new FormData();
-                   fdGetCountFund.append('idInv', el.id.split('_')[1]);
-                   axios.post(`/${localStorage.getItem('i18nextLng')}/archiveFund/countCasesOfInv`, fdGetCountFund).then(res => {
-                       if (res.data.success === true) {
-                           this.setState({
-                               numberFull: this.state.numberFull.concat({
-                                   key: el.id.split('_')[1],
-                                   value: res.data.data.countCasesOfInv
-                               })
-                           })
-                       }
-                   })
-               })
-
-           })
+            this.setState({
+                dataInv: parserCube
+            })
         }
     }
-    renderTableDataInv=(item)=>{
+
+    renderTableDataInv = (item ,ids) => {
         const constArr = ['invNumber', 'invDates', 'invType', 'invStorage', 'fundNumberOfCases', "caseStorageMulti", "rackMulti", "sectionMulti", "shelfMulti", 'fundNumberOfCasesWithFiles',
-            'documentType', 'fundFeature', 'invCaseSystem', 'invApprovalDate2', 'invApprovalDate1', 'invAgreement2Date',
-            'invAgreementDate', 'agreementProtocol', 'agreement2Protocol', 'approvalProtocol',"invFile", 'invCont'];
+            'documentType', 'fundFeature', 'invCaseSystem','invDeadline','invAgreementNumber', 'invApprovalDate2',"invAgreement2Date", 'invApprovalDate1', 'invAgreement2Date',
+            'invAgreementDate', 'agreementProtocol', 'agreement2Protocol', 'approvalProtocol', "invFile", 'invCont'];
 
         const accessLevelObj = this.props.accessLevelOptions.find(al => al.id === item.accessLevel);
 
 
         const result = {
             key: item.id,
+            ids:ids+1,
             name: item.name,
             accessLevel: accessLevelObj && {value: accessLevelObj.id, label: accessLevelObj.name[this.lng]},
         };
@@ -321,49 +310,37 @@ class TablelegalEntities extends React.Component {
         });
 
     };
+
+
     getCubeInv = (ikObj) => {
         this.setState({
-            loading: this
+            loading: this,
         })
-        const fd = new FormData();
-        fd.append("idIK", ikObj.value.split('_')[1]);
-        axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getIdFundByIdIK`, fd)
-            .then(res => {
-                getIdGetObj(res.data.data.idFund, DO_FOR_FUND_AND_IK).then(resId => {
-                    const filters = {
-                        filterDOAnd: [
-                            {
-                                dimConst: DO_FOR_INV,
-                                concatType: "and",
-                                conds: [
-                                    {
-                                        data: {
-                                            valueRef: {
-                                                id: String( resId.data.idDimObj)
-                                            }
-                                        }
-                                    }
-                                ]
+        const filters = {
+            filterDOAnd: [
+                {
+                    dimConst: DO_FOR_INV,
+                    concatType: "and",
+                    conds: [
+                        {
+                            data: {
+                                dimPropConst:'dpForInv',
+                                propConst:'invFund',
+                                valueRef: {id: String(ikObj.value)}
                             }
-                        ]
-                    }
-                    this.props.getCube('CubeForAF_Inv', JSON.stringify(filters), {customKey: 'InvItem'}).then(() => this.setState({loading: false}))
-                        .catch(err => {
-                            console.error(err);
-                            this.setState({loading: false})
-                        })
-
-                }).catch(e=>{
-                    console.log(e)
-
-                })
-
-
-                })
+                        }
+                    ]
+                }
+            ]
+        }
+        this.props.getCube('CubeForAF_Inv', JSON.stringify(filters), {customKey: 'InvItem'}).then(() => this.setState({loading: false}))
             .catch(err => {
-                console.log(err)
-            })
+                console.error(err);
+                this.setState({loading: false})
+            }).catch(e => {
+            console.log(e)
 
+        })
     };
 
     onFormOfAdmissionChange = s => {
@@ -377,6 +354,7 @@ class TablelegalEntities extends React.Component {
             dateReport: moment(data).format("DD-MM-YYYY")
         })
         this.setState({filter: {...this.state.filter, dateIncludeOfIk: moment(data).format("DD-MM-YYYY")}})
+
     };
     dateReport = (mom, data) => {
         if (mom === null) {
@@ -393,14 +371,16 @@ class TablelegalEntities extends React.Component {
                 filter: {
                     ...this.state.filter,
                     dateIncludeOfIk: moment(this.state.dateReport).format("DD-MM-YYYY")
-                }
+                },
+                chek:false
             })
         } else {
             this.setState({
                 filter: {
                     ...this.state.filter,
                     dateIncludeOfIk: ""
-                }
+                },
+                chek:true
             })
         }
     }
@@ -449,7 +429,7 @@ class TablelegalEntities extends React.Component {
                                 size="small"
                                 type="text"
                                 readOnly
-                                value={this.filteredData.length + " / " + this.state.data.length}
+                                value={this.state.dataInv.length + " / " + this.state.dataInv.length}
                             />
                         </div>
                     </div>
@@ -457,11 +437,33 @@ class TablelegalEntities extends React.Component {
             </div>
         );
     };
-
-
+    showModal = () => {
+        this.setState({
+            visible: true,
+        });
+    }
+    handleOk = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+    }
+    handleCancel = (e) => {
+        this.setState({
+            visible: false,
+        });
+    }
+    onChangeGlobal=(e, date)=>{
+        if(e==null){
+            return false
+        }
+        this.setState({
+            globalDate:moment(date).format("YYYY-MM-DD")
+        })
+    }
     render() {
         const {t, tofiConstants, legalStatusOptions, fundmakerArchiveOptions, orgIndustryOptions, formOfAdmissionOptions} = this.props;
-        const {legalStatus, fundmakerArchive, orgIndustry, formOfAdmission, invNumber, invDates, invList, invType, documentType, fundNumberOfCases, fundNumberOfCasesWithFiles} = tofiConstants;
+        const {legalStatus, fundmakerArchive, orgIndustry, formOfAdmission, invNumber,invAgreement2Date,invApprovalDate2, invDates, invList, invType, documentType, fundNumberOfCases, fundNumberOfCasesWithFiles} = tofiConstants;
         const lng = localStorage.getItem('i18nextLng');
 
         const {loading, openCard, filter} = this.state;
@@ -481,30 +483,44 @@ class TablelegalEntities extends React.Component {
         });
         return (
             <div className='Works'>
-
+                <div className="title">
+                    <h2>Описи</h2>
+                    <DatePicker
+                        disabled={this.state.openCard || loading}
+                        value={moment(this.state.globalDate, "YYYY-MM-DD")}
+                        onChange={this.onChangeGlobal}
+                        styile={{marginBottom:10}}
+                    />
+                </div>
                 <div className="Works__heading ">
                     <div className="table-header ">
 
                         <div className="label-select">
                             <Button
-                            onClick={() => {
-                            const accessLevelObj = this.props.accessLevelOptions.find(al => al.id === 1);
-                            this.setState({
-                                openCard: true,
-                                selectedRow: {
-                                    fundId: this.props.match.params.idFundCard,
-                                    accessLevel: {value: accessLevelObj.id, label: accessLevelObj.name[this.lng]},
-                                    fundFeature: {
-                                        value: this.props.tofiConstants.included.id,
-                                        label: this.props.tofiConstants.included.name[this.lng]
-                                    },
-                                    invType: {
-                                        value: this.props.tofiConstants.invOCD.id,
-                                        label: this.props.tofiConstants.invOCD.name[this.lng]
-                                    }
-                                }
-                            })
-                        }}>{t('ADD')}</Button>
+                                onClick={() => {
+                                    const accessLevelObj = this.props.accessLevelOptions.find(al => al.id === 1);
+                                    this.setState({
+                                        openCard: true,
+                                        selectedRow: {
+                                            fundId: this.props.match.params.idFundCard,
+                                            accessLevel: {
+                                                value: accessLevelObj.id,
+                                                label: accessLevelObj.name[this.lng]
+                                            },
+                                            fundFeature: {
+                                                value: this.props.tofiConstants.notIncluded.id,
+                                                label: this.props.tofiConstants.included.name[this.lng]
+                                            },
+                                            invType: {
+                                                value: this.props.tofiConstants.invOCD.id,
+                                                label: this.props.tofiConstants.invOCD.name[this.lng]
+                                            },
+                                            invFund:{
+                                                value:this.state.filter.ikName.value.split('_')[1]
+                                            }
+                                        }
+                                    })
+                                }}>{t('ADD')}</Button>
                         </div>
 
 
@@ -580,13 +596,14 @@ class TablelegalEntities extends React.Component {
                             <DatePicker
                                 name="periodType"
                                 onChange={this.onFormOfAdateIncludeOfIkChange}
-
+                                disabled={this.state.chek}
                                 value={moment(this.state.dateReport, "DD-MM-YYYY")}
                             />
 
                         </div>
                         <div className="label-select" style={{width: "1px"}}>
                             <Checkbox
+                                checked={this.state.chek}
                                 onChange={this.showAllRender}>Показать все</Checkbox>
                         </div>
                         <div className="label-select">
@@ -613,11 +630,10 @@ class TablelegalEntities extends React.Component {
                         columns={
                             [
                                 {
-                                    key: 'invNumber',
-                                    title: t('INV_NUMB'),
-                                    dataIndex: 'invNumber',
+                                    key: 'ids',
+                                    title: "№",
+                                    dataIndex: 'ids',
                                     width: '7%',
-                                    render:obj=>obj && obj.value,
 
                                 },
                                 {
@@ -629,6 +645,13 @@ class TablelegalEntities extends React.Component {
                                     render: obj => obj && obj[this.lng]
                                 },
                                 {
+                                    key: 'invType',
+                                    title: invType.name[lng],
+                                    dataIndex: 'invType',
+                                    width: '10%',
+                                    render: obj => obj && obj.label
+                                },
+                                {
                                     key: 'invDates',
                                     title: invDates.name[lng],
                                     dataIndex: 'invDates',
@@ -637,36 +660,31 @@ class TablelegalEntities extends React.Component {
 
                                     render: arr => arr && arr.map(o => o.value.value).join(', ')
                                 },
-                                {
-                                    key: 'invType',
-                                    title: invType.name[lng],
-                                    dataIndex: 'invType',
-                                    width: '10%',
-                                    render: obj => obj && obj.label
-                                },
-                                {
-                                    key: 'documentType',
-                                    title: documentType.name[lng],
-                                    dataIndex: 'documentType',
-                                    width: '10%',
-                                    render: obj => obj && obj.label
-                                },
+
+
                                 {
                                     key: 'fundNumberOfCases',
                                     title: fundNumberOfCases.name[lng],
                                     dataIndex: 'fundNumberOfCases',
                                     width: '15%',
-                                    render: (text, record) => {
-                                        let rezul = this.state.numberFull.find((el) => record.key.split('_')[1] === el.key)
-                                        if (rezul === undefined)return false
-                                        return rezul.value
-                                    }
+                                    render: obj => { return obj && obj.value}
+
                                 },
                                 {
-                                    key: 'fundNumberOfCasesWithFiles',
-                                    title: fundNumberOfCasesWithFiles.name[lng],
-                                    dataIndex: 'fundNumberOfCasesWithFiles',
-                                    width: '15%'
+                                    key: 'invAgreement2Date',
+                                    title: invAgreement2Date.name[lng],
+                                    dataIndex: 'invAgreement2Date',
+                                    width: '15%',
+                                    render: obj => { return obj && obj.value}
+
+                                },
+                                {
+                                    key: 'invApprovalDate2',
+                                    title: invApprovalDate2.name[lng],
+                                    dataIndex: 'invApprovalDate2',
+                                    width: '15%',
+                                    render: obj => { return obj && obj.value}
+
                                 },
                                 {
                                     key: 'action',
@@ -689,8 +707,35 @@ class TablelegalEntities extends React.Component {
                                                             hideLoading();
                                                             if (res.success) {
                                                                 message.success(this.props.t('SUCCESSFULLY_REMOVED'));
-                                                                this.setState({loading: true});
-                                                                this.remove(record.key)
+                                                                this.setState({
+                                                                    loading: this,
+                                                                })
+                                                                const filters = {
+                                                                    filterDOAnd: [
+                                                                        {
+                                                                            dimConst: DO_FOR_INV,
+                                                                            concatType: "and",
+                                                                            conds: [
+                                                                                {
+                                                                                    data: {
+                                                                                        dimPropConst:'dpForInv',
+                                                                                        propConst:'invFund',
+                                                                                        valueRef: {id: String(this.state.filter.ikName.value)}
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                                this.props.getCube('CubeForAF_Inv', JSON.stringify(filters), {customKey: 'InvItem'}).then(() => this.setState({loading: false}))
+                                                                    .catch(err => {
+                                                                        console.error(err);
+                                                                        this.setState({loading: false})
+                                                                    }).catch(e => {
+                                                                    console.log(e)
+
+                                                                })
+
                                                             } else {
                                                                 throw res
                                                             }
@@ -704,7 +749,7 @@ class TablelegalEntities extends React.Component {
                                                     <Button title="Удалить" icon="delete"
                                                             onClick={e => e.stopPropagation()}
                                                             className="green-btn yellow-bg"
-                                                            disabled={this.state.selectedRow  && this.state.selectedRow.key !== record.key}/>
+                                                            disabled={this.state.selectedRow && this.state.selectedRow.key !== record.key}/>
                                                 </Popconfirm>
                                             </div>
                                         );
@@ -716,9 +761,9 @@ class TablelegalEntities extends React.Component {
                         bordered
                         footer={this.renderTableFooter}
                         loading={this.state.loading}
-                        changeSelectedRow={this.changeSelectedRow}
+                        onRowClick={this.changeSelectedRow}
                         rowClassName={record => {
-                            return !!this.state.selectedRow && this.state.selectedRow.id === record.id ? 'row-selected' : ''
+                            return !!this.state.selectedRow && this.state.selectedRow.key === record.key ? 'row-selected' : ''
                         }}
 
 
@@ -730,22 +775,23 @@ class TablelegalEntities extends React.Component {
                         classNames="card"
                         unmountOnExit
                     >
-                        <SiderCard className="minW900px"
+                        <SiderCard
                                    closer={
                                        <Button
                                            type="danger"
                                            onClick={() => this.setState({openCard: false})}
                                            shape="circle"
-                                           style={{left: 0, top: 20}}
+
                                            icon="arrow-right"
                                        />
                                    }
                         >
-                            <Card className="minW900px"
+                            <Card
                                   t={t}
                                   tofiConstants={this.props.tofiConstants}
                                   initialValues={this.state.selectedRow}
                                   onCreateObj={this.onCreateObj}
+                                  icConst={this.state.filter.ikName.value}
                                   onSaveCubeData={this.onSaveCubeData}
                             />
                         </SiderCard>
@@ -754,7 +800,133 @@ class TablelegalEntities extends React.Component {
 
                 </div>
 
+                <Modal
+                    title="Фильтры данных"
+                    visible={this.state.visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                >
 
+
+                    <div className="label-select-modal">
+                        <div className="title-select">
+                            {fundmakerArchive.name[this.lng]}
+                        </div>
+                        <Select
+                            name="fundmakerArchive"
+                            isMulti
+                            isSearchable
+                            optionHeight={40}
+                            isLoading={filter.fundmakerArchiveLoading}
+                            onMenuOpen={this.loadOptions(FUND_MAKER_ARCHIVE)}
+                            value={filter.fundmakerArchive}
+                            onChange={this.onOrgLocationChange}
+                            options={fundmakerArchiveOptions ? fundmakerArchiveOptions.map(option => ({
+                                value: option.id,
+                                label: option.name[this.lng]
+                            })) : []}
+                            placeholder={fundmakerArchive.name[this.lng]}
+                        /></div>
+                    <div className="label-select-modal">
+                        <div className="title-select">
+                            Тип источника комплектования
+                        </div>
+                        <Select
+                            name="ikType"
+                            isSearchable={false}
+                            value={filter.ikType}
+                            disabled={filter.fundmakerArchive.length > 0 ? false : true}
+                            onChange={this.onFundTypeChange}
+                            options={[
+                                "sourceOrgList",
+                                "sourceLPList"
+                            ].map(c => ({
+                                value: this.props.tofiConstants[c].id,
+                                label: this.props.tofiConstants[c].name[this.lng]
+                            }))}
+                            placeholder="Тип источника комплектования"
+                        />
+                    </div>
+                    <div className="label-select-modal">
+                        <div className="title-select">
+                            {legalStatus.name[this.lng]}
+                        </div>
+                        <Select
+                            name="legalStatus"
+                            isMulti
+                            isSearchable={false}
+                            disabled={Object.keys(filter.ikType).length > 0 ? false : true}
+                            value={filter.legalStatus}
+                            onChange={this.onLegalStatusChange}
+                            isLoading={filter.legalStatusLoading}
+                            options={legalStatusOptions ? legalStatusOptions.map(option => ({
+                                value: option.id,
+                                label: option.name[this.lng]
+                            })) : []}
+                            placeholder={legalStatus.name[this.lng]}
+                            onMenuOpen={this.loadOptions(LEGAL_STATUS)}
+                        />
+                    </div>
+                    <div className="label-select-modal">
+                        <div className="title-select">
+                            {formOfAdmission.name[this.lng]}
+                        </div>
+                        <Select
+                            name="formOfAdmission"
+                            isMulti
+                            isSearchable={false}
+                            disabled={filter.legalStatus.length > 0 ? false : true}
+                            value={filter.formOfAdmission}
+                            onChange={this.onFormOfAdmissionChange}
+                            onMenuOpen={this.loadOptions(FORM_OF_ADMISSION)}
+                            isLoading={filter.formOfAdmissionLoading}
+                            options={formOfAdmissionOptions ? formOfAdmissionOptions.map(option => ({
+                                value: option.id,
+                                label: option.name[this.lng]
+                            })) : []}
+                            placeholder={formOfAdmission.name[this.lng]}
+                        />
+                    </div>
+
+                    <div className="label-select-modal">
+                        <div className="title-select">
+                            Источник комплектования
+                        </div>
+                        <Select
+                            name="ikName"
+                            isSearchable={true}
+                            disabled={filter.fundmakerArchive.length > 0 && Object.keys(filter.ikType).length > 0 ? false : true}
+                            value={filter.ikName}
+                            onChange={this.ikNameChange}
+                            options={this.filteredData ? this.filteredData.map(option => ({
+                                value: option.id,
+                                label: option.name[this.lng]
+                            })) : []}
+                            placeholder={"Источник комплектования"}
+                        />
+
+
+                    </div>
+                    <div className="label-select-modal" >
+                        <div className="title-select">
+                            Дата включения в список источников комплектования
+                        </div>
+                        <DatePicker
+                            name="periodType"
+                            onChange={this.onFormOfAdateIncludeOfIkChange}
+                            disabled={this.state.chek}
+
+                            value={moment(this.state.dateReport, "DD-MM-YYYY")}
+                        />
+
+                    </div>
+                    <div className="label-select-modal" >
+                        <Checkbox
+                            checked={this.state.chek}
+
+                            onChange={this.showAllRender}>Показать все</Checkbox>
+                    </div>
+                </Modal>
             </div>
         );
     }

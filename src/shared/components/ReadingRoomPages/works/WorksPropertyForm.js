@@ -288,6 +288,7 @@ class WorksPropertyForm extends Component {
     }
 
     render() {
+        debugger;
         const content = (
             <div>{this.state.roles.join(', ')}</div>
         )
@@ -444,6 +445,7 @@ class WorksPropertyForm extends Component {
                         }
                     }
                     onChange={(e, newValue) => {
+                        debugger;
                         const user = this.props.user;
                         if (newValue) {
                             this.props.change('appointedUser', {

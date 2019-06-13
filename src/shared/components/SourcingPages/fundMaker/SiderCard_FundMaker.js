@@ -8,6 +8,9 @@ import FundMakerContent from './FundMakerContent';
 import {parseCube_new, parseForTable} from '../../../utils/cubeParser.js';
 import Chat_FundMaker from "./Chat_FundMaker";
 import Viewer from "../../Viewer";
+import RenameFormFoundMaker from "./RenameFormFoundMaker";
+import ReorganizationFounMaker from "./ReorganizationFounMaker";
+import LiquidationFoundMaker from "./LiquidationFoundMaker";
 
 
 
@@ -138,10 +141,39 @@ class SiderCard_FundMaker extends React.PureComponent {
                 saveProps={saveProps}
                 saveIKProps={saveIKProps}
                 onCreateObj={onCreateObj}
-                //withIdDPV={this.withIdDPV}
                 initialValues={initialValues}
               />
             },
+              {
+                  tabKey: 'Rename',
+                  disabled: initialValues && !initialValues.key,
+                  tabName: t('RENAME'),
+                  tabContent: <RenameFormFoundMaker
+                      tofiConstants={tofiConstants}
+                      t={t}
+                      saveProps={saveProps}
+                      initialValues={initialValues}/>
+              },
+              {
+                  tabKey: 'Reorganization',
+                  disabled: initialValues && !initialValues.key,
+                  tabName: t('REORGANIZATION'),
+                  tabContent: <ReorganizationFounMaker
+                      tofiConstants={tofiConstants}
+                      t={t}
+                      saveProps={saveProps}
+                      initialValues={initialValues}/>
+              },
+          {
+              tabKey: 'Liquidation',
+              disabled: initialValues && !initialValues.key,
+              tabName: t('LIQUIDATION'),
+              tabContent: <LiquidationFoundMaker
+              tofiConstants={tofiConstants}
+              t={t}
+              saveProps={saveProps}
+              initialValues={initialValues}/>
+          },
             {
               tabKey: 'Description',
               disabled: initialValues && !initialValues.key,
@@ -150,7 +182,6 @@ class SiderCard_FundMaker extends React.PureComponent {
                 tofiConstants={tofiConstants}
                 saveProps={saveProps}
                 t={t}
-                //withIdDPV={this.withIdDPV}
                 initialValues={initialValues}/>
             },
             {
