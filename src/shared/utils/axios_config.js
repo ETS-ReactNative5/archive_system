@@ -25,6 +25,12 @@ export const Auth = {
      return axios.post(`/${localStorage.getItem('i18nextLng')}/session/aboutMe`,fd)
           .then(response => response.data.data)
     },
+    getUserInformation: (objUser) =>{
+        const fd = new FormData();
+        fd.append('objUser', objUser);
+        return axios.post(`/${localStorage.getItem('i18nextLng')}/session/getUserInfo`,fd)
+            .then(response => response.data.data)
+    },
   regNewUser: fd =>
     axios.post(`/${localStorage.getItem('i18nextLng')}/registration/regUser`, fd),
   regNewUserWithECP: fd =>
@@ -115,7 +121,8 @@ export const Cube = {
   createObj: (cube, obj) => {
     const fd = new FormData();
     fd.append("cube", JSON.stringify(cube));
-    fd.append("obj", JSON.stringify(obj));
+      fd.append("obj", JSON.stringify(obj));
+      fd.append("dBeg", moment().format("YYYY-MM-DD"));
     return axios.post(`/${localStorage.getItem('i18nextLng')}/cube/createObj`, fd)
       .then(res => res.data)
   },

@@ -92,9 +92,8 @@
     display: flex;
     flex-direction: column; }
 
-.centerIcon i {
-  position: relative;
-  left: 3px; }
+.nomenTable .ant-table-body {
+  padding-bottom: 250px !important; }
 
 .ant-table {
   height: 100%;

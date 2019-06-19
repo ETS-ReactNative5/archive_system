@@ -526,6 +526,9 @@ export const regNewUserSuccess = fd => dispatch => {
 export const getUserInfo = objUser =>  {
     return axios.Auth.getUserInfo(objUser)
 };
+export const getUserInformation = objUser =>  {
+    return axios.Auth.getUserInformation(objUser)
+};
 export const regNewUserWithECP = fd => {
     return axios.Auth.regNewUserWithECP(fd)
 };

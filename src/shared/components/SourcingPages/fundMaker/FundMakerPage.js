@@ -102,7 +102,9 @@ class FundMakerPage extends React.PureComponent {
               cubeForOrgFundmaker={cubeForOrgFundmaker}
               tofiConstants={tofiConstants}
               loadOrgFundmaker={this.loadOrgFundmaker}
-              globalDate={globalDate}/>
+              globalDate={globalDate}
+                {...this.props}
+            />
           },
           {
             tabKey: 'individuals',

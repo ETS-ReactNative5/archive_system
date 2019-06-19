@@ -91,7 +91,7 @@ class ComplexContactTable2 extends React.Component {
             iconLoading: true
         });
         var nextnumber = 1;
-        if (this.state.oldTableData.length > 0) {
+        if (this.state.oldTableData && this.state.oldTableData.length > 0) {
             var numbArr = [...this.state.oldTableData.map(el => {
                 return el[this.props.tofiConstants['contactPersonsComplexNum'].id][0].valueLng.ru
             })
@@ -352,8 +352,6 @@ class ComplexContactTable2 extends React.Component {
         const {contactPersonsComplex, contactPersonsComplexFio, contactPersonsComplexPosition, contactPersonsComplexPhone, contactPersonsComplexEmail} = this.props.tofiConstants;
         const columns = [
             {
-
-
                 key: [this.props.tofiConstants['contactPersonsComplexNum'].id],
                 title: "#",
                 dataIndex: [this.props.tofiConstants['contactPersonsComplexNum'].id],
@@ -576,7 +574,9 @@ class ComplexContactTable2 extends React.Component {
                     onClick={this.addRow}>
                 Добавить контакт
             </Button>
-            <AntTable className="fixHeight" loading={this.state.loading} columns={columns}
+            <AntTable className="fixHeight"
+                      loading={this.state.loading}
+                      columns={columns}
                       hidePagination
                       dataSource={this.state.tableData}/>
         </div>

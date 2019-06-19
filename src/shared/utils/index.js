@@ -71,14 +71,17 @@ export const sign = async (callBack, data={}, files) => {
     showFileChooser("ALL", "", "showFileChooserBack");
   };
   const toSend = {hashedFiles, ...data};
-  const xmlToSign = "<xml><values>" + JSON.stringify(toSend) + "</values></xml>";
-  console.log({toSend});
+  var xmlToSign = "<xml><values>" + JSON.stringify(toSend) + "</values>"
+  if (toSend.hasOwnProperty('iin'))
+    xmlToSign +="<iin>" + toSend.iin + "</iin>";
+  xmlToSign += "</xml>";
+  //console.log('++++++++++++++++++', {toSend});
   // give some time ncaLayer to establish connection
   // const hideLoading = message.loading(this.props.t('OPENING_NCA_LAYER'), 60);
   setTimeout(() => {
     // hideLoading();
     signXml("PKCS12", "SIGNATURE", xmlToSign, callBack);
-  }, 2000);
+  }, 100);
 };
 
 // Удаляет из списка файлов те файлы, которые имеют idDPV (на сохранение серверу передаются только файлы новые, не имеющие idDPV).
@@ -119,6 +122,7 @@ window.signXmlBackVS2 = function signXmlBack(result) {
   if (result['code'] === "500") {
     alert(result['message']);
   } else if (result['code'] === "200") {
+
     // const headers = new Headers();
     // // headers.append('Access-Control-Allow-Origin', '*');
     // headers.append('Content-Type', 'text/xml');

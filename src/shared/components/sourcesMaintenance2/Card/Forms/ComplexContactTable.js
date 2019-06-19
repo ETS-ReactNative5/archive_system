@@ -89,7 +89,7 @@ class ComplexContactTable extends React.Component {
             iconLoading: true
         });
         var nextnumber = 1;
-        if (this.state.oldTableData.length > 0) {
+        if (this.state.oldTableData && this.state.oldTableData.length > 0) {
             var numbArr = [...this.state.oldTableData.map(el => {
                 return el['contactPersonsComplexNum'].valueStr.ru
             })

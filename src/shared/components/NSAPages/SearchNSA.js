@@ -590,7 +590,6 @@ class SearchNSA extends Component {
     };
 
     renderTableData = (item, idx) => {
-        debugger;
         const {
             fundDbeg, fundDend, fundNumber, fundIndex, fundCategory, fundFeature,
             fundIndustry, fundmakerOfIK, fundmakerMulti, fundExitDate, fundExitReason, fundToGuidbook,
@@ -668,7 +667,7 @@ class SearchNSA extends Component {
             lastChangeDateScheme:lastChangeDateSchemeObj && lastChangeDateSchemeObj.values ? lastChangeDateSchemeObj.values : {value : moment().format("DD-MM-YYYY")},
             fundHistoricalNoteMulti:fundHistoricalNoteMultiObj && fundHistoricalNoteMultiObj.values ? fundHistoricalNoteMultiObj.values : [],
             fundHistoricalNote:fundHistoricalNoteObj && fundHistoricalNoteObj.values ? fundHistoricalNoteObj.values : [],
-            surnameOriginator: surnameOriginatorObj && surnameOriginatorObj.values ? surnameOriginatorObj.values.label : surnameOriginatorObj,
+            surnameOriginator: surnameOriginatorObj && surnameOriginatorObj.values ? surnameOriginatorObj.values.label : "" ,
         }
     };
     renderRecordData = (item) => {
@@ -905,7 +904,7 @@ class SearchNSA extends Component {
                                             filterDropdownVisible: visible,
                                         }, () => this.fundNumber.focus());
                                     },
-                                    sorter: (a, b) => ((a.fundNumber.value).replace(/[^0-9]/g, '')) - ((b.fundNumber.value).replace(/[^0-9]/g, '')),
+                                    sorter: (a, b) => ((a.fundNumber.value && a.fundNumber.value).replace(/[^0-9]/g, '')) - ((b.fundNumber.value && b.fundNumber.value).replace(/[^0-9]/g, '')),
                                     render: obj => !!obj.value ? obj.value : ""
                                 },
 

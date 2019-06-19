@@ -30,7 +30,8 @@ class MainInfoFundForm extends React.Component {
             loading: {
                 invCaseSystemLoading: false
             },
-            optionMultiSelect: []
+            optionMultiSelect: [],
+            oldDate:[]
         };
     }
 
@@ -119,27 +120,34 @@ class MainInfoFundForm extends React.Component {
         return endValue.valueOf() <= startValue.valueOf();
     };
 
+    componentDidMount(){
+        this.setState({
+            oldDate:this.props.initialValues.invDates
+        })
+    }
     componentDidUpdate(prevProps) {
         if (prevProps.initialValues !== this.props.initialValues) {
             this.nameValue = {...this.props.initialValues.name} || {kz: '', ru: '', en: ''};
         }
-    }
+        if (prevProps.initialValues.invDates !== this.props.initialValues.invDates) {
+            this.setState({
+                oldDate:this.props.initialValues.invDates
+            })
+        }
+
+        }
 
     taggedSelectToRedux = (val, prevVal) => {
-debugger
         if (!!val) {
             if (val.length > 0) {
                 let coppyPrevVal = [...prevVal]
                 let coppyVal = [...val]
-
                 let arrState = this.state.optionMultiSelect
-                // debugger
                 if (coppyPrevVal.length > 0) {
                     for (let i = 0; i < coppyPrevVal.length; i++) {
                         if (coppyPrevVal[i].value === undefined) continue
                         if (coppyPrevVal[i].value.idDataPropVal !== undefined) {
                             let findePrevVal = this.state.optionMultiSelect.find((el) => el.value.idDataPropVal === coppyPrevVal[i].value.idDataPropVal)
-
                             if (findePrevVal === undefined) {
                                 arrState.push(coppyPrevVal[i])
                             }
@@ -150,15 +158,11 @@ debugger
                 }
                 let newArr = []
                 for (let i = 0; i < coppyVal.length; i++) {
-
                     if (coppyVal[i].value === undefined) {
                         // let selectArr = this.state.optionMultiSelect;
                         let selectArr = arrState;
                         let findVal = selectArr.find((el) => el.value.value === coppyVal[i])
-
                         if (findVal !== undefined) {
-
-
                             newArr.push(findVal)
                         } else {
                             newArr.push({
@@ -168,18 +172,24 @@ debugger
                         }
                     }
                 }
-
-
                 if (coppyPrevVal.length > 0) {
                     this.setState({
                         optionMultiSelect: arrState
                     })
                 }
-
-
+                // let rezult =[]
+                // let newarrResult = [...newArr]
+                // let newarrResult2 = [...this.state.oldDate]
+                // for (let vall of newarrResult ){
+                //     for (let val2 of newarrResult2 ){
+                //         if (vall.value.value != val2.value.value){
+                //             let values = {...val2}
+                //             values.value.value=""
+                //             rezult.push(values)
+                //         }
+                //     }
+                // }
                 return newArr
-
-
             } else {
                 return []
             }

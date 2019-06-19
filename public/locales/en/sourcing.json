@@ -27,6 +27,10 @@
   "RENAME": "Rename",
   "LIQUIDATION": "Liquidation",
   "DELETE": "Delete",
+  "FUND": "Fund",
+  "ADD_SECTION": "Add section",
+  "ADD_SUB_SECTION": "Add subsection",
+  "SECTION": "Section",
   "REGULATION_ON_ARCHIVE": "Regulations on the archive",
   "REGULATION_ON_COMMISSION": "Regulations on the expert commission",
   "INSTRUCTION_ON_OFFICE_WORK": "Instruction on office-work",
@@ -122,5 +126,10 @@
   "EXISTS_FUND_1": "It is impossible to remove a fundmaker, because it has been created on the basis of",
   "REASONS_FOR_REFUSAL": "Reasons for refusal",
   "NO_FUND_OF_IK": "No found og fund",
-  "CHAT":"Переписка с организацией"
+  "CHAT":"Переписка с организацией",
+  "ADD_RENAME": "Add rename",
+  "DATE_RENAME":"Date rename",
+  "DATE_REORGANIZATION": "Date reorganization",
+  "ADD_REORGANIZATION": "Add reorganization",
+  "DATE_ELIMINATION": "Date elimination"
   }

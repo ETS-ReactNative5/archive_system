@@ -47,7 +47,9 @@ class LightToDestroy extends React.Component {
             dataIndex: 'caseDbeg',
             key: 'caseDbeg',
             width: '15%',
-            render:(obj,rec)=>{return [rec.caseDbeg +'-'+rec.caseDend]}
+            render:(obj,rec)=> {return (<div><br />
+                {[rec.caseDbeg + ' ' +  rec.caseDend]}
+            </div>)}
         }, {
             title: 'Номера описей',
             dataIndex: 'invNumber',
@@ -150,7 +152,7 @@ class LightToDestroy extends React.Component {
                 <Col col={24}><br/> Заведующий отделом
                     (архивохранилищем): {this.props.initialValues.workAssignedTo.label}
                 </Col>
-            </Row>
+            </Row> 
 
             <h3><br/>Изменения в учетные документы внесены</h3>
             <Row>

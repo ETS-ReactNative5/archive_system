@@ -1,24 +1,11 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {Button, Input, Icon, message, Popconfirm} from 'antd';
 import CSSTransition from 'react-transition-group/CSSTransition'
 import moment from 'moment';
 
 import SelectVirt from '../../SelectVirt';
 import Select from '../../Select';
-
-import AntTable from '../../AntTable';
-import SiderCard_FundMaker from './SiderCard_FundMaker';
-import {isEmpty, isEqual, map} from 'lodash';
-import {parseCube_new, onSaveCubeData, parseForTable} from '../../../utils/cubeParser';
-import {
-    getCube,
-    getPropVal,
-    updateCubeData,
-    createObj,
-    insPropVal,
-    getPropValWithChilds, dFundMaker
-} from '../../../actions/actions';
-import {connect} from 'react-redux';
 import {
     FORM_OF_ADMISSION,
     LEGAL_STATUS,
@@ -32,6 +19,19 @@ import {
     DP_FOR_FUND_AND_IK,
     DP_FOR_ORG_FUNDMAKER
 } from '../../../constants/tofiConstants';
+import AntTable from '../../AntTable';
+import SiderCard_FundMaker from './SiderCard_FundMaker';
+import {isEmpty, isEqual, map} from 'lodash';
+import {parseCube_new, onSaveCubeData, parseForTable} from '../../../utils/cubeParser';
+import {
+    getCube,
+    getPropVal,
+    updateCubeData,
+    createObj,
+    insPropVal,
+    getPropValWithChilds, dFundMaker
+} from '../../../actions/actions';
+import SiderCard from "../../SiderCard";
 
 /*eslint eqeqeq:0*/
 class FundMaker extends React.PureComponent {
@@ -56,11 +56,51 @@ class FundMaker extends React.PureComponent {
                 isActive: [],
                 isActiveLoading: false
             },
+
             openCard: false,
             loading: true,
-            selectedRow: '',
+            selectedRow: null,
             initialValues: {}
         }
+    }
+
+    getFundsList=()=>{
+        this.props.history.push({
+            pathname: `/archiveFund/fundsList`,
+            state: {
+                key:this.state.selectedRow.key.split("_")[1]
+            }
+        })
+    }
+
+    getTablelegalEntities=()=>{
+        this.props.history.push({
+            pathname: `/sourcing/sourcesMaintenance2`,
+            state: {
+                key:this.state.selectedRow.key.split("_")[1]
+            }
+        })
+    }
+    deleteObj =()=>{
+        const hideLoading = message.loading(this.props.t('REMOVING'), 30);
+        dFundMaker(this.state.selectedRow.key.split('_')[1])
+            .then(res => {
+                hideLoading();
+                if (res.success) {
+                    message.success(this.props.t('SUCCESSFULLY_REMOVED'));
+                    this.remove(this.state.selectedRow.key)
+                } else {
+                    throw res
+                }
+            }).catch(err => {
+            hideLoading();
+            console.error(err);
+            if (err.funds) {
+                err.funds.forEach(err => message.error(`${this.props.t('EXISTS_FUND_1')} ${err.name[this.lng]} ${this.props.t('EXISTS_FUND_2')}`, 8))
+            } else {
+                message.error(this.props.t('REMOVING_ERROR'))
+            }
+        })
     }
 
     onLegalStatusChange = s => {
@@ -101,8 +141,6 @@ class FundMaker extends React.PureComponent {
     };
 
     changeSelectedRow = rec => {
-        //this.newObjIdx = -1;
-        //this.newObj = undefined;
         var slctdRow = this.state.selectedRow;
         if ((!!slctdRow) && (!(slctdRow.key === rec.key)) && (this.state.openCard == true)) {
             this.setState({initialValues:rec,selectedRow: rec, openCard: false})
@@ -253,7 +291,7 @@ class FundMaker extends React.PureComponent {
             'isActive', 'orgAddress', 'orgPhone', 'orgFax', 'orgEmail', 'orgFormationDoc', 'orgReorganizationDoc', 'orgLiquidationDoc',
             'leaderFIO', 'leaderPosition', 'leaderPhone', 'depLeaderFIO', 'depLeaderPosition', 'depLeaderPhone', 'responsibleFIO', 'responsiblePosition', 'responsiblePhone',
             'responsibleAppointmentDate', 'archiveLeaderFIO', 'archiveLeaderPosition', 'archiveLeaderPhone', 'archiveLeaderAppointmentDate', 'subordination', 'jurisdiction',
-            'commissionLeaderFIO', 'commissionLeaderPosition', 'commissionLeaderPhone', 'contractNumber', 'orgDocType', 'orgFunction', 'structure', 'fundNumber', 'corresOrg', 'corresOrgFile', 'letterDetails'];
+            'commissionLeaderFIO', 'commissionLeaderPosition', 'commissionLeaderPhone', 'contractNumber', 'orgDocType', 'orgFunction', 'structure', 'fundNumber', 'corresOrg', 'corresOrgFile', 'letterDetails','fundmakerOfIK'];
         const accessLevelObj = this.props.accessLevelOptions.find(al => al.id === item.accessLevel);
 
         const result = {
@@ -467,9 +505,9 @@ class FundMaker extends React.PureComponent {
                 <div className="table-header">
                     <div className="table-header-btns">
                         <Button onClick={this.openCard}>{this.props.t('ADD')}</Button>
-                        <Button onClick={this.openCard}>{this.props.t('DELETE')}</Button>
-                        <Button onClick={this.openCard}>{this.props.t('Источник комплектования')}</Button>
-                        <Button onClick={this.openCard}>{this.props.t('Фонд')}</Button>
+                        <Button onClick={this.deleteObj} disabled={this.state.selectedRow!== null?false:true}>{this.props.t('DELETE')}</Button>
+                        <Button onClick={this.getTablelegalEntities} disabled={this.state.selectedRow!== null?false:true}>{this.props.t('SOURCING')}</Button>
+                        <Button onClick={this.getFundsList} disabled={this.state.selectedRow!== null?false:true}>{this.props.t('FUND')}</Button>
                     </div>
                     <div className="label-select">
                         <SelectVirt
@@ -549,47 +587,6 @@ class FundMaker extends React.PureComponent {
                         dataIndex: 'orgIndustry',
                         width: '19%',
                         render: value => value && value.label,
-                    },{
-                        key: 'action',
-                        title: '',
-                        dataIndex: '',
-                        width: '3%',
-                        render: (text, record) => {
-                            return (
-                                <div className="editable-row-operations">
-                                    <Popconfirm title={this.props.t('CONFIRM_REMOVE')}
-                                                onConfirm={() => {
-                                                    const hideLoading = message.loading(this.props.t('REMOVING'), 30);
-                                                    dFundMaker(record.key.split('_')[1])
-                                                        .then(res => {
-                                                            hideLoading();
-                                                            if (res.success) {
-                                                                message.success(this.props.t('SUCCESSFULLY_REMOVED'));
-                                                                this.remove(record.key)
-                                                            } else {
-                                                                throw res
-                                                            }
-                                                        }).catch(err => {
-                                                        hideLoading();
-                                                        console.error(err);
-                                                        if (err.funds) {
-                                                            err.funds.forEach(err => message.error(`${t('EXISTS_FUND_1')} ${err.name[this.lng]} ${t('EXISTS_FUND_2')}`, 8))
-                                                        } else {
-                                                            message.error(this.props.t('REMOVING_ERROR'))
-                                                        }
-                                                    })
-                                                }}>
-                                        <a style={{
-                                            color: '#f14c34',
-                                            marginLeft: '10px',
-                                            fontSize: '14px'
-                                        }}
-                                           onClick={this.stopPropagation}><Icon type="delete"
-                                                                                className="editable-cell-icon"/></a>
-                                    </Popconfirm>
-                                </div>
-                            );
-                        },
                     }
                 ]}
                 dataSource={this.filteredData}
@@ -609,20 +606,27 @@ class FundMaker extends React.PureComponent {
                 classNames="card"
                 unmountOnExit
                 >
-                    <SiderCard_FundMaker t={t} tofiConstants={tofiConstants}
-                                         initialValues={this.state.initialValues} //eslint-disable-line
-                                         closer={<Button type='danger'
-                                                         onClick={this.closeCard}
-                                                         shape="circle"
-                                                         icon="arrow-right"/>}
-                                         saveProps={this.saveProps}
-                                         saveIKProps={this.saveIKProps}
-                                         onCreateObj={this.onCreateObj}
-                                         loadOrgFundmaker={this.props.loadOrgFundmaker}
-                                         cubeForOrgFundmakerSingle={this.props.cubeForOrgFundmakerSingle}
-                                         accessLevelOptions={this.props.accessLevelOptions}
+                    <SiderCard
+                        closer={
+                            <Button
+                                type="danger"
+                                onClick={this.closeCard}
+                                shape="circle"
+                                icon="arrow-right"
+                            />
+                        }
+                    >
+                        <SiderCard_FundMaker t={t} tofiConstants={tofiConstants}
+                                             initialValues={this.state.initialValues} //eslint-disable-line
+                                             saveProps={this.saveProps}
+                                             saveIKProps={this.saveIKProps}
+                                             onCreateObj={this.onCreateObj}
+                                             loadOrgFundmaker={this.props.loadOrgFundmaker}
+                                             cubeForOrgFundmakerSingle={this.props.cubeForOrgFundmakerSingle}
+                                             accessLevelOptions={this.props.accessLevelOptions}
 
-                    />
+                        />
+                    </SiderCard>
                 </CSSTransition>
             </div>
         </div>

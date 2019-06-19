@@ -109,6 +109,7 @@ class ClassificationHierarchy extends React.Component{
     const indexScemeObj = item.props.find(element => element.prop === indexSceme.id);
     const spellVariantObj = item.props.find(element => element.prop === spellVariant.id);
     const requisitesObj = item.props.find(element => element.prop === requisites.id);
+    debugger
     //console.log(item);
     return {
       key: item.id,

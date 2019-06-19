@@ -57,6 +57,41 @@ export const renderInput = ({input, formItemClass, meta: {submitFailed, error}, 
     );
 };
 
+export const renderInputLabel = ({input, formItemClass, meta: {submitFailed, error}, tooltip, formItemLayout, colon, ...rest}) => {
+    const addCls = !!colon ? ' with-colon' : '';
+    var input2 = {...input};
+    input2.label = input.label && input.value.label ? input.value.label : null;
+    return (
+        <FormItem
+            colon={colon || false}
+            validateStatus={submitFailed ? (error && 'error') : ''}
+            className={formItemClass + addCls}
+            label={rest.label}
+            {...formItemLayout}
+        >
+            {
+                tooltip ?
+                    <Tooltip
+                        // trigger={['focus, hover']}
+                        title={tooltip.title}
+                        placement="topLeft"
+                    >
+                        <Input
+                            {...input2}
+                            {...rest}
+                        />
+                    </Tooltip>
+                    :
+                    <Input
+                        {...input2}
+                        {...rest}
+                    />
+            }
+
+            {submitFailed && (error && <span className="message-error">{error}</span>)}
+        </FormItem>
+    );
+};
 
 export const renderLogin = ({input, formItemClass, meta: {submitFailed, error}, tooltip, formItemLayout, colon, ...rest}) => {
     return (

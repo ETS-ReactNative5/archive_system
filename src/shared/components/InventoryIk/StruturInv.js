@@ -32,7 +32,11 @@ class StruturInv extends React.Component {
     componentDidMount() {
         this.getData()
     }
-
+    componentDidUpdate(prevProps) {
+        if (this.props.initialValues !== prevProps.initialValues) {
+            this.getData()
+        }
+    }
     componentWillReceiveProps(nextProps) {
         if (nextProps.hierarchyRefresh > 0 && nextProps.hierarchyRefresh > this.props.hierarchyRefresh) {
             this.setState({
@@ -62,9 +66,10 @@ class StruturInv extends React.Component {
                 nextProps.InvItemStructur[`dp_${dpForInv.id}`],
                 `do_${doForInv.id}`,
                 `dp_${dpForInv.id}`).map(this.renderTableDataInv)
-            debugger
+
+
             this.setState({
-                data: parseCubeData,
+                data: getChildren(this.props.initialValues.key,parseCubeData),
                 loading: false,
             })
 
@@ -100,7 +105,9 @@ class StruturInv extends React.Component {
                 }
             ]
         }
-        this.props.getCube('CubeForAF_Inv', JSON.stringify(filters), {customKey: 'InvItemStructur'}).then(() => this.setState({loading: false}))
+        this.props.getCube('CubeForAF_Inv', JSON.stringify(filters), {customKey: 'InvItemStructur',
+            nodeWithChilds:1
+        }).then(() => this.setState({loading: false}))
             .catch(err => {
                 console.error(err);
                 this.setState({loading: false})
@@ -111,17 +118,22 @@ class StruturInv extends React.Component {
     }
 
     renderTableDataInv = (item, ids) => {
-        const constArr = ['invNumber',];
+        const { indexSceme, spellVariant, requisites } = this.props.tofiConstants;
 
-
-        const result = {
+        const indexScemeObj = item.props.find(element => element.prop === indexSceme.id);
+        const spellVariantObj = item.props.find(element => element.prop === spellVariant.id);
+        const requisitesObj = item.props.find(element => element.prop === requisites.id);
+        //console.log(item);
+        return {
             key: item.id,
-            ids: ids + 1,
-            name: item.name,
-        };
-        parseForTable(item.props, this.props.tofiConstants, result, constArr);
-        result.invDates = result.invDates ? result.invDates.map(str => ({value: str})) : [];
-        return result;
+            numb: ids + 1,
+            referenceName: item.name[this.lng],
+            parent: item.parent,
+
+            indexSceme: !!indexScemeObj && indexScemeObj.values ? indexScemeObj.values.value : '',
+            spellVariant: !!spellVariantObj && spellVariantObj.values ? spellVariantObj.values.value : '',
+            requisites: !!requisitesObj && requisitesObj.values ? requisitesObj.values.value : '',
+        }
     }
 
     onTableRowExpand = (expanded, record) => {
@@ -134,13 +146,11 @@ class StruturInv extends React.Component {
     }
     changeSelectedRow = (rec, openAtOnce) => {
         this.lng = localStorage.getItem('i18nextLng');
-
-        debugger
         if (this.props.readOnly) return;
         if (this.state.inputMode) return;
 
         const recEdit = {
-            referenceName: rec.name[this.lng],
+            referenceName: rec.referenceName,
         }
         if (openAtOnce === true && !this.state.inputMode) {
             this.setState({
@@ -190,7 +200,6 @@ class StruturInv extends React.Component {
         });
     }
     saveSection = (data) => {
-        debugger
         const {inputVariant, selectedRow, selectedRowKey} = this.state;
         const {tofiConstants, icConst, referenceSubtype, initialValues} = this.props;
         const {referenceName, ...rest} = data;
@@ -211,7 +220,7 @@ class StruturInv extends React.Component {
             case 'newSubSection': {
                 let parent = '';
                 if (inputVariant === 'newSection') {
-                    parent = selectedRow ? selectedRow.parent : initialValues.key;
+                    parent = selectedRow ? selectedRow.key : initialValues.key;
                 }
                 if (inputVariant === 'newSubSection') {
                     parent = selectedRowKey;
@@ -278,86 +287,47 @@ class StruturInv extends React.Component {
         }
     }
     onSaveCubeData = async (objVerData, values, doItemProp, objDataProp, valOld) => {
-        // let hideLoading
-        // try {
-        //     const c ={
-        //         cube:{
-        //             cubeSConst: "csClassificationShem",
-        //             doConst: "doForSchemClas",
-        //             dpConst: "dpForSchemClas",
-        //             data:this.props[objVerData.cube.cubeSConst]
-        //         },
-        //         obj:{
-        //             doItem:doItemProp
-        //         }
-        //     }
-        //
-        //     const v ={
-        //         values:values,
-        //         complex:"",
-        //         oFiles:{}
-        //     }
-        //     const objData = objDataProp
-        //     const  t = this.props.tofiConstants
-        //     this.setState({loading: true, });
-        //
-        //     hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
-        //     const resSave = await onSaveCubeData(c, v, t, objData);
-        //     hideLoading();
-        //     if(!resSave.success) {
-        //         message.error(this.props.t('PROPS_UPDATING_ERROR'));
-        //         resSave.errors.forEach(err => {
-        //             message.error(err.text)
-        //         });
-        //         return Promise.reject(resSave);
-        //     }
-        //     message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
-        //     return this.props.getCube('csClassificationShem', JSON.stringify(this.filters))
-        //
-        // } catch (e) {
-        //     typeof hideLoading === 'function' && hideLoading();
-        //     this.setState({ loading: false });
-        //     console.warn(e);
-        // }
-
-
-        let datas = [];
+           let datas = [];
         try {
+
             datas = [{
                 own: [{doConst: objVerData.cube.doConst, doItem: doItemProp, isRel: "0", objData: objDataProp}],
                 props: map(values, (val, key) => {
                     console.log(values, val, key)
-                    const propMetaData = getPropMeta(this.props[objVerData.cube.cubeSConst]["dp_" + this.props.tofiConstants[objVerData.cube.dpConst].id], this.props.tofiConstants[key]);
+                    const propMetaData = getPropMeta(this.props.InvItemStructur["dp_" + this.props.tofiConstants[objVerData.cube.dpConst].id], this.props.tofiConstants[key]);
                     console.log(val, valOld, valOld[key], key);
-                    let value = val;
-                    let oldValue = valOld[key];
-                    if ((propMetaData.typeProp === 315 || propMetaData.typeProp === 311 || propMetaData.typeProp === 317) && typeof val === 'string') {
-                        value = {kz: val, ru: val, en: val};
-                        oldValue = oldValue && {kz: valOld[key], ru: valOld[key], en: valOld[key]};
+                    if (!!propMetaData){
+                        let value = val;
+                        let oldValue = valOld[key];
+                        if ((propMetaData.typeProp === 315 || propMetaData.typeProp === 311 || propMetaData.typeProp === 317) && typeof val === 'string') {
+                            value = {kz: val, ru: val, en: val};
+                            oldValue = oldValue && {kz: valOld[key], ru: valOld[key], en: valOld[key]};
+                        }
+                        if (propMetaData.typeProp === 312 && typeof value === 'string') {
+                            value = value.split('-').reverse().join('-');
+                            oldValue = oldValue && oldValue.split('-').reverse().join('-');
+                        }
+                        if (val && typeof val === 'object' && val.value) {
+                            value = String(val.value);
+                            oldValue = oldValue && String(valOld[key].value);
+                        }
+                        if (val && typeof val === 'object' && val.mode) propMetaData.mode = val.mode;
+                        if (propMetaData.isUniq === 2 && val[0].value) {
+                            propMetaData.mode = val[0].mode;
+                            value = val.map(v => String(v.value)).join(",");
+                            oldValue = oldValue && valOld[key].map(v => String(v.value)).join(",");
+                        }
+                        return {
+                            propConst: key,
+                            val: value,
+                            oldValue,
+                            typeProp: String(propMetaData.typeProp),
+                            periodDepend: String(propMetaData.periodDepend),
+                            isUniq: String(propMetaData.isUniq),
+                            mode: propMetaData.mode
+                        }
                     }
-                    if (propMetaData.typeProp === 312 && typeof value === 'string') {
-                        value = value.split('-').reverse().join('-');
-                        oldValue = oldValue && oldValue.split('-').reverse().join('-');
-                    }
-                    if (val && typeof val === 'object' && val.value) {
-                        value = String(val.value);
-                        oldValue = oldValue && String(valOld[key].value);
-                    }
-                    if (val && typeof val === 'object' && val.mode) propMetaData.mode = val.mode;
-                    if (propMetaData.isUniq === 2 && val[0].value) {
-                        propMetaData.mode = val[0].mode;
-                        value = val.map(v => String(v.value)).join(",");
-                        oldValue = oldValue && valOld[key].map(v => String(v.value)).join(",");
-                    }
-                    return {
-                        propConst: key,
-                        val: value,
-                        oldValue,
-                        typeProp: String(propMetaData.typeProp),
-                        periodDepend: String(propMetaData.periodDepend),
-                        isUniq: String(propMetaData.isUniq),
-                        mode: propMetaData.mode
-                    }
+
                 }),
                 periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
             }];
@@ -371,7 +341,7 @@ class StruturInv extends React.Component {
                 hideLoading();
                 if (res.success) {
                     message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
-                    this.props.refreshRecord({}, true);
+                    // this.props.refreshRecord({}, true);
                     if (this.filters) {
                         this.setState({loading: true});
                         return this.props.getCube('CubeForAF_Inv', JSON.stringify(this.filters))
@@ -425,7 +395,7 @@ class StruturInv extends React.Component {
         this.lng = localStorage.getItem('i18nextLng');
 
         const columns = [
-            {title: t('SECTION'), dataIndex: 'name', key: 'name', width: '45%', render: obj => obj && obj[this.lng]},
+            {title: t('SECTION'), dataIndex: 'referenceName', key: 'referenceName', width: '45%', },
             {
                 title: '', dataIndex: '', key: 'action', width: '10%',
                 render: (text, record) => {
@@ -457,7 +427,7 @@ class StruturInv extends React.Component {
                                         })
                                     }}>
                                         <a style={{color: '#f14c34', marginLeft: '10px', fontSize: '14px'}}
-                                           disabled={readOnly}><Icon type="delete" className="editable-cell-icon"/></a>
+                                          ><Icon type="delete" /></a>
                                     </Popconfirm>
                                 </div>
                                 :
@@ -470,7 +440,7 @@ class StruturInv extends React.Component {
         ];
         const openedBy = inputMode ? '' : 'ClassificationHierarchy';
         return (
-            <div className="Classification-Schemas-Hierarchy">
+            <div style={{margin:10}} className="Classification-Schemas-Hierarchy">
                 {!inputMode &&
                 <span>
             <Button style={{margin: '5px'}} onClick={this.addSection} disabled={readOnly}>

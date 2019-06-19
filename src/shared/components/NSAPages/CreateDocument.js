@@ -202,7 +202,6 @@ class CreateDocument extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        debugger;
         if (!isEmpty(nextProps.cubeDocuments) && !isEmpty(nextProps.tofiConstants) && this.props.cubeDocuments !== nextProps.cubeDocuments) {
             const {doDocuments, dpDocuments} = nextProps.tofiConstants;
             const parseCubeData = orderBy(parseCube_new(
@@ -240,7 +239,7 @@ class CreateDocument extends React.Component {
     }
 
     renderTableData = (item, idx) => {
-        debugger;
+        ;
         const {
             invNumber, pageNumberStart, turnoverSheetStart, pageNumberEnd, turnoverSheetEnd, start, end,
             documentPapers, dateForming, nomenLastChangeDate, archiveCipher, surnameOriginator,
@@ -1187,7 +1186,6 @@ class CreateDocument extends React.Component {
     };
 
     render() {
-        debugger;
         const {
             tableData, selectedRow, openNewRec, openCard, filterLoading, filter,
             fundOrgOptions, invListOptions, caseListOptions

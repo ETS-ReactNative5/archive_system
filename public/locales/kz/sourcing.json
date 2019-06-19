@@ -27,6 +27,7 @@
   "REORGANIZATION": "Қайта ұйымдастыру",
   "LIQUIDATION": "Тарату",
   "DELETE": "Өшіру",
+  "FUND": "Фонд",
   "REGULATION_ON_ARCHIVE": "Архив туралы ереже",
   "REGULATION_ON_COMMISSION": "Сараптау комиссиясы туралы ереже",
   "INSTRUCTION_ON_OFFICE_WORK": "Іс жүргізу бойынша нұсқаулық",
@@ -123,5 +124,13 @@
   "REASONS_FOR_REFUSAL": "Рұқсат бермеу себептері",
   "NO_FUND_OF_IK": "Қор табылған жоқ",
   "NUMB_OF_IK": "Жинақтау көзінің нөмірі",
-  "CHAT":"Переписка с организацией"
+  "CHAT":"Переписка с организацией",
+  "ADD_SECTION": "Бөлім қосу",
+  "ADD_SUB_SECTION": "Бөлімше қосу",
+  "SECTION": "Бөлім",
+  "DATE_RENAME": "Өзгерген күні",
+  "ADD_RENAME": "Өзгертулер қосу",
+  "DATE_REORGANIZATION": "Қайта ұйымдастыру күні",
+  "ADD_REORGANIZATION": "Қайта ұйымдастыруды қосу",
+  "DATE_ELIMINATION": "Таратылған күні"
 }

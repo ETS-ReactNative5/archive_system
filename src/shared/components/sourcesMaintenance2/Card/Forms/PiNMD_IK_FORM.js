@@ -73,15 +73,26 @@ class PiNMD_IK_FORM extends React.Component {
         if (!!key.value) {
             let typeFile = ''//key.name.ru.split(".")[1]
             getFileResolve(key.value.name).then(res => {
-                debugger
-                getFileData(res.data.id).then(resove =>{
-                    debugger
-                    let blob =resove.data
-                    const url = URL.createObjectURL(new Blob([blob]));
-                    this.setState({
-                        modalOpen: true,
-                        file: <img src={`${url}#toolbar=0`}/>
-                    })
+
+                getFile(key.value.name).then(blob =>{
+
+                    if (res.data.type ==="pdf"){
+
+                        const url = URL.createObjectURL(new Blob([blob.data], {type: 'application/pdf'}));
+                        this.setState({
+                            modalOpen: true,
+                            file:  <iframe src={`${url}#toolbar=0`} frameBorder="0"/>
+                        })
+                    }
+                    else{
+                        const url = URL.createObjectURL(new Blob([blob.data]));
+                        this.setState({
+                            modalOpen: true,
+                            file: <img src={`${url}#toolbar=0`}/>
+                        })
+                    }
+
+
 
                 })
 
@@ -435,7 +446,6 @@ class PiNMD_IK_FORM extends React.Component {
     }
     handleAdd = () => {
         const showLoad = message.loading('Сохранение', 0);
-debugger
         var nextnumber = 1;
         if (this.state.tableData.length > 0) {
             var numbArr = [...this.state.tableData.map(el => {

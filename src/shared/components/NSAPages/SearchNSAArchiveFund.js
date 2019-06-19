@@ -7,7 +7,7 @@ import {
     renderDatePicker,
     renderFileUpload,
     renderFileUploadBtn,
-    renderTextareaLang
+    renderTextareaLang, renderInputLabel
 } from "../../utils/form_components";
 
 import {Field, formValueSelector, reduxForm} from "redux-form";
@@ -299,7 +299,7 @@ class SearchNSAArchiveFund extends React.Component {
                             [
                                 {
                                     key: 'fundNumber',
-                                    title: t('fundNumber'),
+                                    title: t('FUND_NUMB'),
                                     dataIndex: 'fundNumber',
                                     width: '7%',
                                     render: obj => obj && obj.value,
@@ -323,7 +323,7 @@ class SearchNSAArchiveFund extends React.Component {
                     {surnameOriginator &&
                         <Field
                             name="surnameOriginator"
-                            component={renderInput}
+                            component={renderInputLabel}
                             label={surnameOriginator.name[this.lng]}
                             disabled
                             formItemLayout={

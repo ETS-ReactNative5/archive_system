@@ -10,7 +10,10 @@ import {
 } from '../../constants/tofiConstants';
 import Select from '../Select';
 
-import {getCube, getPropVal, getIdGetObj, getObjByObjVal, createObj, dObj} from '../../actions/actions';
+import {
+    getCube, getPropVal, getIdGetObj, getObjByObjVal, createObj, dObj, getUserInfo,
+    getUserInformation
+} from '../../actions/actions';
 import {CSSTransition} from "react-transition-group";
 import SiderCard from "../SiderCard";
 
@@ -31,6 +34,7 @@ class TablelegalEntities extends React.Component {
         dateReport: moment().format("DD-MM-YYYY"),
         selectedRow: null,
         data: [],
+        ikKey:'',
         numberFull: [],
         chek:false,
         visible: false,
@@ -176,49 +180,115 @@ class TablelegalEntities extends React.Component {
         this.setState({
             loading: this
         })
-        const filters = {
-            filterDPAnd: [
-                {
-                    dimConst: 'dpForFundAndIK',
-                    concatType: "and",
-                    conds: [
-                        {
-                            consts:
-                                "numberOfIK,orgDocType,legalStatus,formOfAdmission,fundArchive,dateIncludeOfIk,dateExcludeOfIk,fundmakerOfIK"
-                        }
-                    ]
-                }
-            ],
-            filterDOAnd: [
-                {
-                    dimConst: 'doForFundAndIK',
-                    concatType: "and",
-                    conds: [
-                        {
-                            clss: "sourceOrgList,sourceLPList"
-                        }
-                    ]
-                }
-            ]
-        };
-        await  this.props.getCube('cubeForFundAndIK', JSON.stringify(filters), {customKey: 'orgSourceCube'}).then(() => this.setState({loading: false}))
-            .catch(err => {
-                console.error(err);
-            })
+        if (this.props.tofiConstants["userOfIK"].id === this.props.user.cls) {
+            getUserInformation(this.props.user.obj)
+                .then((res) => {
+                    let userIkRef = res.idIK
+                    getIdGetObj(userIkRef, 'doForFundAndIK').then(async (res) => {
+                        let idDimObj = res.data.idDimObj;
+                        this.setState({
+                            ikKey:idDimObj
+                        })
+                        const filters = {
+                            filterDPAnd: [
+                                {
+                                    dimConst: 'dpForFundAndIK',
+                                    concatType: "and",
+                                    conds: [
+                                        {
+                                            consts:
+                                                "numberOfIK,orgDocType,legalStatus,formOfAdmission,fundArchive,dateIncludeOfIk,dateExcludeOfIk,fundmakerOfIK"
+                                        }
+                                    ]
+                                }
+                            ],
+                            filterDOAnd: [
+                                {
+                                    dimConst: 'doForFundAndIK',
+                                    concatType: "and",
+                                    conds: [
+                                        {
+                                            ids: String(idDimObj)
+                                        }
+                                    ]
+                                }
+                            ]
+                        };
+                        await  this.props.getCube('cubeForFundAndIK', JSON.stringify(filters), {customKey: 'orgSourceCube'}).then(() => this.setState({loading: false}))
+                            .catch(err => {
+                                console.error(err);
+                            })
 
-        const parsedCube = parseCube_new(this.props.orgSourceCube['cube'],
-            [],
-            'dp',
-            'do',
-            this.props.orgSourceCube['do_' + this.props.tofiConstants['doForFundAndIK'].id],
-            this.props.orgSourceCube['dp_' + this.props.tofiConstants['dpForFundAndIK'].id],
-            'do_' + this.props.tofiConstants['doForFundAndIK'].id,
-            'dp_' + this.props.tofiConstants['dpForFundAndIK'].id
-        ).map(this.renderTableData);
-        this.setState({
-            data: parsedCube,
-            visible: true
-        })
+                        const parsedCube = parseCube_new(this.props.orgSourceCube['cube'],
+                            [],
+                            'dp',
+                            'do',
+                            this.props.orgSourceCube['do_' + this.props.tofiConstants['doForFundAndIK'].id],
+                            this.props.orgSourceCube['dp_' + this.props.tofiConstants['dpForFundAndIK'].id],
+                            'do_' + this.props.tofiConstants['doForFundAndIK'].id,
+                            'dp_' + this.props.tofiConstants['dpForFundAndIK'].id
+                        ).map(this.renderTableData);
+                        this.setState({
+                            data: parsedCube,
+                        },()=>{
+
+                            this.getCubeInv({
+                                value:this.state.data[0].id
+                            })
+                        })
+                    }).catch(e => {
+                        console.log(e)
+                    })
+
+                }).catch(e => {
+                console.log(e)
+            })
+        }else {
+            const filters = {
+                filterDPAnd: [
+                    {
+                        dimConst: 'dpForFundAndIK',
+                        concatType: "and",
+                        conds: [
+                            {
+                                consts:
+                                    "numberOfIK,orgDocType,legalStatus,formOfAdmission,fundArchive,dateIncludeOfIk,dateExcludeOfIk,fundmakerOfIK"
+                            }
+                        ]
+                    }
+                ],
+                filterDOAnd: [
+                    {
+                        dimConst: 'doForFundAndIK',
+                        concatType: "and",
+                        conds: [
+                            {
+                                clss: "sourceOrgList,sourceLPList"
+                            }
+                        ]
+                    }
+                ]
+            };
+            await  this.props.getCube('cubeForFundAndIK', JSON.stringify(filters), {customKey: 'orgSourceCube'}).then(() => this.setState({loading: false}))
+                .catch(err => {
+                    console.error(err);
+                })
+
+            const parsedCube = parseCube_new(this.props.orgSourceCube['cube'],
+                [],
+                'dp',
+                'do',
+                this.props.orgSourceCube['do_' + this.props.tofiConstants['doForFundAndIK'].id],
+                this.props.orgSourceCube['dp_' + this.props.tofiConstants['dpForFundAndIK'].id],
+                'do_' + this.props.tofiConstants['doForFundAndIK'].id,
+                'dp_' + this.props.tofiConstants['dpForFundAndIK'].id
+            ).map(this.renderTableData);
+            this.setState({
+                data: parsedCube,
+                visible: true
+            })
+        }
+
     }
 
     componentWillReceiveProps(nextProps) {
@@ -516,7 +586,7 @@ class TablelegalEntities extends React.Component {
                                                 label: this.props.tofiConstants.invOCD.name[this.lng]
                                             },
                                             invFund:{
-                                                value:this.state.filter.ikName.value.split('_')[1]
+                                                value:this.state.filter.ikName.value?this.state.filter.ikName.value.split('_')[1]:this.state.ikKey.split('_')[1]
                                             }
                                         }
                                     })
@@ -533,6 +603,7 @@ class TablelegalEntities extends React.Component {
                                 isLoading={filter.fundmakerArchiveLoading}
                                 onMenuOpen={this.loadOptions(FUND_MAKER_ARCHIVE)}
                                 value={filter.fundmakerArchive}
+                                disabled={this.props.tofiConstants["userOfIK"].id === this.props.user.cls}
                                 onChange={this.onOrgLocationChange}
                                 options={fundmakerArchiveOptions ? fundmakerArchiveOptions.map(option => ({
                                     value: option.id,
@@ -596,7 +667,7 @@ class TablelegalEntities extends React.Component {
                             <DatePicker
                                 name="periodType"
                                 onChange={this.onFormOfAdateIncludeOfIkChange}
-                                disabled={this.state.chek}
+                                disabled={this.state.chek || this.props.tofiConstants["userOfIK"].id === this.props.user.cls}
                                 value={moment(this.state.dateReport, "DD-MM-YYYY")}
                             />
 
@@ -604,6 +675,8 @@ class TablelegalEntities extends React.Component {
                         <div className="label-select" style={{width: "1px"}}>
                             <Checkbox
                                 checked={this.state.chek}
+                                disabled={this.props.tofiConstants["userOfIK"].id === this.props.user.cls}
+
                                 onChange={this.showAllRender}>Показать все</Checkbox>
                         </div>
                         <div className="label-select">
@@ -944,6 +1017,7 @@ mapStateToProps(state) {
         legalStatusOptions: state.generalData[LEGAL_STATUS],
         InvItem: state.cubes.InvItem,
         accessLevelOptions: state.generalData.accessLevel,
+        user: state.auth.user,
 
         formOfAdmissionOptions: state.generalData[FORM_OF_ADMISSION],
         orgSourceCubeSingle: state.cubes.orgSourceCubeSingle,

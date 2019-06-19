@@ -1447,7 +1447,7 @@ class ArchiveFundWorks extends React.PureComponent {
                                 { record.intermediateResultDate ?
                                 <Button title={t('CONTINUE')}
                                         icon="forward"
-                                        disabled={record.workAssignedTo !== null ? record.workAssignedTo.value === this.props.user.obj ? false : true : true}
+                                        disabled={!!record.workAssignedTo?  this.props.user.obj != record.workAssignedTo.value:true}
 
                                         onClick={this.addSpecialDate(record.key, 'workActualStartDateContinue', record)}
                                         className='green-btn'
@@ -1467,7 +1467,7 @@ class ArchiveFundWorks extends React.PureComponent {
                             <div className="editable-row-operations">
                                 <Button
                                 title={record.workType.workTypeClass === 'casesForTemporaryUse' ? t("ISSUED") : t("START")}
-                                disabled={!record.workAssignedTo && record.workAssignedTo !== null ? record.workAssignedTo.value === this.props.user.obj ? false : true : true}
+                                disabled={!!record.workAssignedTo ? this.props.user.obj != record.workAssignedTo.value:true}
                                 icon={record.workType.workTypeClass === 'casesForTemporaryUse' ? "reload" : "play-circle"}
                                 onClick={this.addSpecialDate(record.key, 'workActualStartDate', record)}
                                 className='green-btn'
@@ -1525,7 +1525,7 @@ class ArchiveFundWorks extends React.PureComponent {
                                 <Button
                                 title={record.workType.workTypeClass === 'casesForTemporaryUse' ? t("GET_BACK") : t("COMPLETE")}
                                 icon={record.workType.workTypeClass === 'casesForTemporaryUse' ? "sync" : "poweroff"}
-                                disabled={!record.workActualStartDate && record.workAssignedTo !== null ? record.workAssignedTo.value === this.props.user.obj ? false : true : true}
+                                disabled={ !!record.workAssignedTo ? this.props.user.obj != record.workAssignedTo.value && !record.workActualStartDate :true }
                                 onClick={this.addSpecialDate(record.key, 'workActualEndDate', record)}
                                 className='green-btn'
                                 />}

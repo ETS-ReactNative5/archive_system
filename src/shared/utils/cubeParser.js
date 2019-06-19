@@ -985,7 +985,7 @@ export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFile
       periodDepend: String(propMetaData.periodDepend),
       isUniq: String(propMetaData.isUniq),
       //periodType: periodType,
-      // dBeg:  ?moment().format("DD-MM-YYYY"):null,
+       dBeg:  moment().format("YYYY-MM-DD"),
       //dEnd: dEnd,
       mode: val.mode ? val.mode : val.idDataPropVal ? 'upd' : 'ins'
     }

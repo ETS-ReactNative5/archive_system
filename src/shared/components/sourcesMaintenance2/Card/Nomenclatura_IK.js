@@ -3,12 +3,14 @@ import {onSaveCubeData, parseCube_new, parseForTable} from "../../../utils/cubeP
 import axios from "axios";
 import {getIdGetObj} from "../../../actions/actions";
 import NomenTable from "./Nomenclaturs/NomenTable";
+import {Spin} from "antd";
 class Nomenclatura_IK extends React.Component {
 
     state = {
         data: {},
         cubeData: {},
-        listIdOfNomen: []
+        listIdOfNomen: [],
+
     };
 
     buildComponent = () => {
@@ -39,7 +41,7 @@ class Nomenclatura_IK extends React.Component {
                     ]
                 }
             ],
-            filterDTOr: [
+           filterDTOr: [
                 {
                     dimConst: 'dtForFundAndIK',
                     conds: [
@@ -83,14 +85,18 @@ class Nomenclatura_IK extends React.Component {
                     });
 
                 }
+            }else{
+                this.callBackForNom([], [])
             }
         });
+
     };
 
 
     callBackForNom = (listArr, stock) => {
         if (listArr.length == stock.length) {
             this.setState({
+                loading:false,
                 listIdOfNomen: listArr
             })
         }
@@ -102,7 +108,7 @@ class Nomenclatura_IK extends React.Component {
         this.buildComponent();
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps) {     
         if (prevProps.selectedIK.id !== this.props.selectedIK.id) {
             this.buildComponent();
         }
@@ -117,7 +123,9 @@ class Nomenclatura_IK extends React.Component {
 
     render() {
         const {t, tofiConstants, initialValues, dateIncludeOfIk} = this.props;
-        return (<div><br/><br/>
+        return (
+        <Spin spinning={this.state.loading}>
+        <div><br/><br/>
             <NomenTable
             listIdOfNomen={this.state.listIdOfNomen}
             t={t}
@@ -125,7 +133,8 @@ class Nomenclatura_IK extends React.Component {
             tofiConstants={tofiConstants}
             dateIncludeOfIk={dateIncludeOfIk}
             />
-        </div> )
+        </div>
+        </Spin>)
 
     }
 

@@ -270,7 +270,9 @@ class WorksPropertyForm extends Component {
     }
 
     getRolUser = () => {
-        getRolesUser(this.props.initialValues.workAuthor.value)
+        // getRolesUser(this.props.initialValues.workAuthor.value)
+        const workAuthor = this.props.initialValues.workAuthor;
+        workAuthor && getRolesUser(workAuthor.value)
             .then(res => {
                 this.setState({
                     rolesUser: res.data.map(o => ({value: o.id, label: o.name[this.lng]}))
@@ -288,11 +290,10 @@ class WorksPropertyForm extends Component {
     }
 
     render() {
-        debugger;
         const content = (
             <div>{this.state.roles.join(', ')}</div>
         )
-        this.lng = localStorage.getItem('i18nextLng');
+        //this.lng = localStorage.getItem('i18nextLng');
 
         if (!this.props.tofiConstants) return null;
         const lng = localStorage.getItem('i18nextLng');

@@ -87,7 +87,7 @@ class SignupForm extends React.Component {
           })
           .catch(err => {
             hideLoading()
-            console.warn(err);
+            //console.warn(err);
             Modal.error({
               title: self.props.t("REGISTRATION_FAILED_TITLE"),
               content: self.props.t("REGISTRATION_FAILED_CONTENT")
@@ -145,7 +145,7 @@ class SignupForm extends React.Component {
   };
 
   handleModalCancel = () => {
-    console.log('cancel');
+    //console.log('cancel');
     this.setState({
       modal: {
         visible: false
@@ -153,7 +153,58 @@ class SignupForm extends React.Component {
     });
   };
 
+  receiveSignedXML = (result) => {
+    //debugger;
+    if (result['code'] == 500) {
+      alert ("NCA Layer error!");
+      return;
+    }
+    if (result['code'] == 200) {
+      //console.log(result);
+      let fd = new FormData();
+      fd.append('xml', result.responseObject);
+      //debugger;
+      //axios.post('', data);
+      const hideLoading = message.loading(this.props.t('REGGING_NEW_USER'), 60);
+      return regNewUserWithECP(fd)
+        .then(res => res.data)
+        .then(data => {
+          hideLoading();
+          //debugger;
+          data.success
+            ? Modal.success({
+            title: this.props.t("REGISTRATION_SUCCESS_TITLE"),
+            content: this.props.t("REGISTRATION_SUCCESS_CONTENT"),
+            onOk: () => {
+              this.props.push("/");
+            }
+          })
+            : Modal.error({
+            title: this.props.t("REGISTRATION_FAILED_TITLE"),
+            content: data.errors[0].text
+          });
+        })
+        .catch(err => {
+          hideLoading()
+          //console.warn(err);
+          Modal.error({
+            title: this.props.t("REGISTRATION_FAILED_TITLE"),
+            content: this.props.t("REGISTRATION_FAILED_CONTENT")
+          });
+        });
+    }
+    alert("Unknown NCA Layer result, see console");
+    console.log(result);
+  };
+
   onSubmit = async ({scanCopyLetter, ecp, ...values}) => {
+
+    var recCBThis = this;
+
+    window.gl_receiveSignedXML = function (result) {
+      recCBThis.receiveSignedXML(result);
+    }
+
     const fd = new FormData();
     scanCopyLetter && scanCopyLetter.forEach((f, idx) => {
 
@@ -188,7 +239,9 @@ class SignupForm extends React.Component {
       for (let [key,value] of fd.entries()) {
         data[key] = value;
       }
-      return sign('signXmlBackVS2', data);
+      //return sign('signXmlBackVS2', data);
+      //debugger;
+      return sign('gl_receiveSignedXML', data);
     }
     const hideLoading = message.loading(this.props.t('REGGING_NEW_USER'), 60);
     return this.props.regNewUserSuccess(fd)
@@ -210,7 +263,7 @@ class SignupForm extends React.Component {
       })
       .catch(err => {
         hideLoading()
-        console.warn(err);
+        //console.warn(err);
         Modal.error({
           title: this.props.t("REGISTRATION_FAILED_TITLE"),
           content: this.props.t("REGISTRATION_FAILED_CONTENT")

@@ -77,7 +77,6 @@ class UploadButton extends React.Component {
           }
         }
       
-
         const index = this.props.value.indexOf(file);
         const newFileList = this.props.value.slice();
         newFileList.splice(index, 1);
