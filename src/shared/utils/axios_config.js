@@ -483,7 +483,18 @@ export const Works = {
   // Перевод выбранного юзера в класс исследователи и на роль исследователь
   toResearcher: objId =>
     axios.get(`/${localStorage.getItem('i18nextLng')}/rabotaUchet/toResearcher?obj=${objId}`)
+      .then(res => res.data),
+  // Подготовка XML для подписания
+  prepareXMLforSign: workId =>
+    axios.get(`/${localStorage.getItem('i18nextLng')}/Sign/prepareXMLforSign?work_id=${workId}`)
+      .then(res=> res.data),
+  saveSignedXMLForWork:(workId, signedXML)=> {
+    let fd = new FormData();
+    fd.append("workId", workId)
+    fd.append("signedXML", signedXML)
+    return axios.post(`/${localStorage.getItem('i18nextLng')}/Sign/saveSignedXMLForWork`, fd)
       .then(res => res.data)
+  },
 };
 
 export const ReadingRoom = {

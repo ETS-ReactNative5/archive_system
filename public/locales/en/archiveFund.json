@@ -46,6 +46,7 @@
   "NOTE_TO_THE_FUND": "Note to the fund",
   "SAVE": "Save",
   "CANCEL": "Cancel",
+  "SIGN": "Sign EDS",
   "INVENTORIES_QUANTITY": "Number of inventories",
   "E_VIEW_CASES_QUANTITY": "Number of cases that have an electronic image",
   "SECRET_CASES_QUANTITY": "Number of secret cases",
@@ -177,5 +178,19 @@
   "SHOW_FILES": "Show files",
   "ELECTRONIC_CONTENT": "Electronic content of case",
   "CHOICE_FILE": "Choice file from list",
-  "USER_FIO_PLACEHOLDER": ""
+  "USER_FIO_PLACEHOLDER": "",
+
+  "CORRUPTED_XML": "Certificate corrupted EDS",
+  "NO_CERTIFICATE": "Certificate not exists",
+  "IO_ERROR": "Certificate I/O Error",
+  "XML_SECURITY_ERROR": "Certificate security error",
+  "XML_SIGNATURE_ERROR": "Certificate signature error",
+  "CHECK_IIN_ERROR": "Certificate IIN Error",
+  "CHECK_1_ANOTHER_CERT": "Another certificate for EDS",
+  "CHECK_2_ANOTHER_CERT": "Certificate not from KZ",
+  "CHECK_3_CERT_EXPIRED": "Certificate has expired",
+  "CHECK_4_CERT_RECALLED": "Certificate recalled",
+  "CHECK_5_TSP_ERROR": "Certificate timestamp error",
+  "CHECK_6_EXT_POLICY": "Certificate extention policy error",
+  "CHECK_7_DN_ERROR": "Certificate DN Error"
 }

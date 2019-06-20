@@ -1,10 +1,13 @@
 import React from 'react';
-import {Button, Form, message} from "antd";
-import {Field, formValueSelector, reduxForm} from 'redux-form';
-import {requiredArr, requiredLabel, requiredLng} from "../../../utils/form_validations";
-import {
-    renderDatePicker, renderFileUploadBtn, renderInput, renderInputLang, renderSelect, renderTextareaLang
-} from '../../../utils/form_components';
+import {Button, Form} from "antd";
+import {Field, formValueSelector, reduxForm} from "redux-form";
+import {renderDatePicker, renderFileUploadBtn, renderInput, renderInputLang} from "../../../utils/form_components";
+import {requiredLng} from "../../../utils/form_validations";
+import Row from "antd/es/grid/row";
+import Col from "antd/es/grid/col";
+import {isEqual, pickBy} from "lodash";
+import moment from 'moment/moment';
+import {parseCube_new} from "../../../utils/cubeParser";
 import {
     FORM_OF_ADMISSION,
     FUND_MAKER_ARCHIVE,
@@ -20,101 +23,44 @@ import {
     getPropVal,
     getPropValWithChilds
 } from "../../../actions/actions";
-import {isEqual, pickBy} from "lodash";
-import moment from "./MainInfoFundMaker";
-import {parseCube_new} from "../../../utils/cubeParser";
-import Col from "antd/es/grid/col";
-import Row from "antd/es/grid/row";
 
 
 class LiquidationFoundMaker extends React.PureComponent {
     constructor(props) {
         super(props);
-
         const lng = localStorage.getItem('i18nextLng');
         this.state = {
             lang: {
-                shortName: lng,
-                name: lng,
-                reasonFundmaker: lng,
+                orgRightReceiver: lng,
             },
-            loading: {
-                legalStatusLoading: false,
-                formOfAdmissionLoading: false,
-                orgIndustryLoading: false,
-                isActiveLoading: false,
-                fundmakerArchiveLoading: false,
-                orgDocTypeLoading: false,
-                objSubordinationLoading: false
-            },
-            optionMultiSelect: []
         };
     }
-
-    componentDidMount() {
-        if (!this.props.accessLevelOptions) {
-            this.props.getAccessLevels();
-        }
-        if (!this.props.orgIndustryOptions) {
-            this.props.getPropValWithChilds('orgIndustry')
-        }
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.initialValues !== this.props.initialValues) {
-            this.fundNumber = {...this.props.initialValues.fundNumber} || '';
-            this.shortNameValue = {...this.props.initialValues.shortName} || {
-                kz: '',
-                ru: '',
-                en: ''
-            };
-            this.nameValue = {...this.props.initialValues.name} || {
-                kz: '',
-                ru: '',
-                en: ''
-            };
-            this.reasonFundmakerValue = {...this.props.initialValues.reasonFundmaker} || {
-                kz: '',
-                ru: '',
-                en: ''
-            };
-        }
-    }
-
-        reasonFundmakerValue = {...this.props.initialValues.reasonFundmaker} || {
-            kz: '',
-            ru: '',
-            en: ''
-        };
-
 
     onSubmit = values => {
         const {doForFundAndIK, dpForFundAndIK} = this.props.tofiConstants;
-        const {shortName,dateFormation, name, accessLevel, orgFunction, structure, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
+        const {orgRightReceiver,reasonFundmakerFile, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
         const cube = {
             cubeSConst: 'cubeForOrgFundmaker',
             doConst: 'doForOrgFundmakers',
             dpConst: 'dpForOrgFundmakers',
         };
         const obj = {
-            name: shortName,
-            fullName: name,
+            name: orgRightReceiver,
+            fullName: orgRightReceiver,
             clsConst: 'fundmakerOrg',
-            accessLevel: String(values.accessLevel.value)
         };
         if (!this.props.initialValues.key) {
             return this.props.onCreateObj(
                 {cube, obj},
-                {values: rest, idDPV: this.props.withIdDPV, oFiles: {orgFunction, structure}},
+                {values: rest, idDPV: this.props.withIdDPV, oFiles: {reasonFundmakerFile}},
             )
         }
         obj.doItem = this.props.initialValues.key;
         const objData = {};
-        if (shortName) objData.name = shortName;
-        if (name) objData.fullName = name;
-        if (accessLevel) objData.accessLevel = accessLevel;
+        if (orgRightReceiver) objData.name = orgRightReceiver;
+        if (orgRightReceiver) objData.fullName = orgRightReceiver;
         // Сохраняем значения свойств fundNumber, fundmakerArchive (fundArchive для ИК), formOfAdmission, legalStatus, isActive для соответстующего источника комплектования, если хотя бы одно изменилось.
-        if (shortName || name || accessLevel || rest.fundNumber || rest.fundmakerArchive || rest.formOfAdmission || rest.legalStatus || rest.isActive || rest.orgIndustry) {
+        if (orgRightReceiver) {
             const filters = {
                 filterDOAnd: [
                     {
@@ -177,8 +123,7 @@ class LiquidationFoundMaker extends React.PureComponent {
                         },
                         obj: {doItem: parsedCube.id}
                     };
-                    const {fundNumber, fundmakerArchive, formOfAdmission, legalStatus, isActive, orgIndustry} = rest;
-                    const fundArchive = fundmakerArchive;
+                    const {formOfAdmission, legalStatus, isActive, orgIndustry} = rest;
                     const vIK = {
                         values: JSON.parse(JSON.stringify({
                             fundNumber: {
@@ -186,7 +131,6 @@ class LiquidationFoundMaker extends React.PureComponent {
                                 propConst: "fundNumber",
                                 idDataPropVal: parsedCube.props.find(el => el.prop == this.props.tofiConstants['fundNumber'].id) && parsedCube.props.find(el => el.prop == this.props.tofiConstants['fundNumber'].id).values.idDataPropVal
                             },
-                            fundArchive,
                             formOfAdmission,
                             legalStatus,
                             isActive,
@@ -201,20 +145,39 @@ class LiquidationFoundMaker extends React.PureComponent {
                             }
                         })),
                     };
+                    //console.log('vIK ', vIK);
+
                     this.props.saveIKProps(cIK, vIK, this.props.tofiConstants, objData);
                 });
         }
         return this.props.saveProps(
             {cube, obj},
-            {values: rest, idDPV: this.props.withIdDPV, oFiles: {orgFunction, structure}},
+            {values: rest, idDPV: this.props.withIdDPV, oFiles: {reasonFundmakerFile}},
             this.props.tofiConstants,
             objData
         );
     };
 
 
-    changeLang = e => {
-        this.setState({lang: {...this.state.lang, [e.target.name]: e.target.value}});
+
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.initialValues !== this.props.initialValues) {
+            this. orgRightReceiverValue = {...this.props.initialValues. orgRightReceiver} || {
+                kz: '',
+                ru: '',
+                en: ''
+            };
+        }
+    }
+    orgRightReceiverValue = {...this.props.initialValues.orgRightReceiver} || {kz: '', ru: '', en: ''};
+
+    disabledStartDate = (startValue) => {
+        const endValue = this.props.dendValue;
+        if (!startValue || !endValue) {
+            return false;
+        }
+        return startValue.valueOf() > endValue.valueOf();
     };
 
 
@@ -233,27 +196,66 @@ class LiquidationFoundMaker extends React.PureComponent {
         }
     };
 
+    dateToRedux=(val , prev)=>{{
+        let coppyPrev = {...prev}
+        if (!!val){
+            let newDate = moment(val).format("DD-MM-YYYY")
+            if (!!coppyPrev.idDataPropVal){
+                coppyPrev.value = newDate
+                return coppyPrev
+            }else {
+                return {
+                    value:newDate
+                }
+            }
+        }else{
+            if (!!coppyPrev.value){
+                coppyPrev.value=""
+                return coppyPrev
+            }else{
+                return {}
+            }
+        }
+    }}
+
+    strToRedux = (val, prevVal, obj, prevObj, flag) => {
+        if(!!flag){
+            val = val.replace(/[^\d;]/g, '')
+        }
+        var newVal = {...prevVal};
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: {kz: val},
+                valueLng: {ru: val},
+                valueLng: {en: val}
+            };
+            return objVal
+        } else {
+            newVal.value = val;
+            newVal['valueLng']={kz:val,ru:val,en:val}
+            return (newVal)
+
+        }
+    };
+
+
     render(){
         if (!this.props.tofiConstants) return null;
         const lng = localStorage.getItem('i18nextLng');
-        const {t,handleSubmit, reset, dirty, error, submitting, orgIndustryOptions, legalStatusOptions,
-            tofiConstants: {departmentalAccessory, structure, orgFunction, shortName, dateRename, orgIndustry, legalStatus, orgFunctionFundmaker, dateElimination, reasonFundmaker}
-        } = this.props;
-        const {lang, loading} = this.state;
-
-
-
-
+        const {lang} = this.state;
+        const {tofiConstants: {dateElimination,reasonFundmaker}, t, handleSubmit, reset, dirty, error, submitting} = this.props;
         return(
-            <div className="FundMaker">
-                <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)}
-                      style={dirty ? {paddingBottom: '43px'} : {}}>
-                    <Field
+            <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)}
+                  style={dirty ? {paddingBottom: '43px'} : {}}>
+                {
+                    dateElimination && <Field
                         name="dateElimination"
+                        normalize={this.dateToRedux}
                         component={renderDatePicker}
                         disabledDate={this.disabledStartDate}
+                        label={dateElimination.name[lng]}
                         format={null}
-                        label={t('DATE_ELIMINATION')}
                         formItemLayout={
                             {
                                 labelCol: {span: 10},
@@ -261,112 +263,80 @@ class LiquidationFoundMaker extends React.PureComponent {
                             }
                         }
                     />
-                    <Field
-                        name="name"
-                        component={renderInputLang}
-                        format={value => (!!value ? value[lang.name] : '')}
-                        parse={value => {
-                            this.nameValue[lang.name] = value;
-                            return {...this.nameValue}
-                        }}
-                        label={t('NAME')}
-                        formItemClass="with-lang"
-                        changeLang={this.changeLang}
-                        formItemLayout={
-                            {
-                                labelCol: {span: 10},
-                                wrapperCol: {span: 14}
-                            }
+                }
+                <Field
+                    name="orgRightReceiver"
+                    component={renderInputLang}
+                    format={value => (!!value ? value[lang.orgRightReceiver] : '')}
+                    parse={value => {
+                        this.orgRightReceiverValue[lang.orgRightReceiver] = value;
+                        return {...this.orgRightReceiverValue}
+                    }}
+                    label={t('ORG_RIGHT_RECEIVER')}
+                    formItemClass="with-lang"
+                    changeLang={this.changeLang}
+                    formItemLayout={
+                        {
+                            labelCol: {span: 10},
+                            wrapperCol: {span: 14}
                         }
-                        validate={requiredLng}
-                        colon={true}
-                    />
-                    <Field
-                        name="shortName"
-                        component={renderInputLang}
-                        format={value => (!!value ? value[lang.shortName] : '')}
-                        parse={value => {
-                            this.shortNameValue[lang.shortName] = value;
-                            return {...this.shortNameValue}
-                        }}
-                        label={t('SHORT_NAME')}
-                        formItemClass="with-lang"
-                        changeLang={this.changeLang}
-                        formItemLayout={
-                            {
-                                labelCol: {span: 10},
-                                wrapperCol: {span: 14}
-                            }
-                        }
-                        validate={requiredLng}
-                        colon={true}
-                    />
-                    <Row>
-                        <Col span={24}>
-                            {reasonFundmaker && <Field
-                                name="reasonFundmaker"
-                                label={reasonFundmaker.name[lng]}
-                                component={renderTextareaLang}
-                                format={value => (!!value ? value.valueLng[lang.reasonFundmaker] : "")}
-                                normalize={(val, prevVal, obj, prevObj) => {
-                                    let newVal = { ...prevVal };
-                                    newVal.value = val;
-                                    if (!!newVal.valueLng) {
-                                        newVal.valueLng[lang.reasonFundmaker] = val;
-                                    } else {
-                                        newVal["valueLng"] = { kz: "", en: "", ru: "" };
-                                        newVal.valueLng[lang.reasonFundmaker] = val;
-                                    }
-                                    return newVal;
-                                }}
-                                formItemClass="with-lang"
-                                changeLang={this.changeLang}
-                                formItemLayout={{
+                    }
+                    validate={requiredLng}
+                    colon={true}
+                />
+                <Row>
+                    <Col span={24}>
+                        {reasonFundmaker && <Field
+                            name="reasonFundmaker"
+                            component={renderInput}
+                            label={reasonFundmaker.name[lng]}
+                            normalize={this.strToRedux}
+                            formItemLayout={
+                                {
                                     labelCol: { span: 10 },
                                     wrapperCol: { span: 14 }
-                                }}
-                            />}
-                        </Col>
-                        <Col span={24}>
-                            <Row>
-                                <Col span={10}></Col>
-                                <Col span={14}>
-                                    {<Field
-                                        name="reasonFundmaker"
-                                        component={renderFileUploadBtn}
-                                        cubeSConst='cubeForOrgFundmaker'
-                                        normalize={this.fileToRedux}
-                                        formItemLayout={
-                                            {
-                                                labelCol: {span: 10},
-                                                wrapperCol: {span: 14}
-                                            }
+                                }
+                            }
+                        />}
+                    </Col>
+                    <Col span={24}>
+                        <Row>
+                            <Col span={10}></Col>
+                            <Col span={14}>
+                                <Field
+                                    name="reasonFundmakerFile"
+                                    label=''
+                                    component={renderFileUploadBtn}
+                                    cubeSConst='cubeForOrgFundmaker'
+                                    normalize={this.fileToRedux}
+                                    formItemLayout={
+                                        {
+                                            labelCol: {span: 0},
+                                            wrapperCol: {span: 24}
                                         }
-                                    />
                                     }
-                                </Col>
-                            </Row>
-                        </Col>
-                    </Row>
-                    {dirty && <Form.Item className="ant-form-btns absolute-bottom">
-                        <Button className="signup-form__btn" type="primary" htmlType="submit"
-                                disabled={submitting}>
-                            {submitting ? t('LOADING...') : t('SAVE')}
-                        </Button>
-                        <Button className="signup-form__btn" type="danger" htmlType="button"
-                                disabled={submitting} style={{marginLeft: '10px'}}
-                                onClick={reset}>
-                            {submitting ? t('LOADING...') : t('CANCEL')}
-                        </Button>
-                        {error &&
-                        <span className="message-error"><i className="icon-error"/>{error}</span>}
-                    </Form.Item>}
-                </Form>
-            </div>
+                                />
+                            </Col>
+                        </Row>
+                    </Col>
+                </Row>
+                {dirty && <Form.Item className="ant-form-btns absolute-bottom">
+                    <Button className="signup-form__btn" type="primary" htmlType="submit"
+                            disabled={submitting}>
+                        {submitting ? t('LOADING...') : t('SAVE')}
+                    </Button>
+                    <Button className="signup-form__btn" type="danger" htmlType="button"
+                            disabled={submitting} style={{marginLeft: '10px'}}
+                            onClick={reset}>
+                        {submitting ? t('LOADING...') : t('CANCEL')}
+                    </Button>
+                    {error &&
+                    <span className="message-error"><i className="icon-error"/>{error}</span>}
+                </Form.Item>}
+            </Form>
+
         );
     }
-
-
 }
 
 

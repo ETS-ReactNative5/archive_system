@@ -1163,6 +1163,8 @@ class Works extends React.PureComponent {
                                 onCreateObj={this.onCreateObj}
                                 saveProps={this.saveProps}
                                 clsStatusMap={this.clsStatusMap}
+                                // user={!!user?user:this.props.user}
+                              user={user}
                             />
                         </SiderCard>
                     </CSSTransition>

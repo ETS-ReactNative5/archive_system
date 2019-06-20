@@ -517,6 +517,7 @@ class MainInfoReportForm extends Component {
                         if(key==='typeReport') continue
                         if(key==='fundIndexKey'){
                             if (item[key]==="all"){
+                                fd.append(key, "");
                             }else {
                                 fd.append(key, Array.isArray(item[key])?item[key].join(","):item[key]);
 

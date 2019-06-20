@@ -311,20 +311,6 @@ class ReorganizationFounMaker extends React.PureComponent {
         );
     };
 
-    fileToRedux = (val, prevVal, file, str) => {
-        let newFile = val.filter(el => el instanceof File);
-        if (newFile.length > 0) {
-            var copyVal = prevVal?[...prevVal]:[]
-            newFile.map(el => {
-                copyVal.push({
-                    value: el
-                })
-            });
-            return copyVal
-        } else {
-            return val.length == 0 ? [] : val
-        }
-    };
 
     render(){
         if (!this.props.tofiConstants) return null;
@@ -417,6 +403,7 @@ class ReorganizationFounMaker extends React.PureComponent {
                                 name="reasonFundmaker"
                                 label={reasonFundmaker.name[lng]}
                                 component={renderTextareaLang}
+                                style={{height: '70px !important', minHeight: '70px !important'}}
                                 format={value => (!!value ? value.valueLng[lang.reasonFundmaker] : "")}
                                 normalize={(val, prevVal, obj, prevObj) => {
                                     let newVal = { ...prevVal };
@@ -446,6 +433,7 @@ class ReorganizationFounMaker extends React.PureComponent {
                                         component={renderFileUploadBtn}
                                         cubeSConst='cubeForOrgFundmaker'
                                         normalize={this.fileToRedux}
+                                        style={{height: '70px !important', minHeight: '70px !important'}}
                                         formItemLayout={
                                             {
                                                 labelCol: {span: 10},
@@ -503,6 +491,7 @@ class ReorganizationFounMaker extends React.PureComponent {
                             {structureFundmaker && <Field
                                 name="structureFundmaker"
                                 label={structureFundmaker.name[lng]}
+                                style={{height: '70px !important', minHeight: '70px !important'}}
                                 component={renderTextareaLang}
                                 format={value => (!!value ? value.valueLng[lang.structureFundmaker] : "")}
                                 normalize={(val, prevVal, obj, prevObj) => {
@@ -551,6 +540,7 @@ class ReorganizationFounMaker extends React.PureComponent {
                             {orgFunctionFundmaker && <Field
                                 name="reasonFundmaker"
                                 label={orgFunctionFundmaker.name[lng]}
+                                style={{height: '70px !important', minHeight: '70px !important'}}
                                 component={renderTextareaLang}
                                 format={value => (!!value ? value.valueLng[lang.orgFunctionFundmaker] : "")}
                                 normalize={(val, prevVal, obj, prevObj) => {

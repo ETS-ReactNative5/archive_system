@@ -360,7 +360,11 @@ export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable
               if (prop.isUniq === 2) { // многозначное свойство типа файл
                 if (cubeValItem['valueFile']) { // есть значение
                   const id = cubeValItem['valueFile'][localStorage.getItem('i18nextLng')];
-                  const f = new File([id], id);
+                  // const f = new File([id], id);
+                  let filename = cubeValItem['name'][localStorage.getItem('i18nextLng')];
+                  if (!filename) filename = id;
+                  const f = new File([id], filename);
+                  f.__file__id = id;
                   f.uid = `rc-upload-${id}`;
                   if (cubeValItem['parentDataPropVal']) { // ребенок комплексного свойства
                     if (!prop.complexMultiValues[cubeValItem['parentDataPropVal'] + '_' + cubeValItem[dpConst]])
@@ -390,7 +394,10 @@ export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable
               } else { // однозначное свойство типа файл
                 if (cubeValItem['valueFile']) { // есть значение
                   const id = cubeValItem['valueFile'][localStorage.getItem('i18nextLng')];
-                  const f = new File([id], id);
+                  let filename = cubeValItem['name'][localStorage.getItem('i18nextLng')];
+                  if (!filename) filename = id;
+                  const f = new File([id], filename);
+                  f.__file__id = id;
                   f.uid = `rc-upload-${id}`;
                   if (cubeValItem['parentDataPropVal']) {
                     if (!prop.complexChildValues) prop.complexChildValues = [];
@@ -562,20 +569,19 @@ export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable
     });
 
 
-
     doTableWithProps.forEach(obj => obj.props.filter(
-      prop=>prop.typeProp == '71').forEach(
+      prop => prop.typeProp == '71').forEach(
       complexProp => complexProp.values && complexProp.values.forEach(val => {
-      doTableWithComplexChilds.find(obj2 => !!obj2.childProps && obj2.id == obj.id).childProps.forEach(childProp => {
-        let childPropVal = [];
-        childProp.complexChildValues && childProp.complexChildValues.forEach(cmpxChildVal => {
-          if (cmpxChildVal.parentDataPropVal == val.idDataPropVal) {
-            childPropVal.push(cmpxChildVal)
-          }
-        })
-        val[childProp.prop] = childPropVal
-      });
-    })));
+        doTableWithComplexChilds.find(obj2 => !!obj2.childProps && obj2.id == obj.id).childProps.forEach(childProp => {
+          let childPropVal = [];
+          childProp.complexChildValues && childProp.complexChildValues.forEach(cmpxChildVal => {
+            if (cmpxChildVal.parentDataPropVal == val.idDataPropVal) {
+              childPropVal.push(cmpxChildVal)
+            }
+          })
+          val[childProp.prop] = childPropVal
+        });
+      })));
 
     return doTableWithProps;
   } catch (err) {
@@ -755,7 +761,7 @@ export const getPropMeta = (cubeProps, cnst) => {
 export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFiles = {}},
                                tofiConstants,
                                objData = {},
-                               periods="11",
+                               periods = "11",
                                dte = moment().format('YYYY-MM-DD'),
                                options = {}) {
 
@@ -784,7 +790,6 @@ export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFile
 
 
   const files = {...testObj};
-
 
   forEach(qFiles, (val, key) => {
     files[`__Q__${key}`] = val;
@@ -961,20 +966,20 @@ export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFile
       return;
     }
 
-    if (propMetaData.periodDepend ===1){
-        return {
-            propConst: key,
-            val: value,
-            idDataPropVal: val.idDataPropVal,
-            typeProp: String(propMetaData.typeProp),
-            periodDepend: String(propMetaData.periodDepend),
-            isUniq: String(propMetaData.isUniq),
-            periodType: periods,
-            dte:dte,
-            ///dBeg:  ?moment().format("DD-MM-YYYY"):null,
-            //dEnd: dEnd,
-            mode: val.mode ? val.mode : val.idDataPropVal ? 'upd' : 'ins'
-        }
+    if (propMetaData.periodDepend === 1) {
+      return {
+        propConst: key,
+        val: value,
+        idDataPropVal: val.idDataPropVal,
+        typeProp: String(propMetaData.typeProp),
+        periodDepend: String(propMetaData.periodDepend),
+        isUniq: String(propMetaData.isUniq),
+        periodType: periods,
+        dte: dte,
+        ///dBeg:  ?moment().format("DD-MM-YYYY"):null,
+        //dEnd: dEnd,
+        mode: val.mode ? val.mode : val.idDataPropVal ? 'upd' : 'ins'
+      }
     }
 
     return {
@@ -985,7 +990,7 @@ export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFile
       periodDepend: String(propMetaData.periodDepend),
       isUniq: String(propMetaData.isUniq),
       //periodType: periodType,
-       dBeg:  moment().format("YYYY-MM-DD"),
+      dBeg: moment().format("YYYY-MM-DD"),
       //dEnd: dEnd,
       mode: val.mode ? val.mode : val.idDataPropVal ? 'upd' : 'ins'
     }

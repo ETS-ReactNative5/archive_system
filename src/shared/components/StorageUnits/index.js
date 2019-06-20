@@ -165,7 +165,7 @@ class StorageUnits extends React.Component {
                     concatType: "and",
                     conds: [
                         {
-                            consts: "section,caseNomenItem,bunchCases,invFund,documentType,fundNumber,fundIndex,caseDbeg,caseDend,caseStructuralSubdivision,caseNotes,documentFile,caseNumberOfPages,structuralSubdivisionList,caseDocsLang,irreparablyDamaged,caseOCD,caseInsurance,caseFundOfUse,caseStorage,rack,shelf,propAuthenticity,fundFeature,caseDateOfDeposit,documentFile,dateForming,linkToKatalog,linkToUkaz,linkToObzor,surnameOriginator,uprDocType,storageUnitType,caseNomenItem,accountingUnitType,numberOfOriginals,compositionOfTextDocumentation,storageUnitQuantity,documentAuthor,addressee,question,terrain,documentDate,dateAccuracy,inaccurateDateFeature,day,month,year,typeOfPaperCarrier,objectCode,projectName,projectStage,projectPartName,volumeNumber,yearOfCompletion,accountingUnitNumber,authorTitle,cameraOperator,artistOfTheWork,dateOfRecording,timingOfVideoRecording,TypeAndFormatOfRecording,numberOfVideoItems,original,copy,shootingDate,shootPlace,movieVariant,formatAndBase,numberOfMovieItems,movieNegative,doubleNegative,phonogramNegative,phonogramMagnetic,intermediatePositive,positive,colorPassports,playingTime,mainContent,genre,eventLocation,firstLine,initialsOfAuthors,initialsOfTranslators,manufactureDate,manufacturePlace,serialNumber,numberOfPhonoItems,gremoriginal,gramplastine,recordPlace,soundingSpeed,magneticTapeType,photoDescription,documentShootAuthor,numberOfPhotoPrints,externalFeatures,productionNumber,numberOfPhotoItems,photoNegative,photoDoubleNegative,photoPositive,photocast,slide,filmStrip,terrain,electronicDocumentsFormat,personLastName,personName,personPatronymic,publicPositionOfPerson,propNationality,documentLanguage,documentPlaybackMethod"
+                            consts: "section,caseInventory,caseNomenItem,propTimeLife,bunchCases,invFund,documentType,fundNumber,fundIndex,caseDbeg,caseDend,caseStructuralSubdivision,caseNotes,documentFile,caseNumberOfPages,structuralSubdivisionList,caseDocsLang,irreparablyDamaged,caseOCD,caseInsurance,caseFundOfUse,caseStorage,rack,shelf,propAuthenticity,fundFeature,caseDateOfDeposit,documentFile,dateForming,linkToKatalog,linkToUkaz,linkToObzor,surnameOriginator,uprDocType,storageUnitType,caseNomenItem,accountingUnitType,numberOfOriginals,compositionOfTextDocumentation,storageUnitQuantity,documentAuthor,addressee,question,terrain,documentDate,dateAccuracy,inaccurateDateFeature,day,month,year,typeOfPaperCarrier,objectCode,projectName,projectStage,projectPartName,volumeNumber,yearOfCompletion,accountingUnitNumber,authorTitle,cameraOperator,artistOfTheWork,dateOfRecording,timingOfVideoRecording,TypeAndFormatOfRecording,numberOfVideoItems,original,copy,shootingDate,shootPlace,movieVariant,formatAndBase,numberOfMovieItems,movieNegative,doubleNegative,phonogramNegative,phonogramMagnetic,intermediatePositive,positive,colorPassports,playingTime,mainContent,genre,eventLocation,firstLine,initialsOfAuthors,initialsOfTranslators,manufactureDate,manufacturePlace,serialNumber,numberOfPhonoItems,gremoriginal,gramplastine,recordPlace,soundingSpeed,magneticTapeType,photoDescription,documentShootAuthor,numberOfPhotoPrints,externalFeatures,productionNumber,numberOfPhotoItems,photoNegative,photoDoubleNegative,photoPositive,photocast,slide,filmStrip,terrain,electronicDocumentsFormat,personLastName,personName,personPatronymic,publicPositionOfPerson,propNationality,documentLanguage,documentPlaybackMethod"
                         }
                     ]
                 }
@@ -183,9 +183,7 @@ class StorageUnits extends React.Component {
 
 
     getCubeInv = (ikObj) => {
-        this.setState({
-            loading: this,
-        })
+
         const filters = {
             filterDOAnd: [
                 {
@@ -242,7 +240,7 @@ class StorageUnits extends React.Component {
     }
 
     renderTableData = item => {
-        const constArr = ["section","caseNomenItem","invFund", "bunchCases","documentType", "fundNumber", "fundIndex", "caseDbeg", "caseDend", "caseStructuralSubdivision", "caseNotes", "documentFile", "caseNumberOfPages", "structuralSubdivisionList", "caseDocsLang", "irreparablyDamaged", "caseOCD", "caseInsurance", "caseFundOfUse", "caseStorage", "rack", "shelf", "propAuthenticity", "fundFeature", "caseDateOfDeposit", "documentFile", "dateForming", "linkToKatalog", "linkToUkaz", "linkToObzor", "surnameOriginator", "uprDocType", "storageUnitType", "caseNomenItem", "accountingUnitType", "numberOfOriginals", "compositionOfTextDocumentation", "storageUnitQuantity", "documentAuthor", "addressee", "question", "terrain", "documentDate", "dateAccuracy", "inaccurateDateFeature", "day", "month", "year", "typeOfPaperCarrier", "objectCode", "projectName", "projectStage", "projectPartName", "volumeNumber", "yearOfCompletion", "accountingUnitNumber", "authorTitle", "cameraOperator", "artistOfTheWork", "dateOfRecording", "timingOfVideoRecording", "TypeAndFormatOfRecording", "numberOfVideoItems", "original", "copy", "shootingDate", "shootPlace", "movieVariant", "formatAndBase", "numberOfMovieItems", "movieNegative", "doubleNegative", "phonogramNegative", "phonogramMagnetic", "intermediatePositive", "positive", "colorPassports", "playingTime", "mainContent", "genre", "eventLocation", "firstLine", "initialsOfAuthors", "initialsOfTranslators", "manufactureDate", "manufacturePlace", "serialNumber", "numberOfPhonoItems", "gremoriginal", "gramplastine", "recordPlace", "soundingSpeed", "magneticTapeType", "photoDescription", "documentShootAuthor", "numberOfPhotoPrints", "externalFeatures", "productionNumber", "numberOfPhotoItems", "photoNegative", "photoDoubleNegative", "photoPositive", "photocast", "slide", "filmStrip", "terrain", "electronicDocumentsFormat", "personLastName", "personName", "personPatronymic", "publicPositionOfPerson", "propNationality", "documentLanguage", "documentPlaybackMethod"]
+        const constArr = ["section","propTimeLife","caseInventory","caseNomenItem","invFund", "bunchCases","documentType", "fundNumber", "fundIndex", "caseDbeg", "caseDend", "caseStructuralSubdivision", "caseNotes", "documentFile", "caseNumberOfPages", "structuralSubdivisionList", "caseDocsLang", "irreparablyDamaged", "caseOCD", "caseInsurance", "caseFundOfUse", "caseStorage", "rack", "shelf", "propAuthenticity", "fundFeature", "caseDateOfDeposit", "documentFile", "dateForming", "linkToKatalog", "linkToUkaz", "linkToObzor", "surnameOriginator", "uprDocType", "storageUnitType", "caseNomenItem", "accountingUnitType", "numberOfOriginals", "compositionOfTextDocumentation", "storageUnitQuantity", "documentAuthor", "addressee", "question", "terrain", "documentDate", "dateAccuracy", "inaccurateDateFeature", "day", "month", "year", "typeOfPaperCarrier", "objectCode", "projectName", "projectStage", "projectPartName", "volumeNumber", "yearOfCompletion", "accountingUnitNumber", "authorTitle", "cameraOperator", "artistOfTheWork", "dateOfRecording", "timingOfVideoRecording", "TypeAndFormatOfRecording", "numberOfVideoItems", "original", "copy", "shootingDate", "shootPlace", "movieVariant", "formatAndBase", "numberOfMovieItems", "movieNegative", "doubleNegative", "phonogramNegative", "phonogramMagnetic", "intermediatePositive", "positive", "colorPassports", "playingTime", "mainContent", "genre", "eventLocation", "firstLine", "initialsOfAuthors", "initialsOfTranslators", "manufactureDate", "manufacturePlace", "serialNumber", "numberOfPhonoItems", "gremoriginal", "gramplastine", "recordPlace", "soundingSpeed", "magneticTapeType", "photoDescription", "documentShootAuthor", "numberOfPhotoPrints", "externalFeatures", "productionNumber", "numberOfPhotoItems", "photoNegative", "photoDoubleNegative", "photoPositive", "photocast", "slide", "filmStrip", "terrain", "electronicDocumentsFormat", "personLastName", "personName", "personPatronymic", "publicPositionOfPerson", "propNationality", "documentLanguage", "documentPlaybackMethod"]
 
         const result = {
             key: item.id,
@@ -331,7 +329,7 @@ class StorageUnits extends React.Component {
                     ...this.state.filter,
                     [name]: {...this.state.filter[name], [dateType]: date}
                 }
-            }, () => console.log(this.state.filter))
+            })
         }
     };
     emitEmpty = e => {
@@ -409,7 +407,6 @@ class StorageUnits extends React.Component {
         }
     };
     refreshRecord = (values) => {
-
         const cube = {
             cubeSConst: 'CubeForAF_Case2',
             doConst: 'doForCase2',
@@ -426,6 +423,8 @@ class StorageUnits extends React.Component {
                 hideLoading();
                 if (res.success) {
                     message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+                    this.setState({loading: true, openCard: false});
+                    this.getCubeAct();
                 }else {
                     message.error(this.props.t('PROPS_UPDATING_ERROR'));
                     if (res.errors) {
@@ -663,7 +662,7 @@ class StorageUnits extends React.Component {
                             docType=""
                             myValues={this.state.dataIk}
                             onSave={this.refreshRecord}
-
+                            dataInv={this.state.dataInv}
                             ikKey={this.state.ikKey.value}
                             onCreateObj={this.onCreateObj}
                             {...this.props}

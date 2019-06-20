@@ -104,7 +104,6 @@ class NomenStorageUUnits extends React.Component{
                             item.children =[];
                         } else {
                             item.markbox = false;
-                            console.log(this.state.myValues)
                             for (let val of this.state.myValues) {
 
                                 if (Number(val.value) == Number(item.id)) {
@@ -163,7 +162,8 @@ class NomenStorageUUnits extends React.Component{
                                 key: moment.now() + o.id,
                                 id: o.id,
                                 title: o.name[this.lng],
-                                isLeaf: !o.hasChild
+                                isLeaf: !o.hasChild,
+                                shelfLifeOfPerechen:o.shelfLifeOfPerechen.idRef
                             }
                             if (o.hasChild) {
                                 item.children =[];
@@ -181,7 +181,6 @@ class NomenStorageUUnits extends React.Component{
                             return item;
                         });
                         const newTreeData = this.state.treeData;
-                        console.log(record.id, newTreeData, children)
                         putChildren(record.id, newTreeData, children)
                         this.setState({ treeLoading: false, treeData: newTreeData })
                     }
@@ -192,9 +191,7 @@ class NomenStorageUUnits extends React.Component{
                 });
             function putChildren(parentKey, array, children) {
                 for (let i=0; i < array.length; i++) {
-                    // if (String(array[i].id) === '19998') {
-                    //   debugger
-                    // }
+
                     if (array[i].id === parentKey) {
                         array[i].children = children;
                         return true;
@@ -203,7 +200,6 @@ class NomenStorageUUnits extends React.Component{
                 for (let i=0; i < array.length; i++) {
                     if (array[i].isLeaf) continue;
                     //const parentKey = array[i].id;
-                    console.log(array[i].children)
                     if (putChildren(parentKey, array[i].children, children)) {
                         return true;
                     }
@@ -230,9 +226,8 @@ class NomenStorageUUnits extends React.Component{
             filtered=[]
         }
         if (value === true) {
-            filtered.push({value: record.id, label: record.title})
+            filtered.push({value: record.id,shelfLifeOfPerechen:record.shelfLifeOfPerechen, label: record.title})
         }
-        //console.log(myValues);
         this.setState({
             myValues: filtered,
             flagSave: !isEqual(this.props.myValues2, filtered),
@@ -256,7 +251,36 @@ class NomenStorageUUnits extends React.Component{
     };
 
     onSave = () => {
-        this.props.onSave({caseNomenItem:this.state.myValues[0]})
+        if (this.state.myValues.length>0 ){
+            if (this.props.myValues2.length>0){
+                let copyvall ={...this.state.myValues[0]}
+                let shelfLifeOfPerechen = {
+                    value: copyvall.shelfLifeOfPerechen,
+                    idDataPropVal:!!this.props.propTimeLife?this.props.propTimeLife:null
+                }
+                copyvall.idDataPropVal=this.props.myValues2[0].idDataPropVal
+                this.props.onSave({caseNomenItem:copyvall,propTimeLife:shelfLifeOfPerechen})
+            }else{
+                console.log(this.state.myValues)
+                let copyvall ={...this.state.myValues[0]}
+                let shelfLifeOfPerechen = {
+                    value: copyvall.shelfLifeOfPerechen,
+                    idDataPropVal:!!this.props.propTimeLife?this.props.propTimeLife:null
+                }
+                this.props.onSave({caseNomenItem:copyvall,propTimeLife:shelfLifeOfPerechen})
+            }
+        }else {
+            if (this.props.myValues2.length>0){
+                let copyvall ={value:""}
+                let shelfLifeOfPerechen = {
+                    value: "",
+                    idDataPropVal:!!this.props.propTimeLife?this.props.propTimeLife:null
+                }
+                copyvall.idDataPropVal=this.props.myValues2[0].idDataPropVal
+                this.props.onSave({caseNomenItem:copyvall,propTimeLife:shelfLifeOfPerechen})
+            }
+
+        }
     };
 
     render() {
@@ -275,7 +299,6 @@ class NomenStorageUUnits extends React.Component{
             },
         ];
 
-        console.log(this.state.treeData);
 
         return (
             <div className="searchNSAReferenceByTypeMainDiv">

@@ -131,5 +131,6 @@
   "DATE_RENAME":"Date rename",
   "DATE_REORGANIZATION": "Date reorganization",
   "ADD_REORGANIZATION": "Add reorganization",
-  "DATE_ELIMINATION": "Date elimination"
+  "ORG_RIGHT_RECEIVER": "Name of the organization of successor",
+  "ORG_RIGHT_RECEIVER": "Құқықтанушы ұйымның атауы"
   }

@@ -24,6 +24,8 @@ import { SYSTEM_LANG_ARRAY } from "../../constants/constants";
 import { getObjChildsByConst,getCube,getObjListNew, getPropVal } from "../../actions/actions";
 import { requiredLng } from "./../../utils/form_validations";
 import {parseCube_new, parseForTable} from "../../utils/cubeParser";
+import Select from "../Select";
+const FormItem = Form.Item;
 
 const Panel = Collapse.Panel;
 
@@ -34,6 +36,7 @@ class MainInfoCaseForm extends Component {
 
     this.state = {
       data:[],
+        docType:"",
         Options:[],
         optionMultiSelect:[],
       lang: {
@@ -324,10 +327,20 @@ class MainInfoCaseForm extends Component {
   showInput = arr => {
     return arr.some(
       el =>
-        el.invType.id === this.props.invType &&
-        el.docType.id === this.props.docType
+        el.docType.id === this.state.docType
     );
   };
+    onFdocumentTypeChange=(val)=>{
+        if (!!val){
+            this.setState({
+                docType:val.value
+            })
+        }else {
+            this.setState({
+                docType:null
+            })
+        }
+    }
     selectMultiToRedux = (val, prevVal, obj, prevObj) => {
         if (val !== undefined) {
             if (val.length > 0){
@@ -662,12 +675,35 @@ class MainInfoCaseForm extends Component {
         documentPlaybackMethod
       }
     } = this.props;
+        const formItemLayout = {
+            labelCol: { span: 10 },
+            wrapperCol: { span: 14 },
+        };
     return (
+
       <Form
         className="antForm-spaceBetween"
         onSubmit={handleSubmit(this.onSubmit)}
         style={dirty ? { paddingBottom: "43px" } : {}}
       >
+          <FormItem
+              {...formItemLayout}
+              label={documentType.name[this.lng]}
+          >
+              <Select
+                  name="documentType"
+                  isSearchable={false}
+                  onChange={this.onFdocumentTypeChange}
+                  onMenuOpen={this.loadOptions("documentType")}
+                  options={documentTypeOptions ? documentTypeOptions.map(option => ({
+                      value: option.id,
+                      label: option.name[this.lng]
+                  })) : []}
+                  placeholder={documentType.name[this.lng]}
+              />
+          </FormItem>
+          {this.state.docType?
+        <div>
         {caseNumber && (
           <Field
             name="caseNumber"
@@ -851,28 +887,28 @@ class MainInfoCaseForm extends Component {
               }}
             />
           )}
-        {caseStructuralSubdivision && (
-          <Field
-            name="caseStructuralSubdivision"
-            component={renderSelect}
-            normalize={this.selectToRedux}
-            label={caseStructuralSubdivision.name[this.lng]}
-            formItemLayout={{
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }}
-            isLoading={loading.caseStructuralSubdivision}
-            data={
-                this.state.Options
-                ? this.state.Options.map(option => ({
-                    value: option.id,
-                    label: option.name[this.lng]
-                  }))
-                : []
-            }
-            onMenuOpen={()=>this.loadOptionsGet("caseStructuralSubdivision")}
-          />
-        )}
+        {/*{caseStructuralSubdivision && (*/}
+          {/*<Field*/}
+            {/*name="caseStructuralSubdivision"*/}
+            {/*component={renderSelect}*/}
+            {/*normalize={this.selectToRedux}*/}
+            {/*label={caseStructuralSubdivision.name[this.lng]}*/}
+            {/*formItemLayout={{*/}
+              {/*labelCol: { span: 10 },*/}
+              {/*wrapperCol: { span: 14 }*/}
+            {/*}}*/}
+            {/*isLoading={loading.caseStructuralSubdivision}*/}
+            {/*data={*/}
+                {/*this.state.Options*/}
+                {/*? this.state.Options.map(option => ({*/}
+                    {/*value: option.id,*/}
+                    {/*label: option.name[this.lng]*/}
+                  {/*}))*/}
+                {/*: []*/}
+            {/*}*/}
+            {/*onMenuOpen={()=>this.loadOptionsGet("caseStructuralSubdivision")}*/}
+          {/*/>*/}
+        {/*)}*/}
         {caseNotes && (
           <Field
             name="caseNotes"
@@ -969,141 +1005,141 @@ class MainInfoCaseForm extends Component {
             }}
           />
         )}
-        {caseFundOfUse && (
-          <Field
-            name="caseFundOfUse"
-            component={renderCheckbox}
-            label={caseFundOfUse.name[this.lng]}
-            format={v => v && v.value===caseFundOfUseTrue.id?true:false }
-            normalize={this.checkboxToRedux3}
-            formItemLayout={{
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }}
-          />
-        )}
-        {bunchCases && (
-          <Field
-            name="bunchCases"
-            component={renderSelect}
-            normalize={this.selectToRedux}
-            label={bunchCases.name[this.lng]}
-            formItemLayout={{
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }}
-            isLoading={this.state.caseStorageLoading}
-            data={
-                this.state.Options
-                ? this.state.Options.map(option => ({
-                    value: option.id,
-                    label: option.name[this.lng]
-                  }))
-                : []
-            }
-            onMenuOpen={()=>this.loadOptionsGet(["bunchCases"])}
-            // validate={requiredLabel}
-            // colon={true}
-          />
-        )}
-          {caseStorage && (
-              <Field
-                  name="caseStorage"
-                  component={renderSelect}
-                  normalize={this.selectToRedux}
-                  label={caseStorage.name[this.lng]}
-                  formItemLayout={{
-                      labelCol: { span: 10 },
-                      wrapperCol: { span: 14 }
-                  }}
-                  isLoading={this.state.caseStorageLoading}
-                  data={
-                      caseStorageOptions
-                          ? caseStorageOptions.map(option => ({
-                              value: option.id,
-                              label: option.name[this.lng]
-                          }))
-                          : []
-                  }
-                  onMenuOpen={this.loadOptions(["caseStorage"])}
-                  // validate={requiredLabel}
-                  // colon={true}
-              />
-          )}
-        {rack && (
-          <Field
-            name="rack"
-            component={renderSelect}
-            normalize={this.selectToRedux}
-            label={rack.name[this.lng]}
-            formItemLayout={{
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }}
-            isLoading={this.state.rackLoading}
-            data={
-              rackOptions
-                ? rackOptions.map(option => ({
-                    value: option.id,
-                    label: option.name[this.lng]
-                  }))
-                : []
-            }
-            onMenuOpen={this.loadOptions(["rack"])}
-            // validate={requiredLabel}
-            // colon={true}
-          />
-        )}
+        {/*{caseFundOfUse && (*/}
+          {/*<Field*/}
+            {/*name="caseFundOfUse"*/}
+            {/*component={renderCheckbox}*/}
+            {/*label={caseFundOfUse.name[this.lng]}*/}
+            {/*format={v => v && v.value===caseFundOfUseTrue.id?true:false }*/}
+            {/*normalize={this.checkboxToRedux3}*/}
+            {/*formItemLayout={{*/}
+              {/*labelCol: { span: 10 },*/}
+              {/*wrapperCol: { span: 14 }*/}
+            {/*}}*/}
+          {/*/>*/}
+        {/*)}*/}
+        {/*{bunchCases && (*/}
+          {/*<Field*/}
+            {/*name="bunchCases"*/}
+            {/*component={renderSelect}*/}
+            {/*normalize={this.selectToRedux}*/}
+            {/*label={bunchCases.name[this.lng]}*/}
+            {/*formItemLayout={{*/}
+              {/*labelCol: { span: 10 },*/}
+              {/*wrapperCol: { span: 14 }*/}
+            {/*}}*/}
+            {/*isLoading={this.state.caseStorageLoading}*/}
+            {/*data={*/}
+                {/*this.state.Options*/}
+                {/*? this.state.Options.map(option => ({*/}
+                    {/*value: option.id,*/}
+                    {/*label: option.name[this.lng]*/}
+                  {/*}))*/}
+                {/*: []*/}
+            {/*}*/}
+            {/*onMenuOpen={()=>this.loadOptionsGet(["bunchCases"])}*/}
+            {/*// validate={requiredLabel}*/}
+            {/*// colon={true}*/}
+          {/*/>*/}
+        {/*)}*/}
+          {/*{caseStorage && (*/}
+              {/*<Field*/}
+                  {/*name="caseStorage"*/}
+                  {/*component={renderSelect}*/}
+                  {/*normalize={this.selectToRedux}*/}
+                  {/*label={caseStorage.name[this.lng]}*/}
+                  {/*formItemLayout={{*/}
+                      {/*labelCol: { span: 10 },*/}
+                      {/*wrapperCol: { span: 14 }*/}
+                  {/*}}*/}
+                  {/*isLoading={this.state.caseStorageLoading}*/}
+                  {/*data={*/}
+                      {/*caseStorageOptions*/}
+                          {/*? caseStorageOptions.map(option => ({*/}
+                              {/*value: option.id,*/}
+                              {/*label: option.name[this.lng]*/}
+                          {/*}))*/}
+                          {/*: []*/}
+                  {/*}*/}
+                  {/*onMenuOpen={this.loadOptions(["caseStorage"])}*/}
+                  {/*// validate={requiredLabel}*/}
+                  {/*// colon={true}*/}
+              {/*/>*/}
+          {/*)}*/}
+        {/*{rack && (*/}
+          {/*<Field*/}
+            {/*name="rack"*/}
+            {/*component={renderSelect}*/}
+            {/*normalize={this.selectToRedux}*/}
+            {/*label={rack.name[this.lng]}*/}
+            {/*formItemLayout={{*/}
+              {/*labelCol: { span: 10 },*/}
+              {/*wrapperCol: { span: 14 }*/}
+            {/*}}*/}
+            {/*isLoading={this.state.rackLoading}*/}
+            {/*data={*/}
+              {/*rackOptions*/}
+                {/*? rackOptions.map(option => ({*/}
+                    {/*value: option.id,*/}
+                    {/*label: option.name[this.lng]*/}
+                  {/*}))*/}
+                {/*: []*/}
+            {/*}*/}
+            {/*onMenuOpen={this.loadOptions(["rack"])}*/}
+            {/*// validate={requiredLabel}*/}
+            {/*// colon={true}*/}
+          {/*/>*/}
+        {/*)}*/}
 
-          {section && (
-              <Field
-                  name="section"
-                  component={renderSelect}
-                  normalize={this.selectToRedux}
-                  label={section.name[this.lng]}
-                  formItemLayout={{
-                      labelCol: { span: 10 },
-                      wrapperCol: { span: 14 }
-                  }}
-                  isLoading={this.state.rackLoading}
-                  data={
-                      sectionOptions
-                          ? sectionOptions.map(option => ({
-                              value: option.id,
-                              label: option.name[this.lng]
-                          }))
-                          : []
-                  }
-                  onMenuOpen={this.loadOptions(["section"])}
-                  // validate={requiredLabel}
-                  // colon={true}
-              />
-          )}
+          {/*{section && (*/}
+              {/*<Field*/}
+                  {/*name="section"*/}
+                  {/*component={renderSelect}*/}
+                  {/*normalize={this.selectToRedux}*/}
+                  {/*label={section.name[this.lng]}*/}
+                  {/*formItemLayout={{*/}
+                      {/*labelCol: { span: 10 },*/}
+                      {/*wrapperCol: { span: 14 }*/}
+                  {/*}}*/}
+                  {/*isLoading={this.state.rackLoading}*/}
+                  {/*data={*/}
+                      {/*sectionOptions*/}
+                          {/*? sectionOptions.map(option => ({*/}
+                              {/*value: option.id,*/}
+                              {/*label: option.name[this.lng]*/}
+                          {/*}))*/}
+                          {/*: []*/}
+                  {/*}*/}
+                  {/*onMenuOpen={this.loadOptions(["section"])}*/}
+                  {/*// validate={requiredLabel}*/}
+                  {/*// colon={true}*/}
+              {/*/>*/}
+          {/*)}*/}
 
-        {shelf && (
-          <Field
-            name="shelf"
-            component={renderSelect}
-            normalize={this.selectToRedux}
-            label={shelf.name[this.lng]}
-            formItemLayout={{
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }}
-            isLoading={this.state.shelfLoading}
-            data={
-              shelfOptions
-                ? shelfOptions.map(option => ({
-                    value: option.id,
-                    label: option.name[this.lng]
-                  }))
-                : []
-            }
-            onMenuOpen={this.loadOptions(["shelf"])}
-            // validate={requiredLabel}
-            // colon={true}
-          />
-        )}
+        {/*{shelf && (*/}
+          {/*<Field*/}
+            {/*name="shelf"*/}
+            {/*component={renderSelect}*/}
+            {/*normalize={this.selectToRedux}*/}
+            {/*label={shelf.name[this.lng]}*/}
+            {/*formItemLayout={{*/}
+              {/*labelCol: { span: 10 },*/}
+              {/*wrapperCol: { span: 14 }*/}
+            {/*}}*/}
+            {/*isLoading={this.state.shelfLoading}*/}
+            {/*data={*/}
+              {/*shelfOptions*/}
+                {/*? shelfOptions.map(option => ({*/}
+                    {/*value: option.id,*/}
+                    {/*label: option.name[this.lng]*/}
+                  {/*}))*/}
+                {/*: []*/}
+            {/*}*/}
+            {/*onMenuOpen={this.loadOptions(["shelf"])}*/}
+            {/*// validate={requiredLabel}*/}
+            {/*// colon={true}*/}
+          {/*/>*/}
+        {/*)}*/}
         {propAuthenticity && (
           <Field
             name="propAuthenticity"
@@ -1130,148 +1166,148 @@ class MainInfoCaseForm extends Component {
           />
         )}
 
-        {caseDateOfDeposit && (
-          <Field
-            name="caseDateOfDeposit"
-            disabledDate={this.disabledEndDate}
-            component={renderDatePicker}
-            normalize={this.dateToRedux}
-            format={null}
-            isSearchable={false}
-            label={caseDateOfDeposit.name[this.lng]}
-            formItemLayout={{
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }}
-          />
-        )}
-        {documentFile && (
-          <Field
-            name="documentFile"
-            component={renderFileUploadBtn}
-            normalize={this.fileToRedux}
-            cubeSConst="CubeForAF_Case"
-            label={documentFile.name[this.lng]}
-            formItemLayout={{
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }}
-          />
-        )}
-        {dateForming && (
-          <Field
-            name="dateForming"
-            disabledDate={this.disabledEndDate}
-            component={renderDatePicker}
-            format={null}
-            normalize={this.dateToRedux}
-            isSearchable={false}
-            label={dateForming.name[this.lng]}
-            formItemLayout={{
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }}
-          />
-        )}
-        {linkToKatalog && (
-          <Field
-            name="linkToKatalog"
-            component={renderSelect}
-            isMulti
-            normalize={this.selectMultiToRedux}
-            label={linkToKatalog.name[this.lng]}
-            formItemLayout={{
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }}
-            isLoading={this.state.shelfLoading}
-            data={
-              linkToKatalogOptions
-                ? linkToKatalogOptions.map(option => ({
-                    value: option.id,
-                    label: option.name[this.lng]
-                  }))
-                : []
-            }
-            onMenuOpen={this.loadOptions(["linkToKatalog"])}
-            // validate={requiredLabel}
-            // colon={true}
-          />
-        )}
-        {linkToUkaz && (
-          <Field
-            name="linkToUkaz"
-            component={renderSelect}
-            isMulti
-            normalize={this.selectMultiToRedux}
-            label={linkToUkaz.name[this.lng]}
-            formItemLayout={{
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }}
-            isLoading={this.state.shelfLoading}
-            data={
-              linkToUkazOptions
-                ? linkToUkazOptions.map(option => ({
-                    value: option.id,
-                    label: option.name[this.lng]
-                  }))
-                : []
-            }
-            onMenuOpen={this.loadOptions(["linkToUkaz"])}
-            // validate={requiredLabel}
-            // colon={true}
-          />
-        )}
-        {linkToObzor && (
-          <Field
-            name="linkToObzor"
-            component={renderSelect}
-            isMulti
-            normalize={this.selectMultiToRedux}
-            label={linkToObzor.name[this.lng]}
-            formItemLayout={{
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }}
-            isLoading={this.state.shelfLoading}
-            data={
-              linkToObzorOptions
-                ? linkToObzorOptions.map(option => ({
-                    value: option.id,
-                    label: option.name[this.lng]
-                  }))
-                : []
-            }
-            onMenuOpen={this.loadOptions(["linkToObzor"])}
-            // validate={requiredLabel}
-            // colon={true}
-          />
-        )}
-        {surnameOriginator && (
-          <Field
-            name="surnameOriginator"
-            component={renderSelect}
-            normalize={this.selectToRedux}
-            label={surnameOriginator.name[this.lng]}
-            formItemLayout={{
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }}
-            isLoading={this.state.shelfLoading}
-            data={
-              surnameOriginatorOptions
-                ? surnameOriginatorOptions.map(option => ({
-                    value: option.id,
-                    label: option.name[this.lng]
-                  }))
-                : []
-            }
-            onMenuOpen={this.loadOptions(["surnameOriginator"])}
-            // validate={requiredLabel}
-            // colon={true}
-          />
-        )}
+        {/*{caseDateOfDeposit && (*/}
+          {/*<Field*/}
+            {/*name="caseDateOfDeposit"*/}
+            {/*disabledDate={this.disabledEndDate}*/}
+            {/*component={renderDatePicker}*/}
+            {/*normalize={this.dateToRedux}*/}
+            {/*format={null}*/}
+            {/*isSearchable={false}*/}
+            {/*label={caseDateOfDeposit.name[this.lng]}*/}
+            {/*formItemLayout={{*/}
+              {/*labelCol: { span: 10 },*/}
+              {/*wrapperCol: { span: 14 }*/}
+            {/*}}*/}
+          {/*/>*/}
+        {/*)}*/}
+        {/*{documentFile && (*/}
+          {/*<Field*/}
+            {/*name="documentFile"*/}
+            {/*component={renderFileUploadBtn}*/}
+            {/*normalize={this.fileToRedux}*/}
+            {/*cubeSConst="CubeForAF_Case"*/}
+            {/*label={documentFile.name[this.lng]}*/}
+            {/*formItemLayout={{*/}
+              {/*labelCol: { span: 10 },*/}
+              {/*wrapperCol: { span: 14 }*/}
+            {/*}}*/}
+          {/*/>*/}
+        {/*)}*/}
+        {/*{dateForming && (*/}
+          {/*<Field*/}
+            {/*name="dateForming"*/}
+            {/*disabledDate={this.disabledEndDate}*/}
+            {/*component={renderDatePicker}*/}
+            {/*format={null}*/}
+            {/*normalize={this.dateToRedux}*/}
+            {/*isSearchable={false}*/}
+            {/*label={dateForming.name[this.lng]}*/}
+            {/*formItemLayout={{*/}
+              {/*labelCol: { span: 10 },*/}
+              {/*wrapperCol: { span: 14 }*/}
+            {/*}}*/}
+          {/*/>*/}
+        {/*)}*/}
+        {/*{linkToKatalog && (*/}
+          {/*<Field*/}
+            {/*name="linkToKatalog"*/}
+            {/*component={renderSelect}*/}
+            {/*isMulti*/}
+            {/*normalize={this.selectMultiToRedux}*/}
+            {/*label={linkToKatalog.name[this.lng]}*/}
+            {/*formItemLayout={{*/}
+              {/*labelCol: { span: 10 },*/}
+              {/*wrapperCol: { span: 14 }*/}
+            {/*}}*/}
+            {/*isLoading={this.state.shelfLoading}*/}
+            {/*data={*/}
+              {/*linkToKatalogOptions*/}
+                {/*? linkToKatalogOptions.map(option => ({*/}
+                    {/*value: option.id,*/}
+                    {/*label: option.name[this.lng]*/}
+                  {/*}))*/}
+                {/*: []*/}
+            {/*}*/}
+            {/*onMenuOpen={this.loadOptions(["linkToKatalog"])}*/}
+            {/*// validate={requiredLabel}*/}
+            {/*// colon={true}*/}
+          {/*/>*/}
+        {/*)}*/}
+        {/*{linkToUkaz && (*/}
+          {/*<Field*/}
+            {/*name="linkToUkaz"*/}
+            {/*component={renderSelect}*/}
+            {/*isMulti*/}
+            {/*normalize={this.selectMultiToRedux}*/}
+            {/*label={linkToUkaz.name[this.lng]}*/}
+            {/*formItemLayout={{*/}
+              {/*labelCol: { span: 10 },*/}
+              {/*wrapperCol: { span: 14 }*/}
+            {/*}}*/}
+            {/*isLoading={this.state.shelfLoading}*/}
+            {/*data={*/}
+              {/*linkToUkazOptions*/}
+                {/*? linkToUkazOptions.map(option => ({*/}
+                    {/*value: option.id,*/}
+                    {/*label: option.name[this.lng]*/}
+                  {/*}))*/}
+                {/*: []*/}
+            {/*}*/}
+            {/*onMenuOpen={this.loadOptions(["linkToUkaz"])}*/}
+            {/*// validate={requiredLabel}*/}
+            {/*// colon={true}*/}
+          {/*/>*/}
+        {/*)}*/}
+        {/*{linkToObzor && (*/}
+          {/*<Field*/}
+            {/*name="linkToObzor"*/}
+            {/*component={renderSelect}*/}
+            {/*isMulti*/}
+            {/*normalize={this.selectMultiToRedux}*/}
+            {/*label={linkToObzor.name[this.lng]}*/}
+            {/*formItemLayout={{*/}
+              {/*labelCol: { span: 10 },*/}
+              {/*wrapperCol: { span: 14 }*/}
+            {/*}}*/}
+            {/*isLoading={this.state.shelfLoading}*/}
+            {/*data={*/}
+              {/*linkToObzorOptions*/}
+                {/*? linkToObzorOptions.map(option => ({*/}
+                    {/*value: option.id,*/}
+                    {/*label: option.name[this.lng]*/}
+                  {/*}))*/}
+                {/*: []*/}
+            {/*}*/}
+            {/*onMenuOpen={this.loadOptions(["linkToObzor"])}*/}
+            {/*// validate={requiredLabel}*/}
+            {/*// colon={true}*/}
+          {/*/>*/}
+        {/*)}*/}
+        {/*{surnameOriginator && (*/}
+          {/*<Field*/}
+            {/*name="surnameOriginator"*/}
+            {/*component={renderSelect}*/}
+            {/*normalize={this.selectToRedux}*/}
+            {/*label={surnameOriginator.name[this.lng]}*/}
+            {/*formItemLayout={{*/}
+              {/*labelCol: { span: 10 },*/}
+              {/*wrapperCol: { span: 14 }*/}
+            {/*}}*/}
+            {/*isLoading={this.state.shelfLoading}*/}
+            {/*data={*/}
+              {/*surnameOriginatorOptions*/}
+                {/*? surnameOriginatorOptions.map(option => ({*/}
+                    {/*value: option.id,*/}
+                    {/*label: option.name[this.lng]*/}
+                  {/*}))*/}
+                {/*: []*/}
+            {/*}*/}
+            {/*onMenuOpen={this.loadOptions(["surnameOriginator"])}*/}
+            {/*// validate={requiredLabel}*/}
+            {/*// colon={true}*/}
+          {/*/>*/}
+        {/*)}*/}
         {/*<Field*/}
           {/*name="fix"*/}
           {/*disabledDate={this.disabledEndDate}*/}
@@ -1571,40 +1607,40 @@ class MainInfoCaseForm extends Component {
               }}
             />
           )}
-        {dateAccuracy &&
-          this.showInput([
-            {
-              invType: invTypePerm,
-              docType: uprDoc
-            },
-            {
-              invType: invTypeDigital,
-              docType: uprDoc
-            }
-          ]) && (
-            <Field
-              name="dateAccuracy"
-              component={renderSelect}
-              normalize={this.selectToRedux}
-              label={dateAccuracy.name[this.lng]}
-              formItemLayout={{
-                labelCol: { span: 10 },
-                wrapperCol: { span: 14 }
-              }}
-              isLoading={this.state.shelfLoading}
-              data={
-                dateAccuracyOptions
-                  ? dateAccuracyOptions.map(option => ({
-                      value: option.id,
-                      label: option.name[this.lng]
-                    }))
-                  : []
-              }
-              onMenuOpen={this.loadOptions(["dateAccuracy"])}
-              // validate={requiredLabel}
-              // colon={true}
-            />
-          )}
+        {/*{dateAccuracy &&*/}
+          {/*this.showInput([*/}
+            {/*{*/}
+              {/*invType: invTypePerm,*/}
+              {/*docType: uprDoc*/}
+            {/*},*/}
+            {/*{*/}
+              {/*invType: invTypeDigital,*/}
+              {/*docType: uprDoc*/}
+            {/*}*/}
+          {/*]) && (*/}
+            {/*<Field*/}
+              {/*name="dateAccuracy"*/}
+              {/*component={renderSelect}*/}
+              {/*normalize={this.selectToRedux}*/}
+              {/*label={dateAccuracy.name[this.lng]}*/}
+              {/*formItemLayout={{*/}
+                {/*labelCol: { span: 10 },*/}
+                {/*wrapperCol: { span: 14 }*/}
+              {/*}}*/}
+              {/*isLoading={this.state.shelfLoading}*/}
+              {/*data={*/}
+                {/*dateAccuracyOptions*/}
+                  {/*? dateAccuracyOptions.map(option => ({*/}
+                      {/*value: option.id,*/}
+                      {/*label: option.name[this.lng]*/}
+                    {/*}))*/}
+                  {/*: []*/}
+              {/*}*/}
+              {/*onMenuOpen={this.loadOptions(["dateAccuracy"])}*/}
+              {/*// validate={requiredLabel}*/}
+              {/*// colon={true}*/}
+            {/*/>*/}
+          {/*)}*/}
 
         {inaccurateDateFeature &&
           this.showInput([
@@ -1754,24 +1790,24 @@ class MainInfoCaseForm extends Component {
               // colon={true}
             />
           )}
-        {objectCode &&
-          this.showInput([
-            {
-              invType: invTypePerm,
-              docType: uprNTD
-            }
-          ]) && (
-            <Field
-              name="objectCode"
-              component={renderInput}
-              normalize={this.strToRedux}
-              label={objectCode.name[this.lng]}
-              formItemLayout={{
-                labelCol: { span: 10 },
-                wrapperCol: { span: 14 }
-              }}
-            />
-          )}
+        {/*{objectCode &&*/}
+          {/*this.showInput([*/}
+            {/*{*/}
+              {/*invType: invTypePerm,*/}
+              {/*docType: uprNTD*/}
+            {/*}*/}
+          {/*]) && (*/}
+            {/*<Field*/}
+              {/*name="objectCode"*/}
+              {/*component={renderInput}*/}
+              {/*normalize={this.strToRedux}*/}
+              {/*label={objectCode.name[this.lng]}*/}
+              {/*formItemLayout={{*/}
+                {/*labelCol: { span: 10 },*/}
+                {/*wrapperCol: { span: 14 }*/}
+              {/*}}*/}
+            {/*/>*/}
+          {/*)}*/}
         {projectName &&
           this.showInput([
             {
@@ -3146,49 +3182,49 @@ class MainInfoCaseForm extends Component {
               // colon={true}
             />
           )}
-        {documentLanguage &&
-          this.showInput([
-            {
-              invType: invTypeVideo,
-              docType: videoDoc
-            },
-            {
-              invType: invTypeMovie,
-              docType: movieDoc
-            },
-            {
-              invType: invTypePhonoGram,
-              docType: phonoDoc
-            },
-            {
-              invType: invTypePhonoMag,
-              docType: phonoDoc
-            }
-          ]) && (
-            <Field
-              name="documentLanguage
-"
-              component={renderSelect}
-              normalize={this.selectToRedux}
-              label={documentLanguage.name[this.lng]}
-              formItemLayout={{
-                labelCol: { span: 10 },
-                wrapperCol: { span: 14 }
-              }}
-              isLoading={this.state.shelfLoading}
-              data={
-                documentLanguageOptions
-                  ? documentLanguageOptions.map(option => ({
-                      value: option.id,
-                      label: option.name[this.lng]
-                    }))
-                  : []
-              }
-              onMenuOpen={this.loadOptions(["documentLanguageOptions"])}
-              // validate={requiredLabel}
-              // colon={true}
-            />
-          )}
+        {/*{documentLanguage &&*/}
+          {/*this.showInput([*/}
+            {/*{*/}
+              {/*invType: invTypeVideo,*/}
+              {/*docType: videoDoc*/}
+            {/*},*/}
+            {/*{*/}
+              {/*invType: invTypeMovie,*/}
+              {/*docType: movieDoc*/}
+            {/*},*/}
+            {/*{*/}
+              {/*invType: invTypePhonoGram,*/}
+              {/*docType: phonoDoc*/}
+            {/*},*/}
+            {/*{*/}
+              {/*invType: invTypePhonoMag,*/}
+              {/*docType: phonoDoc*/}
+            {/*}*/}
+          {/*]) && (*/}
+            {/*<Field*/}
+              {/*name="documentLanguage*/}
+{/*"*/}
+              {/*component={renderSelect}*/}
+              {/*normalize={this.selectToRedux}*/}
+              {/*label={documentLanguage.name[this.lng]}*/}
+              {/*formItemLayout={{*/}
+                {/*labelCol: { span: 10 },*/}
+                {/*wrapperCol: { span: 14 }*/}
+              {/*}}*/}
+              {/*isLoading={this.state.shelfLoading}*/}
+              {/*data={*/}
+                {/*documentLanguageOptions*/}
+                  {/*? documentLanguageOptions.map(option => ({*/}
+                      {/*value: option.id,*/}
+                      {/*label: option.name[this.lng]*/}
+                    {/*}))*/}
+                  {/*: []*/}
+              {/*}*/}
+              {/*onMenuOpen={this.loadOptions(["documentLanguageOptions"])}*/}
+              {/*// validate={requiredLabel}*/}
+              {/*// colon={true}*/}
+            {/*/>*/}
+          {/*)}*/}
         {documentPlaybackMethod &&
           this.showInput([
             {
@@ -3249,6 +3285,8 @@ class MainInfoCaseForm extends Component {
             )}
           </Form.Item>
         )}
+        </div>
+          :""}
       </Form>
     );
   }
@@ -3267,7 +3305,8 @@ export default connect(
         state.generalData.caseStructuralSubdivision,
       caseStorageOptions: state.generalData.caseStorage,
       rackOptions: state.generalData.rack,
-      shelfOptions: state.generalData.shelf,
+        shelfOptions: state.generalData.shelf,
+        documentTypeOptions: state.generalData.documentType,
       inaccurateDateFeatureOptions: state.generalData.inaccurateDateFeature,
       typeOfPaperCarrierOptions: state.generalData.typeOfPaperCarrier,
         caseDocLangObjOptions: state.generalData.caseDocLangObj,

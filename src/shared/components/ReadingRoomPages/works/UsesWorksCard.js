@@ -120,6 +120,7 @@ class UsesWorksCard extends React.PureComponent {
             tofiConstants={tofiConstants}
             t={t}
             saveProps={saveProps}
+            user={user}
             initialValues={initialValues}
           />
         },

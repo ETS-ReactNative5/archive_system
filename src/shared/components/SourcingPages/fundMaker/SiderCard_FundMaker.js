@@ -11,6 +11,7 @@ import Viewer from "../../Viewer";
 import RenameFormFoundMaker from "./RenameFormFoundMaker";
 import ReorganizationFounMaker from "./ReorganizationFounMaker";
 import LiquidationFoundMaker from "./LiquidationFoundMaker";
+import {getValueOfMultiText} from "../../../actions/actions";
 
 
 
@@ -40,34 +41,109 @@ class SiderCard_FundMaker extends React.PureComponent {
    */
 
 
-  componentDidMount() {
+ async componentDidMount() {
     if (this.props.initialValues.key) {
+
       this.props.loadOrgFundmaker(this.props.initialValues.key);
+        await getValueOfMultiText(String(this.props.initialValues.key.split('_')[1]), 'orgFunctionFundmaker').then(
+            res => {
+
+                if (!!res.data[0]){
+                    let orgF = res.data[0]
+                    orgF.value={
+                        ru: res.data[0].valueMultiStr.ru,
+                        kz: res.data[0].valueMultiStr.kz,
+                        en: res.data[0].valueMultiStr.en,
+                    }
+                    orgF.valueLng={
+                        ru: res.data[0].valueMultiStr.ru,
+                        kz: res.data[0].valueMultiStr.kz,
+                        en: res.data[0].valueMultiStr.en,
+                    }
+                    let newInitialValues = this.props.initialValues
+                    newInitialValues.orgFunctionFundmaker = orgF
+                    this.setState({
+                        initialValues: newInitialValues
+                    })
+                }
+            }
+        )
+
+        await getValueOfMultiText(String(this.props.initialValues.key.split('_')[1]), 'structureFundmaker').then(
+            res => {
+
+                if (!!res.data[0]){
+                    let orgF = res.data[0]
+                    orgF.value={
+                        ru: res.data[0].valueMultiStr.ru,
+                        kz: res.data[0].valueMultiStr.kz,
+                        en: res.data[0].valueMultiStr.en,
+                    }
+                    orgF.valueLng={
+                        ru: res.data[0].valueMultiStr.ru,
+                        kz: res.data[0].valueMultiStr.kz,
+                        en: res.data[0].valueMultiStr.en,
+                    }
+                    let newInitialValues = this.props.initialValues
+                    newInitialValues.structureFundmaker = orgF
+                    this.setState({
+                        initialValues: newInitialValues
+                    })
+                }
+            }
+        )
     } else {
       return;
     }
-    if (this.props.cubeForOrgFundmakerSingle !== undefined) {
-      const {doForOrgFundmakers, dpForOrgFundmakers} = this.props.tofiConstants;
-      const data = parseCube_new(this.props.cubeForOrgFundmakerSingle['cube'],
-        [],
-        'dp',
-        'do',
-        this.props.cubeForOrgFundmakerSingle[`do_${doForOrgFundmakers.id}`],
-        this.props.cubeForOrgFundmakerSingle[`dp_${dpForOrgFundmakers.id}`],
-        `do_${doForOrgFundmakers.id}`,
-        `dp_${dpForOrgFundmakers.id}`).map(this.renderTableData)[0];
-      this.setState(
-        {
-          loading: false,
-          data: data,
-          initialValues: data
-        }
-      );
-    }
+    // if (this.props.cubeForOrgFundmakerSingle !== undefined) {
+    //   const {doForOrgFundmakers, dpForOrgFundmakers} = this.props.tofiConstants;
+    //   const data = parseCube_new(this.props.cubeForOrgFundmakerSingle['cube'],
+    //     [],
+    //     'dp',
+    //     'do',
+    //     this.props.cubeForOrgFundmakerSingle[`do_${doForOrgFundmakers.id}`],
+    //     this.props.cubeForOrgFundmakerSingle[`dp_${dpForOrgFundmakers.id}`],
+    //     `do_${doForOrgFundmakers.id}`,
+    //     `dp_${dpForOrgFundmakers.id}`).map( this.renderTableData)[0];
+    //
+    //     this.setState(
+    //         {
+    //             loading: false,
+    //             data: data,
+    //             initialValues: data
+    //         }
+    //     );
+    //
+    //     if (!!data){
+    //     await getValueOfMultiText(String(data.key.split('_')[1]), 'orgFunctionFundmaker').then(
+    //         res => {
+    //             if (!!res.data[0]){
+    //                 let orgF = res.data[0]
+    //                 orgF.value={
+    //                     ru: res.data[0].valueMultiStr.ru,
+    //                     kz: res.data[0].valueMultiStr.kz,
+    //                     en: res.data[0].valueMultiStr.en,
+    //                 }
+    //                 orgF.valueLng={
+    //                     ru: res.data[0].valueMultiStr.ru,
+    //                     kz: res.data[0].valueMultiStr.kz,
+    //                     en: res.data[0].valueMultiStr.en,
+    //                 }
+    //                 let newInitialValues = data
+    //                 newInitialValues.orgFunctionFundmaker = orgF
+    //                 this.setState({
+    //                     initialValues: newInitialValues
+    //                 })
+    //             }
+    //         }
+    //     )
+    //     }
+    // }
+
   }
 
 
-  componentDidUpdate(prevProps) {
+   async componentDidUpdate(prevProps) {
     if (prevProps.cubeForOrgFundmakerSingle !== this.props.cubeForOrgFundmakerSingle) {
       const {doForOrgFundmakers, dpForOrgFundmakers} = this.props.tofiConstants;
       const data = parseCube_new(this.props.cubeForOrgFundmakerSingle['cube'],
@@ -78,21 +154,67 @@ class SiderCard_FundMaker extends React.PureComponent {
         this.props.cubeForOrgFundmakerSingle[`dp_${dpForOrgFundmakers.id}`],
         `do_${doForOrgFundmakers.id}`,
         `dp_${dpForOrgFundmakers.id}`).map(this.renderTableData)[0];
-      this.setState(
-        {
-          loading: false,
-          data: data,
-          initialValues: data
-        }
-      );
+        this.setState(
+            {
+                loading: false,
+                data: data,
+                initialValues: data
+            }
+        );
     }
     if (this.props.initialValues.key && this.props.initialValues.key !== prevProps.initialValues.key) {
       return this.props.loadOrgFundmaker(this.props.initialValues.key);
     }
     if (this.props.initialValues !== prevProps.initialValues) {
-      this.setState({
-        initialValues: this.props.initialValues
-      });
+
+      await getValueOfMultiText(String(this.props.initialValues.key.split('_')[1]), 'orgFunctionFundmaker').then(
+            res => {
+                if (!!res.data[0]){
+                    let orgF = res.data[0]
+                    orgF.value={
+                        ru: res.data[0].valueMultiStr.ru,
+                        kz: res.data[0].valueMultiStr.kz,
+                        en: res.data[0].valueMultiStr.en,
+                    }
+                    orgF.valueLng={
+                        ru: res.data[0].valueMultiStr.ru,
+                        kz: res.data[0].valueMultiStr.kz,
+                        en: res.data[0].valueMultiStr.en,
+                    }
+                    let newInitialValues = this.props.initialValues
+                    newInitialValues.orgFunctionFundmaker = orgF
+                    this.setState({
+                        initialValues: newInitialValues
+                    })
+                }
+            }
+        )
+
+        await getValueOfMultiText(String(this.props.initialValues.key.split('_')[1]), 'structureFundmaker').then(
+            res => {
+                if (!!res.data[0]){
+                    let orgF = res.data[0]
+                    orgF.value={
+                        ru: res.data[0].valueMultiStr.ru,
+                        kz: res.data[0].valueMultiStr.kz,
+                        en: res.data[0].valueMultiStr.en,
+                    }
+                    orgF.valueLng={
+                        ru: res.data[0].valueMultiStr.ru,
+                        kz: res.data[0].valueMultiStr.kz,
+                        en: res.data[0].valueMultiStr.en,
+                    }
+                    let newInitialValues = this.props.initialValues
+                    newInitialValues.structureFundmaker = orgF
+                    this.setState({
+                        initialValues: newInitialValues
+                    })
+                }
+            }
+        )
+        this.setState({
+            initialValues: this.props.initialValues
+        });
     }
   }
 
@@ -141,7 +263,7 @@ class SiderCard_FundMaker extends React.PureComponent {
                 saveProps={saveProps}
                 saveIKProps={saveIKProps}
                 onCreateObj={onCreateObj}
-                initialValues={initialValues}
+                initialValues={!!initialValues && initialValues}
               />
             },
               {

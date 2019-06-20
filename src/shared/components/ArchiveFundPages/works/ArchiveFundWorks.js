@@ -994,7 +994,17 @@ class ArchiveFundWorks extends React.PureComponent {
             }
         });
     };
-
+    buttonDis=(date,user)=>{
+        if ( !!user ) {
+            if (!!date && user.value == this.props.user.obj) {
+                return false
+            } else {
+                return true
+            }
+        }else {
+            return true
+        }
+    }
     render() {
         const menu = (
         <Menu>
@@ -1525,7 +1535,7 @@ class ArchiveFundWorks extends React.PureComponent {
                                 <Button
                                 title={record.workType.workTypeClass === 'casesForTemporaryUse' ? t("GET_BACK") : t("COMPLETE")}
                                 icon={record.workType.workTypeClass === 'casesForTemporaryUse' ? "sync" : "poweroff"}
-                                disabled={ !!record.workAssignedTo ? this.props.user.obj != record.workAssignedTo.value && !record.workActualStartDate :true }
+                                disabled={  this.buttonDis(record.workActualStartDate, record.workAssignedTo)  }
                                 onClick={this.addSpecialDate(record.key, 'workActualEndDate', record)}
                                 className='green-btn'
                                 />}

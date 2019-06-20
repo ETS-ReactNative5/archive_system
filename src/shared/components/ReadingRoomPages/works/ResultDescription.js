@@ -9,8 +9,8 @@ import {isEqual, pickBy} from "lodash";
 import {General} from "../../../utils/axios_config";
 import {catchErrors} from "../../../utils/handleAsync";
 import {message, Modal} from "antd/lib/index";
-import {regNewUserWithECP} from "../../../actions/actions";
-import {sign} from "../../../utils";
+import {signXML, sign} from "../../../utils";
+import {prepareXml} from "../../../actions/actions";
 
 class ResultDescription extends React.PureComponent {
 
@@ -57,25 +57,48 @@ class ResultDescription extends React.PureComponent {
     };
     return this.props.saveProps({cube, obj}, {values: rest, oFiles: {resultResearch}}, this.props.tofiConstants);
   };
-    fileToRedux = (val, prevVal, file, str) => {
-        let newFile = val.filter(el => el instanceof File);
-        if (newFile.length > 0) {
-            var copyVal = prevVal ? [...prevVal] : [];
-            newFile.map(el => {
-                copyVal.push({
-                    value: el
-                });
-            });
-            return copyVal;
-        } else {
-            return val.length == 0 ? [] : val;
-        }
-    };
+
+  fileToRedux = (val, prevVal, file, str) => {
+    let newFile = val.filter(el => el instanceof File);
+    if (newFile.length > 0) {
+      var copyVal = prevVal ? [...prevVal] : [];
+      newFile.map(el => {
+        copyVal.push({
+          value: el
+        });
+      });
+      return copyVal;
+    } else {
+      return val.length == 0 ? [] : val;
+    }
+  };
+
+  // old code
+  // submitSign = async () => {
+  //   debugger;
+  //   const { resultDescription, resultResearch, resultResearchStatus } = this.props.initialValues;
+  //   const data = { resultDescription };
+  //   const files = resultResearch && resultResearch.map(f => f.name);
+  //   return sign('signXmlBackVS', data, files);
+  // };
+
+  receiveSignedXML = (res) => {
+    if (res.code == "200") {
+      let signedXML = res.responseObject
+      /// ---- надо сохранить XML
+    } else {
+      alert("Ошибка/Отмена подписания");
+    }
+  }
+
   submitSign = async () => {
-    const { resultDescription, resultResearch } = this.props.initialValues;
-    const data = { resultDescription };
-    const files = resultResearch && resultResearch.map(f => f.name);
-    return sign('signXmlBackVS', data, files);
+    let workId = this.props.initialValues.key;
+    let xml = await prepareXml(workId)
+    var recCBThis = this;
+    window.cb_receiveSignedXML = function (result) {
+      recCBThis.receiveSignedXML(result);
+    }
+    signXML('cb_receiveSignedXML', xml);
   };
 
   render() {
@@ -83,11 +106,12 @@ class ResultDescription extends React.PureComponent {
     this.lng = localStorage.getItem('i18nextLng');
     const {
       t, handleSubmit, reset, dirty, error, submitting,
-      tofiConstants: {resultDescription, resultResearch}
+      tofiConstants: {resultDescription, resultResearch, resultResearchStatus}
     } = this.props;
     return (
       <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)}
             style={dirty ? {paddingBottom: '43px'} : {}}>
+
         {resultDescription && (
           <Field
             name="resultDescription"
@@ -98,15 +122,15 @@ class ResultDescription extends React.PureComponent {
             //   return {...this.resultDescriptionValue}
             // }}
             normalize={(val, prevVal, obj, prevObj) => {
-                let newVal = { ...prevVal };
-                newVal.value = val;
-                if (!!newVal.valueLng) {
-                    newVal.valueLng[lang.resultDescription] = val;
-                } else {
-                    newVal["valueLng"] = { kz: "", en: "", ru: "" };
-                    newVal.valueLng[lang.resultDescription] = val;
-                }
-                return newVal;
+              let newVal = { ...prevVal };
+              newVal.value = val;
+              if (!!newVal.valueLng) {
+                newVal.valueLng[lang.resultDescription] = val;
+              } else {
+                newVal["valueLng"] = { kz: "", en: "", ru: "" };
+                newVal.valueLng[lang.resultDescription] = val;
+              }
+              return newVal;
             }}
             label={resultDescription.name[this.lng]}
             formItemClass="with-lang--column"
@@ -140,7 +164,9 @@ class ResultDescription extends React.PureComponent {
                 {submitting ? t('LOADING...') : t('CANCEL')}
               </Button>
             </div>}
-            {/*<Button type='primary' onClick={catchErrors(this.submitSign)}>{t('SIGN')}</Button>*/}
+            { this.props.user.privs.indexOf('sign_auth') != -1 &&
+              <Button type='primary' disabled={!(!!this.props.initialValues.workActualEndDate && (this.props.initialValues.workActualEndDate.value != null))} onClick={catchErrors(this.submitSign)}>{t('SIGN')}</Button>
+            }
             {error && <span className="message-error"><i className="icon-error"/>{error}</span>}
           </div>
         </Form.Item>

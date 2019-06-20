@@ -136,6 +136,7 @@ class CollectionsLayout extends Component {
   }
 
   getCollections = (t) => {
+
     return [
       {
         name: t('ACQUISITION'), //Комплектование
@@ -165,6 +166,7 @@ class CollectionsLayout extends Component {
                 priv: 'sourceacquisition'
 
             },
+
             {
                 name:  "Единицы хранения",
                 path: '/sourcing/storageunits',

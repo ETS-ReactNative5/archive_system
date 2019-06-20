@@ -331,6 +331,24 @@ export const getFileData = (id,  page='',rotate="",viewtype="image") =>
 export const dFile = (id, cubeConst) =>
     axios.General.dFile(id, cubeConst);
 
+
+export const prepareXml = workId =>
+    axios.Works.prepareXMLforSign(workId)
+      .then(res => {
+        console.log(res);
+        return res.data;
+      })
+      .catch(err => console.log(err));
+
+export const saveSignedXMLForWork = (workId, signedXML) =>
+    axios.Works.saveSignedXMLForWork(workId, signedXML)
+      .then(res=> {
+          console.log(res);
+          return res.data;
+      })
+      .catch(err => console.error(err));
+
+
 export const listPropValRef = obj => {
     return axios.Test.listPropValRef(obj)
         .then(res => console.log(res))

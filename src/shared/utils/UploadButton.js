@@ -9,7 +9,7 @@ class UploadButton extends React.Component {
     modal: {
       visible: false,
       result: '',
-        newFile:[]
+      newFile:[]
     }
   };
 
@@ -23,27 +23,27 @@ class UploadButton extends React.Component {
     kz: 'Файлды таңдаңыз'
   };
   editStateNewgFile=()=>{
-      this.setState({newFile:[]})
-      let newFile =[]
-      if (this.props.value.length){
-          for(let i = 0; i<this.props.value.length; i++){
-              newFile.push(this.props.value[i].value)
-          }
-          this.setState({
-              newFile:newFile
-          })
+    this.setState({newFile:[]})
+    let newFile =[]
+    if (this.props.value.length){
+      for(let i = 0; i<this.props.value.length; i++){
+        newFile.push(this.props.value[i].value)
       }
+      this.setState({
+        newFile:newFile
+      })
+    }
   }
-    componentDidMount(){
+  componentDidMount(){
+    this.editStateNewgFile()
+  }
+
+  componentDidUpdate(prevProps) {
+    // Typical usage (don't forget to compare props):
+    if (this.props !== prevProps) {
       this.editStateNewgFile()
     }
-
-    componentDidUpdate(prevProps) {
-        // Typical usage (don't forget to compare props):
-        if (this.props !== prevProps) {
-            this.editStateNewgFile()
-        }
-    }
+  }
   handleImgError = () => {
     this.onClose();
     const instance = axios.create({baseURL: ''});
@@ -67,22 +67,30 @@ class UploadButton extends React.Component {
       onRemove: async (file) => {
         if(file.type === '') {
           // remove file from server and go on
-          const res = await dFile(file.name, this.props.cubeSConst);
+          let fileId = (!!file.__file__id)?file.__file__id:file.name;
+          const res = await dFile(fileId, this.props.cubeSConst);
           if(!res.success) {
-          //  on fail stop here with message;
+            //  on fail stop here with message;
             res.errors.forEach(err => {
               message.error(err.text);
             });
             return;
           }
         }
-      
-        const index = this.props.value.indexOf(file);
+
+        let size = this.props.value.length;
+        let index = -1;
+        for (let i = 0; i < size; i++) {
+          if (this.props.value[i].value == file) {
+            index = i;
+            break;
+          }
+        }
         const newFileList = this.props.value.slice();
         newFileList.splice(index, 1);
-         this.setState({
-             newFile:[]
-         });
+        this.setState({
+          newFile:[]
+        });
         this.props.onChange(newFileList);
       },
       onPreview: (file) => {
@@ -94,7 +102,8 @@ class UploadButton extends React.Component {
         }
         else if(file.type === '') {
           // TODO change to actions
-          getFile(file.name)
+          let filename = !!file.__file__id?file.__file__id:file.name;
+          getFile(filename)
             .then(resp => {
               const url = URL.createObjectURL(resp.data);
               this.setState({result: url, modal: {...this.state.modal, visible: true}})
@@ -117,8 +126,8 @@ class UploadButton extends React.Component {
         this.props.onChange([...this.props.value, ...fileList]);
         return false;
       },
-      fileList:this.state.newFile ,
-          multiple: true
+      fileList:this.state.newFile,
+      multiple: true
     };
 
     return (

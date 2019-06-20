@@ -2,12 +2,7 @@ import React, {Component} from 'react';
 import {Button, Form} from 'antd';
 import {Field, formValueSelector, reduxForm} from 'redux-form';
 import {
-    renderDatePicker,
-    renderFileUploadBtn,
-    renderInput,
-    renderInputLang,
-    renderSelect,
-    renderTextareaLang
+    renderDatePicker, renderFileUploadBtn, renderInput, renderInputLang, renderSelect, renderTextareaLang
 } from '../../../utils/form_components';
 import {isEmpty, isEqual, pickBy} from 'lodash';
 import {
@@ -15,7 +10,7 @@ import {
     getPropVal,
     getObjChildsByConst,
     getPropValWithChilds,
-    getCube
+    getCube, saveValueOfMultiText
 } from '../../../actions/actions';
 import {
     CUBE_FOR_ORG_FUNDMAKER,
@@ -29,7 +24,6 @@ import {
     ORG_INDUSTRY
 } from '../../../constants/tofiConstants';
 import {connect} from 'react-redux';
-import {normalizePhone} from '../../../utils/form_normalizing';
 import {requiredArr, requiredLabel, requiredLng} from "../../../utils/form_validations";
 import {message} from "antd/lib/index";
 import {getParents} from "../../../utils";
@@ -42,13 +36,14 @@ class MainInfoFundMaker extends Component {
 
     constructor(props) {
         super(props);
-
         const lng = localStorage.getItem('i18nextLng');
         this.state = {
             lang: {
+                orgFunctionFundmaker: localStorage.getItem("i18nextLng"),
+                structureFundmaker: localStorage.getItem("i18nextLng"),
                 shortName: lng,
                 name: lng,
-                orgFunctionFundmaker: lng,
+                orgAddress: lng,
                 orgFormationDoc: lng,
                 orgReorganizationDoc: lng,
                 departmentalAccessory: lng,
@@ -74,13 +69,6 @@ class MainInfoFundMaker extends Component {
         return startValue.valueOf() > endValue.valueOf();
     };
 
-    disabledEndDate = (endValue) => {
-        const startValue = this.props.dbegValue;
-        if (!endValue || !startValue) {
-            return false;
-        }
-        return endValue.valueOf() <= startValue.valueOf();
-    };
     loadOptions = (c, withChilds) => {
         return () => {
             if (!this.props[c + 'Options']) {
@@ -103,6 +91,28 @@ class MainInfoFundMaker extends Component {
                 .catch(() => message.error('Ошибка загрузки данных'));
 
             }
+        }
+    };
+
+
+    strToRedux = (val, prevVal, obj, prevObj, flag) => {
+        if(!!flag){
+            val = val.replace(/[^\d;]/g, '')
+        }
+        var newVal = {...prevVal};
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: {kz: val},
+                valueLng: {ru: val},
+                valueLng: {en: val}
+            };
+            return objVal
+        } else {
+            newVal.value = val;
+            newVal['valueLng']={kz:val,ru:val,en:val}
+            return (newVal)
+
         }
     };
 
@@ -178,6 +188,25 @@ class MainInfoFundMaker extends Component {
         }
     };
 
+    /*strToRedux = (val, prevVal, obj, prevObj) => {
+        var newVal = {...prevVal};
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: {kz: val},
+                valueLng: {ru: val},
+                valueLng: {en: val}
+            }
+            return objVal
+        } else {
+            newVal.value = val;
+            newVal['valueLng']={kz:val,ru:val,en:val}
+
+            return (newVal)
+
+        }
+    };*/
+
     loadChilds = c => {
         return () => {
             if (!this.props[c + 'Options']) {
@@ -203,6 +232,30 @@ class MainInfoFundMaker extends Component {
         }
 
     }
+    dateToRedux=(val , prev)=>{{
+        let coppyPrev = {...prev}
+
+        if (!!val){
+            let newDate = moment(val).format("DD-MM-YYYY")
+            if (!!coppyPrev.idDataPropVal){
+                coppyPrev.value = newDate
+                return coppyPrev
+            }else {
+                return {
+                    value:newDate
+                }
+            }
+        }else{
+            if (!!coppyPrev.value){
+                coppyPrev.value=""
+                return coppyPrev
+            }else{
+                return {}
+            }
+
+        }
+
+    }}
 
     changeLang = e => {
         this.setState({lang: {...this.state.lang, [e.target.name]: e.target.value}});
@@ -210,7 +263,7 @@ class MainInfoFundMaker extends Component {
 
     shortNameValue = {...this.props.initialValues.shortName} || {kz: '', ru: '', en: ''};
     nameValue = {...this.props.initialValues.name} || {kz: '', ru: '', en: ''};
-    orgFunctionFundmakerValue = {...this.props.initialValues.orgFunctionFundmaker} || {
+    orgAddressValue = {...this.props.initialValues.orgAddress} || {
         kz: '',
         ru: '',
         en: ''
@@ -233,7 +286,6 @@ class MainInfoFundMaker extends Component {
 
     componentDidUpdate(prevProps) {
         if (prevProps.initialValues !== this.props.initialValues) {
-            this.fundNumber = {...this.props.initialValues.fundNumber} || '';
             this.shortNameValue = {...this.props.initialValues.shortName} || {
                 kz: '',
                 ru: '',
@@ -244,7 +296,7 @@ class MainInfoFundMaker extends Component {
                 ru: '',
                 en: ''
             };
-            this.orgFunctionFundmakerValue = {...this.props.initialValues.orgFunctionFundmaker} || {
+            this.orgAddressValue = {...this.props.initialValues.orgAddress} || {
                 kz: '',
                 ru: '',
                 en: ''
@@ -269,8 +321,9 @@ class MainInfoFundMaker extends Component {
     }
 
     onSubmit = values => {
+
         const {doForFundAndIK, dpForFundAndIK} = this.props.tofiConstants;
-        const {shortName,reasonFundmaker, name, accessLevel, orgFunctionFundmaker, structure, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
+        const {shortName, name, dbeg, dend,orgFunctionFundmaker,structureFundmaker, accessLevel, orgFunction, structure, reasonFundmakerFile, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
         const cube = {
             cubeSConst: 'cubeForOrgFundmaker',
             doConst: 'doForOrgFundmakers',
@@ -280,27 +333,26 @@ class MainInfoFundMaker extends Component {
             name: shortName,
             fullName: name,
             clsConst: 'fundmakerOrg',
+            dbeg,
+            dend,
             accessLevel: String(values.accessLevel.value)
         };
         //if(rest.orgIndustry) rest.orgIndustry = getParents(this.props.orgIndustryOptions, rest.orgIndustry);
         if (!this.props.initialValues.key) {
             return this.props.onCreateObj(
             {cube, obj},
-            {values: {
-                rest,
-                idDPV: this.props.withIdDPV,
-                oFiles: {orgFunctionFundmaker, structure},
-            }
-            },
+            {values: rest, idDPV: this.props.withIdDPV, oFiles: {orgFunction, structure, reasonFundmakerFile}},
             )
         }
         obj.doItem = this.props.initialValues.key;
         const objData = {};
         if (shortName) objData.name = shortName;
         if (name) objData.fullName = name;
+        if (dbeg) objData.dbeg = dbeg;
+        if (dend) objData.dend = dend;
         if (accessLevel) objData.accessLevel = accessLevel;
         // Сохраняем значения свойств fundNumber, fundmakerArchive (fundArchive для ИК), formOfAdmission, legalStatus, isActive для соответстующего источника комплектования, если хотя бы одно изменилось.
-        if (shortName || name || accessLevel || rest.fundmakerArchive || rest.formOfAdmission || rest.legalStatus || rest.isActive || rest.orgIndustry) {
+        if (shortName || name || dbeg || dend || accessLevel || rest.fundNumber || rest.fundmakerArchive || rest.formOfAdmission || rest.legalStatus || rest.isActive || rest.orgIndustry) {
             const filters = {
                 filterDOAnd: [
                     {
@@ -334,7 +386,7 @@ class MainInfoFundMaker extends Component {
                         concatType: "and",
                         conds: [
                             {
-                                consts: 'fundmakerOfIK,dateFormation,formOfAdmission,legalStatus,isActive,orgIndustry'
+                                consts: 'fundNumber,fundmakerOfIK,fundArchive,formOfAdmission,legalStatus,isActive,orgIndustry'
                             }
                         ]
                     }
@@ -342,7 +394,7 @@ class MainInfoFundMaker extends Component {
             };
             this.props.getCube('cubeForFundAndIK', JSON.stringify(filters), {customKey: 'cubeForFundAndIKSingle'})
             .then(() => {
-                const constArr = ['fundmakerOfIK', 'dateFormation', 'formOfAdmission', 'legalStatus', 'isActive', 'orgIndustry'];
+                const constArr = ['fundNumber', 'fundmakerOfIK', 'fundArchive', 'formOfAdmission', 'legalStatus', 'isActive', 'orgIndustry'];
                 const parsedCube = parseCube_new(
                 this.props.cubeForFundAndIKSingle['cube'],
                 [],
@@ -363,9 +415,16 @@ class MainInfoFundMaker extends Component {
                     },
                     obj: {doItem: parsedCube.id}
                 };
-                const {formOfAdmission, legalStatus, isActive, orgIndustry} = rest;
+                const {fundNumber, fundmakerArchive, formOfAdmission, legalStatus, isActive, orgIndustry} = rest;
+                const fundArchive = fundmakerArchive;
                 const vIK = {
                     values: JSON.parse(JSON.stringify({
+                        fundNumber: {
+                            value: rest.fundNumber && rest.fundNumber.value,
+                            propConst: "fundNumber",
+                            idDataPropVal: parsedCube.props.find(el => el.prop == this.props.tofiConstants['fundNumber'].id) && parsedCube.props.find(el => el.prop == this.props.tofiConstants['fundNumber'].id).values.idDataPropVal
+                        },
+                        fundArchive,
                         formOfAdmission,
                         legalStatus,
                         isActive,
@@ -380,68 +439,90 @@ class MainInfoFundMaker extends Component {
                         }
                     })),
                 };
+                //console.log('vIK ', vIK);
+
                 this.props.saveIKProps(cIK, vIK, this.props.tofiConstants, objData);
             });
         }
+        if(!!orgFunctionFundmaker){
+        this.saveMultiText(orgFunctionFundmaker, 'orgFunctionFundmaker')}
+        if(!!structureFundmaker){
+            this.saveMultiText(structureFundmaker, 'structureFundmaker')}
         return this.props.saveProps(
         {cube, obj},
-        {values: rest, idDPV: this.props.withIdDPV, oFiles: {orgFunctionFundmaker, structure}},
+        {values: rest, idDPV: this.props.withIdDPV, oFiles: {orgFunction, structure, reasonFundmakerFile}},
         this.props.tofiConstants,
         objData
         );
-
-
     };
 
-    dateToRedux=(val , prev)=>{{
-        let coppyPrev = {...prev}
-        if (!!val){
-            let newDate = moment(val).format("DD-MM-YYYY")
-            if (!!coppyPrev.idDataPropVal){
-                coppyPrev.value = newDate
-                return coppyPrev
-            }else {
-                return {
-                    value:newDate
-                }
-            }
-        }else{
-            if (!!coppyPrev.value){
-                coppyPrev.value=""
-                return coppyPrev
-            }else{
-                return {}
-            }
-
+    saveMultiText = (value, key) =>{
+        const dataToSend = [];
+        var mod = 'ins';
+        if (!!value.idDataPropVal) {
+            mod = 'upd'
+        };
+        dataToSend.push(
+            {
+                propConst: key,
+                vals: [
+                    {
+                        idDataPropVal:value.idDataPropVal,
+                        mode: mod,
+                        val: {
+                            kz: value.valueLng.kz,
+                            ru: value.valueLng.ru,
+                            en: value.valueLng.en,
+                        }
+                    }
+                ],
+            },
+        );
+        if (dataToSend.length > 0) {
+            let data = JSON.stringify(dataToSend);
+            saveValueOfMultiText(this.props.initialValues.key.split('_')[1], data, moment().format('YYYY-DD-MM')).then(res => {
+                message.success(this.props.t("PROPS_SUCCESSFULLY_UPDATED"));
+                //console.log(res)
+            }).catch(err => {
+                console.warn(err);
+            })
         }
-    }};
+    }
+
 
     render() {
         if (!this.props.tofiConstants) return null;
+        console.log(this.props.initialValues)
         const lng = localStorage.getItem('i18nextLng');
         const {
             tofiConstants: {
-                orgFunctionFundmaker, structureFundmaker, reasonFundmakerFile, reasonFundmaker, legalStatus, departmentalAccessory, orgIndustry, dateFormation},
-            t, handleSubmit, reset, dirty, error, submitting, legalStatusOptions, orgIndustryOptions} = this.props;
+                orgFunctionFundmaker, structureFundmaker, reasonFundmaker,reasonFundmakerFile, legalStatus, fundNumber, formOfAdmission, departmentalAccessory, orgIndustry, isActive, fundmakerArchive, orgPhone, orgFax,dateFormation,
+                orgEmail, orgAddress, orgFormationDoc, orgReorganizationDoc, orgLiquidationDoc, contractNumber, orgDocType,
+                subordination, jurisdiction, orgFunction, structure
+            }, t, handleSubmit, reset, dirty, error, submitting, legalStatusOptions, accessLevelOptions, orgDocTypeOptions,
+            formOfAdmissionOptions, orgIndustryOptions, isActiveOptions, fundmakerArchiveOptions, cubeSConst,
+            objSubordinationOptions,departmentalAccessoryOptions
+        } = this.props;
         const {lang, loading} = this.state;
         return (
-        <Form className="antForm-spaceBetween"
-              onSubmit={handleSubmit(this.onSubmit)}
+        <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)}
               style={dirty ? {paddingBottom: '43px'} : {}}>
-
-            {dateFormation && <Field
+            {
+                dateFormation && <Field
                 name="dateFormation"
-                component={renderDatePicker}
-                format={null}
                 normalize={this.dateToRedux}
+                component={renderDatePicker}
+                disabledDate={this.disabledStartDate}
                 label={dateFormation.name[lng]}
+                format={null}
                 formItemLayout={
                     {
                         labelCol: {span: 10},
                         wrapperCol: {span: 14}
                     }
                 }
-            />}
+                />
+            }
             <Field
             name="name"
             component={renderInputLang}
@@ -486,8 +567,9 @@ class MainInfoFundMaker extends Component {
                 <Col span={24}>
                     {reasonFundmaker && <Field
                         name="reasonFundmaker"
-                        component={ renderInput }
+                        component={renderInput}
                         label={reasonFundmaker.name[lng]}
+                        normalize={this.strToRedux}
                         formItemLayout={
                             {
                                 labelCol: { span: 10 },
@@ -500,19 +582,19 @@ class MainInfoFundMaker extends Component {
                     <Row>
                         <Col span={10}></Col>
                         <Col span={14}>
-                            {<Field
+                            <Field
                                 name="reasonFundmakerFile"
+                                label=''
                                 component={renderFileUploadBtn}
-                                cubeSConst='reasonFundmakerFile'
+                                cubeSConst='cubeForOrgFundmaker'
                                 normalize={this.fileToRedux}
                                 formItemLayout={
                                     {
-                                        labelCol: {span: 10},
-                                        wrapperCol: {span: 14}
+                                        labelCol: {span: 0},
+                                        wrapperCol: {span: 24}
                                     }
                                 }
                             />
-                            }
                         </Col>
                     </Row>
                 </Col>
@@ -562,6 +644,7 @@ class MainInfoFundMaker extends Component {
                     {structureFundmaker && <Field
                         name="structureFundmaker"
                         label={structureFundmaker.name[lng]}
+                        style={{height: '70px !important', minHeight: '70px !important'}}
                         component={renderTextareaLang}
                         format={value => (!!value ? value.valueLng[lang.structureFundmaker] : "")}
                         normalize={(val, prevVal, obj, prevObj) => {
@@ -608,10 +691,10 @@ class MainInfoFundMaker extends Component {
             <Row>
                  <Col span={24}>
                         {orgFunctionFundmaker && <Field
-                            name="reasonFundmaker"
+                            name="orgFunctionFundmaker"
                             label={orgFunctionFundmaker.name[lng]}
                             component={renderTextareaLang}
-                            format={value => (!!value ? value.valueLng[lang.orgFunctionFundmaker] : "")}
+                            format={value => (!!value ? value.valueLng[lang.orgFunctionFundmaker] : '')}
                             normalize={(val, prevVal, obj, prevObj) => {
                                 let newVal = { ...prevVal };
                                 newVal.value = val;
@@ -653,6 +736,7 @@ class MainInfoFundMaker extends Component {
                     </Row>
                 </Col>
             </Row>
+
             {departmentalAccessory && <Field
                 name="departmentalAccessory"
                 component={renderInputLang}
@@ -673,7 +757,20 @@ class MainInfoFundMaker extends Component {
                     }
                 }
             />}
-            {/*fundNumber && <Field
+            {dirty && <Form.Item className="ant-form-btns absolute-bottom">
+                <Button className="signup-form__btn" type="primary" htmlType="submit"
+                        disabled={submitting}>
+                    {submitting ? t('LOADING...') : t('SAVE')}
+                </Button>
+                <Button className="signup-form__btn" type="danger" htmlType="button"
+                        disabled={submitting} style={{marginLeft: '10px'}}
+                        onClick={reset}>
+                    {submitting ? t('LOADING...') : t('CANCEL')}
+                </Button>
+                {error &&
+                <span className="message-error"><i className="icon-error"/>{error}</span>}
+            </Form.Item>}
+            {/*<Field
             name="fundNumber"
             component={renderInput}
             placeholder={t('NUMB_OF_IK')}
@@ -688,7 +785,7 @@ class MainInfoFundMaker extends Component {
             validate={requiredLng}
             colon={true}
             />
-            }
+
             <Field
             name="dbeg"
             component={renderDatePicker}
@@ -747,9 +844,8 @@ class MainInfoFundMaker extends Component {
                     wrapperCol: {span: 14}
                 }
             }
-            />*/}
-
-            {/*formOfAdmission && <Field
+            />
+           <Field
             name="formOfAdmission"
             normalize={this.selectToRedux}
             component={renderSelect}
@@ -989,19 +1085,6 @@ class MainInfoFundMaker extends Component {
                 }
             }
             />*/}
-            {dirty && <Form.Item className="ant-form-btns absolute-bottom">
-                <Button className="signup-form__btn" type="primary" htmlType="submit"
-                        disabled={submitting}>
-                    {submitting ? t('LOADING...') : t('SAVE')}
-                </Button>
-                <Button className="signup-form__btn" type="danger" htmlType="button"
-                        disabled={submitting} style={{marginLeft: '10px'}}
-                        onClick={reset}>
-                    {submitting ? t('LOADING...') : t('CANCEL')}
-                </Button>
-                {error &&
-                <span className="message-error"><i className="icon-error"/>{error}</span>}
-            </Form.Item>}
         </Form>
         )
     }
@@ -1010,6 +1093,8 @@ class MainInfoFundMaker extends Component {
 const selector = formValueSelector('MainInfoFundMaker');
 
 function mapStateToProps(state) {
+    const dbegValue = selector(state, 'dbeg');
+    const dendValue = selector(state, 'dend');
     const lng = localStorage.getItem('i18nextLng');
     const orgIndOpts = state.generalData[ORG_INDUSTRY] && state.generalData[ORG_INDUSTRY]
     .map(option => ({
@@ -1019,6 +1104,8 @@ function mapStateToProps(state) {
         parent: option.parent
     }));
     return {
+        dbegValue,
+        dendValue,
         legalStatusOptions: state.generalData[LEGAL_STATUS],
         formOfAdmissionOptions: state.generalData[FORM_OF_ADMISSION],
         orgIndustryOptions: orgIndOpts,

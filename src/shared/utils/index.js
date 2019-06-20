@@ -81,7 +81,17 @@ export const sign = async (callBack, data={}, files) => {
   setTimeout(() => {
     // hideLoading();
     signXml("PKCS12", "SIGNATURE", xmlToSign, callBack);
-  }, 100);
+  }, 1000);
+};
+
+export const signXML = async (callBack, xml) => {
+  const {showFileChooser, signXml} = await import('./ncaLayers');
+  window.showFileChooserCall = function showFileChooserCall() {
+    showFileChooser("ALL", "", "showFileChooserBack");
+  };
+  setTimeout(() => {
+    signXml("PKCS12", "SIGNATURE", xml, callBack);
+  }, 1000);
 };
 
 // Удаляет из списка файлов те файлы, которые имеют idDPV (на сохранение серверу передаются только файлы новые, не имеющие idDPV).

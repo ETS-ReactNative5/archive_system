@@ -31,7 +31,6 @@ import {
     insPropVal,
     getPropValWithChilds, dFundMaker
 } from '../../../actions/actions';
-import SiderCard from "../../SiderCard";
 
 /*eslint eqeqeq:0*/
 class FundMaker extends React.PureComponent {
@@ -287,7 +286,7 @@ class FundMaker extends React.PureComponent {
     }
 
     renderTableData = (item, idx) => {
-        const constArr = ['legalStatus', 'dateFormation', 'formOfAdmission', 'orgIndustry', 'fundmakerArchive',
+        const constArr = ['legalStatus', 'dateFormation','dateElimination','reasonFundmakerFile', 'departmentalAccessory', 'reasonFundmaker', 'formOfAdmission', 'orgIndustry', 'fundmakerArchive',
             'isActive', 'orgAddress', 'orgPhone', 'orgFax', 'orgEmail', 'orgFormationDoc', 'orgReorganizationDoc', 'orgLiquidationDoc',
             'leaderFIO', 'leaderPosition', 'leaderPhone', 'depLeaderFIO', 'depLeaderPosition', 'depLeaderPhone', 'responsibleFIO', 'responsiblePosition', 'responsiblePhone',
             'responsibleAppointmentDate', 'archiveLeaderFIO', 'archiveLeaderPosition', 'archiveLeaderPhone', 'archiveLeaderAppointmentDate', 'subordination', 'jurisdiction',
@@ -301,7 +300,6 @@ class FundMaker extends React.PureComponent {
             name: item.fullName ? item.fullName : {kz: '', ru: '', en: ''},
             dbeg: item.dbeg && moment(item.dbeg).isAfter('1800-01-01') ? moment(item.dbeg) : null,
             dend: item.dend && moment(item.dend).isBefore('3333-12-31') ? moment(item.dend) : null,
-            dateFormation:  item.dateFormation ? item.dateFormation : null,
             accessLevel: accessLevelObj && {
                 value: accessLevelObj.id,
                 label: accessLevelObj.name[this.lng]
@@ -422,6 +420,7 @@ class FundMaker extends React.PureComponent {
     };
 
     saveProps = async (c, v, t, objData) => {
+
         let hideLoading;
         try {
             // Сохраняем значения свойств фондообразователя
@@ -606,27 +605,20 @@ class FundMaker extends React.PureComponent {
                 classNames="card"
                 unmountOnExit
                 >
-                    <SiderCard
-                        closer={
-                            <Button
-                                type="danger"
-                                onClick={this.closeCard}
-                                shape="circle"
-                                icon="arrow-right"
-                            />
-                        }
-                    >
-                        <SiderCard_FundMaker t={t} tofiConstants={tofiConstants}
-                                             initialValues={this.state.initialValues} //eslint-disable-line
-                                             saveProps={this.saveProps}
-                                             saveIKProps={this.saveIKProps}
-                                             onCreateObj={this.onCreateObj}
-                                             loadOrgFundmaker={this.props.loadOrgFundmaker}
-                                             cubeForOrgFundmakerSingle={this.props.cubeForOrgFundmakerSingle}
-                                             accessLevelOptions={this.props.accessLevelOptions}
+                    <SiderCard_FundMaker t={t} tofiConstants={tofiConstants}
+                                         initialValues={this.state.initialValues} //eslint-disable-line
+                                         closer={<Button type='danger'
+                                                         onClick={this.closeCard}
+                                                         shape="circle"
+                                                         icon="arrow-right"/>}
+                                         saveProps={this.saveProps}
+                                         saveIKProps={this.saveIKProps}
+                                         onCreateObj={this.onCreateObj}
+                                         loadOrgFundmaker={this.props.loadOrgFundmaker}
+                                         cubeForOrgFundmakerSingle={this.props.cubeForOrgFundmakerSingle}
+                                         accessLevelOptions={this.props.accessLevelOptions}
 
-                        />
-                    </SiderCard>
+                    />
                 </CSSTransition>
             </div>
         </div>
