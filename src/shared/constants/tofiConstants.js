@@ -98,6 +98,7 @@ export const IS_ACTIVE = 'isActive';
 export const ORG_FUND_NUMBER = 'orgFundNumber';
 export const FORM_OF_ADMISSION = 'formOfAdmission';
 export const LEGAL_STATUS = 'legalStatus';
+export const ORG_RIGHT_RECEIVER ='orgRightReceiver';
 export const ORG_LOCATION = 'orgLocation';
 export const IK_ARCHIVE = 'IKArchive';
 export const IK_INDUSTRY = 'IKIndustry';

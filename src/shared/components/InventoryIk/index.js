@@ -117,7 +117,7 @@ class TablelegalEntities extends React.Component {
                             data: {
                                 dimPropConst:'dpForInv',
                                 propConst:'invFund',
-                                valueRef: {id: String(this.state.filter.ikName.value)}
+                                valueRef: {id: String(this.state.filter.ikName.value?this.state.filter.ikName.value:this.state.ikKey)}
                             }
                         }
                     ]
@@ -375,9 +375,12 @@ class TablelegalEntities extends React.Component {
         }
     };
     ikNameChange = s => {
-        this.setState({filter: {...this.state.filter, ikName: s}}, () => {
-            this.getCubeInv(this.state.filter.ikName)
-        });
+        if(s!==null){
+
+            this.setState({filter: {...this.state.filter, ikName: s}}, () => {
+                this.getCubeInv(this.state.filter.ikName)
+            });
+        }
 
     };
 
@@ -531,6 +534,17 @@ class TablelegalEntities extends React.Component {
             globalDate:moment(date).format("YYYY-MM-DD")
         })
     }
+    disBut=()=>{
+        if (!!this.state.ikKey){
+            return false
+        }else{
+            if (!!this.state.filter.ikName && !!this.state.filter.ikName.value){
+                return false
+            }else {
+                return true
+            }
+        }
+    }
     render() {
         const {t, tofiConstants, legalStatusOptions, fundmakerArchiveOptions, orgIndustryOptions, formOfAdmissionOptions} = this.props;
         const {legalStatus, fundmakerArchive, orgIndustry, formOfAdmission, invNumber,invAgreement2Date,invApprovalDate2, invDates, invList, invType, documentType, fundNumberOfCases, fundNumberOfCasesWithFiles} = tofiConstants;
@@ -567,6 +581,7 @@ class TablelegalEntities extends React.Component {
 
                         <div className="label-select">
                             <Button
+                                disabled={this.disBut()}
                                 onClick={() => {
                                     const accessLevelObj = this.props.accessLevelOptions.find(al => al.id === 1);
                                     this.setState({
@@ -864,7 +879,7 @@ class TablelegalEntities extends React.Component {
                                   tofiConstants={this.props.tofiConstants}
                                   initialValues={this.state.selectedRow}
                                   onCreateObj={this.onCreateObj}
-                                  icConst={this.state.filter.ikName.value}
+                                  icConst={!!this.state.filter.ikName && this.state.filter.ikName.value}
                                   onSaveCubeData={this.onSaveCubeData}
                             />
                         </SiderCard>

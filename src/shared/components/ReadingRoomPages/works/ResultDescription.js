@@ -10,7 +10,7 @@ import {General} from "../../../utils/axios_config";
 import {catchErrors} from "../../../utils/handleAsync";
 import {message, Modal} from "antd/lib/index";
 import {signXML, sign} from "../../../utils";
-import {prepareXml} from "../../../actions/actions";
+import {prepareXml, saveSignedXMLForWork} from "../../../actions/actions";
 
 class ResultDescription extends React.PureComponent {
 
@@ -75,8 +75,7 @@ class ResultDescription extends React.PureComponent {
 
   // old code
   // submitSign = async () => {
-  //   debugger;
-  //   const { resultDescription, resultResearch, resultResearchStatus } = this.props.initialValues;
+    //   const { resultDescription, resultResearch, resultResearchStatus } = this.props.initialValues;
   //   const data = { resultDescription };
   //   const files = resultResearch && resultResearch.map(f => f.name);
   //   return sign('signXmlBackVS', data, files);
@@ -84,30 +83,81 @@ class ResultDescription extends React.PureComponent {
 
   receiveSignedXML = (res) => {
     if (res.code == "200") {
-      let signedXML = res.responseObject
-      /// ---- надо сохранить XML
+      // let signedXML = encodeURI(res.responseObject);
+      let signedXML = res.responseObject;
+      console.log(signedXML)
+      this.saveSignedXML(signedXML)
     } else {
       alert("Ошибка/Отмена подписания");
     }
-  }
+  };
+
+  saveSignedXML = async(signedXML) => {
+    let workId = this.props.initialValues.key;
+    const hideLoading = message.loading(this.props.t("SAVE_SIGNED_XML"), 60);
+    let cbResult = await saveSignedXMLForWork(workId, signedXML);
+    hideLoading();
+    if (!!cbResult.success) {
+      Modal.success(
+        {
+          title: this.props.t("SAVE_SIGNED_XML_SUCCESS"),
+          content: this.props.t("SAVE_SIGNED_XML_SUCCESS_CONTENT"),
+          okText: "Закрыть",
+          onOk: ()=>{},
+        }
+      );
+    }
+    else {
+      let errText = ""
+      let i;
+      for(i = 0; i < cbResult.errors.length; i++) {
+        let error_code = cbResult.errors[i].text
+        if (!!error_code) errText += this.props.t(error_code);
+      }
+      Modal.error(
+        {
+          title: this.props.t("SAVE_SIGNED_XML_ERROR"),
+          content: errText,
+          // cancelText: "Закрыть",
+          okText: "Закрыть",
+          // onCancel: ()=>{},
+          onOk: ()=>{},
+        }
+      );
+    }
+  };
 
   submitSign = async () => {
     let workId = this.props.initialValues.key;
-    let xml = await prepareXml(workId)
+    const hideLoading = message.loading(this.props.t("PREPARE_XML_FOR_SIGN"), 60);
+    let xml = await prepareXml(workId);
+    hideLoading();
     var recCBThis = this;
     window.cb_receiveSignedXML = function (result) {
       recCBThis.receiveSignedXML(result);
-    }
+    };
     signXML('cb_receiveSignedXML', xml);
   };
 
   render() {
     const {lang} = this.state;
     this.lng = localStorage.getItem('i18nextLng');
+
     const {
       t, handleSubmit, reset, dirty, error, submitting,
-      tofiConstants: {resultDescription, resultResearch, resultResearchStatus}
+      tofiConstants: {resultDescription, resultResearch, resultResearchStatus},
+      initialValues
     } = this.props;
+console.log('resultResearchStatus', initialValues);
+    let show_sign_button = this.props.user.privs.indexOf('sign_auth') != -1;
+    if (show_sign_button) {
+      // -- нет данных
+      if (resultResearchStatus != null) {
+        // -- подписан и/или отправлен пользователю
+        // if (resultResearchStatus.value )
+      }
+    }
+
     return (
       <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)}
             style={dirty ? {paddingBottom: '43px'} : {}}>
@@ -164,7 +214,7 @@ class ResultDescription extends React.PureComponent {
                 {submitting ? t('LOADING...') : t('CANCEL')}
               </Button>
             </div>}
-            { this.props.user.privs.indexOf('sign_auth') != -1 &&
+            { show_sign_button &&
               <Button type='primary' disabled={!(!!this.props.initialValues.workActualEndDate && (this.props.initialValues.workActualEndDate.value != null))} onClick={catchErrors(this.submitSign)}>{t('SIGN')}</Button>
             }
             {error && <span className="message-error"><i className="icon-error"/>{error}</span>}

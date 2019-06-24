@@ -82,6 +82,7 @@ class MainInfoCaseForm extends Component {
           name:name,
           documentFile:documentFile,
           invFund:this.props.ikKey.split("_")[1],
+          documentType:{value:this.state.docType},
           fundFeature: this.props.tofiConstants.notIncluded.id,
         // objData: {
         //     name: name,
@@ -111,6 +112,11 @@ class MainInfoCaseForm extends Component {
         values,
         (val, key) => !isEqual(val, this.props.initialValues[key])
       );
+        if (!!this.props.initialValues.documentType) {
+        }else {
+            props.documentType = {value: this.state.docType}
+
+        }
         if (name) {
             objData.name = name;
             objData.fullName = name;
@@ -230,6 +236,14 @@ class MainInfoCaseForm extends Component {
     return endValue.valueOf() <= startValue.valueOf();
   };
 
+    componentDidMount() {
+        if (this.props.initialValues.documentType) {
+            this.setState({
+                docType:this.props.initialValues.documentType.value
+            })
+        }
+    }
+
   componentDidUpdate(prevProps) {
     if (prevProps.initialValues !== this.props.initialValues) {
 
@@ -243,6 +257,11 @@ class MainInfoCaseForm extends Component {
         ru: "",
         en: ""
       };
+        if (this.props.initialValues.documentType) {
+            this.setState({
+                docType:this.props.initialValues.documentType.value
+            })
+        }
     }
   }
 
@@ -685,7 +704,8 @@ class MainInfoCaseForm extends Component {
         className="antForm-spaceBetween"
         onSubmit={handleSubmit(this.onSubmit)}
         style={dirty ? { paddingBottom: "43px" } : {}}
-      >
+      >{!!this.props.initialValues.documentType?
+      "":
           <FormItem
               {...formItemLayout}
               label={documentType.name[this.lng]}
@@ -702,6 +722,8 @@ class MainInfoCaseForm extends Component {
                   placeholder={documentType.name[this.lng]}
               />
           </FormItem>
+      }
+
           {this.state.docType?
         <div>
         {caseNumber && (

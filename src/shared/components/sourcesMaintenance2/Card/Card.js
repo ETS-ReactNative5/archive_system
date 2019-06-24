@@ -63,7 +63,7 @@ class Card extends Component {
                     tabName:
                         <Popover content={""} title="Правовая и нормативно-методическая документация">
 
-                        'ПиНМД'
+                        ПиНМД
                         </Popover>
 
                     ,

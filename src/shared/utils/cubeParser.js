@@ -363,6 +363,7 @@ export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable
                   // const f = new File([id], id);
                   let filename = cubeValItem['name'][localStorage.getItem('i18nextLng')];
                   if (!filename) filename = id;
+                  filename = decodeURI(filename);
                   const f = new File([id], filename);
                   f.__file__id = id;
                   f.uid = `rc-upload-${id}`;

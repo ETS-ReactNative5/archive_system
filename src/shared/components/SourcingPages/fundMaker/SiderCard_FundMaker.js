@@ -250,7 +250,7 @@ class SiderCard_FundMaker extends React.PureComponent {
     const {t, tofiConstants, saveProps, saveIKProps, onCreateObj} = this.props;
     const {initialValues} = this.state;
     return (
-      <div className="card">
+      <div >
         {this.props.closer}
         <AntTabs
           tabs={[
@@ -296,7 +296,7 @@ class SiderCard_FundMaker extends React.PureComponent {
               saveProps={saveProps}
               initialValues={initialValues}/>
           },
-            {
+            {/*
               tabKey: 'Description',
               disabled: initialValues && !initialValues.key,
               tabName: t('MANAGING'),
@@ -314,7 +314,7 @@ class SiderCard_FundMaker extends React.PureComponent {
                 tofiConstants={tofiConstants}
                 t={t}
                 id={initialValues && initialValues.key}/>
-            }
+            */}
           ]}
           //onChange={this.handleTabChange}
         />

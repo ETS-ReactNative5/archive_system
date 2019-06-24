@@ -74,7 +74,7 @@ class PiNMD_IK_FORM extends React.Component {
             let typeFile = ''//key.name.ru.split(".")[1]
             getFileResolve(key.value.name).then(res => {
 
-                getFile(key.value.name).then(blob =>{
+                getFile(key.value.__file__id).then(blob =>{
 
                     if (res.data.type ==="pdf"){
 

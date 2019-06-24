@@ -31,6 +31,7 @@ class StorageUnits extends React.Component {
         objInv:[],
         dataIk:[],
         ikKey:'',
+        keyInv:null,
         loading: false,
         openCard: false,
         openModal: false,
@@ -61,84 +62,86 @@ class StorageUnits extends React.Component {
     }
 
     getCubeAct = () => {
-        getUserInformation(this.props.user.obj)
-            .then((res) => {
-                let userIkRef = res.idIK
-                getIdGetObj(userIkRef, 'doForFundAndIK').then(async (res) => {
-                    let idDimObj = res.data.idDimObj;
-                    this.setState({
-                        ikKey:{value:idDimObj}
-                    })
-                    this.getCubeCase({
-                        value:idDimObj
-                    })
-                    const filters = {
-                        filterDPAnd: [
-                            {
-                                dimConst: 'dpForFundAndIK',
-                                concatType: "and",
-                                conds: [
-                                    {
-                                        consts:
-                                            "numberOfIK,orgDocType,nomen,legalStatus,formOfAdmission,fundArchive,dateIncludeOfIk,dateExcludeOfIk,fundmakerOfIK"
-                                    }
-                                ]
-                            }
-                        ],
-                        filterDOAnd: [
-                            {
-                                dimConst: 'doForFundAndIK',
-                                concatType: "and",
-                                conds: [
-                                    {
-                                        ids: String(idDimObj)
-                                    }
-                                ]
-                            }
-                        ],
-                        filterDTOr: [
-                            {
-                                dimConst: 'dtForFundAndIK',
-                                conds: [
-                                    {
-                                        ids: String(moment().format("DD-MM-YYYY").slice(-4)) + '0101' + String(moment().format("DD-MM-YYYY").slice(-4)) + '1231'
-                                    }
-                                    ]
-                            }
-                            ]
-                    };
-                    await  this.props.getCube('cubeForFundAndIK', JSON.stringify(filters), {customKey: 'orgSourceCube'}).then(() => this.setState({loading: false}))
-                        .catch(err => {
-                            console.error(err);
+        if (this.props.tofiConstants["userOfIK"].id === this.props.user.cls) {
+
+            getUserInformation(this.props.user.obj)
+                .then((res) => {
+                    let userIkRef = res.idIK
+                    getIdGetObj(userIkRef, 'doForFundAndIK').then(async (res) => {
+                        let idDimObj = res.data.idDimObj;
+                        this.setState({
+                            ikKey: {value: idDimObj}
                         })
+                        this.getCubeCase({
+                            value: idDimObj
+                        })
+                        const filters = {
+                            filterDPAnd: [
+                                {
+                                    dimConst: 'dpForFundAndIK',
+                                    concatType: "and",
+                                    conds: [
+                                        {
+                                            consts:
+                                                "numberOfIK,orgDocType,nomen,legalStatus,formOfAdmission,fundArchive,dateIncludeOfIk,dateExcludeOfIk,fundmakerOfIK"
+                                        }
+                                    ]
+                                }
+                            ],
+                            filterDOAnd: [
+                                {
+                                    dimConst: 'doForFundAndIK',
+                                    concatType: "and",
+                                    conds: [
+                                        {
+                                            ids: String(idDimObj)
+                                        }
+                                    ]
+                                }
+                            ],
+                            filterDTOr: [
+                                {
+                                    dimConst: 'dtForFundAndIK',
+                                    conds: [
+                                        {
+                                            ids: String(moment().format("DD-MM-YYYY").slice(-4)) + '0101' + String(moment().format("DD-MM-YYYY").slice(-4)) + '1231'
+                                        }
+                                    ]
+                                }
+                            ]
+                        };
+                        await  this.props.getCube('cubeForFundAndIK', JSON.stringify(filters), {customKey: 'orgSourceCube'}).then(() => this.setState({loading: false}))
+                            .catch(err => {
+                                console.error(err);
+                            })
 
-                    const parsedCube = parseCube_new(this.props.orgSourceCube['cube'],
-                        [],
-                        'dp',
-                        'do',
-                        this.props.orgSourceCube['do_' + this.props.tofiConstants['doForFundAndIK'].id],
-                        this.props.orgSourceCube['dp_' + this.props.tofiConstants['dpForFundAndIK'].id],
-                        'do_' + this.props.tofiConstants['doForFundAndIK'].id,
-                        'dp_' + this.props.tofiConstants['dpForFundAndIK'].id
-                    ).map(this.renderTableDataIK);
-                    this.setState({
-                        dataIk:parsedCube
+                        const parsedCube = parseCube_new(this.props.orgSourceCube['cube'],
+                            [],
+                            'dp',
+                            'do',
+                            this.props.orgSourceCube['do_' + this.props.tofiConstants['doForFundAndIK'].id],
+                            this.props.orgSourceCube['dp_' + this.props.tofiConstants['dpForFundAndIK'].id],
+                            'do_' + this.props.tofiConstants['doForFundAndIK'].id,
+                            'dp_' + this.props.tofiConstants['dpForFundAndIK'].id
+                        ).map(this.renderTableDataIK);
+                        this.setState({
+                            dataIk: parsedCube
+                        })
+                        this.getCubeInv({
+                            value: parsedCube[0].key
+                        })
+                    }).catch(e => {
+                        console.log(e)
                     })
-                    this.getCubeInv({
-                        value: parsedCube[0].key
-                    })
+
                 }).catch(e => {
-                    console.log(e)
-                })
-
-            }).catch(e => {
-            console.log(e)
-        })
-
+                console.log(e)
+            })
+        }
     }
 
     getCubeCase=(ids)=>{
-        if (ids ===null){
+        if (!ids){
             ids= this.state.ikKey
         }
 
@@ -211,6 +214,12 @@ class StorageUnits extends React.Component {
         })
     };
 
+    onChangeInv=(val)=>{
+        this.setState({
+            keyInv:val
+        })
+        this.getCubeCase(val)
+    }
     componentWillUpdate(nextProps) {
         if (isEmpty(this.props.tofiConstants)) return;
 
@@ -397,7 +406,8 @@ class StorageUnits extends React.Component {
             }
             message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
             this.setState({loading: true, openCard: false});
-            await this.getCubeAct();
+            let idCube = !!this.state.keyInv ? this.state.keyInv :this.state.ikKey
+            await this.getCubeCase(idCube);
             return resSave;
         }
         catch (e) {
@@ -472,7 +482,7 @@ class StorageUnits extends React.Component {
         this.filteredData = data.filter(item => {
             return (
                 (item.name[this.lng].toLowerCase().includes(filter.name.toLowerCase())) &&
-                (item.fundNumber.value.toLowerCase().includes(filter.fundNumber.toLowerCase())) &&
+                ( !filter.fundNumber|| item.fundNumber.value.toLowerCase().includes(filter.fundNumber.toLowerCase())) &&
                 (!filter.documentType || item.documentType && item.documentType.label.toLowerCase().includes(filter.documentType.toLowerCase()))
                 // ( !filter.caseDbeg.dbeg || moment(item.caseDbeg.value).isSameOrAfter(moment(filter.caseDbeg.dbeg).format("DD-MM-YYYY"), 'day') ) &&
                 // ( !filter.caseDbeg.dend || moment(item.caseDbeg.value).isSameOrBefore(moment(filter.caseDbeg.dend).format("DD-MM-YYYY"), 'day') ) &&
@@ -486,7 +496,7 @@ class StorageUnits extends React.Component {
         return (
             <div className="EditCardCases">
                 <div className="table-header">
-                   <Button onClick={this.addCase}>{t('ADD')}</Button>
+                   <Button disabled={this.props.tofiConstants["userOfIK"].id !== this.props.user.cls} onClick={this.addCase}>{t('ADD')}</Button>
                     <div className="label-select">
 
                     </div>
@@ -494,7 +504,7 @@ class StorageUnits extends React.Component {
                         <Select
                             name="inventory"
                             isSearchable={false}
-                            onChange={this.getCubeCase}
+                            onChange={this.onChangeInv}
                             options={this.state.dataInv ? this.state.dataInv.map(option => ({
                                 value: option.id,
                                 label: option.name[this.lng]

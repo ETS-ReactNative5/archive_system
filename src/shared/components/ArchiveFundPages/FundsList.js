@@ -625,7 +625,7 @@ class FundsList extends Component {
         });
 
     }
-    if (!!this.state.idFundLisrKey ){
+   else if (!!this.state.idFundLisrKey ){
 
       this.filteredData = data.map(this.renderTableData).filter(item => {
         return (

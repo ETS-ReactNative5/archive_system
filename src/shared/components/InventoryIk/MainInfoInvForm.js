@@ -142,9 +142,13 @@ class MainInfoFundForm extends React.Component {
             if (val.length > 0) {
                 let coppyPrevVal = [...prevVal]
                 let coppyVal = [...val]
+                let newArr = [];
+                let i;
+
+
                 let arrState = this.state.optionMultiSelect
                 if (coppyPrevVal.length > 0) {
-                    for (let i = 0; i < coppyPrevVal.length; i++) {
+                    for (i = 0; i < coppyPrevVal.length; i++) {
                         if (coppyPrevVal[i].value === undefined) continue
                         if (coppyPrevVal[i].value.idDataPropVal !== undefined) {
                             let findePrevVal = this.state.optionMultiSelect.find((el) => el.value.idDataPropVal === coppyPrevVal[i].value.idDataPropVal)
@@ -156,7 +160,7 @@ class MainInfoFundForm extends React.Component {
                     }
 
                 }
-                let newArr = []
+
                 for (let i = 0; i < coppyVal.length; i++) {
                     if (coppyVal[i].value === undefined) {
                         // let selectArr = this.state.optionMultiSelect;
@@ -177,19 +181,17 @@ class MainInfoFundForm extends React.Component {
                         optionMultiSelect: arrState
                     })
                 }
-                // let rezult =[]
-                // let newarrResult = [...newArr]
-                // let newarrResult2 = [...this.state.oldDate]
-                // for (let vall of newarrResult ){
-                //     for (let val2 of newarrResult2 ){
-                //         if (vall.value.value != val2.value.value){
-                //             let values = {...val2}
-                //             values.value.value=""
-                //             rezult.push(values)
-                //         }
-                //     }
-                // }
-                return newArr
+                for (i = 0; i < coppyPrevVal.length; i++) {
+                    let value = coppyPrevVal[i].value.value;
+                    if (coppyVal.indexOf(value) == -1){
+                        coppyPrevVal[i].value.value = ""
+                        newArr.push(coppyPrevVal[i])
+                    }
+                }
+                let  newArr2 = newArr.filter(function(elem, index, self) {
+                    return index === self.indexOf(elem);
+                })
+                return newArr2
             } else {
                 return []
             }

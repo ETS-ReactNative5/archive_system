@@ -61,10 +61,10 @@ class PicturesWall extends React.Component {
     if(value && value.constructor === File && value.type === '' && !value.url) {
       value.status = 'uploading';
       value.uid = 'uploading';
-      getFile(value.name)
+      getFile(value.__file__id)
         .then(res => {
-          const f = new File([value.name], value.name);
-          f.uid = value.name;
+          const f = new File([value], value);
+          f.uid = value;
           f.url = URL.createObjectURL(res.data);
           this.props.onChange(f);
         })

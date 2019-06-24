@@ -306,17 +306,19 @@ class NomenStorageUUnits extends React.Component{
                 <AntTable
                     loading={tableLoading}
                     columns={[
-                        {
-                            key: 'numb',
-                            title: '№',
-                            dataIndex: 'numb',
-                            width: '5%',
-                        },
+                        // {
+                        //     key: 'numb',
+                        //     title: '№',
+                        //     dataIndex: 'numb',
+                        //     width: '5%',
+                        // },
                         {
                             key: 'referenceType',
                             title: constReferenceType.name[this.lng],
                             dataIndex: 'referenceType',
                             width: '30%',
+                            sorter: (a, b) => {return Number(a.referenceType) - Number(b.referenceType)},
+
                         },
                         {
                             key: 'referenceName',

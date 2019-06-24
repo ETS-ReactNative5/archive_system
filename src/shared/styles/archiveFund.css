@@ -95,6 +95,22 @@
 .nomenTable .ant-table-body {
   padding-bottom: 250px !important; }
 
+.siderCard_perechen {
+  width: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  transition: .3s;
+  overflow: hidden;
+  background-color: #f3f3f3;
+  border: 1px solid #cfcfcf;
+  z-index: 9; }
+
+.siderCard_perechenOpen {
+  width: 500px;
+  padding: 10px 25px; }
+
 .ant-table {
   height: 100%;
   display: flex;

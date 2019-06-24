@@ -131,5 +131,7 @@
   "DATE_RENAME": "Өзгерген күні",
   "ADD_RENAME": "Өзгертулер қосу",
   "DATE_REORGANIZATION": "Қайта ұйымдастыру күні",
-  "ADD_REORGANIZATION": "Қайта ұйымдастыруды қосу"
+  "ADD_REORGANIZATION": "Қайта ұйымдастыруды қосу",
+  "CASE_NUMB" : "Іс нөмірі",
+  "REASON_FUNDMAKER" : "Основание (Дата, №, название документа)"
 }

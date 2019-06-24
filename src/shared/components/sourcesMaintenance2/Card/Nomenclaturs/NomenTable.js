@@ -113,7 +113,6 @@ class NomenTable extends React.Component {
 
 
     check = (obj, key, c, type) => {
-     debugger;
         if(type=='name'){
             data = [
                 {
@@ -461,7 +460,7 @@ class NomenTable extends React.Component {
     };
 
     showFile = (key) => {
-        getFile(key.name).then(blob => {
+        getFile(key.__file__id).then(blob => {
             const url = URL.createObjectURL(new Blob([blob.data], {type: 'image/jpeg'}));
             this.setState({
                 modalOpen: true,

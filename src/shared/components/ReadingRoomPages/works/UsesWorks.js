@@ -225,7 +225,7 @@ class Works extends React.PureComponent {
                             consts: "permitionDate,workAuthor,workDate,linkToUkaz,reasonForRefusalCaseStorage,workPriority,linkToDoc,customerReqs," +
                             "workAssignedTo,tookUser,reasonForRefusalCase,acceptanceDate,workActualEndDate,appointedUser,workActualStartDate," +
                             "workRegCase,workDescription,workStatusCreateRequirement,workStatusForResearches,workRegFund,workRegInv,dateAppointment,fundArchive,workRecipient," +
-                            "workStatusCopyDoc,workStatusRegistration,childWorkFeature,linkToWork,propResearcheRequests,resultDescription,resultResearch,docsResearch"
+                            "workStatusCopyDoc,workStatusRegistration,childWorkFeature,linkToWork,propResearcheRequests,resultDescription,resultResearch,docsResearch,resultResearchStatus"
                         }
                     ]
                 }
@@ -510,7 +510,7 @@ class Works extends React.PureComponent {
             'workPriority', 'workDate', 'workAssignedTo', 'workActualStartDate', 'dateAppointment', 'workRegFund', 'workRegInv',
             'workActualEndDate', 'acceptanceDate', 'customerReqs', 'reasonForRefusalCase', 'reasonForRefusalCaseStorage',
             'workStatusCreateRequirement', 'workStatusForResearches', 'workRegCase', 'linkToDoc', 'linkToUkaz', 'workStatusCopyDoc',
-            'workStatusRegistration', 'childWorkFeature', 'linkToWork','propResearcheRequests','resultDescription','resultResearch','docsResearch'];
+            'workStatusRegistration', 'childWorkFeature', 'linkToWork','propResearcheRequests','resultDescription','resultResearch','docsResearch','resultResearchStatus'];
         const workTypeClass = workTypeClasses.find(cls => this.props.tofiConstants[cls].id == item.clsORtr);
 
         const result = {

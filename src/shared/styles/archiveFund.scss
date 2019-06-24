@@ -8,22 +8,24 @@
   }
 }
 
-.minW900px{
+.minW900px {
   min-width: 900px !important;
 }
-.borderGroup{
+
+.borderGroup {
   border: 1px solid #e4e4e4;
   padding: 5px 10px;
 }
-.borderGroupTitle{
-position: relative;
-top: -16px;
-background-color: #fff;
-padding: 0 15px;
-font-weight: bold;
+
+.borderGroupTitle {
+  position: relative;
+  top: -16px;
+  background-color: #fff;
+  padding: 0 15px;
+  font-weight: bold;
 }
 
-.w1200{
+.w1200 {
   width: 1200px;
 }
 
@@ -90,23 +92,24 @@ font-weight: bold;
   }
 }
 
-
-.badgeInputFile{
+.badgeInputFile {
   position: absolute;
   top: -7px;
   right: -4px;
 }
-.fakeInput{
+
+.fakeInput {
   position: absolute;
   opacity: 0;
   z-index: 2;
 }
 
-.fakeIcon{
+.fakeIcon {
   position: relative;
   left: 10%;
   top: 6px;
 }
+
 .ant-table-wrapper {
   height: 100%;
   min-height: 250px;
@@ -122,8 +125,28 @@ font-weight: bold;
   }
 }
 
-.nomenTable .ant-table-body{
+.nomenTable .ant-table-body {
   padding-bottom: 250px !important;
+}
+
+.siderCard_perechen {
+  width: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  transition: .3s;
+  overflow: hidden;
+  background-color: #f3f3f3;
+  border: 1px solid #cfcfcf;
+  z-index: 9;
+
+}
+
+.siderCard_perechenOpen {
+  width: 500px;
+  padding: 10px 25px;
+
 }
 
 .ant-table {

@@ -36,7 +36,8 @@ class Viewer extends React.Component {
                   windowFile: <img onError={() => this.brokenImgHandle(item.value)} src={url} alt={item.value}/>
               })
           } else {
-              getFile(item.value.name, item.value.fileType)
+              let fileId = !!item.value.__file__id?item.value.__file__id:item.value.name;
+              getFile(fileId, item.value.fileType)
                   .then(res => {
                       const url = URL.createObjectURL(res.data);
                       this.setState({

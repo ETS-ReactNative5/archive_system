@@ -130,7 +130,8 @@ class MainInfoFundForm extends React.Component {
             if (val.length > 0) {
                 let coppyPrevVal = [...prevVal]
                 let coppyVal = [...val]
-
+                let newArr = [];
+                let i;
                 let arrState = this.state.optionMultiSelect
                 // debugger
                 if (coppyPrevVal.length > 0) {
@@ -147,7 +148,6 @@ class MainInfoFundForm extends React.Component {
                     }
 
                 }
-                let newArr = []
                 for (let i = 0; i < coppyVal.length; i++) {
 
                     if (coppyVal[i].value === undefined) {
@@ -174,8 +174,17 @@ class MainInfoFundForm extends React.Component {
                 }
 
 
-                return newArr
-
+                for (i = 0; i < coppyPrevVal.length; i++) {
+                    let value = coppyPrevVal[i].value.value;
+                    if (coppyVal.indexOf(value) == -1){
+                        coppyPrevVal[i].value.value = ""
+                        newArr.push(coppyPrevVal[i])
+                    }
+                }
+                let  newArr2 = newArr.filter(function(elem, index, self) {
+                    return index === self.indexOf(elem);
+                })
+                return newArr2
 
             } else {
                 return []

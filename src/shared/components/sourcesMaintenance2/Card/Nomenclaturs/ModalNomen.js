@@ -1,15 +1,20 @@
 import React from "react"
-import {Button, Col, Input, message, Modal, Row, Tree} from "antd";
+import {Button, Col, Input, message, Modal, Row, Tree, Select} from "antd";
 import {connect} from "react-redux";
-import {createObj, getAllObjOfCls, getCube} from "../../../../actions/actions";
+import {
+    createObj, getAllObjOfCls, getCube,
+    getObjList
+} from "../../../../actions/actions";
 import {parseCube_new} from "../../../../utils/cubeParser";
 import axios from 'axios';
 import ListOfPosts from "./ListOfPosts";
 
-const TreeNode = Tree.TreeNode;
 
+const TreeNode = Tree.TreeNode;
+const Option = Select.Option;
 class ModalNomen extends React.Component {
     state = {
+        showPerechenBar: false,
         data: [],
         loading: false,
         expandedKeys: [],
@@ -22,11 +27,26 @@ class ModalNomen extends React.Component {
         disabledAddItem: true,
         showAddModal: false,
         showAddModalPost: false,
-        newNameRazdel: ''
+        newNameRazdel: '',
+        listPerechenOption: [],
+        perechenTree:[]
     };
 
 
+    getListPerechenOfNomen = (id) => {
+
+    };
+
     buildComponent = () => {
+        let children = [];
+        for (let i of this.props.initialValues.nomenPerechen) {
+            children.push(<Option key={i.value}>{i.label}</Option>)
+        }
+        this.setState({
+            listPerechenOption: children
+        });
+
+
         const filters = {
             filterDOAnd: [
                 {
@@ -167,12 +187,12 @@ class ModalNomen extends React.Component {
         if ((info.node.props.clsORtr == this.props.tofiConstants['nomenItemList'].id) || (info.node.props.children && info.node.props.children.find(el => el.props.clsORtr == this.props.tofiConstants['nomenNodeList'].id))) {
             this.setState({
                 disabledAddItem: true,
-                selectedKeysid:null,
+                selectedKeysid: null,
             })
         } else {
             this.setState({
-                selectedKeysid:selectedKeys[0],
-                selectedChildren:info.node.props.children,
+                selectedKeysid: selectedKeys[0],
+                selectedChildren: info.node.props.children,
                 disabledAddItem: false
             })
         }
@@ -201,6 +221,57 @@ class ModalNomen extends React.Component {
         });
 
     };
+
+
+    renderTreeNodes2 = (data) => {
+        return data.map((item) => {
+            debugger;
+            item.isLeaf=!item.hasChild;
+            item.title=item.name && item.name.ru;
+            item.key=item.id;
+            if (item.children) {
+                return (
+                <TreeNode title={item.title} key={item.key} dataRef={item.parent}>
+                    {this.renderTreeNodes2(item.children)}
+                </TreeNode>
+                );
+            }
+            return <TreeNode {...item} dataRef={item}/>;
+        });
+    };
+
+
+    onLoadData = (treeNode) => {
+   
+        const fd = new FormData();
+        // fd.append('clsConst', 'nomenNodeList');
+        fd.append('parent', treeNode.props.dataRef.key);
+        return getObjList(fd)
+        .then(res => {
+            if(res.success) {
+                treeNode.props.dataRef.children = res.data.map(o => ({
+                    key: o.id,
+                    name: o.name,
+                    id:o.id, 
+                    hasChild:o.hasChild,
+                    title: o.name.ru,
+                    isLeaf: !o.hasChild,
+                    perechenNodeNumber: o.perechenNodeNumber,
+                    perechenNote: o.perechenNote,
+                    shelfLifeOfPerechen: o.shelfLifeOfPerechen
+                }));
+                this.setState({
+                    perechenTree: [...this.state.perechenTree],
+                });
+                return {success: true}
+            }
+        })
+        .catch(err => {
+            console.error(err);
+        })
+    };
+
+
 
     renderTableDataInv = (item, ids) => {
         this.lng = localStorage.getItem('i18nextLng');
@@ -319,6 +390,24 @@ class ModalNomen extends React.Component {
             newNamePost: e.target.value
         })
     };
+    closePerechen = () => {
+        this.setState({
+            showPerechenBar: false
+        })
+    };
+
+    changePerechen = (value) => {
+        console.log(value);
+        let fd = new FormData();
+        fd.append('parent', value);
+        getObjList(fd).then(
+        res => {
+            this.setState({
+                perechenTree: res.data
+            })
+        }
+        );
+    };
 
     render() {
         return (
@@ -331,13 +420,7 @@ class ModalNomen extends React.Component {
                         })
                     }} disabled={this.state.disabledAddRazdel}
                             type='primary'>{this.state.addLevel}</Button>
-                    <Button onClick={() => {
-                        this.setState({
-                            showAddModalPost: true
-                        })
-                    }}
-                            disabled={this.state.disabledAddItem} type='primary'>Добавить
-                        статью</Button>
+
 
                     {!!this.state.data && <Tree
                     onExpand={this.onExpand}
@@ -358,6 +441,22 @@ class ModalNomen extends React.Component {
                     }
                 </Col>
                 <Col span={18}>
+                    <Button onClick={() => {
+                        this.setState({
+                            showAddModalPost: true
+                        })
+                    }}
+                            disabled={this.state.disabledAddItem} type='primary'>Добавить
+                        пустую статью</Button>
+
+
+                    <Button onClick={() => {
+                        this.setState({
+                            showPerechenBar: true
+                        })
+                    }}
+                            disabled={this.state.disabledAddItem} type='primary'> Добавить
+                        статью на основе Перечня дел</Button>
                     <ListOfPosts
                     selectedKeysid={this.state.selectedKeysid}
                     selectedChildren={this.state.selectedChildren}
@@ -369,6 +468,25 @@ class ModalNomen extends React.Component {
                     />
                 </Col>
             </Row>
+
+            <div
+            className={this.state.showPerechenBar ? 'siderCard_perechen siderCard_perechenOpen' : 'siderCard_perechen' }>
+                <Button onClick={() => this.closePerechen()}>Закрыть</Button>
+                <h3>Основание</h3>
+                <Select
+                onChange={this.changePerechen}
+                style={{width: 460}}
+                >
+                    {this.state.listPerechenOption}
+                </Select>
+
+
+                <Tree loadData={this.onLoadData}>
+                    {this.renderTreeNodes2(this.state.perechenTree)}
+                </Tree>
+
+            </div>
+
 
             <Modal footer={null} onCancel={this.handleCancel}
                    visible={this.state.showAddModal}>
@@ -413,5 +531,6 @@ function mapStateToProps(state) {
         cubeSNomen: state.cubes.cubeSNomen,
     }
 }
+
 
 export default connect(mapStateToProps, {getAllObjOfCls, getCube})(ModalNomen);

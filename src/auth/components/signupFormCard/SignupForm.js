@@ -60,41 +60,6 @@ class SignupForm extends React.Component {
 
   componentDidMount() {
     const self = this;
-    window.signXmlBack = function signXmlBack(result) {
-      if (result['code'] === "500") {
-        alert(result['message']);
-      } else if (result['code'] === "200") {
-        const hideLoading = message.loading(self.props.t('REGGING_NEW_USER'), 60);
-        const res = result['responseObject'];
-        const fd = new FormData();
-        fd.append('xml_values', res);
-        regNewUserWithECP(fd)
-          .then(res => res.data)
-          .then(data => {
-            hideLoading();
-            data.success
-              ? Modal.success({
-                title: self.props.t("REGISTRATION_SUCCESS_TITLE"),
-                content: self.props.t("REGISTRATION_SUCCESS_CONTENT"),
-                onOk: () => {
-                  self.props.push("/");
-                }
-              })
-              : Modal.error({
-                title: self.props.t("REGISTRATION_FAILED_TITLE"),
-                content: data.errors[0].text
-              });
-          })
-          .catch(err => {
-            hideLoading()
-            //console.warn(err);
-            Modal.error({
-              title: self.props.t("REGISTRATION_FAILED_TITLE"),
-              content: self.props.t("REGISTRATION_FAILED_CONTENT")
-            });
-          });
-      }
-    };
   }
   componentWillUnmount() {
     // cleaning
@@ -154,39 +119,46 @@ class SignupForm extends React.Component {
   };
 
   receiveSignedXML = (result) => {
-    //debugger;
     if (result['code'] == 500) {
       alert ("NCA Layer error!");
       return;
     }
     if (result['code'] == 200) {
-      //console.log(result);
       let fd = new FormData();
       fd.append('xml', result.responseObject);
-      //debugger;
-      //axios.post('', data);
       const hideLoading = message.loading(this.props.t('REGGING_NEW_USER'), 60);
       return regNewUserWithECP(fd)
-        .then(res => res.data)
         .then(data => {
           hideLoading();
-          //debugger;
-          data.success
-            ? Modal.success({
-            title: this.props.t("REGISTRATION_SUCCESS_TITLE"),
-            content: this.props.t("REGISTRATION_SUCCESS_CONTENT"),
-            onOk: () => {
-              this.props.push("/");
-            }
-          })
-            : Modal.error({
-            title: this.props.t("REGISTRATION_FAILED_TITLE"),
-            content: data.errors[0].text
-          });
+          data = data.data;
+          let errorCode = data.data
+          if (data.success) {
+            let title = this.props.t("REGISTRATION_SUCCESS_TITLE")
+            let content = ""
+            if (!!errorCode) {
+              errorCode = this.props.t(errorCode)
+              let tmp = this.props.t("REGISTRATION_SUCCESS_CONTENT_EDS_ERROR")
+              content = tmp.replace("{EDS_ERROR}", errorCode)
+            } else
+              content = this.props.t("REGISTRATION_SUCCESS_CONTENT_EDS")
+            Modal.success( {
+              title: title,
+              content: content,
+              onOk: () => {
+                this.props.push("/");
+              }
+            });
+          }
+          else {
+            Modal.error({
+              title: this.props.t("REGISTRATION_FAILED_TITLE"),
+              content: data.errors[0].text
+            })
+          }
         })
         .catch(err => {
           hideLoading()
-          //console.warn(err);
+          console.warn(err);
           Modal.error({
             title: this.props.t("REGISTRATION_FAILED_TITLE"),
             content: this.props.t("REGISTRATION_FAILED_CONTENT")
@@ -239,8 +211,6 @@ class SignupForm extends React.Component {
       for (let [key,value] of fd.entries()) {
         data[key] = value;
       }
-      //return sign('signXmlBackVS2', data);
-      //debugger;
       return sign('gl_receiveSignedXML', data);
     }
     const hideLoading = message.loading(this.props.t('REGGING_NEW_USER'), 60);

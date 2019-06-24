@@ -34,7 +34,7 @@ export const Auth = {
   regNewUser: fd =>
     axios.post(`/${localStorage.getItem('i18nextLng')}/registration/regUser`, fd),
   regNewUserWithECP: fd =>
-    axios.post(`/${localStorage.getItem('i18nextLng')}/registration/regUserWithECP`, fd),
+    axios.post(`/${localStorage.getItem('i18nextLng')}/registration/regNewUserWithECP`, fd),
   changePasswordAct: (paswd, userId) => {
     const fd = new FormData();
     fd.append('paswd', paswd);
@@ -110,8 +110,9 @@ export const Cube = {
     fd.append("datas", datas);
     forEach(files, (fileArr, key) => {
       fileArr && fileArr.forEach((file, idx) => {
-        file && !key.startsWith('__Q__') && fd.append(`files_${key}_${idx + 1}`, file);
-        file && key.startsWith('__Q__') && fd.append(`filesQ_${key.split('__Q__')[1]}_${idx + 1}`, file);
+        // --- Азамат, добавил кодирование имени файла для правильного сохранения / восстановления
+        file && !key.startsWith('__Q__') && fd.append(`files_${key}_${idx + 1}`, file, encodeURI(file.name));
+        file && key.startsWith('__Q__') && fd.append(`filesQ_${key.split('__Q__')[1]}_${idx + 1}`, file, encodeURI(file.name));
       });
     });
     return axios.post(`/${localStorage.getItem('i18nextLng')}/cube/saveCubeData2`, fd)
@@ -480,7 +481,7 @@ export const Works = {
     return axios.post(`/${localStorage.getItem('i18nextLng')}/rabotaUchet/changeInvOC`, fd)
       .then(res => res.data)
   },
-  // Перевод выбранного юзера в класс исследователи и на роль исследователь
+  // Перевод выбранного юзера в класс исследователи и на ролprepareXMLforSignь исследователь
   toResearcher: objId =>
     axios.get(`/${localStorage.getItem('i18nextLng')}/rabotaUchet/toResearcher?obj=${objId}`)
       .then(res => res.data),

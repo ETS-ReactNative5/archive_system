@@ -71,9 +71,9 @@ export const sign = async (callBack, data={}, files) => {
     showFileChooser("ALL", "", "showFileChooserBack");
   };
   const toSend = {hashedFiles, ...data};
-  var xmlToSign = "<xml><values>" + JSON.stringify(toSend) + "</values>"
+  var xmlToSign = "<xml><values>" + encodeURI(JSON.stringify(toSend)) + "</values>"
   if (toSend.hasOwnProperty('iin'))
-    xmlToSign +="<iin>" + toSend.iin + "</iin>";
+    xmlToSign +="<iin>" + encodeURI(toSend.iin) + "</iin>";
   xmlToSign += "</xml>";
   //console.log('++++++++++++++++++', {toSend});
   // give some time ncaLayer to establish connection

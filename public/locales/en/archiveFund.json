@@ -192,5 +192,6 @@
   "CHECK_4_CERT_RECALLED": "Certificate recalled",
   "CHECK_5_TSP_ERROR": "Certificate timestamp error",
   "CHECK_6_EXT_POLICY": "Certificate extention policy error",
-  "CHECK_7_DN_ERROR": "Certificate DN Error"
+  "CHECK_7_DN_ERROR": "Certificate DN Error",
+  "CREATED_TEMP_USER": "Created temporary user"
 }

@@ -1,18 +1,29 @@
 import React from 'react';
-import {Button, Form} from "antd";
+import {Button, Form, message} from "antd";
 import {Field, formValueSelector, reduxForm} from "redux-form";
-import {renderDatePicker, renderFileUploadBtn, renderInput, renderInputLang} from "../../../utils/form_components";
-import {requiredLng} from "../../../utils/form_validations";
+import {
+    renderDatePicker,
+    renderFileUploadBtn,
+    renderInput,
+    renderInputLang,
+    renderSelect
+} from "../../../utils/form_components";
+import {requiredLabel, requiredLng} from "../../../utils/form_validations";
 import Row from "antd/es/grid/row";
 import Col from "antd/es/grid/col";
 import {isEqual, pickBy} from "lodash";
 import moment from 'moment/moment';
 import {parseCube_new} from "../../../utils/cubeParser";
 import {
+    CUBE_FOR_ORG_FUNDMAKER,
+    DO_FOR_ORG_FUNDMAKER,
+    DP_FOR_ORG_FUNDMAKER,
     FORM_OF_ADMISSION,
     FUND_MAKER_ARCHIVE,
+    ORG_RIGHT_RECEIVER,
     IS_ACTIVE,
-    LEGAL_STATUS, ORG_DOC_TYPE,
+    LEGAL_STATUS,
+    ORG_DOC_TYPE,
     ORG_INDUSTRY
 } from "../../../constants/tofiConstants";
 import {connect} from "react-redux";
@@ -21,46 +32,43 @@ import {
     getCube,
     getObjChildsByConst,
     getPropVal,
-    getPropValWithChilds
+    getPropValWithChilds,
+    getAllObjOfCls
 } from "../../../actions/actions";
 
 
 class LiquidationFoundMaker extends React.PureComponent {
     constructor(props) {
         super(props);
-        const lng = localStorage.getItem('i18nextLng');
         this.state = {
-            lang: {
-                orgRightReceiver: lng,
+            loading: {
+                orgRightReceiverLoading: false,
+                loadReceiver: '',
             },
         };
     }
 
     onSubmit = values => {
         const {doForFundAndIK, dpForFundAndIK} = this.props.tofiConstants;
-        const {orgRightReceiver,reasonFundmakerFile, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
+        const {reasonFundmakerFile, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
         const cube = {
             cubeSConst: 'cubeForOrgFundmaker',
             doConst: 'doForOrgFundmakers',
             dpConst: 'dpForOrgFundmakers',
         };
         const obj = {
-            name: orgRightReceiver,
-            fullName: orgRightReceiver,
             clsConst: 'fundmakerOrg',
         };
         if (!this.props.initialValues.key) {
             return this.props.onCreateObj(
                 {cube, obj},
-                {values: rest, idDPV: this.props.withIdDPV, oFiles: {reasonFundmakerFile}},
+                {values: rest, idDPV: this  .props.withIdDPV, oFiles: {reasonFundmakerFile}},
             )
         }
         obj.doItem = this.props.initialValues.key;
         const objData = {};
-        if (orgRightReceiver) objData.name = orgRightReceiver;
-        if (orgRightReceiver) objData.fullName = orgRightReceiver;
         // Сохраняем значения свойств fundNumber, fundmakerArchive (fundArchive для ИК), formOfAdmission, legalStatus, isActive для соответстующего источника комплектования, если хотя бы одно изменилось.
-        if (orgRightReceiver) {
+        if (rest.orgRightReceiver) {
             const filters = {
                 filterDOAnd: [
                     {
@@ -94,7 +102,7 @@ class LiquidationFoundMaker extends React.PureComponent {
                         concatType: "and",
                         conds: [
                             {
-                                consts: 'fundNumber,fundmakerOfIK,fundArchive,formOfAdmission,legalStatus,isActive,orgIndustry'
+                                consts: 'fundmakerOfIK,formOfAdmission,orgRightReceiver,isActive'
                             }
                         ]
                     }
@@ -102,7 +110,7 @@ class LiquidationFoundMaker extends React.PureComponent {
             };
             this.props.getCube('cubeForFundAndIK', JSON.stringify(filters), {customKey: 'cubeForFundAndIKSingle'})
                 .then(() => {
-                    const constArr = ['fundNumber', 'fundmakerOfIK', 'fundArchive', 'formOfAdmission', 'legalStatus', 'isActive', 'orgIndustry'];
+                    const constArr = ['fundNumber', 'fundmakerOfIK', 'formOfAdmission', 'orgRightReceiver'];
                     const parsedCube = parseCube_new(
                         this.props.cubeForFundAndIKSingle['cube'],
                         [],
@@ -123,18 +131,10 @@ class LiquidationFoundMaker extends React.PureComponent {
                         },
                         obj: {doItem: parsedCube.id}
                     };
-                    const {formOfAdmission, legalStatus, isActive, orgIndustry} = rest;
+                    const {orgRightReceiver} = rest;
                     const vIK = {
                         values: JSON.parse(JSON.stringify({
-                            fundNumber: {
-                                value: rest.fundNumber && rest.fundNumber.value,
-                                propConst: "fundNumber",
-                                idDataPropVal: parsedCube.props.find(el => el.prop == this.props.tofiConstants['fundNumber'].id) && parsedCube.props.find(el => el.prop == this.props.tofiConstants['fundNumber'].id).values.idDataPropVal
-                            },
-                            formOfAdmission,
-                            legalStatus,
-                            isActive,
-                            orgIndustry,
+                            orgRightReceiver,
                             fundmakerOfIK: {
                                 value: obj.doItem.split('_')[1], dbeg: "1800-01-01",
                                 propConst: "fundmakerOfIK",
@@ -145,32 +145,25 @@ class LiquidationFoundMaker extends React.PureComponent {
                             }
                         })),
                     };
-                    //console.log('vIK ', vIK);
-
-                    this.props.saveIKProps(cIK, vIK, this.props.tofiConstants, objData);
+                    // this.props.saveIKProps(cIK, vIK, this.props.tofiConstants, objData);
                 });
         }
-        return this.props.saveProps(
-            {cube, obj},
-            {values: rest, idDPV: this.props.withIdDPV, oFiles: {reasonFundmakerFile}},
-            this.props.tofiConstants,
-            objData
-        );
-    };
+            return this.props.saveProps(
+                {cube, obj},
+                {values: rest, idDPV: this.props.withIdDPV, oFiles: {reasonFundmakerFile}},
+                this.props.tofiConstants,
+                objData
+            );
+        };
 
 
 
 
     componentDidUpdate(prevProps) {
         if (prevProps.initialValues !== this.props.initialValues) {
-            this. orgRightReceiverValue = {...this.props.initialValues. orgRightReceiver} || {
-                kz: '',
-                ru: '',
-                en: ''
-            };
+
         }
     }
-    orgRightReceiverValue = {...this.props.initialValues.orgRightReceiver} || {kz: '', ru: '', en: ''};
 
     disabledStartDate = (startValue) => {
         const endValue = this.props.dendValue;
@@ -180,6 +173,13 @@ class LiquidationFoundMaker extends React.PureComponent {
         return startValue.valueOf() > endValue.valueOf();
     };
 
+    loadOptionsReceiver = () => {
+        this.props.getAllObjOfCls('fundmakerOrg', moment().format('YYYY-MM-DD'), 'nomenList').then(res => {
+            this.setState({
+                loadReceiver: res.objects
+            })
+        }).catch(err => console.log(err))
+    }
 
     fileToRedux = (val, prevVal, file, str) => {
         let newFile = val.filter(el => el instanceof File);
@@ -240,11 +240,30 @@ class LiquidationFoundMaker extends React.PureComponent {
     };
 
 
+    selectToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val === null) {
+                let newValNull = {...prevVal};
+                newValNull.label = null;
+                newValNull.labelFull = null;
+                newValNull.value = null;
+                return newValNull
+            } else {
+                let newVal = {...prevVal};
+                newVal.value = val.value;
+                newVal.label = val.label;
+                newVal.labelFull = val.label;
+                return (newVal)
+            }
+
+        }
+    };
+
     render(){
         if (!this.props.tofiConstants) return null;
         const lng = localStorage.getItem('i18nextLng');
-        const {lang} = this.state;
-        const {tofiConstants: {dateElimination,reasonFundmaker}, t, handleSubmit, reset, dirty, error, submitting} = this.props;
+        const {lang, loading} = this.state;
+        const {tofiConstants: {dateElimination,reasonFundmaker,orgRightReceiver}, t,orgRightReceiverOptions, handleSubmit, reset, dirty, error, submitting} = this.props;
         return(
             <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)}
                   style={dirty ? {paddingBottom: '43px'} : {}}>
@@ -264,26 +283,26 @@ class LiquidationFoundMaker extends React.PureComponent {
                         }
                     />
                 }
-                <Field
+                {orgRightReceiver && <Field
                     name="orgRightReceiver"
-                    component={renderInputLang}
-                    format={value => (!!value ? value[lang.orgRightReceiver] : '')}
-                    parse={value => {
-                        this.orgRightReceiverValue[lang.orgRightReceiver] = value;
-                        return {...this.orgRightReceiverValue}
-                    }}
+                    component={renderSelect}
+                    normalize={this.selectToRedux}
                     label={t('ORG_RIGHT_RECEIVER')}
-                    formItemClass="with-lang"
-                    changeLang={this.changeLang}
                     formItemLayout={
                         {
                             labelCol: {span: 10},
                             wrapperCol: {span: 14}
                         }
                     }
-                    validate={requiredLng}
-                    colon={true}
-                />
+                    isSearchable={false}
+                    data={this.state.loadReceiver ? this.state.loadReceiver.map(option => ({
+                        value: option.id,
+                        label: option.name[lng]
+                    })) : []}
+                    onMenuOpen={()=>this.loadOptionsReceiver()}
+                    isLoading={loading.orgRightReceiverLoading}
+                    validate={requiredLabel}
+                />}
                 <Row>
                     <Col span={24}>
                         {reasonFundmaker && <Field
@@ -354,8 +373,8 @@ function mapStateToProps(state) {
         }));
     return {
         legalStatusOptions: state.generalData[LEGAL_STATUS],
+        orgRightReceiverOptions: state.generalData[ORG_RIGHT_RECEIVER],
         formOfAdmissionOptions: state.generalData[FORM_OF_ADMISSION],
-        orgIndustryOptions: orgIndOpts,
         isActiveOptions: state.generalData[IS_ACTIVE],
         fundmakerArchiveOptions: state.generalData[FUND_MAKER_ARCHIVE],
         orgDocTypeOptions: state.generalData[ORG_DOC_TYPE],
@@ -367,5 +386,5 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps,
-    {getPropVal, getCube, getAccessLevels, getObjChildsByConst, getPropValWithChilds}
+    {getPropVal, getCube, getAccessLevels, getObjChildsByConst, getAllObjOfCls, getPropValWithChilds}
 )(reduxForm({form: 'LiquidationFoundMaker', enableReinitialize: true})(LiquidationFoundMaker));

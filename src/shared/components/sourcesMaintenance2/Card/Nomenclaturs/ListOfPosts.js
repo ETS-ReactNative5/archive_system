@@ -22,7 +22,6 @@ class ListOfPosts extends React.Component {
         showAddModal: false,
         showAddModalPost: false,
         newNameRazdel: '',
-        selectedKeys: [],
         tableData: []
     };
 
