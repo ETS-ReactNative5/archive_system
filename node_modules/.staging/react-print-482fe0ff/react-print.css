@@ -1,0 +1,13 @@
+  #react-print {
+    display: none;
+  }
+
+  @media print {
+    #react-no-print {
+      display: none;
+    }
+
+    #react-print {
+      display: block;
+    }
+}

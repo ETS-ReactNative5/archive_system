@@ -36,7 +36,6 @@ export const parseForTableComplex = (cube, doConst, dpConst, dtConst, tofiConsta
 export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable, dpTable, doConst, dpConst) => {
   try {
 
-
     const doTableWithComplexChilds = doTable.map(item => ({
       ...item,
       childProps: dpTable.map(oneLevelCopy).filter(el => el.parent)
@@ -558,11 +557,12 @@ export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable
           }
           break;
         case (propType === 71) : // однозначное комплексное свойство
-          prop.values = {
+            if (!prop.values) prop.values = [];
+          cubeValItem['valueStr'] && prop.values.push({
             value: cubeValItem['valueStr'] ? cubeValItem['valueStr'][localStorage.getItem('i18nextLng')] : '',
             valueLng: cubeValItem['valueStr'] ? cubeValItem['valueStr'] : null,
             idDataPropVal: (cubeValItem['idDataPropVal'] || '')
-          };
+          });
           break;
         default:
           return;
@@ -572,7 +572,8 @@ export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable
 
     doTableWithProps.forEach(obj => obj.props.filter(
       prop => prop.typeProp == '71').forEach(
-      complexProp => complexProp.values && complexProp.values.forEach(val => {
+      complexProp =>
+          complexProp.values && complexProp.values.forEach(val => {
         doTableWithComplexChilds.find(obj2 => !!obj2.childProps && obj2.id == obj.id).childProps.forEach(childProp => {
           let childPropVal = [];
           childProp.complexChildValues && childProp.complexChildValues.forEach(cmpxChildVal => {
@@ -596,7 +597,6 @@ export const parseCube_new = (cubeVal, fixedDim, colDimName, rowDimName, doTable
  * result - object
  * */
 export const parseForTable = (props, tofiConstants, result, constArr) => {
-
   const keys = constArr ? constArr : Object.keys(tofiConstants);
   try {
     props.forEach(dp => {

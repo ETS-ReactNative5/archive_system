@@ -12,6 +12,7 @@ import {getCube, getObjListNew} from "../../../actions/actions";
 import { message } from 'antd';
 import UserStatusTab from "./userStatusTab.js";
 
+
 class UsesWorksCard extends React.PureComponent {
 
   state = {
@@ -21,6 +22,7 @@ class UsesWorksCard extends React.PureComponent {
   };
 
   handleChange = key => {
+    alert("handleChange!!");
     this.setState({activeKey: key});
     if(key !== 'Documents') return;
     this.populateDocs();
@@ -59,6 +61,7 @@ class UsesWorksCard extends React.PureComponent {
         })
     }
   };
+
 
   componentDidUpdate(prevProps) {
     if(prevProps.initialValues !== this.props.initialValues && this.state.activeKey === 'Documents') {
@@ -122,6 +125,7 @@ class UsesWorksCard extends React.PureComponent {
             saveProps={saveProps}
             user={user}
             initialValues={initialValues}
+            updateCard={this.props.updateCard}
           />
         },
         {

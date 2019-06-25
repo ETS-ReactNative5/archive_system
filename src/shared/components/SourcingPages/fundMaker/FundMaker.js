@@ -291,7 +291,7 @@ class FundMaker extends React.PureComponent {
 
     renderTableData = (item, idx) => {
         const constArr = ['legalStatus', 'orgRightReceiver', 'dateFormation', 'dateElimination', 'reasonFundmakerFile', 'departmentalAccessory', 'reasonFundmaker', 'formOfAdmission', 'orgIndustry', 'fundmakerArchive',
-            'isActive', 'orgAddress', 'orgPhone', 'orgFax', 'orgEmail', 'orgFormationDoc', 'orgReorganizationDoc', 'orgLiquidationDoc',
+            'isActive', 'orgAddress', 'orgPhone', 'orgFax', 'orgEmail', 'orgFormationDoc',"liquidation", 'orgReorganizationDoc', 'orgLiquidationDoc',
             'leaderFIO', 'leaderPosition', 'leaderPhone', 'depLeaderFIO', 'depLeaderPosition', 'depLeaderPhone', 'responsibleFIO', 'responsiblePosition', 'responsiblePhone',
             'responsibleAppointmentDate', 'archiveLeaderFIO', 'archiveLeaderPosition', 'archiveLeaderPhone', 'archiveLeaderAppointmentDate', 'subordination', 'jurisdiction',
             'commissionLeaderFIO', 'commissionLeaderPosition', 'commissionLeaderPhone', 'contractNumber', 'orgDocType', 'orgFunction', 'structure', 'fundNumber', 'corresOrg', 'corresOrgFile', 'letterDetails', 'fundmakerOfIK'];
@@ -315,7 +315,7 @@ class FundMaker extends React.PureComponent {
             result.orgIndustry.sort((a, b) => a.value > b.value)[result.orgIndustry.length - 1] :
             null;
 
-        ['orgFormationDoc', 'orgReorganizationDoc', 'orgLiquidationDoc', 'leaderFIO', 'leaderPosition', 'depLeaderFIO',
+        ['orgFormationDoc', 'orgReorganizationDoc',"liquidation", 'orgLiquidationDoc', 'leaderFIO', 'leaderPosition', 'depLeaderFIO',
             'depLeaderPosition', 'responsibleFIO', 'responsiblePosition', 'archiveLeaderFIO', 'orgAddress',
             'archiveLeaderPosition', 'commissionLeaderFIO', 'commissionLeaderPosition', 'fundNumber', 'letterDetails', 'corresOrg', 'corresOrgFile']
             .forEach(c => {
@@ -485,6 +485,16 @@ class FundMaker extends React.PureComponent {
                 await this.props.loadOrgFundmaker();
                 this.setState({loading: false,});
             }
+
+            this.setState({
+                openCard:false,
+                loading:true
+            })
+            await this.props.loadOrgFundmaker()
+            this.setState({
+                openCard:false,
+                loading:false
+            })
             return resSaveFM;
         }
         catch (e) {

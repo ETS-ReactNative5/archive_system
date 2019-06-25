@@ -178,6 +178,7 @@ class CreateDocument extends React.Component {
 
     // Загрузка куба при выборе дела
     getRegistry() {
+
         if (!this.state.filter.caseList) return;
         this.setState({loading: true});
         const pseudo_id = String(this.state.filter.caseList.value);
@@ -316,6 +317,7 @@ class CreateDocument extends React.Component {
         const linkToKatalogObj = item.props.find(element => element.prop === linkToKatalog.id);
         const linkToUkazObj = item.props.find(element => element.prop === linkToUkaz.id);
         const linkToObzorObj = item.props.find(element => element.prop === linkToObzor.id);
+
         return {
             key: item.id,
             parent: item.parent && item.parent !== 'null' ? item.parent : '0',
@@ -323,10 +325,14 @@ class CreateDocument extends React.Component {
             invNumber: !!invNumberObj && invNumberObj.values ? invNumberObj.values.value : '',
             orderIndex: parseInt(!!invNumberObj && !!invNumberObj.values && invNumberObj.values.value ? invNumberObj.values.value : '0') * 1000,
             //start, end
-            pageNumberStart: startObj && startObj.values.idDataPropVal && pageNumberStartObj && pageNumberStartObj.complexChildValues.parentDataPropVal == [startObj.values.idDataPropVal] && pageNumberStartObj.complexChildValues.value,
-            turnoverSheetStart: startObj && startObj.values.idDataPropVal && turnoverSheetStartObj && turnoverSheetStartObj.complexChildValues.parentDataPropVal == [startObj.values.idDataPropVal] && turnoverSheetStartObj.complexChildValues.value,
-            pageNumberEnd: endObj && endObj.values.idDataPropVal && pageNumberEndObj && pageNumberEndObj.complexChildValues.parentDataPropVal == [endObj.values.idDataPropVal] && pageNumberEndObj.complexChildValues.value,
-            turnoverSheetEnd: endObj && endObj.values.idDataPropVal && turnoverSheetEndObj && turnoverSheetEndObj.complexChildValues.parentDataPropVal == [endObj.values.idDataPropVal] && turnoverSheetEndObj.complexChildValues.value,
+            pageNumberStart: startObj && startObj.values[0].idDataPropVal && startObj.values[0][pageNumberStart.id][0],
+//            pageNumberStart: startObj && startObj.values[0].idDataPropVal && pageNumberStartObj && pageNumberStartObj.complexChildValues.parentDataPropVal == [startObj.values[0].idDataPropVal] && pageNumberStartObj.complexChildValues.value,
+            turnoverSheetStart: startObj && startObj.values[0].idDataPropVal && startObj.values[0][turnoverSheetStart.id][0],
+            // turnoverSheetStart: startObj && startObj.values[0].idDataPropVal && turnoverSheetStartObj && turnoverSheetStartObj.complexChildValues.parentDataPropVal == [startObj.values[0].idDataPropVal] && turnoverSheetStartObj.complexChildValues.value,
+            pageNumberEnd: endObj && endObj.values[0].idDataPropVal && endObj.values[0][pageNumberEnd.id][0],
+            // pageNumberEnd: endObj && endObj.values[0].idDataPropVal && pageNumberEndObj && pageNumberEndObj.complexChildValues.parentDataPropVal == [endObj.values[0].idDataPropVal] && pageNumberEndObj.complexChildValues.value,
+            turnoverSheetEnd: endObj && endObj.values[0].idDataPropVal && endObj.values[0][turnoverSheetEnd.id][0] ,
+            // turnoverSheetEnd: endObj && endObj.values[0].idDataPropVal && turnoverSheetEndObj && turnoverSheetEndObj.complexChildValues.parentDataPropVal == [endObj.values[0].idDataPropVal] && turnoverSheetEndObj.complexChildValues.value,
             //pageNumberEnd
             //turnoverSheetEnd
             documentPapers: !!documentPapersObj && documentPapersObj.values ? documentPapersObj.values.value : '',
@@ -729,7 +735,7 @@ class CreateDocument extends React.Component {
         archiveCipher = newValuearchiveCipher;
         let newValuedocumentPapers = target.documentPapers;
 
-        let newValuedateForming = dateFormingVal ? {value: moment(dateFormingVal, 'DD-MM-YYYY').format('MM-DD-YYYY')} :
+        let newValuedateForming = dateFormingVal ? {value: moment(dateFormingVal, 'DD-MM-YYYY').format('DD-MM-YYYY')} :
         {value: moment()};
 
 
@@ -754,7 +760,7 @@ class CreateDocument extends React.Component {
         if (this.state.newFragment) {
             fragmentRest = {
                 //
-                dateForming: parentObj.dateForming ? parentObj.dateForming.format('MM-DD-YYYY') : moment(),
+                dateForming: parentObj.dateForming ? parentObj.dateForming.format('DD-MM-YYYY') : moment(),
                 //
                 documentAuthor: parentObj.documentAuthor,
                 addressee: parentObj.addressee,
@@ -865,7 +871,7 @@ class CreateDocument extends React.Component {
                         en: String(this.props.tofiConstants.no.id)
                     }
                 };
-                const dateForming = dateFormingVal ? {value: moment(dateFormingVal, 'DD-MM-YYYY').format('MM-DD-YYYY')} : {value: moment()};
+                const dateForming = dateFormingVal ? {value: moment(dateFormingVal, 'DD-MM-YYYY').format('DD--MM-YYYY')} : {value: moment()};
                 const cube = {
                     cubeSConst: 'cubeDocuments',
                     doConst: 'doDocuments',
@@ -1402,14 +1408,14 @@ class CreateDocument extends React.Component {
                                 title: t('SHEET'),
                                 dataIndex: 'pageNumberStart',
                                 width: '10%',
-                                render: (obj, record) => this.renderNumber(obj, record, 'pageNumberStart'),
+                                render: (obj, record) =>{ return this.renderNumber(obj.value, record, 'pageNumberStart')},
                             },
                             {
                                 key: 'turnoverSheetStart',
                                 title: t('TURNOVER'),
                                 dataIndex: 'turnoverSheetStart',
                                 width: '10%',
-                                render: (obj, record) => this.renderCheckbox(obj, record, 'turnoverSheetStart'),
+                                render: (obj, record) => this.renderCheckbox(obj.value, record, 'turnoverSheetStart'),
                             },
                         ]
 
@@ -1424,14 +1430,14 @@ class CreateDocument extends React.Component {
                                 title: t('SHEET'),
                                 dataIndex: 'pageNumberEnd',
                                 width: '10%',
-                                render: (obj, record) => this.renderNumber(obj, record, 'pageNumberEnd'),
+                                render: (obj, record) => this.renderNumber(obj.value, record, 'pageNumberEnd'),
                             },
                             {
                                 key: 'turnoverSheetEnd',
                                 title: t('TURNOVER'),
                                 dataIndex: 'turnoverSheetEnd',
                                 width: '10%',
-                                render: (obj, record) => this.renderCheckbox(obj, record, 'turnoverSheetEnd'),
+                                render: (obj, record) => this.renderCheckbox(obj.value, record, 'turnoverSheetEnd'),
                             },
                         ]
 
@@ -1447,8 +1453,7 @@ class CreateDocument extends React.Component {
                         title: t('DATE_CREATED'),
                         dataIndex: 'dateForming',
                         width: '15%',
-                        render: val => val && moment(val).format('DD-MM-YYYY'),
-                    },
+                        render: (obj, record) => this.renderDateColumns(obj, record, 'dateForming'),                    },
                     {
                         key: 'nomenLastChangeDate',
                         title: t('DATE_CHANGED'),

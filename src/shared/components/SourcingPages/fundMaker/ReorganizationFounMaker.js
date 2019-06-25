@@ -1,14 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
+import {Button, Form, Input} from "antd";
+import {isEmpty, isEqual, pickBy} from "lodash";
 import AntTable from "../../AntTable";
-import MainInfoFundMaker from "./MainInfoFundMaker";
-import RenameFormFoundMaker from "./RenameFormFoundMaker";
-import LiquidationFoundMaker from "./LiquidationFoundMaker";
-import AntTabs from "../../AntTabs";
-import {Button, Col, Input, Row} from "antd";
-import {isEmpty, isEqual} from "lodash";
 
-class ReorganizationFoundMaker extends Component {
 
+class ReorganizationFoundMaker extends React.PureComponent {
 
     changeSelectedRow = rec => {
         if(isEmpty(this.state.selectedRow) || !isEqual(this.state.selectedRow, rec)){
@@ -18,28 +14,16 @@ class ReorganizationFoundMaker extends Component {
         }
     };
 
-
-
-    render(){
+    render() {
+        if (!this.props.tofiConstants) return null;
         const lng = localStorage.getItem('i18nextLng');
-        const {tofiConstants: {dateReorganization,orgRightReceiver,reasonFundmaker,orgFunction,structure,orgIndustry,legalStatus,structureFundmaker,orgFunctionFundmaker,departmentalAccessory,}, t,orgRightReceiverOptions, handleSubmit, reset, dirty, error, submitting} = this.props;
-        return(
+        const {t, tofiConstants: {reasonFundmaker,orgIndustry,reasonFundmakerFile,legalStatus,structureFundmaker,orgFunctionFundmaker,departmentalAccessory,}
+        } = this.props;
+
+        return (
             <div >
                 <div className="table-header-btns"  style={{marginTop: "1vw", marginLeft: '5px', marginRight: '5px'}} >
-                    <Row>
-                        <Col span={16}>
-                            <Input onChange={this.changeObjName} value={this.state.newObjName}/>
-                        </Col>
-                        <Col span={8}>
-                            <Button type="primary" icon="plus-circle-o"
-                                    loading={this.state.iconLoading}
-                                    style={{margin: '5px'}}
-                                    disabled={!this.state.newObjName}
-                                    onClick={this.addRow}>
-                                {this.props.t('ADD_REORGANIZATION')}
-                            </Button>
-                        </Col>
-                    </Row>
+                    <Button >{this.props.t('ADD_RENAME')}</Button>
                 </div>
                 <AntTable
                     style={{marginTop: "1vw"}}
@@ -49,13 +33,13 @@ class ReorganizationFoundMaker extends Component {
                             key: 'number',
                             title: '№',
                             dataIndex: 'number',
-                            width: '5%'
+                            width: '5%',
                         },
                         {
                             key: 'dateReorganization',
                             title: t('DATE_REORGANIZATION'),
                             dataIndex: 'dateReorganization',
-                            width: '12%'
+                            width: '8%'
                         },
                         {
                             key: 'orgRightReceiver',
@@ -65,49 +49,58 @@ class ReorganizationFoundMaker extends Component {
                         },
                         {
                             key: 'reasonFundmaker',
-                            title: t('REASON_FUNDMAKER'),
+                            title: reasonFundmaker.name[lng],
                             dataIndex: 'reasonFundmaker',
                             width: '15%'
+                        },
+                        {
+                            key: 'reasonFundmakerFile',
+                            title:reasonFundmakerFile.name[lng],
+                            dataIndex: 'reasonFundmakerFile',
+                            width: '7%'
                         },
                         {
                             key: 'orgIndustry',
                             title: orgIndustry.name[lng],
                             dataIndex: 'orgIndustry',
-                            width: '10%'
+                            width: '7%'
                         },
                         {
                             key: 'legalStatus',
                             title: legalStatus.name[lng],
                             dataIndex: 'legalStatus',
-                            width: '10%'
+                            width: '12%'
                         },
                         {
                             key: 'structureFundmaker',
                             title: structureFundmaker.name[lng],
                             dataIndex: 'structureFundmaker',
-                            width: '10%'
+                            width: '8%'
+                        },{
+                            key: 'structure',
+                            title: structureFundmaker.name[lng],
+                            dataIndex: 'structureFundmaker',
+                            width: '8%'
                         },
                         {
                             key: 'orgFunctionFundmaker',
                             title: orgFunctionFundmaker.name[lng],
                             dataIndex: 'orgFunctionFundmaker',
-                            width: '10%'
+                            width: '8%'
                         },
-                    {
-                        key: 'departmentalAccessory',
-                        title: departmentalAccessory.name[lng],
-                        dataIndex: 'departmentalAccessory',
-                        width: '15%'
-                    }
+                        {
+                            key: 'departmentalAccessory',
+                            title: departmentalAccessory.name[lng],
+                            dataIndex: 'departmentalAccessory',
+                            width: '12%'
+                        }
                     ]}
                     hidePagination
                     changeSelectedRow={this.changeSelectedRow}
-                    openedBy="CreateDocument"
+                    openedBy="ReorganizationFoundMaker"
                 />
             </div>
         )
     }
 }
-
-
 export default ReorganizationFoundMaker;

@@ -232,7 +232,7 @@ class WorksPropertyForm extends Component {
     };
 
     componentDidMount() {
-        if (!!this.props.initialValues.workType && this.props.initialValues.workType.value == this.props.tofiConstants.caseSearch.id) {
+        if (!!this.props.initialValues.workType) {
 
             !!this.props.initialValues.workRegCase && !!this.props.initialValues.workRegCase.value &&
             getIdGetObj(this.props.initialValues.workRegCase.value, 'doForCase').then(res2 => {

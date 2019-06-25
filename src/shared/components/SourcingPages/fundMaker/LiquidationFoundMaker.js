@@ -148,6 +148,9 @@ class LiquidationFoundMaker extends React.PureComponent {
                     // this.props.saveIKProps(cIK, vIK, this.props.tofiConstants, objData);
                 });
         }
+        rest.conditionOfFundmaker=[{
+            value:this.props.tofiConstants["liquidation"].id
+        }]
             return this.props.saveProps(
                 {cube, obj},
                 {values: rest, idDPV: this.props.withIdDPV, oFiles: {reasonFundmakerFile}},

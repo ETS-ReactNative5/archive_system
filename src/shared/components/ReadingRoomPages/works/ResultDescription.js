@@ -103,7 +103,9 @@ class ResultDescription extends React.PureComponent {
           title: this.props.t("SAVE_SIGNED_XML_SUCCESS"),
           content: this.props.t("SAVE_SIGNED_XML_SUCCESS_CONTENT"),
           okText: "Закрыть",
-          onOk: ()=>{},
+          onOk: ()=>{
+            this.props.updateCard();
+          },
         }
       );
     }
@@ -148,7 +150,6 @@ class ResultDescription extends React.PureComponent {
       tofiConstants: {resultDescription, resultResearch, resultResearchStatus},
       initialValues
     } = this.props;
-console.log('resultResearchStatus', initialValues);
     let show_sign_button = this.props.user.privs.indexOf('sign_auth') != -1;
     if (show_sign_button) {
       // -- нет данных

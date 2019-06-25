@@ -49,6 +49,7 @@ class FundMakerPage extends React.PureComponent {
   // Загрузка данных из куба
   // если id не задан, загружаем все объекты куба CUBE_FOR_ORG_FUNDMAKER и 5 пропов, если id задан, то загружаем 1 объект и все пропы.
   loadOrgFundmaker = async (id) => {
+
     try {
       const filters = {
         filterDOAnd: id ? [
@@ -66,7 +67,7 @@ class FundMakerPage extends React.PureComponent {
             concatType: "and",
             conds: [
               {
-                consts: 'formOfAdmission,dateFormation,dateElimination,reasonFundmaker,departmentalAccessory,reasonFundmakerFile,legalStatus,orgRightReceiver,fundmakerArchive,orgIndustry,isActive'
+                consts: 'formOfAdmission,dateFormation,liquidation,dateElimination,reasonFundmaker,departmentalAccessory,reasonFundmakerFile,legalStatus,orgRightReceiver,fundmakerArchive,orgIndustry,isActive'
               }
             ]
           }

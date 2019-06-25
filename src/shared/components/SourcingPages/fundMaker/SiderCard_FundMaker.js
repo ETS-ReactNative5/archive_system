@@ -154,6 +154,7 @@ class SiderCard_FundMaker extends React.PureComponent {
         this.props.cubeForOrgFundmakerSingle[`dp_${dpForOrgFundmakers.id}`],
         `do_${doForOrgFundmakers.id}`,
         `dp_${dpForOrgFundmakers.id}`).map(this.renderTableData)[0];
+
         this.setState(
             {
                 loading: false,
@@ -220,7 +221,7 @@ class SiderCard_FundMaker extends React.PureComponent {
 
   renderTableData = (item) => {
     const constArr = ['fundNumber', 'contractNumber', 'legalStatus', 'formOfAdmission', 'orgDocType', 'orgIndustry', 'isActive', 'fundmakerArchive',
-      'orgFunction', 'structure', 'orgAddress', 'orgPhone', 'orgFax', 'orgEmail', 'orgFormationDoc', 'orgReorganizationDoc', 'orgLiquidationDoc',
+      'orgFunction', 'structure', 'orgAddress',"liquidation", 'orgPhone', 'orgFax', 'orgEmail', 'orgFormationDoc', 'orgReorganizationDoc', 'orgLiquidationDoc',
       'leaderFIO', 'leaderPosition', 'leaderPhone', 'depLeaderFIO', 'depLeaderPosition', 'depLeaderPhone', 'responsibleFIO', 'responsiblePosition',
       'responsiblePhone', 'responsibleAppointmentDate', 'archiveLeaderFIO', 'archiveLeaderPosition', 'archiveLeaderPhone', 'archiveLeaderAppointmentDate',
       'commissionLeaderFIO', 'commissionLeaderPosition', 'commissionLeaderPhone','corresOrg','corresOrgFile','letterDetails'];
