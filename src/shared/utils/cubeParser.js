@@ -4,7 +4,7 @@ import {map, forEach} from "lodash";
 import uuid from "uuid";
 import {SYSTEM_LANG_ARRAY} from '../constants/constants'
 
-import {updateCubeData, updateCubeData2} from "../actions/actions";
+import {updateCubeData, updateCubeData2,updateCubeData3} from "../actions/actions";
 import {removeFilesWithIdDPV} from "./index";
 
 const oneLevelCopy = (object) => ({...object});
@@ -834,7 +834,6 @@ export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFile
             propcConst = keys
             break
           }
-
         }
 
         if (!!idPropitem && !!props && !!propcConst) {
@@ -998,4 +997,269 @@ export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFile
   }
 
   return updateCubeData2(cube.cubeSConst, dte, JSON.stringify(datas), options, filesToServer)
+}
+
+export function onSaveCubeData3 ({cube, obj}, {values, complex, oFiles = {}, qFiles = {}},
+                               tofiConstants,
+                               objData = {},
+                               periods = "11",
+                               dte = moment().format('YYYY-MM-DD'),
+                               ) {
+
+    var test = Object.entries(oFiles);
+
+    let testObj = {};
+    let accessLevel = !!objData.accessLevel && objData.accessLevel.value
+    let verOwn =  {}
+    for (let key in objData){
+      if (key ==="name"){
+        verOwn[key]=objData[key]
+      }
+        if (key ==="fullName"){
+            verOwn[key]=objData[key]
+        }
+        if (key ==="dbeg"){
+            verOwn[key]=objData[key]
+        }
+        if (key ==="dend"){
+            verOwn[key]=objData[key]
+        }
+        if (key ==="verId"){
+            verOwn[key]=objData[key]
+        }
+    }
+
+
+
+    for (let i = 0; i < test.length; i++) {
+        if (!!test[i][1]) {
+            testObj[test[i][0]] = [];
+            if (!!test[i][1][0]) {
+                var vv = test[i][1].map(el => {
+                    return !el.idDataPropVal ? el.value : el
+                });
+                var newVV = [];
+                vv.forEach((item, i, arr) => {
+                    if (item instanceof File) {
+                        newVV.push(item);
+                    }
+                });
+                testObj[test[i][0]] = newVV;
+            }
+        }
+    }
+    const files = {...testObj};
+    forEach(qFiles, (val, key) => {
+        files[`__Q__${key}`] = val;
+    });
+    let filesToServer = files;
+    removeFilesWithIdDPV(Object.values(filesToServer));
+    const valuesArr = map(values, buildProps);
+    const complexArr = map(complex, ({values, mode}, key) => {
+        const propMetaData = getPropMeta(cube.data["dp_" + tofiConstants[cube.dpConst].id], tofiConstants[key]);
+        const id = uuid();
+        const value = {};
+        SYSTEM_LANG_ARRAY.forEach(lang => {
+            value[lang] = id;
+        });
+        return {
+            propConst: key,
+            val: value,
+            typeProp: '71',
+            periodDepend: String(propMetaData.periodDepend),
+            isUniq: String(propMetaData.isUniq),
+            mode: mode ? mode : 'ins',
+            child: map(values, buildProps)
+        }
+    });
+    const datas = [{
+        own: [{doConst: cube.doConst, doItem: obj.doItem, isRel: "0",clsOrRelConst:"",accessLevel:!!accessLevel ? String(accessLevel): null, verOwn:verOwn}],
+        props: [...valuesArr, ...complexArr],
+    }];
+
+    function buildProps(val, key) {
+        const propMetaData = getPropMeta(cube.data["dp_" + tofiConstants[cube.dpConst].id], tofiConstants[key]);
+        let value = val;
+        try {
+            if (propMetaData.isUniq === 1 && (propMetaData.typeProp === 315 || propMetaData.typeProp === 311 || propMetaData.typeProp === 317)) {
+                value = {
+                    kz: !!val.valueLng.kz ? val.valueLng.kz : val.value,
+                    ru: !!val.valueLng.ru ? val.valueLng.ru : val.value,
+                    en: !!val.valueLng.en ? val.valueLng.en : val.value
+                };
+                if (!!value) {
+                } else {
+                    val.mode = "del"
+                }
+            }
+            if (propMetaData.isUniq === 2 && propMetaData.typeProp === 315) {
+                let values = []
+                for (let item of value) {
+                    let mode = ""
+                    if (!!item.value.idDataPropVal && !!item.value.value) {
+                        mode = "upd"
+                    } else {
+                        if (!!item.value.value) {
+                            mode = "ins"
+                        } else {
+                            mode = "del"
+                        }
+                    }
+                    if (propMetaData.periodDepend === 1 && propMetaData.isUniq === 2) {
+                        let newob = {
+                            val: {
+                                ru: item.value.value,
+                                kz: item.value.value,
+                                en: item.value.value
+                            },
+                            dte: dte,
+                            periodType: String(periods),
+                            idDataPropVal: item.value.idDataPropVal ? String(item.value.idDataPropVal) : "",
+                            mode: mode
+
+                        }
+                        values.push(newob)
+                    }
+                     else if (propMetaData.periodDepend === 2 && propMetaData.isUniq === 2){
+                        let newob = {
+                            val: {
+                                ru: item.value.value,
+                                kz: item.value.value,
+                                en: item.value.value
+                            },
+                            idDataPropVal: item.value.idDataPropVal ? String(item.value.idDataPropVal) : "",
+                            dBeg:!!item.dBeg?val.item: moment().format("YYYY-MM-DD"),
+                            periodType: "0",
+                            mode: mode
+                        }
+                        values.push(newob)
+                    }
+                }
+                value=values
+            }
+            if ((propMetaData.typeProp === 11 || propMetaData.typeProp === 41) && (propMetaData.isUniq == 1)) {
+                value = !!val.value ? String(val.value) : val instanceof Object ? "" : String(val);
+                if (!!value) {
+                } else {
+                    val.mode = "del"
+                }
+            }
+            if (propMetaData.typeProp === 312) {
+                if (val instanceof moment) {
+                    value = val.value ? moment(val.value).format('YYYY-MM-DD') : moment(val).format('YYYY-MM-DD')
+                } else {
+                    value = val.value ? moment(val.value, 'DD-MM-YYYY').format('YYYY-MM-DD') : val[2] == '-' ? moment(val, 'DD-MM-YYYY').format('YYYY-MM-DD') : val instanceof Object ? "" : val
+                }
+                if (!!value) {
+                } else {
+                    val.mode = "del"
+                }
+            }
+            if (((propMetaData.typeProp === 11) && (propMetaData.isUniq == 2)) || ((propMetaData.typeProp === 41) && (propMetaData.isUniq == 2))) {
+                let values = []
+                for (let item of value) {
+                    let mode = ""
+                    if (!!item.idDataPropVal && !!item.value) {
+                        mode = "upd"
+                    } else {
+                        if (!!item.value) {
+                            mode = "ins"
+                        } else {
+                            mode = "del"
+                        }
+                    }
+                    if (propMetaData.periodDepend === 1 && propMetaData.isUniq === 2) {
+                        let newob = {
+                            val:String(item.value),
+                            dte: dte,
+                            periodType: String(periods),
+                            idDataPropVal: item.idDataPropVal ? String(item.idDataPropVal) : "",
+                            mode: mode
+
+                        }
+                        values.push(newob)
+                    }
+                    else if (propMetaData.periodDepend === 2 && propMetaData.isUniq === 2){
+                        let newob = {
+                            val:String(item.value),
+                            idDataPropVal: item.idDataPropVal ? String(item.idDataPropVal) : "",
+                            dBeg:!!item.dBeg?item.dBeg: moment().format("YYYY-MM-DD"),
+                            periodType: "0",
+                            mode: mode
+                        }
+                        values.push(newob)
+                    }
+
+                }
+                value=values
+            }
+            if (propMetaData.typeProp === 21) {
+
+                value = val && String(val.value);
+                if (!!value) {
+
+                } else {
+                    val.mode = "del"
+                }
+            }
+        } catch (e) {
+            console.warn(key, val);
+            console.warn(e);
+            return;
+        }
+        if (propMetaData.periodDepend===1 && propMetaData.isUniq ===1){
+            return {
+                propConst: key,
+                propItemConst:"",
+                mode: val.mode ? val.mode : val.idDataPropVal ? 'upd' : 'ins',
+                dte: dte,
+                val: value,
+                propType: String(propMetaData.typeProp),
+                idDataPropVal: String(val.idDataPropVal),
+                periodType: String(periods),
+                periodDepend: String(propMetaData.periodDepend),
+                isUniq: String(propMetaData.isUniq),
+                groupKey:""
+            }
+        }
+        else if (propMetaData.periodDepend===2 && propMetaData.isUniq ===1){
+            return {
+                propConst: key,
+                propItemConst:"",
+                mode: val.mode ? val.mode : val.idDataPropVal ? 'upd' : 'ins',
+                val: value,
+                propType: String(propMetaData.typeProp),
+                idDataPropVal: String(val.idDataPropVal),
+                periodType: "0",
+                periodDepend: String(propMetaData.periodDepend),
+                isUniq: String(propMetaData.isUniq),
+                dBeg:!!val.dBeg?val.dBeg: moment().format("YYYY-MM-DD"),
+                //dEnd: dEnd,
+                groupKey:""
+            }
+        }
+        else if (propMetaData.periodDepend===1 && propMetaData.isUniq ===2) {
+            return {
+                propConst: key,
+                propItemConst:"",
+                values: value,
+                propType: String(propMetaData.typeProp),
+                periodDepend: String(propMetaData.periodDepend),
+                isUniq: String(propMetaData.isUniq),
+                groupKey:""
+            }
+        }
+        else if (propMetaData.periodDepend===2 && propMetaData.isUniq ===2) {
+            return {
+                propConst: key,
+                propItemConst:"",
+                values: value,
+                propType: String(propMetaData.typeProp),
+                periodDepend: String(propMetaData.periodDepend),
+                isUniq: String(propMetaData.isUniq),
+                groupKey:""
+            }
+        }
+        }
+    return updateCubeData3(cube.cubeSConst, JSON.stringify(datas),  filesToServer)
 }

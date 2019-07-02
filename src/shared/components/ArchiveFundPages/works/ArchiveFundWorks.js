@@ -1222,7 +1222,7 @@ class ArchiveFundWorks extends React.PureComponent {
                         dataIndex: 'key',
                         width: '8%',
                         render: key => key ? key.slice(5, 8) + '-' + key.slice(-4) : '',
-                        sortOrder: this.state.sortState ? 'descend' : 'ascend',
+                        sortOrder: 'descend',
                         sorter: (a, b) => parseInt(a.key.split('_')[1]) - parseInt(b.key.split('_')[1]),
                         filterDropdown: (
                         <div className="custom-filter-dropdown">

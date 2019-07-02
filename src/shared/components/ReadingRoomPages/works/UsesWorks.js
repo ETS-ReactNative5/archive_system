@@ -103,16 +103,10 @@ class Works extends React.PureComponent {
   }
 
   changeSelectedRow = rec => {
-    console.log(rec);
     var self = this;
     this.getCubeActSingle(rec.key)
       .then(x => {
         const {tofiConstants: {doForWorks, dpForWorks}} = this.props;
-        console.log(this.props.cubeForWorksSingle[`do_${doForWorks.id}`])
-        console.log(this.props.cubeForWorksSingle[`dp_${dpForWorks.id}`])
-        console.log(doForWorks.id)
-        console.log(dpForWorks.id)
-        debugger;
         let oneRecord = parseCube_new(
           x.cube.cube,
           [],
@@ -123,7 +117,6 @@ class Works extends React.PureComponent {
           `do_${doForWorks.id}`,
           `dp_${dpForWorks.id}`);
         let initValues = this.renderTableData(oneRecord[0], 0);
-        console.log(initValues)
         this.setState({
           selectedRow: rec,
           openCard: true,
@@ -206,7 +199,6 @@ class Works extends React.PureComponent {
     },()=>this.getCubeAct());
   }
   handleCancel = (e) => {
-    console.log(e);
     this.setState({
       maxValue:moment().format("YYYY-MM-DD"),
       minValue:moment().startOf('month').format("YYYY-MM-DD"),
@@ -234,6 +226,13 @@ class Works extends React.PureComponent {
     },()=>this.getCubeAct())
 
   }
+
+  // caseDeliveryToRR - обслуживание исследователей
+  // responseToRequest - исполнение запросов на получение архивных справок
+  // performPaidReq - исполнение платных запросов
+  // conductResearch - проведение исследований
+  // orderCopyDoc - заказ копий документов
+  // userRegistration - регистрация пользователей
 
   getCubeAct = async () => {
     try {
@@ -285,8 +284,6 @@ class Works extends React.PureComponent {
 
   getCubeActSingle = async (id) => {
     try {
-      console.log(id);
-      // this.setState({loading: true});
       let filters = {
         filterDOAnd:
           [
@@ -348,7 +345,7 @@ class Works extends React.PureComponent {
           }
         );
       } catch (err) {
-        console.log(err);
+        console.error(err);
         this.setState({loading: false, data: []})
       }
     }
@@ -424,7 +421,8 @@ class Works extends React.PureComponent {
         doConst: DO_FOR_WORKS,
         dpConst: DP_FOR_WORKS,
       };
-      if (!c.cube.data) c.cube.data = this.props.cubeForWorks;
+      if (!c.cube.data)
+        c.cube.data = this.props.cubeForWorks; // <--- !!!!
       hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
       const resSave = await onSaveCubeData(c, v, t, objData);
       hideLoading();
@@ -624,7 +622,7 @@ class Works extends React.PureComponent {
     // result.reasonForRefusalCase = result.reasonForRefusalCaseLng;
     // result.reasonForRefusalCaseStorage = result.reasonForRefusalCaseStorageLng;
     result.workStatusUses = result[this.clsStatusMap[item.clsORtr]];
-    result.propResearcheRequests = result.propResearcheRequests ? result.propResearcheRequests.value : '';
+    //result.propResearcheRequests = result.propResearcheRequests ? result.propResearcheRequests.value : '';
     return result;
   };
 
@@ -639,10 +637,10 @@ class Works extends React.PureComponent {
         <Input.TextArea rows={4}/>
         <span>
         <a onClick={() => console.log('ok')}><Icon type="check"/></a>
-        <Popconfirm title="Отменить?" onConfirm={() => console.log('cancel')}>
-          <a style={{marginLeft: '5px'}}><Icon type="close"/></a>
-        </Popconfirm>
-      </span>
+          <Popconfirm title="Отменить?" onConfirm={() => console.log('cancel')}>
+            <a style={{marginLeft: '5px'}}><Icon type="close"/></a>
+          </Popconfirm>
+        </span>
     </div>
   );
 
@@ -901,7 +899,6 @@ class Works extends React.PureComponent {
                     fd.append("dimObjConst", DO_FOR_WORKS);
                     fd.append("objId", record.key.split('_')[1]);
                     fd.append("cls", String(this.props.tofiConstants.casesForTemporaryUse.id));
-                    console.log('fd = ' + JSON.stringify(fd));
                     const hideLoading = message.loading(this.props.t('REMOVING'), 30);
                     dObjChild(fd)
                       .then(res => {
@@ -913,7 +910,7 @@ class Works extends React.PureComponent {
                           throw res
                         }
                       }).catch(err => {
-                      console.log(err);
+                      console.error(err);
                       message.error(this.props.t('REMOVING_ERROR'))
                     })
                   })
@@ -1088,7 +1085,7 @@ class Works extends React.PureComponent {
                                 throw res
                               }
                             }).catch(err => {
-                            console.log(err);
+                            console.error(err);
                             message.error(this.props.t('REMOVING_ERROR'))
                           })
                         }}>
@@ -1112,7 +1109,6 @@ class Works extends React.PureComponent {
             onCancel={this.handleCancel}
           >
               <span>С </span> <DatePicker onChange={(e)=>{
-            console.log(e)
             if (e === null){
               return false
             }
@@ -1206,8 +1202,13 @@ class Works extends React.PureComponent {
                         placeholder={t('PERFORMER')}
                       />
                   </div>
+                  <div>
+                      <Button type="primary" onClick={() => {
+                          window.print();
+                      }}>Печать</Button>
+                  </div>
                   <Button
-                    type="primary" icon="reload" loading={this.state.iconLoading}  onClick={()=>this.getCubeAct()}
+                    type="primary" icon="reload" style={{ marginLeft: "5px" , maxWidth: "40px" }} loading={this.state.iconLoading}  onClick={()=>this.getCubeAct()}
                   />
                 {/*<div className="label-select">
                  <Dropdown overlay={this.menu} trigger={['click']}>
@@ -1259,6 +1260,7 @@ class Works extends React.PureComponent {
                         user={user}
                         getCubeAct = {this.getCubeAct}
                         updateCard = {this.updateCard()}
+                        cubeForWorksSingle = {this.props.cubeForWorksSingle}
                       />
                   </SiderCard>
               </CSSTransition>

@@ -540,6 +540,7 @@ class FundsList extends Component {
       "collectionLocation",
       "fundAnnotationFile",
       "invFile",
+        "fundBiographArcheographNote",
       "accessDocument",
       "affiliation"
     ];
@@ -882,10 +883,7 @@ class FundsList extends Component {
                     () => this.fundNumber.focus()
                   );
                 },
-                sortBy: "ascend",
-                sorter: (a, b) =>
-                  a.fundNumber.value.replace(/[^0-9]/g, "") -
-                  b.fundNumber.value.replace(/[^0-9]/g, "")
+                sorter: (a, b) => ((a.fundNumber ? a.fundNumber.value : '').replace(/[^0-9]/g, '')) - ((b.fundNumber ? b.fundNumber.value : '').replace(/[^0-9]/g, ''))
               },
               {
                 key: "fundIndex",

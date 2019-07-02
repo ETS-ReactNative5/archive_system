@@ -73,7 +73,7 @@ class UsesWorksCard extends React.PureComponent {
     const {t, tofiConstants, initialValues, saveProps, onCreateObj, clsStatusMap, user, childWorks} = this.props;
     this.lng = localStorage.getItem('i18nextLng');
       return (
-        <AntTabs tabs={[
+        <AntTabs style={{userSelect:'none'}} tabs={[
         {
           tabKey: 'props',
           tabName: t('PROPS'),
@@ -95,6 +95,7 @@ class UsesWorksCard extends React.PureComponent {
             saveProps={saveProps}
             t={t}
             initialValues={initialValues}
+            cubeForWorksSingle={this.props.cubeForWorksSingle}
           />
         },
         {
@@ -109,6 +110,7 @@ class UsesWorksCard extends React.PureComponent {
               initialValues={initialValues}
               user={user}
               childWorks={childWorks}
+              cubeForWorksSingle={this.props.cubeForWorksSingle}
             />
         },
         {
@@ -125,6 +127,7 @@ class UsesWorksCard extends React.PureComponent {
             saveProps={saveProps}
             user={user}
             initialValues={initialValues}
+            cubeForWorksSingle={this.props.cubeForWorksSingle}
             updateCard={this.props.updateCard}
           />
         },
@@ -135,12 +138,13 @@ class UsesWorksCard extends React.PureComponent {
           hidden: !initialValues.workType ||
             initialValues.workType.workTypeClass == "userRegistration" ||
             initialValues.workType.workTypeClass == "caseDeliveryToRR" ||
-            initialValues.workType.workTypeClass == "orderCopyDoc",
+            initialValues.workType.workTypeClass == "orderCopyDoc" || true,
           tabContent: <Bibliography
             tofiConstants={tofiConstants}
             t={t}
             saveProps={saveProps}
             initialValues={initialValues}
+            cubeForWorksSingle={this.props.cubeForWorksSingle}
           />
         },
             {

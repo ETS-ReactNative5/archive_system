@@ -5,7 +5,7 @@ import {isEmpty, isEqual, map} from 'lodash';
 import axios from "axios"
 import AntTable from '../AntTable';
 import {createObj, dObj, getCasesCount, getCube, getPropVal, updateCubeData} from '../../actions/actions';
-import {getPropMeta, parseCube_new, onSaveCubeData,  parseForTable} from '../../utils/cubeParser';
+import {getPropMeta, parseCube_new, onSaveCubeData, parseForTable, onSaveCubeData3} from '../../utils/cubeParser';
 import {
     CUBE_FOR_AF_INV,
     DO_FOR_INV, DP_FOR_INV
@@ -221,7 +221,7 @@ class EditCardInventories extends Component {
             this.setState({loading: true, });
 
             hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
-            const resSave = await onSaveCubeData(c, v, t, objData);
+            const resSave = await onSaveCubeData3(c, v, t, objData);
             hideLoading();
             if(!resSave.success) {
                 message.error(this.props.t('PROPS_UPDATING_ERROR'));

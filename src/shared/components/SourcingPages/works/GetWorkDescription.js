@@ -93,16 +93,16 @@ class GetWorkDescription extends React.PureComponent {
         const {t} = this.props;
         return (
             <div style={{width:'100%'}}>
-                <h2>Описание</h2>
-                <div className="work-description">
-                    <RadioGroup onChange={this.onLangChange} defaultValue="ru" size="large">
-                        <RadioButton value="kz">KZ</RadioButton>
-                        <RadioButton value="ru">RU</RadioButton>
-                        <RadioButton value="en">EN</RadioButton>
-                    </RadioGroup>
+                <h2 className="fs12">Описание</h2>
+                <div className="work-description p20">
                     <TextArea placeholder="Description" autosize={{minRows: 2}}
                               value={this.state.workDescription[this.state.lang]} onChange={this.onChange}
-                              style={{marginTop: '10px'}}/>
+                              />
+                    <RadioGroup onChange={this.onLangChange} className="ttl" defaultValue="ru" size="large">
+                        <RadioButton className="padding0_6" value="kz">KZ</RadioButton>
+                        <RadioButton className="padding0_6" value="ru">RU</RadioButton>
+                        <RadioButton className="padding0_6" value="en">EN</RadioButton>
+                    </RadioGroup>
                     <Button style={{marginRight: 'auto', marginBottom: '15px', marginTop:'5px'}}onClick={this.saveWorkDescription} className="signup-form__btn" type="primary">
                         {t('SAVE')}
                     </Button>

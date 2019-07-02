@@ -33,7 +33,8 @@ class ResearcherCabinet extends React.Component {
                 return true
             }
         }
-    }
+    };
+
     getCubeAct = clss => {
         this.setState({loading: true});
         this.filters = {
@@ -64,7 +65,7 @@ class ResearcherCabinet extends React.Component {
                             consts: "permitionDate,workAuthor,workDate,linkToUkaz,reasonForRefusalCaseStorage,workPriority,linkToDoc," +
                             "workAssignedTo,tookUser,reasonForRefusalCase,acceptanceDate,workActualEndDate,appointedUser,workActualStartDate," +
                             "workRegCase,workDescription,workStatusCreateRequirement,workRegFund,workRegInv,dateAppointment,fundArchive," +
-                            "workStatusCopyDoc,docsResearch,workStatusRegistration,resultDescription,resultResearch"
+                            "workStatusCopyDoc,docsResearch,workStatusRegistration,resultDescription,resultResearch,customerReqs"
                         }
                     ]
                 }

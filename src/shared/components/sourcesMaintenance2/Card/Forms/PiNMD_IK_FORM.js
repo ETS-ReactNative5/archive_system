@@ -72,7 +72,7 @@ class PiNMD_IK_FORM extends React.Component {
     showFile = (key) => {
         if (!!key.value) {
             let typeFile = ''//key.name.ru.split(".")[1]
-            getFileResolve(key.value.name).then(res => {
+            getFileResolve(key.value.__file__id).then(res => {
 
                 getFile(key.value.__file__id).then(blob =>{
 

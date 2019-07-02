@@ -207,6 +207,7 @@ class WorksPropertyForm extends Component {
             obj
         }, {values: rest}, this.props.tofiConstants);
     };
+
     loadClsObj = (cArr, dte = moment().format('YYYY-MM-DD')) => {
         return () => {
             cArr.forEach(c => {
@@ -228,6 +229,7 @@ class WorksPropertyForm extends Component {
             })
         }
     };
+
     loadOptions = c => {
         return () => {
             if (!this.props[c + 'Options']) {

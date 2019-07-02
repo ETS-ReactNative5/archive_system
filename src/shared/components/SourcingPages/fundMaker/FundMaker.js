@@ -291,7 +291,7 @@ class FundMaker extends React.PureComponent {
 
     renderTableData = (item, idx) => {
         const constArr = ['legalStatus', 'orgRightReceiver', 'dateFormation', 'dateElimination', 'reasonFundmakerFile', 'departmentalAccessory', 'reasonFundmaker', 'formOfAdmission', 'orgIndustry', 'fundmakerArchive',
-            'isActive', 'orgAddress', 'orgPhone', 'orgFax', 'orgEmail', 'orgFormationDoc',"liquidation", 'orgReorganizationDoc', 'orgLiquidationDoc',
+            'isActive', 'orgAddress', 'orgPhone',"dateRename", 'orgFax', 'orgEmail', 'orgFormationDoc',"liquidation", 'orgReorganizationDoc', 'orgLiquidationDoc',
             'leaderFIO', 'leaderPosition', 'leaderPhone', 'depLeaderFIO', 'depLeaderPosition', 'depLeaderPhone', 'responsibleFIO', 'responsiblePosition', 'responsiblePhone',
             'responsibleAppointmentDate', 'archiveLeaderFIO', 'archiveLeaderPosition', 'archiveLeaderPhone', 'archiveLeaderAppointmentDate', 'subordination', 'jurisdiction',
             'commissionLeaderFIO', 'commissionLeaderPosition', 'commissionLeaderPhone', 'contractNumber', 'orgDocType', 'orgFunction', 'structure', 'fundNumber', 'corresOrg', 'corresOrgFile', 'letterDetails', 'fundmakerOfIK'];

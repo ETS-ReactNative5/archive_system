@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import MainInfoCaseForm from "./MainInfoReportForm";
+import MainInfoReportForm from "./MainInfoReportForm";
 import AntTabs from "../../../AntTabs";
-import {Button, Spin, Form, Input, Icon, DatePicker, Upload, Select, Collapse} from "antd";
+import {Button, Spin,message, Form, Input, Icon, DatePicker, Upload, Select, Collapse} from "antd";
 import axios from "axios"
 import moment from "moment";
 
@@ -31,6 +31,12 @@ class CardReport_invTypeDigital_uprDoc extends Component {
         fd.append("formReport", this.props.initialValues.id);
         axios.post(`/${localStorage.getItem('i18nextLng')}/report/getReportParams`, fd)
             .then (async (res)  => {
+                if (res.data.success===false && res.data.errors){
+                    for(let val of  res.data.errors){
+                        message.error(val.text)
+                    }
+                    return false
+                }
                 let propsObj =[]
                 let dara = [...res.data.data]
 
@@ -67,26 +73,18 @@ class CardReport_invTypeDigital_uprDoc extends Component {
                         }
                     }
                     if(val.asgnType ===8  || val.asgnType ===7 ) {
-                        let da = await this.getPropType(val.prop)
-                        propsObj.push({
-                            asgnType: val.asgnType,
-                            name: val.name,
-                            nameParam: val.nameParam,
-                            paramCateg: val.paramCateg,
-                            isUniq: val.isUniq,
-                            typeProp:!!da?da:"",
-                            keyType:keyType
 
+                        propsObj.push({
+                            val:val,
+                            typeProp:val.typeProp,
+                            keyType:keyType
                         })
                     }
                     else {
 
                         propsObj.push({
-                            asgnType: val.asgnType,
-                            name: val.name,
-                            nameParam: val.nameParam,
-                            paramCateg: val.paramCateg,
-                            isUniq: val.isUniq,
+                            val:val,
+
                             keyType:keyType
                         })
                     }
@@ -106,17 +104,6 @@ class CardReport_invTypeDigital_uprDoc extends Component {
     }
 
 
-           getPropType =  async (prop) => {
-               const fd = new FormData();
-               fd.append("idProp", prop);
-               let promResp =  await  axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getPropById`, fd)
-
-
-       let da = !!promResp.data.data?promResp.data.data.typeProp:""
-        return da
-    }
-
-
 
   render() {
       const { t, tofiConstants, saveProps,dateReport, initialValues,periodType, keyInv, invType,docType } = this.props;
@@ -126,7 +113,7 @@ class CardReport_invTypeDigital_uprDoc extends Component {
         {
           tabKey: 'mainInfo',
             tabName: t('MAIN_INFO'),
-          tabContent: <MainInfoCaseForm
+          tabContent: <MainInfoReportForm
               initialValues={initialValues}
               tofiConstants={tofiConstants}
               periodType={periodType}

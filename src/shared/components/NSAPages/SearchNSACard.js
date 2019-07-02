@@ -33,7 +33,7 @@ class FundsListCard extends React.Component {
   render() {
     const { t, tofiConstants, onSaveCubeData, initialValues, onCreateObj,
       record, dataRec, onEditRecordChange, closeCard,activeKey, onTabClick, onSave, onSave2,
-      annotationContentOfDocument, invMulti, fundHistoricalNoteMulti, fundCaseFlags,
+      annotationContentOfDocument, invMulti, fundHistoricalNoteMulti,fundBiographArcheographNoteMulti, fundCaseFlags,
     } = this.props;
     return (
       <AntTabs activeKey={activeKey} onTabClick={onTabClick}
@@ -64,6 +64,7 @@ class FundsListCard extends React.Component {
               annotationContentOfDocument={annotationContentOfDocument}
               invMulti={invMulti} 
               fundHistoricalNoteMulti={fundHistoricalNoteMulti}
+              fundBiographArcheographNoteMulti={fundBiographArcheographNoteMulti}
               withIdDPV = {this.props.withIdDPV}
           />
           },

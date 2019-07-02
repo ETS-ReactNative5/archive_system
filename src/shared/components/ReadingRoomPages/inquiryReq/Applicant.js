@@ -69,7 +69,7 @@ class Applicant extends Component {
     };
 
     componentDidMount(){
-
+console.log("didMount in Applicant")
         if(this.props.user.cls==this.props.tofiConstants['clsResearchers'].id) {
             var datas = [{
                 objs: String(this.props.user.obj),
@@ -382,6 +382,8 @@ class Applicant extends Component {
   render() {
     if (!this.props.tofiConstants) return null;
 
+    let isEnabled = !!this.props.isEnabled;
+
     this.lng = localStorage.getItem('i18nextLng');
     const {
       t, handleSubmit, reset, dirty, error, submitting, usersOfSystemOptions, nationalityOptions,
@@ -399,7 +401,8 @@ class Applicant extends Component {
 
             isSearchable={true}
             label={usersOfSystem.name[this.lng]}
-           disabled={this.props.user.cls==this.props.tofiConstants['clsResearchers'].id}
+            // disabled={this.props.user.cls==this.props.tofiConstants['clsResearchers'].id}
+            disabled = {!isEnabled}
             formItemLayout={
               {
                 labelCol: {span: 10},
@@ -428,7 +431,7 @@ class Applicant extends Component {
             }
           }
           normalize={this.strToRedux}
-
+          disabled = {!isEnabled}
         />}
 
         {nameOfOrganizationDeveloper && <Field
@@ -442,7 +445,7 @@ class Applicant extends Component {
             }
           }
           normalize={this.strToRedux}
-
+          disabled = {!isEnabled}
         />}
         {personLastName && <Field
           name='personLastName'
@@ -455,7 +458,7 @@ class Applicant extends Component {
             }
           }
           normalize={this.strToRedux}
-
+          disabled = {!isEnabled}
         />}
         {personName && <Field
           name='personName'
@@ -468,7 +471,7 @@ class Applicant extends Component {
             }
           }
           normalize={this.strToRedux}
-
+          disabled = {!isEnabled}
         />}
         {personPatronymic && <Field
           name='personPatronymic'
@@ -481,7 +484,7 @@ class Applicant extends Component {
             }
           }
           normalize={this.strToRedux}
-
+          disabled = {!isEnabled}
         />}
         {/*<Field
           name="name"
@@ -510,7 +513,7 @@ class Applicant extends Component {
             }
           }
           normalize={this.dateToRedux}
-
+          disabled = {!isEnabled}
         />}
         {nationality && <Field
           name="nationality"
@@ -531,6 +534,7 @@ class Applicant extends Component {
             label: option.name[this.lng]
           })) : []}
           onFocus={this.loadOptions('nationality')}
+          disabled = {!isEnabled}
         />}
         {personAddress && <Field
           name='personAddress'
@@ -543,7 +547,7 @@ class Applicant extends Component {
             }
           }
           normalize={this.strToRedux}
-
+          disabled = {!isEnabled}
         />}
         {personPhone && <Field
           name='personPhone'
@@ -555,9 +559,8 @@ class Applicant extends Component {
               wrapperCol: { span: 14 }
             }
           }
-
           normalize={this.strToRedux}
-
+          disabled = {!isEnabled}
         />}
         {dirty && <Form.Item className="ant-form-btns absolute-bottom">
           <Button className="signup-form__btn" type="primary" htmlType="submit" disabled={submitting}>

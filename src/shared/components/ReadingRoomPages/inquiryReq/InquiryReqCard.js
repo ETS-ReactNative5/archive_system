@@ -5,39 +5,22 @@ import Description from './Description';
 import ResultDescription from './ResultDescription';
 import Applicant from './Applicant';
 import Bibliography from './Bibliography';
-import { getObjByProp } from '../../../actions/actions.js';
 
 class InqueryRegCard extends React.PureComponent {
 
  state = {
     result: {}
 };
+ updateCounter =  0;
 
   componentDidMount() {
-    const fd = new FormData();
-    fd.append('value', String(this.props.initialValues.key).split('_')[1]);
-    fd.append('clsConsts', 'responseToRequest,performPaidReq,conductResearch');
-    fd.append('propConst', 'propResearcheRequests');
-    fd.append('withProps', 'resultDescription,resultResearch');
-    getObjByProp(fd).then(res => {
-  if(res.success==true) {
-      const resultResearch = res.data[0] && res.data[0].resultResearch;
-      const id = resultResearch && resultResearch[localStorage.getItem('i18nextLng')];
-      const f = new File([id], id);
-      f.uid = `rc-upload-${id}`;
-      const result = {
-        resultDescription: res.data[0] && res.data[0].resultDescription,
-        resultResearch: Number(id) ? [f] : []
-      };
-      this.setState({ result })
-    }
-    });
-
   }
 
   render() {
     const {t, tofiConstants, initialValues, saveProps, onCreateObj, user} = this.props;
-
+    // this.updateCounter - переменная для обновления вкладки результат
+    this.updateCounter++;
+    let _update_counter_ = this.updateCounter;
     return (
       <AntTabs tabs={[
         {
@@ -49,6 +32,7 @@ class InqueryRegCard extends React.PureComponent {
             onCreateObj={onCreateObj}
             saveProps={saveProps}
             initialValues={initialValues}
+            isEnabled={this.props.isEnabled}
           />
         },
         {
@@ -60,6 +44,7 @@ class InqueryRegCard extends React.PureComponent {
             t={t}
             saveProps={saveProps}
             initialValues={initialValues}
+            isEnabled={this.props.isEnabled}
           />
         },
         {
@@ -71,22 +56,25 @@ class InqueryRegCard extends React.PureComponent {
             t={t}
             saveProps={saveProps}
             initialValues={initialValues}
+            isEnabled={this.props.isEnabled}
           />
         },
         {
           tabKey: 'ResultDescription',
           tabName: t('RESULT_DESCRIPTION'),
-          disabled: !initialValues.key || !initialValues.workAuthor || user.obj !== initialValues.workAuthor.value,
+          //disabled: !initialValues.key || !initialValues.workAuthor || user.obj !== initialValues.workAuthor.value,
           tabContent: <ResultDescription
             tofiConstants={tofiConstants}
             t={t}
-            saveProps={saveProps}
+            updateCounter={_update_counter_}
+            // saveProps={saveProps}
             initialValues={initialValues}
           />
         },
         {
           tabKey: 'Bibliography',
           tabName: t('BIBLIOGRAPHY'),
+          hidden: true,
           disabled: !initialValues.key || !initialValues.workAuthor || user.obj !== initialValues.workAuthor.value,
           tabContent: <Bibliography
             tofiConstants={tofiConstants}

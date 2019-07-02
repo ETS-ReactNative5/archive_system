@@ -15,4 +15,4 @@ const AdminRoutes = ({t, tofiConstants}) => {
   )
 };
 
-export default translate('archiveFund   ')(AdminRoutes);
+export default translate('archiveFund')(AdminRoutes);

@@ -362,6 +362,8 @@ class MainInfo extends Component {
     render() {
     if (!this.props.tofiConstants) return null;
 
+    let isEnabled = !!this.props.isEnabled;
+
     this.lng = localStorage.getItem('i18nextLng');
     const {
       t, handleSubmit, reset, dirty, error, submitting, user, researchTypeValue, objStudyParentOptions,
@@ -376,11 +378,10 @@ class MainInfo extends Component {
     return (
       <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)}
             style={dirty ? {paddingBottom: '43px'} : {}}>
-
-
         {outNumber && <Field
             name='outNumber'
             component={renderInput}
+            disabled = {!isEnabled}
             label={outNumber.name[this.lng]}
             formItemLayout={
               {
@@ -389,7 +390,6 @@ class MainInfo extends Component {
               }
             }
             normalize={this.strToRedux}
-
         />}
 
         <Field
@@ -404,8 +404,6 @@ class MainInfo extends Component {
               wrapperCol: {span: 14}
             }
           }
-
-
           data={['clsResearches', 'clsOrders', 'clsArchivalReferences']
             .map(cns => ({
               value: this.props.tofiConstants[cns].id,
@@ -419,6 +417,7 @@ class MainInfo extends Component {
           name='regNumber'
           component={renderInput}
           label={regNumber.name[this.lng]}
+          disabled = {!isEnabled}
           formItemLayout={
             {
               labelCol: { span: 10 },
@@ -426,14 +425,13 @@ class MainInfo extends Component {
             }
           }
           normalize={this.strToRedux}
-
         />}
         {workDate && <Field
           name="workDate"
           component={renderDatePicker}
           format={null}
           normalize={this.dateToRedux}
-
+          disabled = {!isEnabled}
           label={t('REG_DATE')}
           formItemLayout={
             {
@@ -447,6 +445,7 @@ class MainInfo extends Component {
           component={renderSelect}
           isSearchable={false}
           label={requestSource.name[this.lng]}
+          disabled = {!isEnabled}
           formItemLayout={
             {
               labelCol: {span: 10},
@@ -454,7 +453,6 @@ class MainInfo extends Component {
             }
           }
           normalize={this.selectToRedux}
-
           isLoading={requestSourceLoading}
           data={requestSourceOptions ? requestSourceOptions.map(option => ({
             value: option.id,
@@ -467,6 +465,7 @@ class MainInfo extends Component {
           component={renderSelect}
           isSearchable={false}
           label={requestType.name[this.lng]}
+          disabled = {!isEnabled}
           formItemLayout={
             {
               labelCol: {span: 10},
@@ -474,7 +473,6 @@ class MainInfo extends Component {
             }
           }
           normalize={this.selectToRedux}
-
           isLoading={requestTypeLoading}
           data={requestTypeOptions ? requestTypeOptions.map(option => ({
             value: option.id,
@@ -494,7 +492,7 @@ class MainInfo extends Component {
               wrapperCol: {span: 14}
             }
           }
-
+          disabled = {!isEnabled}
           isLoading={caseDocsLangLoading}
           data={caseDocsLangOptions ? caseDocsLangOptions.map(option => ({
             value: option.id,
@@ -508,6 +506,7 @@ class MainInfo extends Component {
           format={value => (!!value ?value.valueLng[lang.theme] : '')}
           // parse={value => { this.themeValue[lang.theme] = value; return {...this.themeValue} }}
           label={theme.name[this.lng]}
+          disabled = {!isEnabled}
           normalize={(val, prevVal, obj, prevObj) => {
               let newVal = { ...prevVal };
               newVal.value = val;
@@ -534,6 +533,7 @@ class MainInfo extends Component {
           isSearchable={false}
           isMulti
           label={propStudy.name[this.lng]}
+          disabled = {!isEnabled}
           formItemLayout={
             {
               labelCol: {span: 10},
@@ -577,7 +577,7 @@ class MainInfo extends Component {
             }
           }
           normalize={this.dateToRedux}
-
+          disabled = {!isEnabled}
         />}
         {caseDend && <Field
           name="caseDend"
@@ -591,7 +591,7 @@ class MainInfo extends Component {
             }
           }
           normalize={this.dateToRedux}
-
+          disabled = {!isEnabled}
         />}
         {workAuthor && <Field
           name="workAuthor"
@@ -611,7 +611,7 @@ class MainInfo extends Component {
           })) : []}
           onFocus={this.loadOptions('workAuthor')}
           normalize={this.selectToRedux}
-
+          disabled = {!isEnabled}
         />}
         {workAssignedTo && <Field
           name="workAssignedTo"
@@ -624,7 +624,7 @@ class MainInfo extends Component {
             }
           }
           normalize={this.selectToRedux}
-
+          disabled = {!isEnabled}
           isLoading={workAssignedToIPSLoading}
           data={workAssignedToIPSOptions ? [...workAssignedToIPSOptions].map(option => ({
               value: option.id,
@@ -637,7 +637,7 @@ class MainInfo extends Component {
           component={renderDatePicker}
           format={null}
           normalize={this.dateToRedux}
-
+          disabled = {!isEnabled}
           label={t('PLANNED_END_DATE')}
           formItemLayout={
             {
@@ -651,7 +651,7 @@ class MainInfo extends Component {
           component={renderDatePicker}
           format={null}
           normalize={this.dateToRedux}
-
+          disabled = {!isEnabled}
           label={t('FACT_END_DATE')}
           formItemLayout={
             {

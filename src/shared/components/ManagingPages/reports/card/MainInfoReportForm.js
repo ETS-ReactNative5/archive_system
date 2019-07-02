@@ -28,277 +28,324 @@ class MainInfoReportForm extends Component {
         reportDate:null
     }
 
-
-    getPropType = (prop, val, flag) => {
-        const fd = new FormData();
-        fd.append("idProp", prop.prop);
-        axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getPropById`, fd)
-            .then(res => {
-                const contact = this.state.typeProp;
-                contact[val] = res.data.data
-
-                this.setState({dataoption: contact,});
-
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }
-
-
-    getFactorVal = (id, val) => {
-
-        const fd = new FormData();
-        fd.append("factorId", String(id));
-        axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getFactorVa`, fd).then((res) => {
-
-        })
-    }
-    getOpton = (keys, val) => {
-        for (let key in keys) {
-            if (String(key) === "factorVal") {
-                if (Array.isArray(keys[key])) {
-                    let data = keys[key].join(',')
-                    const fd = new FormData();
-                    fd.append("factorValIds", data);
-                    axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getFactorValByIds`, fd)
-                        .then(res => {
-                            const contact = this.state.dataOptons;
-                            contact[val] = res.data.data
-
-                            this.setState({dataOptons: contact,});
-
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
-                } else {
-                    let data = keys[key]
-                    const fd = new FormData();
-                    fd.append("factorId", data);
-                    axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getFactorVal`, fd)
-                        .then(res => {
-                            const contact = this.state.dataOptons;
-                            contact[val] = res.data.data
-
-                            this.setState({dataOptons: contact,});
-
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
+    getOpton = (data, val) => {
+        if(!!data.disabled){
+            const fd = new FormData();
+            fd.append("dte", this.props.dateReport);
+            fd.append("periodType", this.props.periodType);
+            fd.append("formReportParam", data.id);
+            for(let val of data.disabled ){
+                if (Array.isArray(this.state.data[val.nameParam])) {
+                    let data = this.state.data[val.nameParam].join(',')
+                    fd.append(val.nameParam,data);
+                }else{
+                    let data = this.state.data[val.nameParam]
+                    fd.append(val.nameParam,data);
                 }
-                break
             }
-            if (String(key) === "factor") {
-                if (Array.isArray(keys[key])) {
-                    let data = keys[key].join(',')
-                    const fd = new FormData();
-                    fd.append("factorValIds", data);
-                    axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getFactorValByIds`, fd)
-                        .then(res => {
-                            const contact = this.state.dataOptons;
-                            contact[val] = res.data.data
-
-                            this.setState({dataOptons: contact,});
-
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
-                } else {
-                    let data = keys[key]
-                    const fd = new FormData();
-                    fd.append("factorId", data);
-                    axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getFactorVal`, fd)
-                        .then(res => {
-                            const contact = this.state.dataOptons;
-                            contact[val] = res.data.data
-
-                            this.setState({dataOptons: contact,});
-
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
-                }
-                break
-            }
-            if (String(key) === "prop") {
-                if (Array.isArray(keys[key])) {
-                    let data = keys[key].join(',')
-                    const fd = new FormData();
-                    fd.append("propIds", data);
-                    axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getPropByIds`, fd)
-                        .then(res => {
-                            const contact = this.state.dataOptons;
-                            contact[val] = res.data.data
-
-                            this.setState({dataOptons: contact,});
-
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
-                } else {
-                    let data = keys[key]
-                    const fd = new FormData();
-                    fd.append("dimPropId", data);
-                    axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getPropByDimProp`, fd)
-                        .then(res => {
-                            const contact = this.state.dataOptons;
-                            contact[val] = res.data.data
-
-                            this.setState({dataOptons: contact,});
-
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
-                }
-                break
-            }
-            if (String(key) === "obj") {
-                if (Array.isArray(keys[key])) {
-                    let data = keys[key].join(',')
-                    const fd = new FormData();
-                    fd.append("objIds", data);
-                    axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjListByIds`, fd)
-                        .then(res => {
-                            const contact = this.state.dataOptons;
-                            contact[val] = res.data.data
-
-                            this.setState({dataOptons: contact,});
-
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
-                } else {
-                    let data = keys[key]
-                    const fd = new FormData();
-                    fd.append("objIds", data);
-                    axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjListByIds`, fd)
-                        .then(res => {
-                            const contact = this.state.dataOptons;
-                            contact[val] = res.data.data
-
-                            this.setState({dataOptons: contact,});
-
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
-                }
-                break
-            }
-            if (String(key) === "cls") {
-                if (val === "fundType"){
-                    if (Array.isArray(keys[key])) {
-
-                        let data = keys[key].join(',')
-                        const fd = new FormData();
-                        fd.append("clsIds", data);
-                        axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getClsListByIds`, fd)
-                            .then(res => {
-                                const contact = this.state.dataOptons;
-                                contact[val] = res.data.data
-
-                                this.setState({dataOptons: contact,});
-
-                            })
-                            .catch(err => {
-                                console.log(err)
-                            })
+            axios.post(`/${localStorage.getItem('i18nextLng')}/report/getReportParamValues`, fd)
+                .then(res => {
+                    if (res.data.success===false && res.data.errors){
+                        for(let val of  res.data.errors){
+                            message.error(val.text)
+                        }
+                        return false
                     }
+                    const contact = this.state.dataOptons;
+                    contact[val] = res.data.data
+
+                    this.setState({dataOptons: contact,});
+
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }else {
+            const fd = new FormData();
+            fd.append("dte", this.props.dateReport);
+            fd.append("periodType", this.props.periodType);
+            fd.append("formReportParam", data.id);
+            axios.post(`/${localStorage.getItem('i18nextLng')}/report/getReportParamValues`, fd)
+                .then(res => {
+                    if (res.data.success===false && res.data.errors){
+                        for(let val of  res.data.errors){
+                            message.error(val.text)
+                        }
+                        return false
                     }
-                else if (Array.isArray(keys[key])) {
-                    let data = keys[key].join(',')
-                    const fd = new FormData();
-                    fd.append("clsIds", data);
-                    axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjListByCls`, fd)
-                        .then(res => {
-                            const contact = this.state.dataOptons;
-                            contact[val] = res.data.data
+                    const contact = this.state.dataOptons;
+                    contact[val] = res.data.data
 
-                            this.setState({dataOptons: contact,});
+                    this.setState({dataOptons: contact,});
 
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
-                } else {
-                    let data = keys[key]
-                    const fd = new FormData();
-                    fd.append("clsIds", data);
-                    axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjListByCls`, fd)
-                        .then(res => {
-                            const contact = this.state.dataOptons;
-                            contact[val] = res.data.data;
-                            this.setState({dataOptons: contact,});
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }
 
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
+        // for (let key in keys) {
+        //     if (String(key) === "factorVal") {
+        //         if (Array.isArray(keys[key])) {
+        //             let data = keys[key].join(',')
+        //             const fd = new FormData();
+        //             fd.append("factorValIds", data);
+        //             axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getFactorValByIds`, fd)
+        //                 .then(res => {
+        //                     const contact = this.state.dataOptons;
+        //                     contact[val] = res.data.data
+        //
+        //                     this.setState({dataOptons: contact,});
+        //
+        //                 })
+        //                 .catch(err => {
+        //                     console.log(err)
+        //                 })
+        //         } else {
+        //             let data = keys[key]
+        //             const fd = new FormData();
+        //             fd.append("factorId", data);
+        //             axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getFactorVal`, fd)
+        //                 .then(res => {
+        //                     const contact = this.state.dataOptons;
+        //                     contact[val] = res.data.data
+        //
+        //                     this.setState({dataOptons: contact,});
+        //
+        //                 })
+        //                 .catch(err => {
+        //                     console.log(err)
+        //                 })
+        //         }
+        //         break
+        //     }
+        //     if (String(key) === "factor") {
+        //         if (Array.isArray(keys[key])) {
+        //             let data = keys[key].join(',')
+        //             const fd = new FormData();
+        //             fd.append("factorValIds", data);
+        //             axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getFactorValByIds`, fd)
+        //                 .then(res => {
+        //                     const contact = this.state.dataOptons;
+        //                     contact[val] = res.data.data
+        //
+        //                     this.setState({dataOptons: contact,});
+        //
+        //                 })
+        //                 .catch(err => {
+        //                     console.log(err)
+        //                 })
+        //         } else {
+        //             let data = keys[key]
+        //             const fd = new FormData();
+        //             fd.append("factorId", data);
+        //             axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getFactorVal`, fd)
+        //                 .then(res => {
+        //                     const contact = this.state.dataOptons;
+        //                     contact[val] = res.data.data
+        //
+        //                     this.setState({dataOptons: contact,});
+        //
+        //                 })
+        //                 .catch(err => {
+        //                     console.log(err)
+        //                 })
+        //         }
+        //         break
+        //     }
+        //     if (String(key) === "prop") {
+        //         if (Array.isArray(keys[key])) {
+        //             let data = keys[key].join(',')
+        //             const fd = new FormData();
+        //             fd.append("propIds", data);
+        //             axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getPropByIds`, fd)
+        //                 .then(res => {
+        //                     const contact = this.state.dataOptons;
+        //                     contact[val] = res.data.data
+        //
+        //                     this.setState({dataOptons: contact,});
+        //
+        //                 })
+        //                 .catch(err => {
+        //                     console.log(err)
+        //                 })
+        //         } else {
+        //             let data = keys[key]
+        //             const fd = new FormData();
+        //             fd.append("dimPropId", data);
+        //             axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getPropByDimProp`, fd)
+        //                 .then(res => {
+        //                     const contact = this.state.dataOptons;
+        //                     contact[val] = res.data.data
+        //
+        //                     this.setState({dataOptons: contact,});
+        //
+        //                 })
+        //                 .catch(err => {
+        //                     console.log(err)
+        //                 })
+        //         }
+        //         break
+        //     }
+        //     if (String(key) === "obj") {
+        //         if (Array.isArray(keys[key])) {
+        //             let data = keys[key].join(',')
+        //             const fd = new FormData();
+        //             fd.append("objIds", data);
+        //             axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjListByIds`, fd)
+        //                 .then(res => {
+        //                     const contact = this.state.dataOptons;
+        //                     contact[val] = res.data.data
+        //
+        //                     this.setState({dataOptons: contact,});
+        //
+        //                 })
+        //                 .catch(err => {
+        //                     console.log(err)
+        //                 })
+        //         } else {
+        //             let data = keys[key]
+        //             const fd = new FormData();
+        //             fd.append("objIds", data);
+        //             axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjListByIds`, fd)
+        //                 .then(res => {
+        //                     const contact = this.state.dataOptons;
+        //                     contact[val] = res.data.data
+        //
+        //                     this.setState({dataOptons: contact,});
+        //
+        //                 })
+        //                 .catch(err => {
+        //                     console.log(err)
+        //                 })
+        //         }
+        //         break
+        //     }
+        //     if (String(key) === "cls") {
+        //         if (val === "fundType"){
+        //             if (Array.isArray(keys[key])) {
+        //
+        //                 let data = keys[key].join(',')
+        //                 const fd = new FormData();
+        //                 fd.append("clsIds", data);
+        //                 axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getClsListByIds`, fd)
+        //                     .then(res => {
+        //                         const contact = this.state.dataOptons;
+        //                         contact[val] = res.data.data
+        //
+        //                         this.setState({dataOptons: contact,});
+        //
+        //                     })
+        //                     .catch(err => {
+        //                         console.log(err)
+        //                     })
+        //             }
+        //             }
+        //         else if (Array.isArray(keys[key])) {
+        //             let data = keys[key].join(',')
+        //             const fd = new FormData();
+        //             fd.append("clsIds", data);
+        //             axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjListByCls`, fd)
+        //                 .then(res => {
+        //                     const contact = this.state.dataOptons;
+        //                     contact[val] = res.data.data
+        //
+        //                     this.setState({dataOptons: contact,});
+        //
+        //                 })
+        //                 .catch(err => {
+        //                     console.log(err)
+        //                 })
+        //         } else {
+        //             let data = keys[key]
+        //             const fd = new FormData();
+        //             fd.append("clsIds", data);
+        //             axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjListByCls`, fd)
+        //                 .then(res => {
+        //                     const contact = this.state.dataOptons;
+        //                     contact[val] = res.data.data;
+        //                     this.setState({dataOptons: contact,});
+        //
+        //                 })
+        //                 .catch(err => {
+        //                     console.log(err)
+        //                 })
+        //         }
+        //         break
+        //     }
+        //     if (String(key) === "typ") {
+        //         if (Array.isArray(keys[key])) {
+        //             let data = keys[key].join(',')
+        //             const fd = new FormData();
+        //             fd.append("typIds", data);
+        //             axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjListByTyp`, fd)
+        //                 .then(res => {
+        //                     const contact = this.state.dataOptons;
+        //                     contact[val] = res.data.data
+        //
+        //                     this.setState({dataOptons: contact,});
+        //
+        //                 })
+        //                 .catch(err => {
+        //                     console.log(err)
+        //                 })
+        //         } else {
+        //             let data = keys[key]
+        //             const fd = new FormData();
+        //             fd.append("typIds", data);
+        //             axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjListByTyp`, fd)
+        //                 .then(res => {
+        //                     const contact = this.state.dataOptons;
+        //                     contact[val] = res.data.data;
+        //                     this.setState({dataOptons: contact,});
+        //
+        //                 })
+        //                 .catch(err => {
+        //                     console.log(err)
+        //                 })
+        //         }
+        //         break
+        //     }
+        // }
+    }
+    disabledProp = (obj)=>{
+        if (!!obj.disabled){
+            let arrBooleon = []
+            for (let val of obj.disabled){
+                if (!!this.state.data[val.nameParam]){
+                    arrBooleon.push(false)
+                }else {
+                    arrBooleon.push(true)
                 }
-                break
             }
-            if (String(key) === "typ") {
-                if (Array.isArray(keys[key])) {
-                    let data = keys[key].join(',')
-                    const fd = new FormData();
-                    fd.append("typIds", data);
-                    axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjListByTyp`, fd)
-                        .then(res => {
-                            const contact = this.state.dataOptons;
-                            contact[val] = res.data.data
-
-                            this.setState({dataOptons: contact,});
-
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
-                } else {
-                    let data = keys[key]
-                    const fd = new FormData();
-                    fd.append("typIds", data);
-                    axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjListByTyp`, fd)
-                        .then(res => {
-                            const contact = this.state.dataOptons;
-                            contact[val] = res.data.data;
-                            this.setState({dataOptons: contact,});
-
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
+            for (let val of arrBooleon){
+                if (val === true){
+                    return true
                 }
-                break
             }
         }
+        return false
     }
     showProop = (object) => {
-
         const {getFieldDecorator} = this.props.form;
-        if ( object.nameParam !== "fundIndexKey"&& object.asgnType === 3 || object.asgnType === 4 || object.asgnType === 5 || object.asgnType === 6  || object.asgnType === 9 || object.asgnType === 10 || object.asgnType === 11 || object.asgnType === 12 || object.asgnType === 13 || object.asgnType === 14) {
+        if ( object.val.nameParam !== "fundIndexKey"&& object.val.asgnType === 3 || object.val.asgnType === 4 || object.val.asgnType === 5 || object.val.asgnType === 6  || object.val.asgnType === 9 || object.val.asgnType === 10 || object.val.asgnType === 11 || object.val.asgnType === 12 || object.val.asgnType === 13 || object.val.asgnType === 14) {
             return (
 
-                <FormItem {...formItemLayout} label={object.name[this.lng]}>
-                    {getFieldDecorator(object.nameParam, {
+                <FormItem {...formItemLayout} label={object.val.name[this.lng]}>
+                    {getFieldDecorator(object.val.nameParam, {
                         rules: [{
-                            required: object.paramCateg === 2,
+                            required: object.val.paramCateg === 2,
                             message: 'Поле обязательно',
                         }],
                     })(
                         <Select
-                            mode={object.isUniq === 2 ? "tags" : ""}
-                            placeholder={object.name[this.lng]}
-                            onFocus={() => this.getOpton(object.keyType, object.nameParam)}
-                            onChange={object.isUniq === 2 ? (e) => this.onChangeMultiSelect(e, object.nameParam) : (e) => this.onChangeSelect(e, object.nameParam)}
+                            mode={object.val.isUniq === 2 ? "tags" : ""}
+                            placeholder={object.val.name[this.lng]}
+                            disabled ={this.disabledProp(object.val)}
+                            onFocus={() => this.getOpton(object.val, object.val.nameParam)}
+                            onChange={object.val.isUniq === 2 ? (e) => this.onChangeMultiSelect(e, object.val.nameParam) : (e) => this.onChangeSelect(e, object.val.nameParam)}
                         >
-                            {this.state.dataOptons[object.nameParam] && this.state.dataOptons[object.nameParam].map(el => {
+                            {this.state.dataOptons[object.val.nameParam] && this.state.dataOptons[object.val.nameParam].map(el => {
                                 return (
                                     <Option key={el.id} value={el.id}>
                                         {el.name[this.lng]}
@@ -310,21 +357,23 @@ class MainInfoReportForm extends Component {
                 </FormItem>
             )
         }
-        if (object.nameParam === "fundIndexKey") {
+        if (object.val.nameParam === "fundIndexKey") {
             return (
 
-                <FormItem {...formItemLayout} label={object.name[this.lng]}>
-                    {getFieldDecorator(object.nameParam, {
+                <FormItem {...formItemLayout} label={object.val.name[this.lng]}>
+                    {getFieldDecorator(object.val.nameParam, {
                         rules: [{
-                            required: object.paramCateg === 2,
+                            required: object.val.paramCateg === 2,
                             message: 'Поле обязательно',
                         }],
                     })(
                         <Select
-                            mode={object.isUniq === 2 ? "tags" : ""}
-                            placeholder={object.name[this.lng]}
-                            onFocus={() => this.getOpton(object.keyType, object.nameParam)}
-                            onChange={object.isUniq === 2 ? (e) => this.onChangeMultiSelect(e, object.nameParam) : (e) => this.onChangeSelect(e, object.nameParam)}
+                            mode={object.val.isUniq === 2 ? "tags" : ""}
+                            placeholder={object.val.name[this.lng]}
+                            disabled ={this.disabledProp(object.val)}
+
+                            onFocus={() => this.getOpton(object.val, object.val.nameParam)}
+                            onChange={object.val.isUniq === 2 ? (e) => this.onChangeMultiSelect(e, object.val.nameParam) : (e) => this.onChangeSelect(e, object.val.nameParam)}
                         >
                             <Option value="all">Все</Option>
                             <Option value={true}>Да</Option>
@@ -336,56 +385,62 @@ class MainInfoReportForm extends Component {
         }
 
 
-        if (object.asgnType === 1) {
+        if (object.val.asgnType === 1) {
             return (
-                <FormItem {...formItemLayout} label={object.name[this.lng]}>
-                    {getFieldDecorator(object.nameParam, {
+                <FormItem {...formItemLayout} label={object.val.name[this.lng]}>
+                    {getFieldDecorator(object.val.nameParam, {
                         rules: [{
-                            required: object.paramCateg === 2,
+                            required: object.val.paramCateg === 2,
                             message: 'Поле обязательно',
                         }],
                     })(
                         <DatePicker
-                            onChange={(e, date) => this.onChangedate(e, date, object.nameParam)}
-                            placeholder={object.name[this.lng]}
+                            onChange={(e, date) => this.onChangedate(e, date, object.val.nameParam)}
+                            placeholder={object.val.name[this.lng]}
+                            disabled ={this.disabledProp(object.val)}
+
 
                         />
                     )}
                 </FormItem>
             )
         }
-        if (object.asgnType === 15) {
+        if (object.val.asgnType === 15) {
             return (
-                <FormItem {...formItemLayout} label={object.name[this.lng]}>
-                    {getFieldDecorator(object.nameParam, {
+                <FormItem {...formItemLayout} label={object.val.name[this.lng]}>
+                    {getFieldDecorator(object.val.nameParam, {
                         rules: [{
-                            required: object.paramCateg === 2,
+                            required: object.val.paramCateg === 2,
                             message: 'Поле обязательно',
                         }],
                     })(
                         <Input
-                            onChange={(e) => this.onChangeInput(e, object.nameParam)}
-                            placeholder={object.name[this.lng]}
+                            onChange={(e) => this.onChangeInput(e, object.val.nameParam)}
+                            placeholder={object.val.name[this.lng]}
+                            disabled ={this.disabledProp(object.val)}
+
 
                         />
                     )}
                 </FormItem>
             )
         }
-        if (object.asgnType === 16) {
+        if (object.val.asgnType === 16) {
             const props = {
-                onChange: (e) => this.handleChangeFile(e, object.nameParam),
-                multiple: object.isUniq === 2 ? true : false,
+                onChange: (e) => this.handleChangeFile(e, object.val.nameParam),
+                multiple: object.val.isUniq === 2 ? true : false,
             };
             return (
-                <FormItem {...formItemLayout} label={object.name[this.lng]}>
-                    {getFieldDecorator(object.nameParam, {
+                <FormItem {...formItemLayout} label={object.val.name[this.lng]}>
+                    {getFieldDecorator(object.val.nameParam, {
                         rules: [{
-                            required: object.paramCateg === 2,
+                            required: object.val.paramCateg === 2,
                             message: 'Поле обязательно',
                         }],
                     })(
-                        <Upload {...props} fileList={this.state.fileList}>
+                        <Upload
+                            disabled ={this.disabledProp(object.val)}
+                            {...props} fileList={this.state.fileList}>
                             <Button>
                                 <Icon type="upload"/> Зарузка файла
                             </Button>
@@ -394,24 +449,54 @@ class MainInfoReportForm extends Component {
                 </FormItem>
             )
         }
-        if (object.asgnType === 8 || object.asgnType === 7) {
+        if (object.val.asgnType === 8 ) {
+            return (
+                <FormItem {...formItemLayout} label={object.val.name[this.lng]}>
+                    {getFieldDecorator(object.val.nameParam, {
+                        rules: [{
+                            required: object.val.paramCateg === 2,
+                            message: 'Поле обязательно',
+                        }],
+                    })(
+                        <Select
+                            mode={object.val.isUniq === 2 ? "tags" : ""}
+                            placeholder={object.val.name[this.lng]}
+                            onFocus={() => this.getOpton(object.val, object.val.nameParam)}
+                            disabled ={this.disabledProp(object.val)}
+                            onChange={object.val.isUniq === 2 ? (e) => this.onChangeMultiSelect(e, object.val.nameParam) : (e) => this.onChangeSelect(e, object.val.nameParam)}
+                        >
+                            {this.state.dataOptons[object.val.nameParam] && this.state.dataOptons[object.val.nameParam].map(el => {
+                                return (
+                                    <Option key={el.id} value={el.id}>
+                                        {el.name[this.lng]}
+                                    </Option>
+                                )
+                            })}
+                        </Select>
+                    )}
+                </FormItem>
+            )
+        }
+            if (object.val.asgnType === 7) {
             if (object.typeProp === 41 || object.typeProp ===11 || object.typeProp ===51 || object.typeProp ===60 ) {
                 return (
-                    <FormItem {...formItemLayout} label={object.name[this.lng]}>
-                        {getFieldDecorator(object.nameParam, {
+                    <FormItem {...formItemLayout} label={object.val.name[this.lng]}>
+                        {getFieldDecorator(object.val.nameParam, {
                             rules: [{
-                                required: object.paramCateg === 2,
+                                required: object.val.paramCateg === 2,
                                 message: 'Поле обязательно',
                             }],
                         })(
                             <Select
-                                mode={object.isUniq === 2 ? "tags" : ""}
-                                placeholder={object.name[this.lng]}
-                                onFocus={() => this.getOpton(object.keyType, object.nameParam)}
+                                mode={object.val.isUniq === 2 ? "tags" : ""}
+                                placeholder={object.val.name[this.lng]}
+                                onFocus={() => this.getOpton(object.val, object.val.nameParam)}
+                                disabled ={this.disabledProp(object.val)}
+                                onChange={object.val.isUniq === 2 ? (e) => this.onChangeMultiSelect(e, object.val.nameParam) : (e) => this.onChangeSelect(e, object.val.nameParam)}
 
 
                             >
-                                {this.state.dataOptons[object.nameParam] && this.state.dataOptons[object.nameParam].map(el => {
+                                {this.state.dataOptons[object.val.nameParam] && this.state.dataOptons[object.val.nameParam].map(el => {
                                     return (
                                         <Option key={el.id} value={el.id}>
                                             {el.name[this.lng]}
@@ -425,16 +510,17 @@ class MainInfoReportForm extends Component {
             }
             if (object.typeProp === 21 || object.typeProp === 22 || object.typeProp === 311 ||object.typeProp === 315 || object.typeProp === 316) {
                 return (
-                    <FormItem {...formItemLayout} label={object.name[this.lng]}>
-                        {getFieldDecorator(object.nameParam, {
+                    <FormItem {...formItemLayout} label={object.val.name[this.lng]}>
+                        {getFieldDecorator(object.val.nameParam, {
                             rules: [{
-                                required: object.paramCateg === 2,
+                                required: object.val.paramCateg === 2,
                                 message: 'Поле обязательно',
                             }],
                         })(
                             <Input
-                                onChange={(e) => this.onChangeInput(e, object.nameParam)}
-                                placeholder={object.name[this.lng]}
+                                onChange={(e) => this.onChangeInput(e, object.val.nameParam)}
+                                placeholder={object.val.name[this.lng]}
+                                disabled ={this.disabledProp(object.val)}
 
                             />
                         )}
@@ -443,17 +529,17 @@ class MainInfoReportForm extends Component {
             }
             if (object.typeProp === 312 || object.typeProp === 313 || object.typeProp === 314 ) {
                 return (
-                    <FormItem {...formItemLayout} label={object.name[this.lng]}>
-                        {getFieldDecorator(object.nameParam, {
+                    <FormItem {...formItemLayout} label={object.val.name[this.lng]}>
+                        {getFieldDecorator(object.val.nameParam, {
                             rules: [{
-                                required: object.paramCateg === 2,
+                                required: object.val.paramCateg === 2,
                                 message: 'Поле обязательно',
                             }],
                         })(
                             <DatePicker
-                                onChange={(e, date) => this.onChangedate(e, date, object.nameParam)}
-                                placeholder={object.name[this.lng]}
-
+                                disabled ={this.disabledProp(object.val)}
+                                onChange={(e, date) => this.onChangedate(e, date, object.val.nameParam)}
+                                placeholder={object.val.name[this.lng]}
                             />
                         )}
                     </FormItem>
@@ -461,18 +547,20 @@ class MainInfoReportForm extends Component {
             }
             if (object.typeProp === 317  ) {
                 const props = {
-                    onChange: (e) => this.handleChangeFile(e, object.nameParam),
-                    multiple: object.isUniq === 2 ? true : false,
+                    onChange: (e) => this.handleChangeFile(e, object.val.nameParam),
+                    multiple: object.val.isUniq === 2 ? true : false,
                 };
                 return (
-                    <FormItem {...formItemLayout} label={object.name[this.lng]}>
-                        {getFieldDecorator(object.nameParam, {
+                    <FormItem {...formItemLayout} label={object.val.name[this.lng]}>
+                        {getFieldDecorator(object.val.nameParam, {
                             rules: [{
-                                required: object.paramCateg === 2,
+                                required: object.val.paramCateg === 2,
                                 message: 'Поле обязательно',
                             }],
                         })(
-                            <Upload {...props} fileList={this.state.fileList}>
+                            <Upload
+                                disabled ={this.disabledProp(object.val)}
+                                {...props} fileList={this.state.fileList}>
                                 <Button>
                                     <Icon type="upload"/> Зарузка файла
                                 </Button>
@@ -510,7 +598,6 @@ class MainInfoReportForm extends Component {
         })
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
-                console.log('Received values of form: ', values);
                 const fd = new FormData();
                 let item = this.state.data
                     for (let key in item){
@@ -587,7 +674,7 @@ class MainInfoReportForm extends Component {
     }
     onChangedate = (mom, date, val) => {
         const contact = this.state.data;
-        contact[val] = moment(date ,"YYYY-MM-DD").format("DD-MM-YYYY")
+        contact[val] = moment(date ,"YYYY-MM-DD").format("YYYY-MM-DD")
         this.setState({data: contact});
     }
     onChangeChecboks = (e, val) => {
@@ -620,7 +707,7 @@ class MainInfoReportForm extends Component {
                         border:"2px solid rgba(204, 204, 204, 0.47)",
                         padding:"10px",
                         margin:"5px",
-                        height: "calc(100vh - 81px)"
+                        height: "calc(88vh - 81px)"
                     }}>
                         <Form
                             className="antForm-spaceBetween"
@@ -667,12 +754,12 @@ class MainInfoReportForm extends Component {
                         border:"2px solid rgba(204, 204, 204, 0.47)",
                         padding:"10px",
                         margin:"5px",
-                        height: "calc(100vh - 81px)"
+                        height: "calc(88vh - 81px)"
 
                     }}>
                         {!!this.state.reportDate && this.state.data.typeReport === "pdf" ?(
                             <div style={{height:"100#"}}>
-                                <iframe style={{height: "calc(100vh - 81px)"}} height={"100%"} width={"100%"} src={`${process.env.PUBLIC_URL}/${this.state.reportDate[this.state.data.typeReport]}`} />
+                                <iframe style={{height: "calc(86vh - 81px)"}} height={"100%"} width={"100%"} src={`${process.env.PUBLIC_URL}/${this.state.reportDate[this.state.data.typeReport]}`} />
                             </div>
                         ):(
                             <h1>

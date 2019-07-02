@@ -13,6 +13,7 @@ class FundsListCard extends React.Component {
     annotationContentOfDocument: {},
     invMulti: {},
     fundHistoricalNoteMulti: {},
+      fundBiographArcheographNoteMulti:{},
     sizeLoading: false,
     sizeData: [],
   };
@@ -29,11 +30,11 @@ class FundsListCard extends React.Component {
         .then(res => this.setState({ sizeData: res.data }));
       getValueOfMultiText(
         this.props.initialValues.key.split('_')[1],
-        'annotationContentOfDocument,invMulti,fundHistoricalNoteMulti'
+        'annotationContentOfDocument,invMulti,fundHistoricalNoteMulti, fundBiographArcheographNoteMulti'
       )
       .then(res => {
         if(res.success) {
-          ['annotationContentOfDocument', 'invMulti', 'fundHistoricalNoteMulti'].forEach(c => {
+          ['annotationContentOfDocument', 'invMulti', 'fundHistoricalNoteMulti',"fundBiographArcheographNoteMulti"].forEach(c => {
             const obj = res.data.find(o => o.prop == this.props.tofiConstants[c].id);
             obj && this.setState({ [c]: obj.valueMultiStr })
           });
@@ -52,10 +53,10 @@ class FundsListCard extends React.Component {
         .then(res => this.setState({sizeData: res.data}));
       getValueOfMultiText(
         this.props.initialValues.key.split('_')[1],
-        'annotationContentOfDocument,invMulti,fundHistoricalNoteMulti'
+        'annotationContentOfDocument,invMulti,fundHistoricalNoteMulti, fundBiographArcheographNoteMulti'
       ).then(res => {
         if(res.success) {
-          ['annotationContentOfDocument', 'invMulti', 'fundHistoricalNoteMulti'].forEach(c => {
+          ['annotationContentOfDocument', 'invMulti', 'fundHistoricalNoteMulti','fundBiographArcheographNoteMulti'].forEach(c => {
             const obj = res.data.find(o => o.prop == this.props.tofiConstants[c].id);
             obj && this.setState({ [c]: obj.valueMultiStr })
           });
@@ -69,7 +70,7 @@ class FundsListCard extends React.Component {
   }
 
   render() {
-    const { annotationContentOfDocument, invMulti, fundHistoricalNoteMulti } = this.state;
+    const { annotationContentOfDocument, invMulti, fundHistoricalNoteMulti,fundBiographArcheographNoteMulti } = this.state;
     const { t, tofiConstants, initialValues, onCreateObj } = this.props;
     return (
       <AntTabs
@@ -89,7 +90,7 @@ class FundsListCard extends React.Component {
             tabName: t('DESCRIPTIVE_INFO'),
             tabContent: <DescriptiveInfo
               tofiConstants={tofiConstants}
-              initialValues={{...initialValues, annotationContentOfDocument, invMulti, fundHistoricalNoteMulti}}
+              initialValues={{...initialValues, annotationContentOfDocument, invMulti, fundHistoricalNoteMulti,fundBiographArcheographNoteMulti}}
               t={t}
             />
           },

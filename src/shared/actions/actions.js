@@ -272,7 +272,7 @@ export const getAllObjOfCls = (clsConst, dte = '', propConsts) => dispatch => {
                 return dispatch(getAllObjOfClsSuccess(res.data, clsConst));
             }
         })
-};
+}
 
 export const dObj = fd =>
     axios.Cube.dObj(fd);
@@ -331,6 +331,7 @@ export const getFileData = (id,  page='',rotate="",viewtype="image") =>
 export const dFile = (id, cubeConst) =>
     axios.General.dFile(id, cubeConst);
 
+////////////////////////////////////////////////////////////
 
 export const prepareXml = workId => {
   return axios.Works.prepareXMLforSign(workId)
@@ -348,6 +349,26 @@ export const saveSignedXMLForWork = (workId, signedXML) =>
       })
       .catch(err => console.error(err));
 
+export const makeUrlForDownloadByRequestId = reqId => {
+  return axios.Works.makeUrlForDownloadByRequestId(reqId)
+    .then(res => {
+      console.log(res);
+      return res.data;
+    })
+    .catch(err => console.log(err));
+}
+
+export const getWorkIdByRequestId = reqId => {
+    return axios.Works.getWorkIdByRequestId(reqId)
+      .then(res => {
+          console.log(res);
+          return res.data;
+      })
+      .catch(err => console.log(err));
+}
+
+
+////////////////////////////////////////////////////////////
 
 export const listPropValRef = obj => {
     return axios.Test.listPropValRef(obj)
@@ -503,6 +524,9 @@ export const updateCubeData2 = (cubeSConst = '', dte, datas = '', options = {}, 
   return axios.Cube.updateCubeData2(cubeSConst, dte, datas, files)
 };
 
+export const updateCubeData3 = (cubeSConst = '',  datas = '', files) => {
+    return axios.Cube.updateCubeData3(cubeSConst,  datas, files)
+};
 export const factorValLoaded = CONST => dispatch => {
     return axios.General.getFactorVal(CONST)
         .then(res => res.data)
@@ -583,7 +607,6 @@ export const redirectWithPush = path => dispatch => {
 
 export const getValuesOfObjsWithProps = fd =>
     axios.General.getValuesOfObjsWithProps(fd)
-
 
 //////////////////////////////////////////// WORKS ////////////////////////////////////////////
 export const getAct1 = idWork=>

@@ -529,7 +529,7 @@ class InquiryReqs extends React.Component {
     return (
       <div className='Works'>
         <div className="title">
-          <h2>{t('INQUIRY_REQUESTS')}</h2>
+          <h2>{t('QUERIES')}</h2>
         </div>
         <div className="Works__heading">
           <div className="table-header" style={{ justifyContent: 'unset' }}>
@@ -576,6 +576,8 @@ class InquiryReqs extends React.Component {
                 onCreateObj={this.onCreateObj}
                 saveProps={this.saveProps}
                 clsThemeMap={this.clsThemeMap}
+                isHidden={false}
+                isEnabled={true}
               />
             </SiderCard>
           </CSSTransition>

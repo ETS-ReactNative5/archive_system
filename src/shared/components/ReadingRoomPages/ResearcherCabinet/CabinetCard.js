@@ -26,7 +26,6 @@ class CabinetCard extends React.PureComponent {
 
   populateDocs = () => {
     const { workRegCase, workType, docsResearch } = this.props.initialValues;
-
     // if it's parent request
     if(workRegCase && workType && workType.workTypeClass !== 'orderCopyDoc') {
       this.setState({ loadingDocs: true, docs: [] });

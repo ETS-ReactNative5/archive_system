@@ -67,7 +67,7 @@ class FundMakerPage extends React.PureComponent {
             concatType: "and",
             conds: [
               {
-                consts: 'formOfAdmission,dateFormation,liquidation,dateElimination,reasonFundmaker,departmentalAccessory,reasonFundmakerFile,legalStatus,orgRightReceiver,fundmakerArchive,orgIndustry,isActive'
+                consts: 'formOfAdmission,dateFormation,dateRename,liquidation,dateElimination,reasonFundmaker,departmentalAccessory,reasonFundmakerFile,legalStatus,orgRightReceiver,fundmakerArchive,orgIndustry,isActive'
               }
             ]
           }

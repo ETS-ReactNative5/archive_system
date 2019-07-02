@@ -366,7 +366,7 @@ class InquiryReqs extends React.Component {
                     title: t('ID'),
                     dataIndex: 'key',
                     width: '6%',
-                    render: key =>  key  ,
+                    render: key =>  key,
                     sorter: (a, b) => parseInt(a.key.split('_')[1]) - parseInt(b.key.split('_')[1]),
                     filterDropdown: (
                         <div className="custom-filter-dropdown">
@@ -480,7 +480,8 @@ class InquiryReqs extends React.Component {
                       }else {
                           return ""
                       }
-                  }              },
+                  }
+              },
               {
                 key: 'researcheStatus',
                 title: researcheStatus.name[this.lng],
@@ -566,6 +567,8 @@ class InquiryReqs extends React.Component {
                 onCreateObj={this.onCreateObj}
                 saveProps={this.saveProps}
                 clsThemeMap={this.clsThemeMap}
+                isHidden={true}
+                isReadOnly={true}
               />
             </SiderCard>
           </CSSTransition>

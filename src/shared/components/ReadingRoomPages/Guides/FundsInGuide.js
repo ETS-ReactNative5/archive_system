@@ -360,7 +360,12 @@ class FundsInGuide extends React.Component {
                         title: t('FUNDNUMB'),
                         dataIndex: "fundNumber",
                         width: "10%",
-                          render: (key, obj) => { return key.value},
+                          // render: (key, obj) => {return key.value + (!!obj.fundIndex ? + " - " + obj.fundIndex.value : '')},
+                          render: (key, obj) => {
+                          if(!!obj.fundIndex && !!obj.fundIndex.value){
+                              return key.value + " - " + obj.fundIndex.value
+                          } else {return key.value}
+                          },
                         sortBy:'ascend',
                         sorter: (a, b) =>((a.fundNumber.value).replace(/[^0-9]/g,'')) - ((b.fundNumber.value).replace(/[^0-9]/g,'')),
                         filterDropdown: (

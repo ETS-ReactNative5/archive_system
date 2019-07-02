@@ -200,7 +200,7 @@ class RequestsUser extends React.Component {
             this.workRegCaseIds.push(result.workRegCase.value)
         }
         result.workStatusUses = result[this.clsStatusMap[item.clsORtr]];
-        result.resultDescription = result.resultDescriptionLng;
+        // result.resultDescription = result.resultDescriptionLng;
         return result;
     }
     onChange = (pagination, filters, sorter) => {
@@ -247,7 +247,7 @@ class RequestsUser extends React.Component {
                                 width: '6%',
                                 render: key => key,
                                 sorter: (a, b) => parseInt(a.key.split('_')[1]) - parseInt(b.key.split('_')[1]),
-                                sortOrder: this.state.sortState ? 'ascend' : 'descend',
+                                sortOrder: 'descend',
                                 filterDropdown: (
                                     <div className="custom-filter-dropdown">
                                         <Input
@@ -390,26 +390,12 @@ class RequestsUser extends React.Component {
                                             className='green-btn'
                                             onClick={e => {
                                                 e.stopPropagation();
-                                                this.getDocs(rec.workRegCase.value)
-                                                    .then(docs => {
-                                                        this.setState({
-                                                            openModal: true,
-                                                            viewerList: docs.data.map((obj) => ({
-                                                                name: obj.id,
-                                                                title: obj.name[this.lng],
-                                                                fileType: 'document'
-                                                            }))
-                                                        })
-                                                    }).catch(err => {
-                                                    if (err === 'NO_DOCS_OF_CASE') {
-                                                        this.setState({
-                                                            openModal: true,
-                                                            viewerList: arr.map((obj, idx) => ({
-                                                                name: obj[this.lng],
-                                                                title: idx + 1 + ' ' + t('PAGE')
-                                                            }))
-                                                        })
-                                                    }
+                                                this.setState({
+                                                    openModal: true,
+                                                    viewerList: arr.map((obj, idx) => ({
+                                                        name: obj[this.lng],
+                                                        title: idx + 1 + ' ' + t('PAGE')
+                                                    }))
                                                 })
                                             }}
                                         />

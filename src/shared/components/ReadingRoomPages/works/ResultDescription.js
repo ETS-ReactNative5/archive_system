@@ -20,7 +20,8 @@ class ResultDescription extends React.PureComponent {
     this.state = {
       lang: {
         resultDescription: localStorage.getItem("i18nextLng")
-      }
+      },
+      signing: false
     }
   }
 
@@ -50,11 +51,30 @@ class ResultDescription extends React.PureComponent {
     const cube = {
       cubeSConst: 'cubeForWorks',
       doConst: 'doForWorks',
-      dpConst: 'dpForWorks'
+      dpConst: 'dpForWorks',
+      data: this.props.cubeForWorksSingle
     };
     const obj = {
       doItem: this.props.initialValues.key,
     };
+    if (!!this.props.initialValues.resultResearchStatus) {
+      if (this.props.initialValues.resultResearchStatus.value == this.props.tofiConstants.signed.id
+      || this.props.initialValues.resultResearchStatus.value == this.props.tofiConstants.fvResultSended.id) {
+        ////{"resultDescription":{"value":"СРРРРРРРРРРРРд ждфлоыж адфылвожадолфывдафыв ввввуувввыы  s",
+        // "idDataPropVal":19541278,"periodType":0,"dbeg":"1800-01-01","dend":"3333-12-31"}}"
+
+        // idDataPropVal: 20004208
+        // propVal: 6807256
+        // value: 1600
+
+        let tmp = JSON.parse(JSON.stringify(this.props.initialValues.resultResearchStatus));
+        tmp.value = this.props.tofiConstants.fvSignDenied.id;
+        delete tmp.propVal;
+        delete tmp.label;
+        delete tmp.labelFull;
+        rest["resultResearchStatus"] = tmp;
+      }
+    }
     return this.props.saveProps({cube, obj}, {values: rest, oFiles: {resultResearch}}, this.props.tofiConstants);
   };
 
@@ -85,9 +105,9 @@ class ResultDescription extends React.PureComponent {
     if (res.code == "200") {
       // let signedXML = encodeURI(res.responseObject);
       let signedXML = res.responseObject;
-      console.log(signedXML)
       this.saveSignedXML(signedXML)
     } else {
+      this.setState({ signing: false});
       alert("Ошибка/Отмена подписания");
     }
   };
@@ -127,9 +147,11 @@ class ResultDescription extends React.PureComponent {
         }
       );
     }
+    this.setState({ signing: false});
   };
 
   submitSign = async () => {
+    this.setState({ signing: true});
     let workId = this.props.initialValues.key;
     const hideLoading = message.loading(this.props.t("PREPARE_XML_FOR_SIGN"), 60);
     let xml = await prepareXml(workId);
@@ -151,27 +173,57 @@ class ResultDescription extends React.PureComponent {
       initialValues
     } = this.props;
     let show_sign_button = this.props.user.privs.indexOf('sign_auth') != -1;
+
+    let signing = this.state.signing;
+    // this.props.tofiConstants.fvSignDenied -- отменена
+    // this.props.tofiConstants.fvResultSended -- отправлено исследователю
+    // this.props.tofiConstants.signed - подписано
+    // this.props.tofiConstants.notSigned - не подписано
+
     if (show_sign_button) {
-      // -- нет данных
-      if (resultResearchStatus != null) {
-        // -- подписан и/или отправлен пользователю
-        // if (resultResearchStatus.value )
+
+      if (!!this.props.initialValues.resultResearchStatus) {
+        // -- нет данных
+        switch (this.props.initialValues.resultResearchStatus.value) {
+          case this.props.tofiConstants.fvSignDenied.id:
+            show_sign_button = !dirty
+            break;
+          case this.props.tofiConstants.notSigned.id:
+            show_sign_button = !dirty
+            break;
+          case this.props.tofiConstants.fvResultSended.id:
+            show_sign_button = false;
+            break;
+          case this.props.tofiConstants.signed.id:
+            show_sign_button = false;
+            break;
+        }
       }
     }
 
+    let isSignButtonDisabled = signing || !(!!this.props.initialValues.workActualEndDate && (this.props.initialValues.workActualEndDate.value != null))
+    if (!isSignButtonDisabled)
+      isSignButtonDisabled = signing || dirty;
+
+    let signStatusText = 'Не подписан';
+    let resultStatusCaption = resultResearchStatus.name[this.lng];
+    if (!!this.props.initialValues.resultResearchStatus) {
+      signStatusText = this.props.initialValues.resultResearchStatus.label
+    }
+
+    // this.props.initialValues.
     return (
       <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)}
             style={dirty ? {paddingBottom: '43px'} : {}}>
-
+        <p style={{color: 'rgba(0, 0, 0, 0.85)', paddingTop: '8px', paddingBottom:'13px', whiteSpace: 'nowrap'}}>{resultStatusCaption}:
+           &nbsp;<font style={{cursor: 'default', userSelect: 'none', color:'red'}}>{signStatusText}
+            </font>
+          </p>
         {resultDescription && (
           <Field
             name="resultDescription"
             component={renderTextareaLang}
             format={value => (!!value ? value.valueLng[lang.resultDescription] : '')}
-            // parse={value => {
-            //   this.resultDescriptionValue[lang.resultDescription] = value;
-            //   return {...this.resultDescriptionValue}
-            // }}
             normalize={(val, prevVal, obj, prevObj) => {
               let newVal = { ...prevVal };
               newVal.value = val;
@@ -216,7 +268,7 @@ class ResultDescription extends React.PureComponent {
               </Button>
             </div>}
             { show_sign_button &&
-              <Button type='primary' disabled={!(!!this.props.initialValues.workActualEndDate && (this.props.initialValues.workActualEndDate.value != null))} onClick={catchErrors(this.submitSign)}>{t('SIGN')}</Button>
+              <Button type='primary' disabled={isSignButtonDisabled} onClick={catchErrors(this.submitSign)}>{t('SIGN')}</Button>
             }
             {error && <span className="message-error"><i className="icon-error"/>{error}</span>}
           </div>

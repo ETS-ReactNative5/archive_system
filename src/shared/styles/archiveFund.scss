@@ -43,7 +43,15 @@
 }
 
 .w80 {
-  width: 80% !important;
+  width: 90% !important;
+  height: 100vh;
+  position: absolute;
+  top: 10px;
+  left: 5%;
+
+  .ant-modal-content {
+    height: 95vh;
+  }
 }
 
 .antForm-spaceBetween .ant-form-item-label {
@@ -144,11 +152,15 @@
 }
 
 .siderCard_perechenOpen {
-  width: 500px;
+  width: 80%;
+  overflow: scroll;
   padding: 10px 25px;
 
 }
 
+.siderCard_perechen span.ant-tree-switcher_open + span.ant-tree-checkbox, .siderCard_perechen span.ant-tree-switcher_close + span.ant-tree-checkbox{
+  display: none;
+}
 .ant-table {
   height: 100%;
   display: flex;
@@ -1239,6 +1251,22 @@
       }
     }
   }
+}
+
+.p20 {
+  padding: 0px 5px 0 !important;
+}
+.fs12 {
+  font-size: 12px;
+  padding: 10px 0px 0 6px;
+  font-weight: 700;
+}
+.ttl {
+  text-transform: lowercase;
+  padding: 6px 0;
+}
+.padding0_6 {
+  padding: 0 6px;
 }
 
 @media screen and (max-width: 1366px) {

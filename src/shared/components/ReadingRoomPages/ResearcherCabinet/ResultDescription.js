@@ -20,7 +20,7 @@ class ResultDescription extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.resultDescriptionValue = {...this.props.initialValues.resultDescription};
+    this.resultDescriptionValue = !!this.props.initialValues.resultDescription&& {...this.props.initialValues.resultDescription.valueLng};
 }
 
 changeLang = e => {
@@ -31,7 +31,7 @@ changeLang = e => {
 
 componentDidUpdate(prevProps) {
   if(prevProps.initialValues !== this.props.initialValues) {
-    this.resultDescriptionValue = {...this.props.initialValues.resultDescription};
+      this.resultDescriptionValue = !!this.props.initialValues.resultDescription&& {...this.props.initialValues.resultDescription.valueLng};
 }
 }
 onSubmit = values => {
@@ -62,7 +62,7 @@ render() {
           name="resultDescription"
           disabled
           component={renderTextareaLang}
-          format={value => (!!value ? value[lang.resultDescription] : '')}
+          format={value => {  return (!!value ? value.valueLng[lang.resultDescription] : '')}}
           parse={value => { this.resultDescriptionValue[lang.resultDescription] = value; return {...this.resultDescriptionValue} }}
           label={resultDescription.name[this.lng]}
           formItemClass="with-lang--column"

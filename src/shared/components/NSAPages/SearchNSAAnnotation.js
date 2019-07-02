@@ -32,7 +32,9 @@ class SearchNSAAnnotation extends React.Component{
       fundAnnotationFile: [],
       invMulti: '',
       invFile: [],
+        fundBiographArcheographNote:[],
       fundHistoricalNoteMulti: '',
+        fundBiographArcheographNoteMulti:"",
       fundHistoricalNote: [],
       flagSave: false,
       flagSaveFile: false,
@@ -46,21 +48,28 @@ class SearchNSAAnnotation extends React.Component{
     if (this.props.invMulti) {
       this.setState({ invMulti: this.props.invMulti.value });
     }
-    if (this.props.fundHistoricalNoteMulti) {
-      this.setState({ fundHistoricalNoteMulti: this.props.fundHistoricalNoteMulti.value });
-    }
+      if (this.props.fundHistoricalNoteMulti) {
+          this.setState({ fundHistoricalNoteMulti: this.props.fundHistoricalNoteMulti.value });
+      }
+      if (this.props.fundBiographArcheographNoteMulti) {
+          this.setState({ fundBiographArcheographNoteMulti: this.props.fundBiographArcheographNoteMulti.value });
+      }
   }
   
   componentWillReceiveProps(nextProps) {
-    if ((nextProps.annotationContentOfDocument.value !== this.props.annotationContentOfDocument)) {
+    if ((nextProps.annotationContentOfDocument.value !== this.props.annotationContentOfDocument.value )) {
       this.setState({ annotationContentOfDocument: nextProps.annotationContentOfDocument.value, flagSave: false });
     }
-    if ((nextProps.invMulti.value !== this.state.invMulti)) {
+    if ((nextProps.invMulti.value !== this.props.invMulti.value)) {
       this.setState({ invMulti: nextProps.invMulti.value, flagSave: false });
     }
-    if ((nextProps.fundHistoricalNoteMulti.value !== this.state.fundHistoricalNoteMulti)) {
+    if ((nextProps.fundHistoricalNoteMulti.value !== this.props.fundHistoricalNoteMulti.value)) {
       this.setState({ fundHistoricalNoteMulti: nextProps.fundHistoricalNoteMulti.value, flagSave: false });
     }
+      if ((nextProps.fundBiographArcheographNoteMulti.value !== this.props.fundBiographArcheographNoteMulti.value)) {
+          this.setState({ fundBiographArcheographNoteMulti: nextProps.fundBiographArcheographNoteMulti.value, flagSave: false });
+      }
+
   }
   
   onChange(value, name) {
@@ -69,7 +78,8 @@ class SearchNSAAnnotation extends React.Component{
     }, () => {
       const flagSave = this.state.annotationContentOfDocument !== this.props.annotationContentOfDocument.value ||
                         this.state.invMulti !== this.props.invMulti.value ||
-                        this.state.fundHistoricalNoteMulti !== this.props.fundHistoricalNoteMulti.value
+          this.state.fundHistoricalNoteMulti !== this.props.fundHistoricalNoteMulti.value||
+          this.state.fundBiographArcheographNoteMulti !== this.props.fundBiographArcheographNoteMulti.value
       this.setState({flagSave:flagSave})
     });
   };
@@ -92,6 +102,14 @@ class SearchNSAAnnotation extends React.Component{
               invFile.push(val.value)
           }
       }
+      let fundBiographArcheographNote  =[]
+      if (!!values.fundBiographArcheographNote){
+          for (let val of values.fundBiographArcheographNote){
+              if (!!val.idDataPropVal) continue
+
+              fundBiographArcheographNote.push(val.value)
+          }
+      }
       let fundHistoricalNote  =[]
       if (!!values.fundHistoricalNote){
           for (let val of values.fundHistoricalNote){
@@ -100,6 +118,7 @@ class SearchNSAAnnotation extends React.Component{
               fundHistoricalNote.push(val.value)
           }
       }
+
 
 
       let datas = [];
@@ -120,6 +139,7 @@ class SearchNSAAnnotation extends React.Component{
       updateCubeData(CUBE_FOR_FUND_AND_IK, moment().format('YYYY-MM-DD'), JSON.stringify(datas),{},{
           fundAnnotationFile,
           invFile,
+          fundBiographArcheographNote,
           fundHistoricalNote
       })
           .then(res => {
@@ -195,6 +215,24 @@ class SearchNSAAnnotation extends React.Component{
         },
       )
     }
+      if (this.state.fundBiographArcheographNoteMulti !== this.props.fundBiographArcheographNoteMulti.value) {
+          dataToSend.push(
+              {
+                  propConst: 'fundBiographArcheographNoteMulti',
+                  vals:[
+                      {
+                          idDataPropVal: String(this.props.fundBiographArcheographNoteMulti.idDataPropVal),
+                          mode: '',
+                          val: {
+                              kz: this.state.fundBiographArcheographNoteMulti,
+                              ru: this.state.fundBiographArcheographNoteMulti,
+                              en: this.state.fundBiographArcheographNoteMulti,
+                          }
+                      }
+                  ],
+              },
+          )
+      }
     if (dataToSend.length > 0) {
       saveValueOfMultiText(
         this.props.record.key.split('_')[1], JSON.stringify(dataToSend), moment().format('YYYY-DD-MM')
@@ -220,6 +258,9 @@ class SearchNSAAnnotation extends React.Component{
     if (!isEqual(this.state.invFile, this.props.dataRec.invFile)) {
       data.invFile = this.state.invFile;
     };
+      if (!isEqual(this.state.fundBiographArcheographNote, this.props.dataRec.fundBiographArcheographNote)) {
+          data.fundBiographArcheographNote = this.state.fundBiographArcheographNote;
+      };
     if (!isEqual(this.state.fundHistoricalNote, this.props.dataRec.fundHistoricalNote)) {
       data.fundHistoricalNote = this.state.fundHistoricalNote;
     };
@@ -244,6 +285,7 @@ class SearchNSAAnnotation extends React.Component{
       const flagSaveFile = (
         !isEqual(this.state.fundAnnotationFile, this.props.dataRec.fundAnnotationFile) ||
         !isEqual(this.state.invFile, this.props.dataRec.invFile) ||
+        !isEqual(this.state.fundBiographArcheographNote, this.props.dataRec.fundBiographArcheographNote) ||
         !isEqual(this.state.fundHistoricalNote, this.props.dataRec.fundHistoricalNote)
       ); 
       this.setState({flagSaveFile: flagSaveFile})
@@ -265,6 +307,23 @@ class SearchNSAAnnotation extends React.Component{
         }
     };
 
+    reset=()=>{
+        if (this.props.annotationContentOfDocument) {
+            this.setState({ annotationContentOfDocument: this.props.annotationContentOfDocument.value });
+        }
+        if (this.props.invMulti) {
+            this.setState({ invMulti: this.props.invMulti.value });
+        }
+        if (this.props.fundHistoricalNoteMulti) {
+            this.setState({ fundHistoricalNoteMulti: this.props.fundHistoricalNoteMulti.value });
+        }
+        if (this.props.fundBiographArcheographNoteMulti) {
+            this.setState({ fundBiographArcheographNoteMulti: this.props.fundBiographArcheographNoteMulti.value });
+        }
+        this.props.reset()
+        this.setState({flagSave:false})
+
+    }
 
   render() {
     if(!this.props.tofiConstants) return null;
@@ -308,12 +367,10 @@ class SearchNSAAnnotation extends React.Component{
         <Field
           name="fundAnnotationFile"
           cubeSConst={CUBE_FOR_FUND_AND_IK}
-
           component={ renderFileUploadBtn }
           formItemClass="classificationInfo_uploadBtn"
           label={''}
           normalize={this.fileToRedux}
-
             //onChange={(e) => this.onChangeFile(e, 'documentFile')}
           formItemLayout={
             {
@@ -374,12 +431,48 @@ class SearchNSAAnnotation extends React.Component{
             }
           }
         />
+          <FormItem
+              label={tofiConstants["fundBiographArcheographNoteMulti"].name[this.lng]}
+              //{...formItemLayout}
+          >
+          <TextArea
+              autosize={{minRows:5,maxRows:10}}
+              placeholder=""
+              value={this.state.fundBiographArcheographNoteMulti}
+              onChange={(e) => this.onChange(e.target.value, 'fundBiographArcheographNoteMulti')}
+          />
+          </FormItem>
+          <Field
+              name="fundBiographArcheographNote"
+              component={ renderFileUploadBtn }
+              formItemClass="classificationInfo_uploadBtn"
+              label={''}
+              cubeSConst={CUBE_FOR_FUND_AND_IK}
+
+              normalize={this.fileToRedux}
+              formItemLayout={
+                  {
+                      labelCol: { span: 10 },
+                      wrapperCol: { span: 14 }
+                  }
+              }
+          />
         <br/><br/><br/>        
         {(flagSave || flagSaveFile || this.props.dirty)  &&
           <div className="ant-form-btns">
             <Button className="signup-form__btn" htmlType="submit" type="primary" >
               {t('SAVE')}
             </Button>
+              <Button
+                  className="signup-form__btn"
+                  type="danger"
+                  htmlType="button"
+                  style={{ marginLeft: "10px" }}
+                  onClick={this.reset}
+              >
+                  { t("CANCEL")}
+
+              </Button>
           </div>
         }
       </Form>      

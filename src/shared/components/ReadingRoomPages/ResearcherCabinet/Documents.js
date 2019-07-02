@@ -57,6 +57,12 @@ class Documents extends React.Component {
               clsConst: 'orderCopyDoc',
               parent: this.props.initialValues.key.split('_')[1]
             };
+            let newarr  = []
+              for (let val of this.state.selectedRowKeys){
+              newarr.push({
+                  value:val
+              })
+              }
             this.props.onCreateObj(
               {obj},
               {
@@ -68,7 +74,7 @@ class Documents extends React.Component {
                   workRegCase: String(idDelo),
                   workRegInv: String(idInv),
                   workRegFund: String(idFund),
-                  docsResearch: this.state.selectedRowKeys.join(',')
+                  docsResearch: newarr
                 },
               })
           }}
@@ -94,8 +100,8 @@ class Documents extends React.Component {
   };
 
   renderTableData = item => {
-    const constArr = ['fundNumber','pageNumberStart',
-      'pageNumberEnd','archiveCipher','documentDate'];
+    const constArr = ['fundNumber','start',
+      'end','archiveCipher','documentDate'];
     const result = {
       key: item.id.split('_')[1]
     };
@@ -129,28 +135,28 @@ class Documents extends React.Component {
           title: fundNumber.name[this.lng],
           dataIndex: 'fundNumber',
           width: '10%',
-          render: obj =>{return  obj && obj.value}
+          render: obj =>{ return  obj && !!obj.value?obj.value:obj[this.lng]}
         },
         {
           key: 'archiveCipher',
           title: archiveCipher.name[this.lng] + '/' + documentDate.name[this.lng],
           dataIndex: 'archiveCipher',
           width: '40%',
-          render: obj=>{return obj.value}
+          render: obj=>{return obj && !!obj.value?obj.value:obj}
         },
         {
-          key: 'pageNumberStart',
+          key: 'start',
           title: t('PAGE_START'),
-          dataIndex: 'pageNumberStart',
+          dataIndex: 'start',
           width: '20%',
-          render: obj =>{ return obj.value}
+          render: (obj, record) =>{  return !!obj? obj[0][this.props.tofiConstants["pageNumberStart"].id][0] && obj[0][this.props.tofiConstants["pageNumberStart"].id][0].value:record.pageNumberStart && record.pageNumberStart }
         },
         {
-          key: 'pageNumberEnd',
+          key: 'end',
           title: t('PAGE_END'),
-          dataIndex: 'pageNumberEnd',
+          dataIndex: 'end',
           width: '20%',
-          render: obj =>{ return obj.value}
+            render: (obj,record) =>{ return !!obj? obj[0][this.props.tofiConstants["pageNumberEnd"].id][0] && obj[0][this.props.tofiConstants["pageNumberEnd"].id][0].value:record.pageNumberEnd && record.pageNumberEnd }
         },
         /*{
           key: 'from',

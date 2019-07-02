@@ -39,6 +39,7 @@ class SearchNSA extends Component {
 
         this.state = {
             sortState: true,
+            order: 'ascend',
             data: [],
             dataRec: [],
             selectedRow: {},
@@ -79,6 +80,7 @@ class SearchNSA extends Component {
             annotationContentOfDocument: '',
             invMulti: '',
             fundHistoricalNoteMulti: '',
+            fundBiographArcheographNoteMulti:"",
             lastChangeDateScheme: '',
             fundCaseFlags: {
                 caseOCD: false,
@@ -99,7 +101,7 @@ class SearchNSA extends Component {
                     concatType: "and",
                     conds: [
                         {
-                            consts: 'fundNumber,fundHistoricalNote,fundHistoricalNoteMulti,lastChangeDateScheme,invFound,fundIndex,fundDbeg,fundDend,fundCategory,fundFeature,fundArchive,surnameOriginator',
+                            consts: 'fundNumber,fundHistoricalNote,fundHistoricalNoteMulti,fundBiographArcheographNoteMulti,lastChangeDateScheme,fundIndex,fundDbeg,fundDend,fundCategory,fundFeature,fundArchive,surnameOriginator',
                         }
                     ]
                 }
@@ -147,6 +149,7 @@ class SearchNSA extends Component {
     }
 
     populate = () => {
+
         const {doForFundAndIK, dpForFundAndIK} = this.props.tofiConstants;
         this.setState(
             {
@@ -166,7 +169,6 @@ class SearchNSA extends Component {
                 }
             );
         } else {
-            this.setState({loading: false});
         }
         if (!isEmpty(nextProps.cubeForFundAndIKRecord) && !isEmpty(nextProps.tofiConstants) && this.props.cubeForFundAndIKRecord !== nextProps.cubeForFundAndIKRecord) {
             const {doForFundAndIK, dpForFundAndIK} = nextProps.tofiConstants;
@@ -188,7 +190,6 @@ class SearchNSA extends Component {
                 }
             );
         } else {
-            this.setState({loading: false});
         }
     }
 
@@ -241,75 +242,6 @@ class SearchNSA extends Component {
                 console.error(err)
             })
     };
-
-    /*
-      onSaveCubeData= (objVerData, prefix, {method, protocol, ...values}, doItemProp, objDataProp, valOld) => {
-        let datas = [];
-        this.setState({loading:true})
-        try {
-          datas = [{
-            own: [{doConst: objVerData.cube.doConst, doItem: doItemProp, isRel: "0", objData: objDataProp }],
-            props: map(values, (val, key) => {
-              console.log(values, val, key)
-              const propMetaData = getPropMeta(this.props[objVerData.cube.cubeSConst + prefix]["dp_" + this.props.tofiConstants[objVerData.cube.dpConst].id], this.props.tofiConstants[key]);
-              console.log(val, valOld, valOld[key], key);
-              let value = val;
-              let oldValue = valOld[key];
-              if((propMetaData.typeProp === 315 || propMetaData.typeProp === 311 || propMetaData.typeProp === 317) && typeof val === 'string'){
-                value = {kz: val, ru: val, en: val};
-                oldValue = oldValue && {kz: valOld[key], ru: valOld[key], en: valOld[key]};
-              }
-              if(propMetaData.typeProp === 312 && typeof value === 'string') {
-                value = value.split('-').reverse().join('-');
-                oldValue = oldValue && oldValue.split('-').reverse().join('-');
-              }
-              if(val && typeof val === 'object' && val.value) {
-                value = String(val.value);
-                oldValue = oldValue && String(valOld[key].value);
-              }
-              if(val && typeof val === 'object' && val.mode) propMetaData.mode = val.mode;
-              if(propMetaData.isUniq === 2 && val[0] && val[0].value) {
-                propMetaData.mode = val[0].mode;
-                value = val.map(v => String(v.value)).join(",");
-                oldValue = oldValue && valOld[key].map(v => String(v.value)).join(",");
-              }
-              return {propConst: key, val: value, oldValue, typeProp: String(propMetaData.typeProp), periodDepend: String(propMetaData.periodDepend), isUniq: String(propMetaData.isUniq), mode: propMetaData.mode }
-            }),
-            periods: [{ periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31' }]
-          }];
-        } catch(err) {
-          console.error(err);
-          return err;
-        }
-        const hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
-        return updateCubeData(objVerData.cube.cubeSConst, moment().format('YYYY-MM-DD'), JSON.stringify(datas), {}, {method, protocol})
-          .then(res => {
-            hideLoading();
-            if(res.success) {
-              message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
-              if(this.filters) {
-                this.setState({loading: true});
-                const dte = this.state.registryPeriod.format('YYYY-MM-DD');
-                return this.props.getCube('cubeDocuments', JSON.stringify(this.filters), {}, dte)
-                  .then(() => {
-                    this.setState({loading: false, openCard: false, flagSave: false});
-                    return {success: true}
-                  })
-              } else {
-                return {success: true}
-              }
-            } else {
-              message.error(this.props.t('PROPS_UPDATING_ERROR'));
-              if(res.errors) {
-                res.errors.forEach(err => {
-                  message.error(err.text);
-                });
-                return {success: false}
-              }
-            }
-          })
-      };
-    */
 
     onSaveCubeData = (values, doItemProp, objDataProp) => {
         let datas = [];
@@ -442,6 +374,7 @@ class SearchNSA extends Component {
             }
         })
     };
+
     emitEmpty = e => {
         this.setState({
             filter: {
@@ -454,12 +387,15 @@ class SearchNSA extends Component {
     onFundCategoryChange = s => {
         this.setState({filter: {...this.state.filter, fundCategory: s}})
     };
+
     onFundTypeChange = s => {
         this.setState({filter: {...this.state.filter, fundType: s}})
     };
+
     onFundFeatureChange = s => {
         this.setState({filter: {...this.state.filter, fundFeature: s}})
     };
+
     onFundIndustryObjChange = s => {
         const getLastChildren = (dataArr, itemArr) => {
             const result = [];
@@ -595,7 +531,7 @@ class SearchNSA extends Component {
             fundIndustry, fundmakerOfIK, fundmakerMulti, fundExitDate, fundExitReason, fundToGuidbook,
             fundFirstDocFlow, fundDateOfLastCheck, collectionCreateDate, creationConds,
             creationReason, creationPrinciple, collectionLocation,lastChangeDateScheme,
-            caseOCD, irreparablyDamaged, caseFundOfUse, propAuthenticity, typeOfPaperCarrier,fundHistoricalNoteMulti,fundHistoricalNote,surnameOriginator,
+            caseOCD, irreparablyDamaged, caseFundOfUse, propAuthenticity, typeOfPaperCarrier,fundHistoricalNoteMulti,fundBiographArcheographNoteMulti,fundHistoricalNote,surnameOriginator,
             // fundAnnotationFile, invFile,
         } = this.props.tofiConstants;
         const fundNumbObj = item.props.find(element => element.prop == fundNumber.id).values,
@@ -620,6 +556,7 @@ class SearchNSA extends Component {
             lastChangeDateSchemeObj=item.props.find(element => element.prop == lastChangeDateScheme.id),
             fundHistoricalNoteObj=item.props.find(element => element.prop ==  fundHistoricalNote.id),
             fundHistoricalNoteMultiObj= item.props.find(element => element.prop == fundHistoricalNoteMulti.id),
+            fundBiographArcheographNoteMultiObj= item.props.find(element => element.prop == fundBiographArcheographNoteMulti.id),
             surnameOriginatorObj = item.props.find(element => element.prop === surnameOriginator.id),
             fundTypeObj = this.props.tofiConstants[
                 ['fundOrg', 'fundLP', 'collectionOrg', 'collectionLP', 'jointOrg', 'jointLP']
@@ -666,13 +603,15 @@ class SearchNSA extends Component {
             fundIndustry: fundIndustryObj && fundIndustryObj.values && fundIndustryObj.values.length > 0 ? fundIndustryObj.values.sort((a, b) => a.value > b.value)[fundIndustryObj.values.length - 1] : {},
             lastChangeDateScheme:lastChangeDateSchemeObj && lastChangeDateSchemeObj.values ? lastChangeDateSchemeObj.values : {value : moment().format("DD-MM-YYYY")},
             fundHistoricalNoteMulti:fundHistoricalNoteMultiObj && fundHistoricalNoteMultiObj.values ? fundHistoricalNoteMultiObj.values : [],
+            fundBiographArcheographNoteMulti:fundBiographArcheographNoteMultiObj && fundBiographArcheographNoteMultiObj.values ? fundBiographArcheographNoteMultiObj.values : [],
             fundHistoricalNote:fundHistoricalNoteObj && fundHistoricalNoteObj.values ? fundHistoricalNoteObj.values : [],
             surnameOriginator: surnameOriginatorObj && surnameOriginatorObj.values ? surnameOriginatorObj.values.label : "" ,
         }
     };
+
     renderRecordData = (item) => {
         const constArr = ['fundToGuidbook', 'accessDocument', 'locationOfSupplementaryMaterials',
-            'fundAnnotationFile', 'invFile', 'fundHistoricalNote','fundHistoricalNote','fundHistoricalNoteMulti','lastChangeDateScheme','invFound'];
+            'fundAnnotationFile', 'invFile',"fundBiographArcheographNote", 'fundHistoricalNote','fundHistoricalNote','fundHistoricalNoteMulti',"fundBiographArcheographNoteMulti",'lastChangeDateScheme'];
         const result = {
             key: item.id
         };
@@ -688,13 +627,14 @@ class SearchNSA extends Component {
                     annotationContentOfDocument: {},
                     invMulti: {},
                     fundHistoricalNoteMulti: {},
+                    fundBiographArcheographNoteMulti:{}
                 }
                 getValueOfMultiText(
                     this.state.selectedRow.key.split('_')[1],
-                    'annotationContentOfDocument,invMulti,fundHistoricalNoteMulti'
+                    'annotationContentOfDocument,invMulti,fundHistoricalNoteMulti,fundBiographArcheographNoteMulti'
                 ).then(res => {
                     if (res.success) {
-                        ['annotationContentOfDocument', 'invMulti', 'fundHistoricalNoteMulti'].forEach(c => {
+                        ['annotationContentOfDocument', 'invMulti', 'fundHistoricalNoteMulti',"fundBiographArcheographNoteMulti"].forEach(c => {
                             const obj = res.data.find(o => o.prop == this.props.tofiConstants[c].id);
                             if (obj === undefined) {
                                 result[c] = {idDataPropVal: '', value: ''};
@@ -706,6 +646,7 @@ class SearchNSA extends Component {
                             annotationContentOfDocument: result.annotationContentOfDocument,
                             invMulti: result.invMulti,
                             fundHistoricalNoteMulti: result.fundHistoricalNoteMulti,
+                            fundBiographArcheographNoteMulti: result.fundBiographArcheographNoteMulti,
                         })
 
                     } else {
@@ -739,11 +680,20 @@ class SearchNSA extends Component {
                 })
         });
     };
+
+
+
+
+
     onChange = (pagination, filters, sorter) => {
-        if (sorter.columnKey === "fundNumber") {
+        {/* debugger;
+        if ( this.state.order === sorter.order) {
+        }else{
             this.setState({sortState: !this.state.sortState});
-        }
+        }*/}
     }
+
+
 
     closeCard=()=>{
         this.setState({openCard: false})
@@ -752,7 +702,7 @@ class SearchNSA extends Component {
     render() {
         if (isEmpty(this.props.tofiConstants)) return null;
         const {loading, selectedRow, data, filter, fundCaseFlags} = this.state;
-        const {annotationContentOfDocument, invMulti, fundHistoricalNoteMulti,lastChangeDateScheme} = this.state;
+        const {annotationContentOfDocument, invMulti, fundHistoricalNoteMulti,fundBiographArcheographNoteMulti,lastChangeDateScheme} = this.state;
         const {
             t, tofiConstants,
             tofiConstants: {fundNumber, fundDbeg, fundDend, fundIndex, fundCategory, fundFeature, fundIndustry}
@@ -760,8 +710,11 @@ class SearchNSA extends Component {
         this.filteredData = data.map(this.renderTableData).filter(item => {
 
             return (
-                (!!item.fundIndex ? item.fundIndex.value.toLowerCase().includes(filter.fundIndex.toLowerCase()) : true) &&
-                (!!item.fundNumber ? String(item.fundNumber.value.toLowerCase()).includes(String(filter.fundNumber.toLowerCase())) : true) &&
+                // (!!item.fundIndex ? item.fundIndex.value.toLowerCase().includes(filter.fundIndex.toLowerCase()) : true) &&
+                // (!!item.fundNumber ? String(item.fundNumber.value.toLowerCase()).includes(String(filter.fundNumber.toLowerCase())) : true) &&
+                (!filter.fundNumber ||!item.fundNumber ||item.fundNumber.value == filter.fundNumber) &&
+                (!filter.fundIndex ||item.fundIndex.value == filter.fundIndex ?true:false) &&
+
                 item.fundList.toLowerCase().includes(filter.fundList.toLowerCase()) &&
                 (!!item.fundDbeg ? item.fundDbeg.value.toLowerCase().includes(filter.fundDbeg.toLowerCase()) : true) &&
                 (!!item.fundDend ? item.fundDend.value.toLowerCase().includes(filter.fundDend.toLowerCase()) : true) &&
@@ -784,28 +737,6 @@ class SearchNSA extends Component {
                     />
                 </div>
                 <div className="fundsList__heading">
-                    {/* <div className="fundsList__heading-buttons">
-            <Button onClick={() => {
-              const accessLevelObj = this.props.accessLevelOptions.find(al => al.id === 1);
-              this.setState({
-                openCard: true,
-                selectedRow: {
-                  accessLevel: {value: accessLevelObj.id, label: accessLevelObj.name[this.lng]},
-                  fundFeature: {value: this.props.tofiConstants.included.id, label: this.props.tofiConstants.included.name[this.lng]}
-                } })
-            }}>{t('ADD')}</Button>
-            <Link to={{
-              pathname: `/archiveFund/editFundCard/${selectedRow.key}`,
-              state: {
-                fund: {
-                  key: selectedRow.key,
-                  name: selectedRow.name
-                }
-              }
-            }}><Button disabled={ isEmpty(selectedRow) }>{t('VIEW_INVENTORIES')}</Button>
-            </Link>
-            <Button icon='printer'>Отчеты</Button>
-          </div> */}
                     <div className="label-select">
                         <Select
                             name="fundCategory"
@@ -882,7 +813,9 @@ class SearchNSA extends Component {
                                     title: t('FUND_NUMB'),
                                     dataIndex: 'fundNumber',
                                     width: "8%",
-                                    sortOrder: this.state.sortState ? 'ascend' : 'descend',
+                                    sorter: (a, b) => ((a.fundNumber ? a.fundNumber.value : '').replace(/[^0-9]/g, '')) - ((b.fundNumber ? b.fundNumber.value : '').replace(/[^0-9]/g, '')),
+                                    //sortOrder: this.state.sortState ? 'ascend' : 'descend',
+                                    render: obj => {return !!obj.value ? obj.value : ""},
                                     filterDropdown: (
                                         <div className="custom-filter-dropdown">
                                             <Input
@@ -904,10 +837,7 @@ class SearchNSA extends Component {
                                             filterDropdownVisible: visible,
                                         }, () => this.fundNumber.focus());
                                     },
-                                    sorter: (a, b) => ((a.fundNumber.value && a.fundNumber.value).replace(/[^0-9]/g, '')) - ((b.fundNumber.value && b.fundNumber.value).replace(/[^0-9]/g, '')),
-                                    render: obj => !!obj.value ? obj.value : ""
                                 },
-
                                 {
                                     key: 'fundIndex',
                                     title: fundIndex.name[this.lng] || '',
@@ -1081,6 +1011,7 @@ class SearchNSA extends Component {
                                 closeCard={this.closeCard}
                                 withIdDPV={this.withIdDPV}
                                 fundHistoricalNoteMulti={fundHistoricalNoteMulti}
+                                fundBiographArcheographNoteMulti={fundBiographArcheographNoteMulti}
                                 fundCaseFlags={fundCaseFlags}
                             />
                         </SiderCard>

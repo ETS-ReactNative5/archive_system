@@ -393,7 +393,7 @@ class Chat_FundMaker extends React.PureComponent {
                         sorter: (a, b) => {
                             a.key - b.key
                         },
-                        sortOrder: this.state.sortState ? 'ascend' : 'descend',
+                        sortOrder: 'descend',
                     },
                     {
                         key: 'corresOrgFile',

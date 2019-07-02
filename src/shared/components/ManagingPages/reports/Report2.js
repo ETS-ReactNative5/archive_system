@@ -24,28 +24,6 @@ class Report2 extends React.Component {
         apiTypeReport: `/${localStorage.getItem('i18nextLng')}/report/getReports`,
         reportTypeOptions: [],
         periodSlovar: [],
-        quarters: [
-            {
-                value: 1,
-                label: "1 квартал"
-            },
-            {
-                value: 2,
-                label: "2 квартал"
-            },
-            {
-                value: 3,
-                label: "3 квартал"
-            },
-            {
-                value: 4,
-                label: "4 квартал"
-            },
-            {
-                value: 5,
-                label: "Год"
-            },
-        ],
         filter: {
             reportType: {
                 value: '',
@@ -100,6 +78,12 @@ class Report2 extends React.Component {
         fd.append("dte", this.state.dateReport);
         Axios.post(this.state.apiTypeReport, fd)
             .then(res => {
+                if (res.data.success===false && res.data.errors){
+                    for(let val of  res.data.errors){
+                        message.error(val.text)
+                    }
+                    return false
+                }
                 this.setState({
                     reportTypeOptions: res.data.data,
                     loading: false
@@ -113,6 +97,8 @@ class Report2 extends React.Component {
             })
     }
     getQuarterRange = (quarter) => {
+        this.lng = localStorage.getItem("i18nextLng");
+
         if (quarter === null) {
             this.setState({
                 starttDate: "",
@@ -122,96 +108,13 @@ class Report2 extends React.Component {
             })
             return false
         }
-        // if (quarter.value ===5){
-        //     this.setState({
-        //         starttDate:moment().startOf('year').format("YYYY-MM-DD"),
-        //         endDate:moment().endOf('year').format("YYYY-MM-DD"),
-        //         quarter:quarter
-        // })
-        //     return false
-        // }
-        // const start = moment().quarter(quarter.value).startOf('quarter').format("YYYY-MM-DD");
-        //
-        // const end = moment().quarter(quarter.value).endOf('quarter').format("YYYY-MM-DD");
+        let defOption = this.state.periodSlovar.find(el=>el.id === quarter)
         this.setState({
-            quarter: quarter
+            quarter: quarter,
+            objDefult:{label:defOption.name[this.lng]}
         })
     }
-    // onChangeYear=(e)=>{
-    //     if (!!e.target.value) {
-    //
-    //
-    //         let year = e.target.value.replace(/\D/g, '').substr(0, 4)
-    //         if (!!year) {
-    //
-    //             this.setState({
-    //                 year: year
-    //             })
-    //         } else {
-    //             this.getQuarterRange(this.state.quarter)
-    //         }
-    //     }else {
-    //         this.setState({
-    //             year: ""
-    //         })
-    //     }
-    //
-    // }
-    // onSelectChangeReoprtType=(e)=>{
-    //     let filter = {...this.state.filter}
-    //
-    //     if(!!e){
-    //         filter.reportType = e
-    //         this.setState({
-    //             filter:filter,
-    //         })
-    //     }else {
-    //         filter.reportType = {
-    //             value:"",
-    //             label:""
-    //         }
-    //     }
-    //
-    //
-    // }
-    // submitFilt=()=>{
-    //     if (this.state.year.length <4){
-    //         return false
-    //     }
-    //     if (this.state.quarter.value ===5){
-    //         let startDate = this.state.year + this.state.starttDate.slice(4)
-    //         let newYar = Number(this.state.year) +1
-    //         let endDate = String(newYar) + this.state.endDate.slice(4)
-    //         this.setState({
-    //             starttDate:startDate,
-    //             endDate:endDate,
-    //         })
-    //         return false
-    //
-    //     }
-    //     let startDate = this.state.year + this.state.starttDate.slice(4)
-    //     let endDate = this.state.year + this.state.endDate.slice(4)
-    //     this.setState({
-    //         starttDate:startDate,
-    //         endDate:endDate,
-    //     })
-    // }
-    // updateTable=(filter)=>{
-    //     this.setState({
-    //         filterTable:filter
-    //     })
-    // }
-    // getData=(data)=>{
-    //     this.setState({
-    //         data:data,
-    //         showReport:true
-    //     })
-    // }
-    // getSpiner=(data)=>{
-    //     this.setState({
-    //         loading:data
-    //     })
-    // }
+
     dateReport = (mom, data) => {
         this.setState({
             dateReport: data
@@ -268,7 +171,7 @@ class Report2 extends React.Component {
             <div className='Works'>
                 <Spin spinning={this.state.loading}>
 
-                    <div className="title"><h2>{t('REPORTS')}</h2></div>
+                    <div className="title"><h2>{t('REPORT')}</h2></div>
                     <div className="Works__heading ">
                         <div className="table-header ">
 
@@ -302,20 +205,6 @@ class Report2 extends React.Component {
 
                                 </Select>
                             </div>
-                            {/*<div className="label-select">*/}
-                            {/*<Input*/}
-                            {/*name="periodValue"*/}
-                            {/*onChange={this.onChangeYear}*/}
-                            {/*value={this.state.year}*/}
-                            {/*disabled={!this.state.quarter}*/}
-                            {/*placeholder={t('Значение периода')}*/}
-                            {/*/>*/}
-                            {/*</div>*/}
-                            {/*<div className="">*/}
-
-                            {/*<Button type="primary"  onClick={this.submitFilt}*/}
-                            {/*>Применить</Button>*/}
-                            {/*</div>*/}
                         </div>
                     </div>
                     <div className='fundsList__body'>
@@ -422,10 +311,6 @@ class Report2 extends React.Component {
                             </SiderCard>
                         </CSSTransition>
                     </div>
-                    {/*<div className="report_body">*/}
-                    {/*<FilterReport updateTable={this.updateTable} getSpiner={this.getSpiner} getData={this.getData} filterType={this.state.filter} {...this.props}/>{this.state.showReport === true? <ViewReports filterType={this.state.filter} filter={this.state.filterTable} data={this.state.data} />  :""}*/}
-                    {/*</div>*/}
-
                 </Spin>
 
             </div>

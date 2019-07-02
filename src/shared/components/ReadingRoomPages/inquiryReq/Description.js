@@ -113,6 +113,7 @@ class Description extends React.PureComponent {
     const { lang } = this.state;
     this.lng = localStorage.getItem('i18nextLng');
 
+    let isEnabled = !!this.props.isEnabled;
     const {  t, handleSubmit, reset, dirty, error, submitting, fundmakerOfIKOptions,
       tofiConstants: {documentContent, formulationResearch, fundmakerOfIK} } = this.props;
     return (
@@ -138,7 +139,7 @@ class Description extends React.PureComponent {
             }}
 
             label={documentContent.name[this.lng]}
-
+            disabled = {!isEnabled}
             formItemClass="with-lang--column"
             changeLang={this.changeLang}
           />
@@ -160,7 +161,7 @@ class Description extends React.PureComponent {
             label: option.name[this.lng]
           })) : []}
           normalize={this.selectToRedux}
-
+          disabled = {!isEnabled}
           onFocus={this.loadOptions('fundmakerOfIK')}
         />}
         {formulationResearch && <Field
@@ -169,7 +170,7 @@ class Description extends React.PureComponent {
           label={formulationResearch.name[this.lng]}
           normalize={this.fileToRedux}
           cubeSConst="cubeStudy"
-
+          disabled = {!isEnabled}
           formItemLayout={
             {
               labelCol: { span: 10 },

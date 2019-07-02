@@ -231,6 +231,81 @@ class WorksPropertyForm extends Component {
         return result;
     };
 
+    componentDidUpdate(prevProps) {
+        if(prevProps.initialValues.key !== this.props.initialValues.key) {
+           
+            if (!!this.props.initialValues.workType) {
+                if(!!this.props.initialValues.workRegCase) {
+
+                !!this.props.initialValues.workRegCase && !!this.props.initialValues.workRegCase.value &&
+                getIdGetObj(this.props.initialValues.workRegCase.value, 'doForCase').then(res2 => {
+                    const filters = {
+                        filterDOAnd: [
+                            {
+                                dimConst: 'doForCase',
+                                concatType: "and",
+                                conds: [
+                                    {
+                                        ids: String(res2.data.idDimObj)
+                                    }
+                                ]
+                            }
+                        ],
+                        filterDPAnd: [
+                            {
+                                dimConst: 'dpForCase',
+                                concatType: "and",
+                                conds: [
+                                    {
+                                        consts: "caseDbeg,caseDend,caseNumberOfPages"
+                                    }
+                                ]
+                            }
+                        ]
+                    };
+    
+                    const fd = new FormData();
+                    fd.append("cubeSConst", 'CubeForAF_Case');
+                    fd.append("filters", JSON.stringify(filters));
+                    axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getCubeData`, fd).then(res => {
+                        var cubeData = res.data.data;
+                        const parsedCube = parseCube_new(
+                        cubeData["cube"],
+                        [],
+                        "dp",
+                        "do",
+                        cubeData['do_' + this.props.tofiConstants.doForCase.id],
+                        cubeData['dp_' + this.props.tofiConstants.dpForCase.id],
+                        ['do_' + this.props.tofiConstants.doForCase.id],
+                        ['dp_' + this.props.tofiConstants.dpForCase.id]
+                        );
+    
+                        var tableData = parsedCube.map(this.renderTableData);
+                        var caseNumberOfPages = tableData[0].caseNumberOfPages.value;
+                        var caseDbeg = tableData[0].caseDbeg.value;
+                        var caseDend = tableData[0].caseDend.value;
+    
+                        this.setState({
+                            tableData: tableData,
+                            caseNumberOfPages: caseNumberOfPages,
+                            caseDbeg: caseDbeg,
+                            caseDend: caseDend
+                        });
+                    });
+                }
+                );
+                } else {
+                    this.setState({
+                        tableData: '',
+                        caseNumberOfPages: '',
+                        caseDbeg: '',
+                        caseDend: ''
+                    });
+                }
+            }
+        }
+    }
+
     componentDidMount() {
         if (!!this.props.initialValues.workType) {
 

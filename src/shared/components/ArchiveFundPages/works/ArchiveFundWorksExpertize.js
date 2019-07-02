@@ -201,7 +201,7 @@ class ArchiveFundWorksExpertize extends React.PureComponent {
             },
             {
               key: 'cases',
-              title: 'CASE_NAME',
+              title: t('CASE_NAME'),
               dataIndex: 'cases',
               width: '40%',
             },
@@ -211,8 +211,9 @@ class ArchiveFundWorksExpertize extends React.PureComponent {
               dataIndex: 'availability',
               width: '10%',
               className: 'td-center',
-              render: (text, record) => (
-                <Checkbox checked={text} onChange={(e) => this.onChange(!record.temporaryUse && e.target.checked, record.key, 'availability')}/>
+              render: (text, record) =>  (
+
+                <Checkbox checked={text} onChange={ (e) => this.onChange(!record.temporaryUse && e.target.checked, record.key, 'availability')}/>
               )
             },
             {

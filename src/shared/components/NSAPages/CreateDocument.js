@@ -325,13 +325,17 @@ class CreateDocument extends React.Component {
             invNumber: !!invNumberObj && invNumberObj.values ? invNumberObj.values.value : '',
             orderIndex: parseInt(!!invNumberObj && !!invNumberObj.values && invNumberObj.values.value ? invNumberObj.values.value : '0') * 1000,
             //start, end
-            pageNumberStart: startObj && startObj.values[0].idDataPropVal && startObj.values[0][pageNumberStart.id][0],
+            pageNumberStart2: startObj && startObj.values[0].idDataPropVal && startObj.values[0][pageNumberStart.id][0],
+            pageNumberStart: startObj && startObj.values[0].idDataPropVal && startObj.values[0][pageNumberStart.id].length>0 && startObj.values[0][pageNumberStart.id][0].value,
 //            pageNumberStart: startObj && startObj.values[0].idDataPropVal && pageNumberStartObj && pageNumberStartObj.complexChildValues.parentDataPropVal == [startObj.values[0].idDataPropVal] && pageNumberStartObj.complexChildValues.value,
-            turnoverSheetStart: startObj && startObj.values[0].idDataPropVal && startObj.values[0][turnoverSheetStart.id][0],
+            turnoverSheetStart2: startObj && startObj.values[0].idDataPropVal && startObj.values[0][turnoverSheetStart.id][0],
+            turnoverSheetStart: startObj && startObj.values[0].idDataPropVal && startObj.values[0][turnoverSheetStart.id].length>0 &&startObj.values[0][turnoverSheetStart.id][0].value,
             // turnoverSheetStart: startObj && startObj.values[0].idDataPropVal && turnoverSheetStartObj && turnoverSheetStartObj.complexChildValues.parentDataPropVal == [startObj.values[0].idDataPropVal] && turnoverSheetStartObj.complexChildValues.value,
-            pageNumberEnd: endObj && endObj.values[0].idDataPropVal && endObj.values[0][pageNumberEnd.id][0],
+            pageNumberEnd2: endObj && endObj.values[0].idDataPropVal && endObj.values[0][pageNumberEnd.id][0],
+            pageNumberEnd: endObj && endObj.values[0].idDataPropVal && endObj.values[0][pageNumberEnd.id].length>0&&endObj.values[0][pageNumberEnd.id][0].value,
             // pageNumberEnd: endObj && endObj.values[0].idDataPropVal && pageNumberEndObj && pageNumberEndObj.complexChildValues.parentDataPropVal == [endObj.values[0].idDataPropVal] && pageNumberEndObj.complexChildValues.value,
-            turnoverSheetEnd: endObj && endObj.values[0].idDataPropVal && endObj.values[0][turnoverSheetEnd.id][0] ,
+            turnoverSheetEnd: endObj && endObj.values[0].idDataPropVal && endObj.values[0][turnoverSheetEnd.id].length>0 && endObj.values[0][turnoverSheetEnd.id][0].value ,
+            turnoverSheetEnd2: endObj && endObj.values[0].idDataPropVal && endObj.values[0][turnoverSheetEnd.id][0] ,
             // turnoverSheetEnd: endObj && endObj.values[0].idDataPropVal && turnoverSheetEndObj && turnoverSheetEndObj.complexChildValues.parentDataPropVal == [endObj.values[0].idDataPropVal] && turnoverSheetEndObj.complexChildValues.value,
             //pageNumberEnd
             //turnoverSheetEnd
@@ -1408,14 +1412,14 @@ class CreateDocument extends React.Component {
                                 title: t('SHEET'),
                                 dataIndex: 'pageNumberStart',
                                 width: '10%',
-                                render: (obj, record) =>{ return this.renderNumber(obj.value, record, 'pageNumberStart')},
+                                render: (obj, record) =>{ return this.renderNumber(obj, record, 'pageNumberStart')},
                             },
                             {
                                 key: 'turnoverSheetStart',
                                 title: t('TURNOVER'),
                                 dataIndex: 'turnoverSheetStart',
                                 width: '10%',
-                                render: (obj, record) => this.renderCheckbox(obj.value, record, 'turnoverSheetStart'),
+                                render: (obj, record) => this.renderCheckbox(obj, record, 'turnoverSheetStart'),
                             },
                         ]
 
@@ -1430,14 +1434,14 @@ class CreateDocument extends React.Component {
                                 title: t('SHEET'),
                                 dataIndex: 'pageNumberEnd',
                                 width: '10%',
-                                render: (obj, record) => this.renderNumber(obj.value, record, 'pageNumberEnd'),
+                                render: (obj, record) => this.renderNumber(obj, record, 'pageNumberEnd'),
                             },
                             {
                                 key: 'turnoverSheetEnd',
                                 title: t('TURNOVER'),
                                 dataIndex: 'turnoverSheetEnd',
                                 width: '10%',
-                                render: (obj, record) => this.renderCheckbox(obj.value, record, 'turnoverSheetEnd'),
+                                render: (obj, record) => this.renderCheckbox(obj, record, 'turnoverSheetEnd'),
                             },
                         ]
 

@@ -348,6 +348,7 @@ class MainInfoFundForm extends React.Component {
                     normalize={this.strToRedux}
                     colon
                     component={renderInput}
+                    disabled={!!this.props.initialValues.key}
                     label={invNumber.name[this.lng]}
                     formItemLayout={
                         {
@@ -599,7 +600,7 @@ class MainInfoFundForm extends React.Component {
                         }
                     }
                 />}
-                {invTypeValue && invTypeValue.value == invTypePerm.id && invApprovalDate1 && <Field
+                {invApprovalDate1 && <Field
                     name='invApprovalDate1'
                     component={renderDatePicker}
                     disabled={!!this.props.initialValues.key}

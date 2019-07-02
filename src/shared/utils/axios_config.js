@@ -118,6 +118,20 @@ export const Cube = {
     return axios.post(`/${localStorage.getItem('i18nextLng')}/cube/saveCubeData2`, fd)
       .then(res => res.data);
   },
+    updateCubeData3: (cubeSConst,  datas, files) => {
+        const fd = new FormData();
+        fd.append("cubeSConst", cubeSConst);
+        fd.append("datas", datas);
+        forEach(files, (fileArr, key) => {
+            fileArr && fileArr.forEach((file, idx) => {
+                // --- Азамат, добавил кодирование имени файла для правильного сохранения / восстановления
+                file && !key.startsWith('__Q__') && fd.append(`files_${key}_${idx + 1}`, file, encodeURI(file.name));
+                file && key.startsWith('__Q__') && fd.append(`filesQ_${key.split('__Q__')[1]}_${idx + 1}`, file, encodeURI(file.name));
+            });
+        });
+        return axios.post(`/${localStorage.getItem('i18nextLng')}/cube/saveCubeData3`, fd)
+            .then(res => res.data);
+    },
   // Creating new obj and writing it in Cube
   createObj: (cube, obj) => {
     const fd = new FormData();
@@ -298,7 +312,8 @@ export const General = {
       .then(res => res.data),
   getValuesOfObjsWithProps: fd =>
     axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getValuesOfObjsWithProps`, fd)
-      .then(res => res.data),
+      .then(res => res.data)
+      .catch(err=>console.error(err)),
   // New Api for getting list of obj
   getObjListNew: fd =>
     axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjListNew`, fd)
@@ -496,6 +511,12 @@ export const Works = {
     return axios.post(`/${localStorage.getItem('i18nextLng')}/Sign/saveSignedXMLForWork`, fd)
       .then(res => res.data)
   },
+  makeUrlForDownloadByRequestId:(reqId)=>
+    axios.get(`/${localStorage.getItem('i18nextLng')}/Sign/makeUrlForDownloadByRequestId?reqId=${reqId}`)
+      .then(res => res.data),
+  getWorkIdByRequestId: (reqId)=>
+    axios.get(`/${localStorage.getItem('i18nextLng')}/Sign/getWorkIdByRequestId?reqId=${reqId}`)
+      .then(res => res.data)
 };
 
 export const ReadingRoom = {

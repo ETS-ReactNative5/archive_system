@@ -3,7 +3,7 @@ import {Button, Col, Input, message, Modal, Row, Tree, Select} from "antd";
 import {connect} from "react-redux";
 import {
     createObj, getAllObjOfCls, getCube,
-    getObjList
+    getObjList, updateCubeData2
 } from "../../../../actions/actions";
 import {parseCube_new} from "../../../../utils/cubeParser";
 import axios from 'axios';
@@ -29,7 +29,10 @@ class ModalNomen extends React.Component {
         showAddModalPost: false,
         newNameRazdel: '',
         listPerechenOption: [],
-        perechenTree:[]
+        perechenTree: [],
+        DisableAddFromPerechen: true,
+        ObjIdFromPerechen: '',
+        objsArrFromPerechen: []
     };
 
 
@@ -125,11 +128,22 @@ class ModalNomen extends React.Component {
         });
     };
 
-    onCheck = (checkedKeys) => {
-        console.log('onCheck', checkedKeys);
-        this.setState({checkedKeys});
-    };
 
+    onSelectFromPerechen = (selectedKeys, info) => {
+        console.log('onSelect', selectedKeys, '-', info);
+        if (info.node.props.hasChild === 0) {
+            this.setState({
+                DisableAddFromPerechen: false,
+                ObjIdFromPerechen: selectedKeys[0]
+            })
+        } else {
+            this.setState({
+                DisableAddFromPerechen: true
+            })
+        }
+
+
+    };
     onSelect = (selectedKeys, info) => {
         console.log('onSelect', info);
 
@@ -225,10 +239,9 @@ class ModalNomen extends React.Component {
 
     renderTreeNodes2 = (data) => {
         return data.map((item) => {
-            debugger;
-            item.isLeaf=!item.hasChild;
-            item.title=item.name && item.name.ru;
-            item.key=item.id;
+            item.isLeaf = !item.hasChild;
+            item.title = item.name && item.name.ru;
+            item.key = item.id;
             if (item.children) {
                 return (
                 <TreeNode title={item.title} key={item.key} dataRef={item.parent}>
@@ -242,18 +255,18 @@ class ModalNomen extends React.Component {
 
 
     onLoadData = (treeNode) => {
-   
+
         const fd = new FormData();
         // fd.append('clsConst', 'nomenNodeList');
         fd.append('parent', treeNode.props.dataRef.key);
         return getObjList(fd)
         .then(res => {
-            if(res.success) {
+            if (res.success) {
                 treeNode.props.dataRef.children = res.data.map(o => ({
                     key: o.id,
                     name: o.name,
-                    id:o.id, 
-                    hasChild:o.hasChild,
+                    id: o.id,
+                    hasChild: o.hasChild,
                     title: o.name.ru,
                     isLeaf: !o.hasChild,
                     perechenNodeNumber: o.perechenNodeNumber,
@@ -270,7 +283,6 @@ class ModalNomen extends React.Component {
             console.error(err);
         })
     };
-
 
 
     renderTableDataInv = (item, ids) => {
@@ -352,13 +364,11 @@ class ModalNomen extends React.Component {
             ru: this.state.newNamePost,
             en: this.state.newNamePost
         };
-
         const cube = {
             cubeSConst: 'cubeSNomen',
             doConst: 'dimObjNomen',
             dpConst: 'dimPropNomen'
         };
-
         var selectedKeys = this.state.selectedKeys;
         var obj = {
             name: name,
@@ -385,6 +395,97 @@ class ModalNomen extends React.Component {
 
 
     };
+
+
+    addFromPerechen = () => {
+        const cube = {
+            cubeSConst: 'cubeSNomen',
+            doConst: 'dimObjNomen',
+            dpConst: 'dimPropNomen'
+        };
+        let arrayOfObjsToSave = this.state.objsArrFromPerechen;
+        let hideCreateObj = message.loading('лобавление из перечня', 0);
+        for (let el of arrayOfObjsToSave) {
+            var name = {
+                kz: el.props.title,
+                ru: el.props.title,
+                en: el.props.title
+            };
+
+            var obj = {
+                name: name,
+                fullName: name,
+                clsConst: 'nomenItemList',
+                parent: this.state.selectedKeysid.split("_")[1]
+            };
+
+            createObj(cube, obj).then(res => {
+
+                if (res.success == true) {
+                    let linkLife = el.props.shelfLifeOfPerechen.idRef===0 ? this.props.tofiConstants[''].id : el.props.shelfLifeOfPerechen.idRef;
+                    const datas = [{
+                        own: [{
+                            doConst: 'dimObjNomen',
+                            doItem: res.data.idItemDO,
+                            isRel: "0",
+                            objData: {}
+                        }],
+                        props: [
+                            {
+                                propConst: 'nomenIndex',
+                                val: {
+                                    en: el.props.perechenNodeNumber.en,
+                                    ru: el.props.perechenNodeNumber.ru,
+                                    kz: el.props.perechenNodeNumber.kz,
+                                },
+                                typeProp: '31',
+                                periodDepend: "0",
+                                isUniq: '1',
+                                mode: 'ins'
+                            },
+                            {
+                                propConst: 'nomenCasesNote',
+                                val: {
+                                    en: el.props.perechenNote.en,
+                                    ru: el.props.perechenNote.ru,
+                                    kz: el.props.perechenNote.kz,
+                                },
+                                typeProp: '31',
+                                periodDepend: "0",
+                                isUniq: '1',
+                                mode: 'ins'
+                            },
+             /*               {
+                                propConst: 'shelfLifeOfPerechen',
+                                val: linkLife,
+                                typeProp: '11',
+                                periodDepend: "0",
+                                isUniq: '1',
+                                mode: 'ins'
+                            }*/
+                        ],
+                        periods: [{
+                            periodType: '0',
+                            dbeg: '1800-01-01',
+                            dend: '3333-12-31'
+                        }]
+                    }];
+
+                    return updateCubeData2('cubeSNomen', '', JSON.stringify(datas)).then(res2 => res2.success == true ? this.addingDone() : console.log("error"));
+                }
+                message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'), 3)
+
+            })
+
+        }
+        hideCreateObj();
+    };
+
+    addingDone = () => {
+        this.setState({
+            showPerechenBar: false
+        })
+    };
     changeNamePost = (e) => {
         this.setState({
             newNamePost: e.target.value
@@ -394,6 +495,11 @@ class ModalNomen extends React.Component {
         this.setState({
             showPerechenBar: false
         })
+    };
+
+    onCheck = (checkedKeys, e) => {
+        console.log('onCheck', checkedKeys);
+        this.setState({checkedKeys, objsArrFromPerechen: e.checkedNodes});
     };
 
     changePerechen = (value) => {
@@ -421,12 +527,11 @@ class ModalNomen extends React.Component {
                     }} disabled={this.state.disabledAddRazdel}
                             type='primary'>{this.state.addLevel}</Button>
 
-
+                     1111
                     {!!this.state.data && <Tree
                     onExpand={this.onExpand}
                     expandedKeys={this.state.expandedKeys}
                     autoExpandParent={this.state.autoExpandParent}
-                    onCheck={this.onCheck}
                     checkedKeys={this.state.checkedKeys}
                     onSelect={this.onSelect}
                     selectedKeys={this.state.selectedKeys}
@@ -472,6 +577,10 @@ class ModalNomen extends React.Component {
             <div
             className={this.state.showPerechenBar ? 'siderCard_perechen siderCard_perechenOpen' : 'siderCard_perechen' }>
                 <Button onClick={() => this.closePerechen()}>Закрыть</Button>
+                <Button type="primary" className="ml-4"
+                        disabled={!this.state.objsArrFromPerechen}
+                        onClick={() => this.addFromPerechen()}>Добавить из
+                    перечня</Button>
                 <h3>Основание</h3>
                 <Select
                 onChange={this.changePerechen}
@@ -481,7 +590,10 @@ class ModalNomen extends React.Component {
                 </Select>
 
 
-                <Tree loadData={this.onLoadData}>
+               22222 <Tree checkable
+                      checkedKeys={this.state.checkedKeys}
+                      loadData={this.onLoadData}
+                      onCheck={this.onCheck}>
                     {this.renderTreeNodes2(this.state.perechenTree)}
                 </Tree>
 

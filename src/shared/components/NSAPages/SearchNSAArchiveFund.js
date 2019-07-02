@@ -145,7 +145,7 @@ class SearchNSAArchiveFund extends React.Component {
     }
 
     renderTableData = item => {
-        const constArr = ['invFund','fundNumber'];
+        const constArr = ['invFund','invNumber'];
         const result = {
             key: item.id,
             name:item.name
@@ -298,9 +298,9 @@ class SearchNSAArchiveFund extends React.Component {
                         columns={
                             [
                                 {
-                                    key: 'fundNumber',
-                                    title: t('FUND_NUMB'),
-                                    dataIndex: 'fundNumber',
+                                    key: 'invNumber',
+                                    title: t('INV_NUMB'),
+                                    dataIndex: 'invNumber',
                                     width: '7%',
                                     render: obj => obj && obj.value,
                                 },

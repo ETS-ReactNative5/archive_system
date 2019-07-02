@@ -11,6 +11,9 @@ class WorkDescription extends React.PureComponent {
     super(props);
 
     this.state = {
+      customerReqsValue: '',
+      reasonForRefusalCaseValue: '',
+      reasonForRefusalCaseStorageValue: '',
       lang: {
         customerReqs: localStorage.getItem("i18nextLng"),
         reasonForRefusalCase: localStorage.getItem("i18nextLng"),
@@ -20,9 +23,11 @@ class WorkDescription extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.customerReqsValue = {...this.props.initialValues.customerReqs};
-    this.reasonForRefusalCaseValue = {...this.props.initialValues.reasonForRefusalCase};
-    this.reasonForRefusalCaseStorageValue = {...this.props.initialValues.reasonForRefusalCaseStorage};
+    this.setState({
+      customerReqsValue : {...this.props.initialValues.customerReqs},
+      reasonForRefusalCaseValue : {...this.props.initialValues.reasonForRefusalCase},
+      reasonForRefusalCaseStorageValue : {...this.props.initialValues.reasonForRefusalCaseStorage}
+    })
   }
 
   changeLang = e => {
@@ -33,9 +38,11 @@ class WorkDescription extends React.PureComponent {
 
   componentDidUpdate(prevProps) {
     if(prevProps.initialValues !== this.props.initialValues) {
-      this.customerReqsValue = {...this.props.initialValues.customerReqs};
-      this.reasonForRefusalCaseValue = {...this.props.initialValues.reasonForRefusalCase};
-      this.reasonForRefusalCaseStorageValue = {...this.props.initialValues.reasonForRefusalCaseStorage};
+      this.setState({
+        customerReqsValue : {...this.props.initialValues.customerReqs},
+        reasonForRefusalCaseValue : {...this.props.initialValues.reasonForRefusalCase},
+        reasonForRefusalCaseStorageValue : {...this.props.initialValues.reasonForRefusalCaseStorage}
+      })
     }
   }
 
@@ -44,6 +51,7 @@ class WorkDescription extends React.PureComponent {
     this.lng = localStorage.getItem('i18nextLng');
 
     const {  tofiConstants: {customerReqs, reasonForRefusalCase, reasonForRefusalCaseStorage} } = this.props;
+    debugger
     return (
       <Form className="antForm-spaceBetween">
         {customerReqs && (
@@ -51,8 +59,8 @@ class WorkDescription extends React.PureComponent {
             name="customerReqs"
             component={renderTextareaLang}
             disabled
-            format={value => (!!value ? value[lang.customerReqs] : '')}
-            parse={value => { this.customerReqsValue[lang.customerReqs] = value; return {...this.customerReqsValue} }}
+            format={value => (!!value ? value.valueLng[lang.customerReqs] : '')}
+            // parse={value => { this.state.customerReqsValue[lang.customerReqs] = value; return {...this.state.customerReqsValue} }}
             label={customerReqs.name[this.lng]}
             formItemClass="with-lang--column"
             changeLang={this.changeLang}
@@ -63,8 +71,8 @@ class WorkDescription extends React.PureComponent {
             name="reasonForRefusalCase"
             component={renderTextareaLang}
             disabled
-            format={value => (!!value ? value[lang.reasonForRefusalCase] : '')}
-            parse={value => { this.reasonForRefusalCaseValue[lang.reasonForRefusalCase] = value; return {...this.reasonForRefusalCaseValue} }}
+            format={value => (!!value ? value.valueLng[lang.reasonForRefusalCase] : '')}
+            // parse={value => { this.state.reasonForRefusalCaseValue[lang.reasonForRefusalCaseValue] = value; return {...this.state.reasonForRefusalCaseValue} } }
             label={reasonForRefusalCase.name[this.lng]}
             formItemClass="with-lang--column"
             changeLang={this.changeLang}
@@ -75,8 +83,8 @@ class WorkDescription extends React.PureComponent {
             name="reasonForRefusalCaseStorage"
             component={renderTextareaLang}
             disabled
-            format={value => (!!value ? value[lang.reasonForRefusalCaseStorage] : '')}
-            parse={value => { this.reasonForRefusalCaseStorageValue[lang.reasonForRefusalCaseStorage] = value; return {...this.reasonForRefusalCaseStorageValue} }}
+            format={value => (!!value ? value.valueLng[lang.reasonForRefusalCaseStorage] : '')}
+            // parse={value => { this.state.reasonForRefusalCaseStorageValue[lang.reasonForRefusalCaseStorage] = value; return {...this.state.reasonForRefusalCaseStorageValue} }}
             label={reasonForRefusalCaseStorage.name[this.lng]}
             formItemClass="with-lang--column"
             changeLang={this.changeLang}

@@ -12,6 +12,7 @@ class DescriptiveInfo extends React.PureComponent {
       annotationContentOfDocument: this.lng,
       invMulti: this.lng,
       fundHistoricalNoteMulti: this.lng,
+        fundBiographArcheographNoteMulti:this.lng,
       locationOfSupplementaryMaterials: this.lng,
     }
   };
@@ -20,7 +21,7 @@ class DescriptiveInfo extends React.PureComponent {
     const { lang } = this.state;
     if(isEmpty(this.props.tofiConstants)) return null;
     const { annotationContentOfDocument, fundAnnotationFile, invMulti, invFile,
-      fundHistoricalNote, fundHistoricalNoteMulti, accessDocument, locationOfSupplementaryMaterials } = this.props.tofiConstants;
+      fundHistoricalNote, fundHistoricalNoteMulti,fundBiographArcheographNoteMulti, fundBiographArcheographNote, accessDocument, locationOfSupplementaryMaterials } = this.props.tofiConstants;
     return (
       <Form>
         <Field
@@ -95,7 +96,32 @@ class DescriptiveInfo extends React.PureComponent {
             }
           }
         />
-        {accessDocument && <Field
+          <Field
+              name='fundBiographArcheographNoteMulti'
+              component={renderTextareaLang}
+              format={value => (value ? value[lang.fundBiographArcheographNoteMulti] : '')}
+              formItemClass="with-lang"
+              disabled
+              label={fundBiographArcheographNoteMulti.name[this.lng]}
+              formItemLayout={{
+                  labelCol: { span: 10 },
+                  wrapperCol: { span: 14 }
+              }}
+          />
+          <Field
+              name='fundBiographArcheographNote'
+              component={renderFileUploadBtn}
+              label={fundBiographArcheographNote.name[this.lng]}
+              disabled
+              formItemLayout={
+                  {
+                      labelCol: { span: 10 },
+                      wrapperCol: { span: 14 }
+                  }
+              }
+          />
+
+          {accessDocument && <Field
           name="accessDocument"
           component={renderSelect}
           disabled

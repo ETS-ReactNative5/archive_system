@@ -358,6 +358,7 @@ class MainInfoFundForm extends Component {
           component={renderInput}
           normalize={this.strToRedux}
           label={fundNumber.name[this.lng]}
+          disabled={!!this.props.initialValues.key}
           formItemLayout={{
             labelCol: {span: 10},
             wrapperCol: {span: 14}
@@ -369,6 +370,7 @@ class MainInfoFundForm extends Component {
           name='fundIndex'
           component={renderInput}
           label={fundIndex.name[this.lng]}
+          disabled={!!this.props.initialValues.key}
           normalize={this.strToRedux}
           formItemLayout={{
             labelCol: {span: 10},

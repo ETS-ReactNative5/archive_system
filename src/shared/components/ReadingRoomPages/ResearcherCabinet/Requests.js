@@ -119,6 +119,7 @@ onWorkClassChange = s => {
   }
 
   changeSelectedRow = rec => {
+
     if(isEmpty(this.state.selectedRow) || (!isEqual(this.state.selectedRow, rec) && !this.state.openCard)){
       this.setState({ selectedRow: rec })
     } else {
@@ -201,7 +202,8 @@ onWorkClassChange = s => {
       this.workRegCaseIds.push(result.workRegCase.value)
     }
     result.workStatusUses = result[this.clsStatusMap[item.clsORtr]];
-    result.resultDescription = result.resultDescriptionLng;
+
+    // result.resultDescription = result.resultDescriptionLng;
     return result;
   };
 
@@ -257,7 +259,7 @@ onWorkClassChange = s => {
                     render: key => key ,
                     // render: key => { return key},
                     sorter: (a, b) => parseInt(a.key.split('_')[1] ) - parseInt(b.key.split('_')[1]),
-                    sortOrder: this.state.sortState ? 'descend' : 'ascend',
+                    sortOrder: 'descend',
                     filterDropdown: (
                         <div className="custom-filter-dropdown">
                           <Input
@@ -405,15 +407,8 @@ onWorkClassChange = s => {
                       icon="paper-clip"
                       className='green-btn'
                       onClick={e => {
-                        e.stopPropagation();
-                        this.getDocs(rec.workRegCase.value)
-                          .then(docs => {
-                            this.setState({openModal: true, viewerList: docs.data.map((obj) => ({name: obj.id, title: obj.name[this.lng], fileType: 'document'}))})
-                        }).catch(err => {
-                          if (err === 'NO_DOCS_OF_CASE') {
-                            this.setState({openModal: true, viewerList: arr.map((obj, idx) => ({name: obj[this.lng], title: idx+1 + ' ' + t('PAGE')}))})
-                          }
-                        })
+                          this.setState({openModal: true, viewerList: arr.map((obj, idx) => ({name: obj[this.lng], title: idx+1 + ' ' + t('PAGE')}))})
+
                       }}
                     />
                   }

@@ -144,56 +144,59 @@ class WorkDescription extends React.PureComponent {
     };
 
     renderIrrDmg = () => {
-        getIdGetObj(this.props.initialValues.workRegCase.value, 'doForCase').then(
-        res => {
-            var caseId = res.data.idDimObj;
-            var getCaseFilter = {
-                filterDOAnd: [
-                    {
-                        dimConst: 'doForCase',
-                        concatType: "and",
-                        conds: [
+        if (!!this.props.initialValues.workRegCase){
+            getIdGetObj(this.props.initialValues.workRegCase.value, 'doForCase').then(
+                res => {
+                    var caseId = res.data.idDimObj;
+                    var getCaseFilter = {
+                        filterDOAnd: [
                             {
-                                ids: String(caseId),
+                                dimConst: 'doForCase',
+                                concatType: "and",
+                                conds: [
+                                    {
+                                        ids: String(caseId),
+                                    }
+                                ]
                             }
-                        ]
-                    }
-                ],
-                filterDPAnd: [
-                    {
-                        dimConst: 'dpForCase',
-                        concatType: "and",
-                        conds: [
+                        ],
+                        filterDPAnd: [
                             {
-                                consts: "noStorageReasonCase,descriptionDamage,irreparableDamage"
+                                dimConst: 'dpForCase',
+                                concatType: "and",
+                                conds: [
+                                    {
+                                        consts: "noStorageReasonCase,descriptionDamage,irreparableDamage"
+                                    }
+                                ]
                             }
-                        ]
-                    }
-                ],
-            };
-            const fd = new FormData();
-            fd.append("cubeSConst", 'CubeForAF_Case');
-            fd.append("filters", JSON.stringify(getCaseFilter));
-            axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getCubeData`, fd).then(res2 => {
-                console.log(res2);
-                var cubeData = res2.data.data;
-                const parsedCube = parseCube_new(
-                cubeData["cube"],
-                [],
-                "dp",
-                "do",
-                cubeData['do_' + this.props.tofiConstants.doForCase.id],
-                cubeData['dp_' + this.props.tofiConstants.dpForCase.id],
-                ['do_' + this.props.tofiConstants.doForCase.id],
-                ['dp_' + this.props.tofiConstants.dpForCase.id]
-                );
-                var tableData = parsedCube.map(this.renderTableData);
-                this.setState({
-                    tableDataIrrDmg: tableData
-                })
-            })
+                        ],
+                    };
+                    const fd = new FormData();
+                    fd.append("cubeSConst", 'CubeForAF_Case');
+                    fd.append("filters", JSON.stringify(getCaseFilter));
+                    axios.post(`/${localStorage.getItem('i18nextLng')}/cube/getCubeData`, fd).then(res2 => {
+                        console.log(res2);
+                        var cubeData = res2.data.data;
+                        const parsedCube = parseCube_new(
+                            cubeData["cube"],
+                            [],
+                            "dp",
+                            "do",
+                            cubeData['do_' + this.props.tofiConstants.doForCase.id],
+                            cubeData['dp_' + this.props.tofiConstants.dpForCase.id],
+                            ['do_' + this.props.tofiConstants.doForCase.id],
+                            ['dp_' + this.props.tofiConstants.dpForCase.id]
+                        );
+                        var tableData = parsedCube.map(this.renderTableData);
+                        this.setState({
+                            tableDataIrrDmg: tableData
+                        })
+                    })
+                }
+            )
         }
-        )
+
     };
 
 
@@ -430,7 +433,7 @@ class WorkDescription extends React.PureComponent {
         const {t} = this.props;
         return (
         <div>
-            <div className="work-description">
+            <div className="work-description p20">
                 <GetWorkDescription
                 t={t}
                 initialValues={this.props.initialValues}
