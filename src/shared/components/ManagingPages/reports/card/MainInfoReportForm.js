@@ -339,15 +339,16 @@ class MainInfoReportForm extends Component {
                         }],
                     })(
                         <Select
-                            mode={object.val.isUniq === 2 ? "tags" : ""}
+                            mode={object.val.isUniq === 2 ? "multiple" : ""}
                             placeholder={object.val.name[this.lng]}
                             disabled ={this.disabledProp(object.val)}
+                            optionFilterProp="label"
                             onFocus={() => this.getOpton(object.val, object.val.nameParam)}
                             onChange={object.val.isUniq === 2 ? (e) => this.onChangeMultiSelect(e, object.val.nameParam) : (e) => this.onChangeSelect(e, object.val.nameParam)}
                         >
                             {this.state.dataOptons[object.val.nameParam] && this.state.dataOptons[object.val.nameParam].map(el => {
                                 return (
-                                    <Option key={el.id} value={el.id}>
+                                    <Option key={el.id} label={el.name[this.lng]} value={el.id}>
                                         {el.name[this.lng]}
                                     </Option>
                                 )
@@ -368,10 +369,9 @@ class MainInfoReportForm extends Component {
                         }],
                     })(
                         <Select
-                            mode={object.val.isUniq === 2 ? "tags" : ""}
+                            mode={object.val.isUniq === 2 ? "multiple" : ""}
                             placeholder={object.val.name[this.lng]}
                             disabled ={this.disabledProp(object.val)}
-
                             onFocus={() => this.getOpton(object.val, object.val.nameParam)}
                             onChange={object.val.isUniq === 2 ? (e) => this.onChangeMultiSelect(e, object.val.nameParam) : (e) => this.onChangeSelect(e, object.val.nameParam)}
                         >
@@ -459,15 +459,16 @@ class MainInfoReportForm extends Component {
                         }],
                     })(
                         <Select
-                            mode={object.val.isUniq === 2 ? "tags" : ""}
+                            mode={object.val.isUniq === 2 ? "multiple" : ""}
                             placeholder={object.val.name[this.lng]}
+                            optionFilterProp="label"
                             onFocus={() => this.getOpton(object.val, object.val.nameParam)}
                             disabled ={this.disabledProp(object.val)}
                             onChange={object.val.isUniq === 2 ? (e) => this.onChangeMultiSelect(e, object.val.nameParam) : (e) => this.onChangeSelect(e, object.val.nameParam)}
                         >
                             {this.state.dataOptons[object.val.nameParam] && this.state.dataOptons[object.val.nameParam].map(el => {
                                 return (
-                                    <Option key={el.id} value={el.id}>
+                                    <Option key={el.id} label={el.name[this.lng]} value={el.id}>
                                         {el.name[this.lng]}
                                     </Option>
                                 )
@@ -488,17 +489,16 @@ class MainInfoReportForm extends Component {
                             }],
                         })(
                             <Select
-                                mode={object.val.isUniq === 2 ? "tags" : ""}
+                                mode={object.val.isUniq === 2 ? "multiple" : ""}
                                 placeholder={object.val.name[this.lng]}
                                 onFocus={() => this.getOpton(object.val, object.val.nameParam)}
                                 disabled ={this.disabledProp(object.val)}
                                 onChange={object.val.isUniq === 2 ? (e) => this.onChangeMultiSelect(e, object.val.nameParam) : (e) => this.onChangeSelect(e, object.val.nameParam)}
-
-
+                                optionFilterProp="label"
                             >
                                 {this.state.dataOptons[object.val.nameParam] && this.state.dataOptons[object.val.nameParam].map(el => {
                                     return (
-                                        <Option key={el.id} value={el.id}>
+                                        <Option key={el.id} label={el.name[this.lng]} value={el.id}>
                                             {el.name[this.lng]}
                                         </Option>
                                     )

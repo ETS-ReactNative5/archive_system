@@ -248,7 +248,7 @@ class SiderCard_FundMaker extends React.PureComponent {
 
   render() {
     this.lng = localStorage.getItem('i18nextLng');
-    const {t, tofiConstants, saveProps, saveIKProps, onCreateObj} = this.props;
+    const {t, tofiConstants, saveProps,saveProps3, saveIKProps, onCreateObj} = this.props;
     const {initialValues} = this.state;
     return (
       <div >
@@ -275,7 +275,11 @@ class SiderCard_FundMaker extends React.PureComponent {
                       tofiConstants={tofiConstants}
                       t={t}
                       saveProps={saveProps}
-                      initialValues={initialValues}/>
+                      saveProps3={saveProps3}
+                      dataPrev={initialValues}
+                      initialValues={{
+                          key:initialValues.key
+                      }}/>
               },
               {
                   tabKey: 'Reorganization',

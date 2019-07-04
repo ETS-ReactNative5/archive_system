@@ -221,7 +221,7 @@ class EditCardInventories extends Component {
             this.setState({loading: true, });
 
             hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
-            const resSave = await onSaveCubeData3(c, v, t, objData);
+            const resSave = await onSaveCubeData(c, v, t, objData);
             hideLoading();
             if(!resSave.success) {
                 message.error(this.props.t('PROPS_UPDATING_ERROR'));

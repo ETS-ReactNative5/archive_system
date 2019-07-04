@@ -3,7 +3,16 @@ import {Button, Form,DatePicker,message,Modal, Input} from "antd";
 import {isEmpty, isEqual, pickBy} from "lodash";
 import AntTable from "../../AntTable";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-import {getFile, getFileResolve, getObjVer,getAllObjOfCls, getObjVer_new, getValuesOfObjsWithProps,getPropValWithChilds} from '../../../actions/actions';
+import {
+    getFile,
+    getFileResolve,
+    getObjVer,
+    getAllObjOfCls,
+    getObjVer_new,
+    getValuesOfObjsWithProps,
+    getPropValWithChilds,
+    getValuesOfObjsWithProps2, addObjVer
+} from '../../../actions/actions';
 import "./css/RenameFormFoundMaker.css";
 import {
     LEGAL_STATUS
@@ -30,12 +39,12 @@ class ReorganizationFoundMaker extends React.PureComponent {
         const lng = localStorage.getItem('i18nextLng');
         this.state = {
             selectedRowKey: '',
+            dataTable: [],
+            modalOpen: false,
             loading: {
                 orgRightReceiverLoading: false,
                 loadReceiver: '',
             },
-            dataTable: [],
-            modalOpen: false,
             lang: {
                 orgFunctionFundmaker: localStorage.getItem("i18nextLng"),
                 structureFundmaker: localStorage.getItem("i18nextLng"),
@@ -178,7 +187,6 @@ class ReorganizationFoundMaker extends React.PureComponent {
 
                     }
                 }
-
                 for (let i = 0; i < coppyVal.length; i++) {
                     if (coppyVal[i].idDataPropVal === undefined) {
                         let findVal = this.state.optionMultiSelect.find((el) => el.value === coppyVal[i].value)
@@ -191,8 +199,7 @@ class ReorganizationFoundMaker extends React.PureComponent {
                 return coppyVal
             } else {
                 return []
-            }
-        }
+            }}
     };
 
     adCoum=()=>{
@@ -201,7 +208,16 @@ class ReorganizationFoundMaker extends React.PureComponent {
                 addForm:true
             })
         }
+    }
 
+    editCoum=()=>{
+        console.log(this.state.selectedRowKey)
+        console.log(this.props.initialValues)
+        let obj = {...this.state.selectedRowKey}
+        let editObj ={...this.props.initialValues}
+        editObj.dateRename.value= moment(obj.dateRename,"YYYY-MM-DD").format("DD-MM-YYYY")
+        editObj.name = obj.fullName
+        editObj.shortName =obj.name
     }
 
     changeSelectedRow = rec => {
@@ -214,12 +230,12 @@ class ReorganizationFoundMaker extends React.PureComponent {
         }
     };
 
-
     departmentalAccessoryValue = {...this.props.initialValues.departmentalAccessory} || {
         kz: '',
         ru: '',
         en: ''
     };
+
     componentDidUpdate(prevProps) {
         if (prevProps.initialValues !== this.props.initialValues) {
             this.shortNameValue = {...this.props.initialValues.shortName} || {
@@ -242,77 +258,92 @@ class ReorganizationFoundMaker extends React.PureComponent {
     }
 
     async  componentDidMount(){
-        getObjVer_new(this.props.initialValues.key.split('_')[1])
-            .then(async res => {
-                if(res.success) {
-                    let datas = [{
-                        objs: String(this.props.initialValues.key.split('_')[1]),
-                        propConsts: 'reasonFundmaker,reasonFundmakerFile,orgIndustry,conditionOfFundmaker,dateReorganization,legalStatus,structureFundmaker,orgRightReceiver,orgFunctionFundmaker,departmentalAccessory'
-                    }];
-                    const data = new FormData();
-                    data.append('datas', JSON.stringify(datas));
-                    await getValuesOfObjsWithProps(data).then(ress=>{
-                        if (ress.success===false && ress.errors){
-                            for(let val of  ress.errors){
-                                message.error(val.text)
-                            }
-                            return false
-                        }
-
-                        let newarr = []
-
-                        let  i = 1
-                        let dataProp = [...ress.data]
-                        for(let val of res.data){
-                            val.number=i
-                            i++
-                            for (let valProp of dataProp){
-                                if (val.dend === valProp.reasonFundmaker_dend && val.dbeg === valProp.reasonFundmaker_dbeg ){
-                                    val.reasonFundmaker = valProp.reasonFundmaker
-                                }
-                                if (val.dend === valProp.reasonFundmakerFile_dend && val.dbeg === valProp.reasonFundmakerFile_dbeg ){
-                                    val.reasonFundmakerFile = valProp.reasonFundmakerFile
-                                }
-                                if (val.dend === valProp.dateReorganization_dend && val.dbeg === valProp.dateReorganization_dbeg ){
-                                    val.dateReorganizatio = valProp.dateReorganizatio
-                                }
-                                if (val.dend === valProp.orgIndustry_dend && val.dbeg === valProp.orgIndustry_dbeg ){
-                                    val.orgIndustry = valProp.orgIndustry
-                                }
-                                if (val.dend === valProp.legalStatus_dend && val.dbeg === valProp.legalStatus_dbeg ){
-                                    val.legalStatu = valProp.legalStatu
-                                }
-                                if (val.dend === valProp.structureFundmaker_dend && val.dbeg === valProp.structureFundmaker_dbeg ){
-                                    val.structureFundmaker = valProp.structureFundmaker
-                                }
-                                if (val.dend === valProp.orgRightReceiver_dend && val.dbeg === valProp.orgRightReceiver_dbeg ){
-                                    val.orgRightReceiver = valProp.orgRightReceiver
-                                }
-                                if (val.dend === valProp.orgFunctionFundmaker_dend && val.dbeg === valProp.orgFunctionFundmaker_dbeg ){
-                                    val.orgFunctionFundmaker = valProp.orgFunctionFundmaker
-                                }
-                                if (val.dend === valProp.departmentalAccessory_dend && val.dbeg === valProp.departmentalAccessory_dbeg ){
-                                    val.departmentalAccessory = valProp.departmentalAccessory
-                                }
-                                if (val.dend === valProp.conditionOfFundmaker_dend && val.dbeg === valProp.conditionOfFundmaker_dbeg ){
-                                    val.conditionOfFundmaker = valProp.conditionOfFundmaker
-                                }
-                            }
-                            if(val.conditionOfFundmaker.ru ==="Реорганизация"){
-                                newarr.push(val)
-
-                            }
-                        }
-                        this.setState({
-                            dataTable:newarr
-                        })
-
-                    })
-                } else {
-                    message.error('Ошибка загрузки версий объекта')
+        const data = new FormData();
+        data.append('objId', String(this.props.initialValues.key.split('_')[1]));
+        data.append('propConsts', 'reasonFundmaker,reasonFundmakerFile,orgIndustry,orgFunction,conditionOfFundmaker,dateReorganization,legalStatus,structureFundmaker,structure,orgRightReceiver,orgFunctionFundmaker,departmentalAccessory');
+        data.append('allValues', String(1));
+        await getValuesOfObjsWithProps2(data).then(res=>{
+            if (res.success===false && res.errors){
+                for(let val of  res.errors){
+                    message.error(val.text)
                 }
-            })
+                return false
+            }
+            if( !!res.data && !!res.data.owner){
+                let newarr = [...res.data.owner]
+                for (let val of newarr){
+                    let dateReorganization = !!res.data.dateReorganization && res.data.dateReorganization.find(el => val.verOwn === el.verOwn)
+                    if(!!dateReorganization){
+                        val.dateReorganization = dateReorganization
+                    }
+                    let reasonFundmaker = !!res.data.reasonFundmaker && res.data.reasonFundmaker.find(el => val.verOwn === el.verOwn)
+                    if(!!reasonFundmaker){
+                        val.reasonFundmaker = reasonFundmaker
+                    }
+                    let reasonFundmakerFile = !!res.data.reasonFundmakerFile && res.data.reasonFundmakerFile.find(el => val.verOwn === el.verOwn)
+                    if(!!reasonFundmakerFile){
+                        val.reasonFundmakerFile = reasonFundmakerFile
+                    }
+                    let orgIndustry = !!res.data.orgIndustry && res.data.orgIndustry.find(el => val.verOwn === el.verOwn)
+                    if(!!orgIndustry){
+                        val.orgIndustry = orgIndustry
+                    }
+                    let legalStatus = !!res.data.legalStatus && res.data.legalStatus.find(el => val.verOwn === el.verOwn)
+                    if(!!legalStatus){
+                        val.legalStatus = legalStatus
+                    }
+                    let structureFundmaker = !!res.data.structureFundmaker && res.data.structureFundmaker.find(el => val.verOwn === el.verOwn)
+                    if(!!structureFundmaker){
+                        val.structureFundmaker = structureFundmaker
+                    }
+                    let structure = !!res.data.structure && res.data.structure.find(el => val.verOwn === el.verOwn)
+                    if(!!structure){
+                        val.structure = structure
+                    }
+                    let orgRightReceiver = !!res.data.orgRightReceiver && res.data.orgRightReceiver.find(el => val.verOwn === el.verOwn)
+                    if(!!orgRightReceiver){
+                        val.orgRightReceiver = orgRightReceiver
+                    }
+                    let orgFunctionFundmaker = !!res.data.orgFunctionFundmaker && res.data.orgFunctionFundmaker.find(el => val.verOwn === el.verOwn)
+                    if(!!orgFunctionFundmaker){
+                        val.orgFunctionFundmaker = orgFunctionFundmaker
+                    }
+                    let orgFunction = !!res.data.orgFunction && res.data.orgFunction.find(el => val.verOwn === el.verOwn)
+                    if(!!orgFunction){
+                        val.orgFunction = orgFunction
+                    }
+                    let departmentalAccessory = !!res.data.departmentalAccessory && res.data.departmentalAccessory.find(el => val.verOwn === el.verOwn)
+                    if(!!departmentalAccessory){
+                        val.departmentalAccessory = departmentalAccessory
+                    }
+                    let conditionOfFundmaker = !!res.data.conditionOfFundmaker && res.data.conditionOfFundmaker.filter(el => val.verOwn === el.verOwn)
+                    if(!!conditionOfFundmaker){
+                        val.conditionOfFundmaker = conditionOfFundmaker
+                    }
+                }
+                let rezulArr = []
+                let  i = 1
+                for (let val of newarr){
+                    if (!!val.conditionOfFundmaker){
+                        for (let item of val.conditionOfFundmaker){
+                            if (!!item.name && item.name.ru === "Реорганизация"){
+                                val.number= i
+                                i++
+                                rezulArr.push(val)
+                            }
+                        }
+                    }
+                }
+                this.setState({
+                    dataTable:rezulArr
+                })
+            }else {
+                message.info("Нет данных")
+            }
 
+        }).catch (e=>{
+            console.log(e)
+        })
     }
 
     handleOk = (e) => {
@@ -349,12 +380,7 @@ class ReorganizationFoundMaker extends React.PureComponent {
                             file: <img src={`${url}#toolbar=0`}/>
                         })
                     }
-
-
-
                 })
-
-
             }).catch(e => {
                 console.log(e)
                 message.error("Файл не найден")
@@ -362,10 +388,50 @@ class ReorganizationFoundMaker extends React.PureComponent {
         } else {
             message.error("Файл не найден")
         }
-
     };
 
-    onSubmit=()=>{
+    onSubmit=(values)=>{
+        const {reasonFundmakerFile,structure,orgFunction, name,shortName, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
+        const cube = {
+            cubeSConst: 'cubeForOrgFundmaker',
+            doConst: 'doForOrgFundmakers',
+            dpConst: 'dpForOrgFundmakers',
+        };
+        const obj = {
+            clsConst: 'fundmakerOrg',
+        };
+
+        obj.doItem = this.props.initialValues.key;
+        const objData = {};
+
+        rest.conditionOfFundmaker=[{
+            value:this.props.tofiConstants["renaming"].id
+        }]
+        const fd = new FormData();
+        fd.append('obj', this.props.initialValues.key.split('_')[1]);
+        fd.append('dimObjsConst', "doForOrgFundmakers");
+        fd.append('dbeg', rest.dateRename.value.format('YYYY-MM-DD'));
+        fd.append('dend', "3333-12-31");
+        fd.append('name',JSON.stringify(shortName));
+        fd.append('fullName', JSON.stringify(name));
+        fd.append('cmtVer', JSON.stringify(""));
+        fd.append('parent', null)
+
+        addObjVer(fd)
+            .then(res=>{
+                if (res.success===false && res.errors){
+                    for(let val of  res.errors){
+                        message.error(val.text)
+                    }
+                    return false
+                }
+                return this.props.saveProps3(
+                    {cube, obj},
+                    {values: rest, idDPV: this.props.withIdDPV, oFiles: {reasonFundmakerFile,structure,orgFunction }},
+                    this.props.tofiConstants,
+                    objData
+                );
+            })
     }
 
     render() {
@@ -373,12 +439,13 @@ class ReorganizationFoundMaker extends React.PureComponent {
         const { lang,loading } = this.state;
         const lng = localStorage.getItem('i18nextLng');
         const {t,submitting, error, reset, handleSubmit, dirty, fundArchiveOptions, orgDocTypeOption, initialValues,orgIndustryOptions,orgRightReceiverOptions,legalStatusOptions,
-            tofiConstants: {reasonFundmaker,orgIndustry,reasonFundmakerFile,legalStatus,dateReorganization,structureFundmaker,orgRightReceiver,orgFunctionFundmaker,departmentalAccessory,}
+            tofiConstants: {reasonFundmaker,orgIndustry,reasonFundmakerFile,legalStatus,orgFunction,structure,dateReorganization,structureFundmaker,orgRightReceiver,orgFunctionFundmaker,departmentalAccessory,}
         } = this.props;
         return (
             <div  className="">
                 <div className="table-header-btns"  style={{marginTop: "1vw", marginLeft: '5px', marginRight: '5px'}} >
-                    <Button onClick={this.adCoum} >{this.props.t('ADD_REORGANIZATION')}</Button>
+                    <Button onClick={this.adCoum} style={{marginRight: '5px'}}>{this.props.t('ADD')}</Button>
+                    <Button onClick={this.editCoum} disabled={this.state.selectedRowKey ===""} >{this.props.t('EDIT')}</Button>
                 </div>
                 <AntTable
                     style={{marginTop: "1vw"}}
@@ -397,8 +464,7 @@ class ReorganizationFoundMaker extends React.PureComponent {
                             dataIndex: 'dateReorganization',
                             width: '8%',
                             render:(obj, record)=>{
-
-                                return !!obj && obj
+                                return !!obj && !!obj.val && obj.val
                             }
                         },
                         {
@@ -406,17 +472,14 @@ class ReorganizationFoundMaker extends React.PureComponent {
                             title: t('ORG_RIGHT_RECEIVER'),
                             dataIndex: 'orgRightReceiver',
                             width: '14%',
-                            render: (obj, record) => { return !!obj && obj}
+                            render: (obj, record) =>  { return !!obj && !!obj.name && obj.name[lng]}
                         },
                         {
                             key: 'reasonFundmaker',
                             title: reasonFundmaker.name[lng],
                             dataIndex: 'reasonFundmaker',
                             width: '14%',
-                            render:(obj, record)=>{
-                                return !!obj && obj[lng]
-
-                            }
+                            render:(obj, record)=>{return !!obj && !!obj.val && obj.val[lng]}
                         },
                         {
                             key: 'reasonFundmakerFile',
@@ -424,7 +487,7 @@ class ReorganizationFoundMaker extends React.PureComponent {
                             dataIndex: 'reasonFundmakerFile',
                             width: '8%',
                             render:(obj, record)=>{
-                                if (!!obj) {
+                                if (!!obj && !!obj.val) {
                                     return (
                                         <Button type="primary"
                                                 className="centerIcon"
@@ -436,7 +499,7 @@ class ReorganizationFoundMaker extends React.PureComponent {
                                                     alignItems: 'center',
                                                     margin: '0 auto'
                                                 }}
-                                                onClick={() => this.showFile(obj.ru)}> </Button>)
+                                                onClick={() => this.showFile(obj.val.ru)}> </Button>)
                                 }
                             }
                         },
@@ -445,47 +508,84 @@ class ReorganizationFoundMaker extends React.PureComponent {
                             title: orgIndustry.name[lng],
                             dataIndex: 'orgIndustry',
                             width: '6%',
-                            render: (obj, record) => {return !!obj && obj}
+                            render: (obj, record) =>  { return !!obj && !!obj.name && obj.name[lng]}
                         },
                         {
                             key: 'legalStatus',
                             title: legalStatus.name[lng],
                             dataIndex: 'legalStatus',
                             width: '8%',
-                            render: (obj, record) => {return !!obj && obj}
+                            render: (obj, record) =>  { return !!obj && !!obj.name && obj.name[lng]}
                         },
                         {
                             key: 'structureFundmaker',
                             title: structureFundmaker.name[lng],
                             dataIndex: 'structureFundmaker',
                             width: '6%',
-                            render: (obj, record) => {return !!obj && obj}
+                            render:(obj, record)=>{return !!obj && !!obj.val && obj.val[lng]}
                         },{
                             key: 'structure',
-                            title: structureFundmaker.name[lng],
-                            dataIndex: 'structureFundmaker',
+                            title: structure.name[lng],
+                            dataIndex: 'structure',
                             width: '6%',
-                            render: (obj, record) => {return !!obj && obj}
+                            render:(obj, record)=>{
+                                if (!!obj && !!obj.val) {
+                                    return (
+                                        <Button type="primary"
+                                                className="centerIcon"
+                                                icon="eye"
+                                                shape='circle'
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    margin: '0 auto'
+                                                }}
+                                                onClick={() => this.showFile(obj.val.ru)}> </Button>)
+                                }
+                            }
                         },
                         {
                             key: 'orgFunctionFundmaker',
                             title: orgFunctionFundmaker.name[lng],
                             dataIndex: 'orgFunctionFundmaker',
                             width: '6%',
-                            render: (obj, record) => {return !!obj && obj}
+                            render:(obj, record)=>{return !!obj && !!obj.val && obj.val[lng]}
+                        },
+                        {
+                            key: 'orgFunction',
+                            title: orgFunction.name[lng],
+                            dataIndex: 'orgFunction',
+                            width: '6%',
+                            render:(obj, record)=>{
+                                if (!!obj && !!obj.val) {
+                                    return (
+                                        <Button type="primary"
+                                                className="centerIcon"
+                                                icon="eye"
+                                                shape='circle'
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    margin: '0 auto'
+                                                }}
+                                                onClick={() => this.showFile(obj.val.ru)}> </Button>)
+                                }
+                            }
                         },
                         {
                             key: 'departmentalAccessory',
                             title: departmentalAccessory.name[lng],
                             dataIndex: 'departmentalAccessory',
                             width: '8%',
-                            render: (obj, record) => {return !!obj && obj}
+                            render: (obj, record) =>  {return !!obj && !!obj.val && obj.val[lng]}
                         },
                     ]}
                     hidePagination
                     dataSource={this.state.dataTable}
                     changeSelectedRow={this.changeSelectedRow}
-                    rowClassName={record => this.state.selectedRowKey === record.key ? 'row-selected' : ''}
+                    rowClassName={record => this.state.selectedRowKey.verOwn === record.verOwn ? 'row-selected' : ''}
                     bordered
                 />
                 {this.state.addForm === true ?
@@ -495,6 +595,7 @@ class ReorganizationFoundMaker extends React.PureComponent {
                             name="dateReorganization"
                             component={renderDatePicker}
                             disabledDate={this.disabledStartDate}
+                            normalize={this.dateToRedux}
                             format={null}
                             label={t('DATE_REORGANIZATION')}
                             validate={requiredDate}

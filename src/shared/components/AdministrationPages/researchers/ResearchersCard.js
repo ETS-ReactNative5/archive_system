@@ -76,6 +76,7 @@ class ResearchersCard extends React.PureComponent {
       }
     }
   };
+
   loadChilds = (c, props) => {
     return () => {
       if (!this.props[c + 'Options']) {
@@ -86,6 +87,7 @@ class ResearchersCard extends React.PureComponent {
       }
     }
   };
+
   loadRolesOptions = () => {
     this.setState({rolesLoading: true});
     getRoles()

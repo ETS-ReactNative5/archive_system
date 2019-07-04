@@ -105,7 +105,7 @@ class Researchers extends React.Component {
   renderTableData = (item, idx) => {
     const researcherClasses = ['clsResearchers', 'clsHead', 'clsAdminDepartment', 'clsDepInformTech', 'staff',
       'clsTempUsers', 'workAssignedToReg', 'workAssignedToNID', 'workAssignedToSource', 'workAssignedToIPS'];
-    const constArr = ['iin', 'personLastName', 'personName', 'personPatronymic', 'dateOfBirth', 'gender', 'nationality',
+    const constArr = ['iin', 'roles', 'personLastName', 'personName', 'personPatronymic', 'dateOfBirth', 'gender', 'nationality',
       'directUseDocument', 'goalSprav', 'formResultRealization', 'location', 'photo', 'copyUdl', 'propStudy',
       'personAcademicDegree', 'job', 'position', 'education', 'personAcademicTitle', 'staffRole'];
     const researcherClass = researcherClasses.find(cls => this.props.tofiConstants[cls].id == item.clsORtr);

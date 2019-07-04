@@ -3,7 +3,10 @@ import {Button, Form,DatePicker,message,Modal, Input} from "antd";
 import {isEmpty, isEqual, pickBy} from "lodash";
 import AntTable from "../../AntTable";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-import {getFile, getFileResolve, getObjVer, getObjVer_new, getValuesOfObjsWithProps} from '../../../actions/actions';
+import {
+    addObjVer, getFile, getFileResolve, getObjVer, getObjVer_new,
+    getValuesOfObjsWithProps2
+} from '../../../actions/actions';
 
 import "./css/RenameFormFoundMaker.css"
 import {
@@ -292,7 +295,6 @@ class RenameFormFoundMaker extends React.PureComponent {
         editObj.shortName =obj.name
 
 
-        debugger
     }
     changeSelectedRow = rec => {
             this.setState({
@@ -329,68 +331,120 @@ class RenameFormFoundMaker extends React.PureComponent {
             en: ''
         };
 
-        getObjVer_new(this.props.initialValues.key.split('_')[1])
-            .then(async res => {
-                if(res.success) {
+        const data = new FormData();
+        data.append('objId', String(this.props.initialValues.key.split('_')[1]));
+        data.append('propConsts', 'reasonFundmaker,reasonFundmakerFile,dateRename,conditionOfFundmaker');
+        data.append('allValues', String(1));
 
-                    const data = new FormData();
-                    data.append('objId', String(this.props.initialValues.key.split('_')[1]));
-                    data.append('propConsts', 'reasonFundmaker,reasonFundmakerFile,dateRename,conditionOfFundmaker');
-                   await getValuesOfObjsWithProps(data).then(ress=>{
-                        debugger
-                        if (ress.success===false && ress.errors){
-                            for(let val of  ress.errors){
-                                message.error(val.text)
-                            }
-                            return false
-                        }
-                       let newarr = []
-                       let  i = 1
-                       let dataProp = [...ress.data]
-                       let reneme = null
-                       let reagrin = null
-                       for(let val of res.data){
-                           val.number=i
-                           i++
-                           for (let valProp of dataProp){
-                               if (val.dend === valProp.reasonFundmaker_dend && val.dbeg === valProp.reasonFundmaker_dbeg ){
-                                   val.reasonFundmaker = valProp.reasonFundmaker
-                               }
-                               if (val.dend === valProp.reasonFundmakerFile_dend && val.dbeg === valProp.reasonFundmakerFile_dbeg ){
-                                   val.reasonFundmakerFile = valProp.reasonFundmakerFile
-                               }
-                               if (val.dend === valProp.dateRename_dend && val.dbeg === valProp.dateRename_dbeg ){
-                                   val.dateRename = valProp.dateRename
-                               }
-                               if (val.dend === valProp.conditionOfFundmaker_dend && val.dbeg === valProp.conditionOfFundmaker_dbeg ){
-                                   if (reneme ===null){
-                                       if (valProp.conditionOfFundmaker.ru === "Переименование"){
-                                           reneme =valProp.conditionOfFundmaker
-                                       }
-                                   }
-                                   if (reagrin ===null){
-                                       if (valProp.conditionOfFundmaker.ru === "Реорганизация"){
-                                           reagrin =valProp.conditionOfFundmaker
-                                       }
-                                   }
-                               }
-                           }
-
-                           val.reneme = reneme
-                           newarr.push(val)
-                           reneme = null
-                           reagrin = null
-                       }
-                       let dataArr = newarr.filter(el=> el.reneme !== null)
-                       this.setState({
-                           dataTable:dataArr
-                       })
-
-                   })
-                } else {
-                    message.error('Ошибка загрузки версий объекта')
+        await getValuesOfObjsWithProps2(data).then(res=>{
+              if (res.success===false && res.errors){
+                for(let val of  res.errors){
+                    message.error(val.text)
                 }
-            })
+                return false
+            }
+            if( !!res.data && !!res.data.owner){
+                let newarr = [...res.data.owner]
+                for (let val of newarr){
+                    let dateRename = !!res.data.dateRename && res.data.dateRename.find(el => val.verOwn === el.verOwn)
+                    if(!!dateRename){
+                        val.dateRename = dateRename
+                    }
+                    let reasonFundmaker = !!res.data.reasonFundmaker && res.data.reasonFundmaker.find(el => val.verOwn === el.verOwn)
+                    if(!!reasonFundmaker){
+                        val.reasonFundmaker = reasonFundmaker
+                    }
+                    let reasonFundmakerFile = !!res.data.reasonFundmakerFile && res.data.reasonFundmakerFile.find(el => val.verOwn === el.verOwn)
+                    if(!!reasonFundmakerFile){
+                        val.reasonFundmakerFile = reasonFundmakerFile
+                    }
+                    let conditionOfFundmaker = !!res.data.conditionOfFundmaker && res.data.conditionOfFundmaker.filter(el => val.verOwn === el.verOwn)
+                    if(!!conditionOfFundmaker){
+                        val.conditionOfFundmaker = conditionOfFundmaker
+                    }
+                }
+                let rezulArr = []
+                let  i = 1
+                for (let val of newarr){
+                    if (!!val.conditionOfFundmaker){
+                        for (let item of val.conditionOfFundmaker){
+                            if (!!item.name && item.name.ru === "Переименование"){
+                                val.number= i
+                                i++
+                                rezulArr.push(val)
+                            }
+                        }
+                    }
+                }
+                this.setState({
+                    dataTable:rezulArr
+                })
+            }else {
+                message.info("Нет данных")
+            }
+
+        }).catch (e=>{
+            console.log(e)
+        })
+
+    }
+    updateTable = async ()=>{
+        const data = new FormData();
+        data.append('objId', String(this.props.initialValues.key.split('_')[1]));
+        data.append('propConsts', 'reasonFundmaker,reasonFundmakerFile,dateRename,conditionOfFundmaker');
+        data.append('allValues', String(1));
+
+        await getValuesOfObjsWithProps2(data).then(res=>{
+            if (res.success===false && res.errors){
+                for(let val of  res.errors){
+                    message.error(val.text)
+                }
+                return false
+            }
+            if( !!res.data && !!res.data.owner){
+                let newarr = [...res.data.owner]
+                for (let val of newarr){
+                    let dateRename = !!res.data.dateRename && res.data.dateRename.find(el => val.verOwn === el.verOwn)
+                    if(!!dateRename){
+                        val.dateRename = dateRename
+                    }
+                    let reasonFundmaker = !!res.data.reasonFundmaker && res.data.reasonFundmaker.find(el => val.verOwn === el.verOwn)
+                    if(!!reasonFundmaker){
+                        val.reasonFundmaker = reasonFundmaker
+                    }
+                    let reasonFundmakerFile = !!res.data.reasonFundmakerFile && res.data.reasonFundmakerFile.find(el => val.verOwn === el.verOwn)
+                    if(!!reasonFundmakerFile){
+                        val.reasonFundmakerFile = reasonFundmakerFile
+                    }
+                    let conditionOfFundmaker = !!res.data.conditionOfFundmaker && res.data.conditionOfFundmaker.filter(el => val.verOwn === el.verOwn)
+                    if(!!conditionOfFundmaker){
+                        val.conditionOfFundmaker = conditionOfFundmaker
+                    }
+                }
+                let rezulArr = []
+                let  i = 1
+                for (let val of newarr){
+                    if (!!val.conditionOfFundmaker){
+                        for (let item of val.conditionOfFundmaker){
+                            if (!!item.name && item.name.ru === "Переименование"){
+                                val.number= i
+                                i++
+                                rezulArr.push(val)
+                            }
+                        }
+                    }
+                }
+                this.setState({
+                    dataTable:rezulArr
+                })
+            }else {
+                message.info("Нет данных")
+            }
+
+        }).catch (e=>{
+            console.log(e)
+        })
+
 
     }
     handleOk = (e) => {
@@ -426,9 +480,6 @@ class RenameFormFoundMaker extends React.PureComponent {
                             file: <img src={`${url}#toolbar=0`}/>
                         })
                     }
-
-
-
                 })
 
 
@@ -441,7 +492,109 @@ class RenameFormFoundMaker extends React.PureComponent {
         }
 
     };
-    onSubmit=()=>{
+    onSubmit= async (values)=>{
+        const {reasonFundmakerFile, name,shortName, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
+        let prevProps = {...this.props.dataPrev}
+        console.log(this.props.dataPrev)
+        let closeProp = {}
+        if (!!prevProps.reasonFundmaker && prevProps.reasonFundmaker.dend == "3333-12-31"){
+            closeProp.reasonFundmaker=prevProps.reasonFundmaker
+            closeProp.reasonFundmaker.dend=moment().add(-1, 'days').format("YYYY-MM-DD");
+        }
+        if (!!prevProps.dateRename && prevProps.dateRename.dend == "3333-12-31"){
+            closeProp.dateRename=prevProps.dateRename
+            closeProp.dateRename.dend=moment().add(-1, 'days').format("YYYY-MM-DD");
+        }
+
+        const cube = {
+            cubeSConst: 'cubeForOrgFundmaker',
+            doConst: 'doForOrgFundmakers',
+            dpConst: 'dpForOrgFundmakers',
+        };
+        const obj = {
+            clsConst: 'fundmakerOrg',
+        };
+
+        obj.doItem = this.props.initialValues.key;
+        const objData = {};
+        if (!!rest.reasonFundmaker){
+            rest.reasonFundmaker.dbeg=moment(rest.dateRename.value ,"DD-MM-YYYY").format("YYYY-MM-DD")
+        }
+        if (!!rest.dateRename){
+            rest.dateRename.dbeg=moment(rest.dateRename.value ,"DD-MM-YYYY").format("YYYY-MM-DD");
+        }
+        if (Object.keys(closeProp).length != 0){
+             await this.props.saveProps3(
+                {cube, obj},
+                {values: closeProp, idDPV: this.props.withIdDPV,},
+                this.props.tofiConstants,
+                objData
+            );
+            rest.conditionOfFundmaker=[{
+                value:this.props.tofiConstants["renaming"].id
+            }]
+            const fd = new FormData();
+            fd.append('obj', this.props.initialValues.key.split('_')[1]);
+            fd.append('dimObjsConst', "doForOrgFundmakers");
+            fd.append('dbeg', rest.dateRename.value.format('YYYY-MM-DD'));
+            fd.append('dend', "3333-12-31");
+            fd.append('name',JSON.stringify(shortName));
+            fd.append('fullName', JSON.stringify(name));
+            fd.append('cmtVer', JSON.stringify({}));
+            fd.append('parent', null)
+
+            addObjVer(fd)
+                .then( async (res)=>{
+                    if (res.success===false && res.errors){
+                        for(let val of  res.errors){
+                            message.error(val.text)
+                        }
+                        return false
+                    }
+                     await this.props.saveProps3(
+                         {cube, obj},
+                         {values: rest, idDPV: this.props.withIdDPV, oFiles: {reasonFundmakerFile}},
+                         this.props.tofiConstants,
+                         objData
+                     );
+
+                }).catch(e=>{
+                console.log(e)
+            })
+        }else {
+            rest.conditionOfFundmaker=[{
+                value:this.props.tofiConstants["renaming"].id
+            }]
+            const fd = new FormData();
+            fd.append('obj', this.props.initialValues.key.split('_')[1]);
+            fd.append('dimObjsConst', "doForOrgFundmakers");
+            fd.append('dbeg', rest.dateRename.value.format('YYYY-MM-DD'));
+            fd.append('dend', "3333-12-31");
+            fd.append('name',JSON.stringify(shortName));
+            fd.append('fullName', JSON.stringify(name));
+            fd.append('cmtVer', JSON.stringify({}));
+            fd.append('parent', null)
+
+            addObjVer(fd)
+                .then( async (res)=>{
+                    if (res.success===false && res.errors){
+                        for(let val of  res.errors){
+                            message.error(val.text)
+                        }
+                        return false
+                    }
+                     this.props.saveProps3(
+                         {cube, obj},
+                         {values: rest, idDPV: this.props.withIdDPV, oFiles: {reasonFundmakerFile}},
+                         this.props.tofiConstants,
+                         objData
+                     );
+
+                }).catch(e=>{
+                console.log(e)
+            })
+        }
+
     }
     shortNameValue = {...this.props.initialValues.shortName} || {kz: '', ru: '', en: ''};
     nameValue = {...this.props.initialValues.name} || {kz: '', ru: '', en: ''};
@@ -456,8 +609,8 @@ class RenameFormFoundMaker extends React.PureComponent {
         return (
             <div  className="">
                 <div className="table-header-btns"  style={{marginTop: "1vw", marginLeft: '5px', marginRight: '5px'}} >
-                    <Button onClick={this.adCoum} >{this.props.t('ADD_RENAME')}</Button>
-                    <Button onClick={this.editCoum} disabled={this.state.selectedRowKey ===""} >{this.props.t('DIT_RENAME')}</Button>
+                    <Button onClick={this.adCoum} >{this.props.t('ADD')}</Button>
+                    <Button onClick={this.editCoum} disabled={this.state.selectedRowKey ===""} >{this.props.t('RENAME')}</Button>
 
                 </div>
                 <AntTable
@@ -476,8 +629,7 @@ class RenameFormFoundMaker extends React.PureComponent {
                             dataIndex: 'dateRename',
                             width: '15%',
                             render:(obj, record)=>{
-
-                                return !!obj && obj
+                                return !!obj && !!obj.val && obj.val
                             }
                         }, {
                             key: 'fullName',
@@ -503,7 +655,7 @@ class RenameFormFoundMaker extends React.PureComponent {
                             dataIndex: 'reasonFundmaker',
                             width: '15%',
                             render:(obj, record)=>{
-                                return !!obj && obj[lng]
+                                return !!obj && !!obj.val && obj.val[lng]
 
                             }
                         },
@@ -513,7 +665,7 @@ class RenameFormFoundMaker extends React.PureComponent {
                             dataIndex: 'reasonFundmakerFile',
                             width: '15%',
                             render:(obj, record)=>{
-                                if (!!obj) {
+                                if (!!obj && !!obj.val) {
                                     return (
                                         <Button type="primary"
                                                 className="centerIcon"
@@ -525,7 +677,7 @@ class RenameFormFoundMaker extends React.PureComponent {
                                                     alignItems: 'center',
                                                     margin: '0 auto'
                                                 }}
-                                                onClick={() => this.showFile(obj.ru)}> </Button>)
+                                                onClick={() => this.showFile(obj.val.ru)}> </Button>)
                                 }
                             }
                         }
@@ -533,7 +685,7 @@ class RenameFormFoundMaker extends React.PureComponent {
                     hidePagination
                     dataSource={this.state.dataTable}
                     onRowClick={this.changeSelectedRow}
-                    rowClassName={record => this.state.selectedRowKey.id === record.id ? 'row-selected' : ''}
+                    rowClassName={record => this.state.selectedRowKey.verOwn === record.verOwn ? 'row-selected' : ''}
                     bordered
                     pagination={{
                         pageSize: 20,
@@ -550,6 +702,7 @@ class RenameFormFoundMaker extends React.PureComponent {
                             format={null}
                             label={t('DATE_RENAME')}
                             validate={requiredDate}
+                            normalize={this.dateToRedux}
                             colon={true}
                             formItemLayout={
                                 {

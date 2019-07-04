@@ -769,9 +769,7 @@ export function onSaveCubeData({cube, obj}, {values, complex, oFiles = {}, qFile
   var test = Object.entries(oFiles);
 
   let testObj = {};
-
-
-  for (let i = 0; i < test.length; i++) {
+    for (let i = 0; i < test.length; i++) {
     if (!!test[i][1]) {
       testObj[test[i][0]] = [];
       if (!!test[i][1][0]) {
@@ -1062,14 +1060,38 @@ export function onSaveCubeData3 ({cube, obj}, {values, complex, oFiles = {}, qFi
         SYSTEM_LANG_ARRAY.forEach(lang => {
             value[lang] = id;
         });
-        return {
-            propConst: key,
-            val: value,
-            typeProp: '71',
-            periodDepend: String(propMetaData.periodDepend),
-            isUniq: String(propMetaData.isUniq),
-            mode: mode ? mode : 'ins',
-            child: map(values, buildProps)
+        if (propMetaData.periodDepend===1 && propMetaData.isUniq ===1){
+            return {
+                propConst: key,
+                propItemConst:"",
+                mode: mode ? mode : 'ins',
+                dte: dte,
+                val: value,
+                propType: String(propMetaData.typeProp),
+                // idDataPropVal: String(val.idDataPropVal),
+                periodType: String(periods),
+                periodDepend: String(propMetaData.periodDepend),
+                isUniq: String(propMetaData.isUniq),
+                groupKey:"",
+                child: map(values, buildProps)
+            }
+        }
+        else if (propMetaData.periodDepend===2 && propMetaData.isUniq ===1){
+            return {
+                propConst: key,
+                propItemConst:"",
+                mode: mode ? mode : 'ins',
+                val: value,
+                propType: String(propMetaData.typeProp),
+                // idDataPropVal: String(val.idDataPropVal),
+                periodType: "0",
+                periodDepend: String(propMetaData.periodDepend),
+                isUniq: String(propMetaData.isUniq),
+                dBeg:moment().format("YYYY-MM-DD"),
+                //dEnd: dEnd,
+                groupKey:"",
+                child: map(values, buildProps)
+            }
         }
     });
     const datas = [{
@@ -1128,7 +1150,9 @@ export function onSaveCubeData3 ({cube, obj}, {values, complex, oFiles = {}, qFi
                                 en: item.value.value
                             },
                             idDataPropVal: item.value.idDataPropVal ? String(item.value.idDataPropVal) : "",
-                            dBeg:!!item.dBeg?val.item: moment().format("YYYY-MM-DD"),
+                            dBeg:!!item.dbeg?item.dbeg: moment().format("YYYY-MM-DD"),
+                            dEnd:!!item.dend?item.dend: "3333-12-31",
+
                             periodType: "0",
                             mode: mode
                         }
@@ -1160,7 +1184,8 @@ export function onSaveCubeData3 ({cube, obj}, {values, complex, oFiles = {}, qFi
                 for (let item of value) {
                     let mode = ""
                     if (!!item.idDataPropVal && !!item.value) {
-                        mode = "upd"
+                      continue
+
                     } else {
                         if (!!item.value) {
                             mode = "ins"
@@ -1183,7 +1208,8 @@ export function onSaveCubeData3 ({cube, obj}, {values, complex, oFiles = {}, qFi
                         let newob = {
                             val:String(item.value),
                             idDataPropVal: item.idDataPropVal ? String(item.idDataPropVal) : "",
-                            dBeg:!!item.dBeg?item.dBeg: moment().format("YYYY-MM-DD"),
+                            dBeg:!!item.dbeg?item.dbeg: moment().format("YYYY-MM-DD"),
+                            dEnd:!!item.dend?item.dend: "3333-12-31",
                             periodType: "0",
                             mode: mode
                         }
@@ -1233,7 +1259,9 @@ export function onSaveCubeData3 ({cube, obj}, {values, complex, oFiles = {}, qFi
                 periodType: "0",
                 periodDepend: String(propMetaData.periodDepend),
                 isUniq: String(propMetaData.isUniq),
-                dBeg:!!val.dBeg?val.dBeg: moment().format("YYYY-MM-DD"),
+                dBeg:!!val.dbeg?val.dbeg: moment().format("YYYY-MM-DD"),
+                dEnd:!!val.dend?val.dend: "3333-12-31",
+
                 //dEnd: dEnd,
                 groupKey:""
             }

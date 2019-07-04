@@ -134,5 +134,7 @@
   "ORG_RIGHT_RECEIVER": "Name of the organization of successor",
   "ORG_RIGHT_RECEIVER": "Құқықтанушы ұйымның атауы",
   "CASE_NUMB" : "Number deal",
-  "REASON_FUNDMAKER" : "Reason fundmaker"
+  "REASON_FUNDMAKER" : "Reason fundmaker",
+  "EDIT_RENAME" : "Edit rename",
+  "EDIT_REORGANIZATION" : "Edit reorganization"
   }

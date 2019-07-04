@@ -314,6 +314,12 @@ export const General = {
     axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getValuesOfObjsWithProps`, fd)
       .then(res => res.data)
       .catch(err=>console.error(err)),
+
+    getValuesOfObjsWithProps2: fd =>
+        axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getValuesOfObjsWithProps2`, fd)
+            .then(res => res.data)
+            .catch(err=>console.error(err)),
+
   // New Api for getting list of obj
   getObjListNew: fd =>
     axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjListNew`, fd)

@@ -23,7 +23,7 @@ import {
 import AntTable from '../../AntTable';
 import SiderCard_FundMaker from './SiderCard_FundMaker';
 import {isEmpty, isEqual, map} from 'lodash';
-import {parseCube_new, onSaveCubeData, parseForTable} from '../../../utils/cubeParser';
+import {parseCube_new, onSaveCubeData, parseForTable, onSaveCubeData3} from '../../../utils/cubeParser';
 import {
     getCube,
     getPropVal,
@@ -504,6 +504,51 @@ class FundMaker extends React.PureComponent {
         }
     };
 
+    saveProps3= async (c, v, t, objData) => {
+
+        let hideLoading;
+        try {
+            // Сохраняем значения свойств фондообразователя
+            c.cube.data = this.props.cubeForOrgFundmakerSingle;
+            hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
+            const resSaveFM = await onSaveCubeData3(c, v, t, objData);
+            hideLoading();
+            if (!resSaveFM.success) {
+                message.error(this.props.t('PROPS_UPDATING_ERROR'));
+                resSaveFM.errors.forEach(err => {
+                    message.error(err.text)
+                });
+                return Promise.reject(resSaveFM);
+            }
+            message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+            // Перезагружаем куб фондообразователей, если изменились названия и 5 свойств фондообразователя.
+            // if ((objData && (objData.name || objData.fullName || objData.dbeg || objData.dend || objData.accessLevel)) ||
+            //     v.values.fundmakerArchive || v.values.formOfAdmission || v.values.legalStatus || v.values.isActive || v.values.orgIndustry) {
+            //     this.setState({loading: true, openCard: false});
+            //     await this.props.loadOrgFundmaker();
+            //     this.setState({loading: false,});
+            // }
+            //
+            // this.setState({
+            //     openCard:false,
+            //     loading:true
+            // })
+            // await this.props.loadOrgFundmaker()
+            // this.setState({
+            //     openCard:false,
+            //     loading:false
+            // })
+            return resSaveFM;
+        }
+        catch (e) {
+            typeof hideLoading === 'function' && hideLoading();
+            this.setState({loading: false});
+            console.warn(e);
+        }
+    };
+
+
+
     remove = key => {
         const newData = this.state.data.filter(item => item.key !== key);
         this.setState({data: newData});
@@ -662,6 +707,7 @@ class FundMaker extends React.PureComponent {
                             <SiderCard_FundMaker t={t} tofiConstants={tofiConstants}
                                                  initialValues={this.state.initialValues} //eslint-disable-line
                                                  saveProps={this.saveProps}
+                                                 saveProps3={this.saveProps3}
                                                  saveIKProps={this.saveIKProps}
                                                  onCreateObj={this.onCreateObj}
                                                  loadOrgFundmaker={this.props.loadOrgFundmaker}

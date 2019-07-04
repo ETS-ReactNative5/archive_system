@@ -663,6 +663,7 @@ class MainInfoCaseForm extends Component {
       }
     } = this.props;
     return (
+
       <Form
         className="antForm-spaceBetween"
         onSubmit={handleSubmit(this.onSubmit)}

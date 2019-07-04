@@ -608,6 +608,11 @@ export const redirectWithPush = path => dispatch => {
 export const getValuesOfObjsWithProps = fd =>
     axios.General.getValuesOfObjsWithProps(fd)
 
+export const getValuesOfObjsWithProps2 = fd =>
+    axios.General.getValuesOfObjsWithProps2(fd)
+
+
+
 //////////////////////////////////////////// WORKS ////////////////////////////////////////////
 export const getAct1 = idWork=>
     axios.Works.getAct1(idWork);

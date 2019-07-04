@@ -4,7 +4,7 @@ import IDData from './IDData';
 import Status from './Status';
 import Contacts from './Contacts';
 import Researches from './Researches';
-import {getObjChildsByConst, getPropVal} from "../../../actions/actions";
+import {getObjChildsByConst, getPropVal, getRolesUser, setRoles, getRoles} from "../../../actions/actions";
 import {connect} from "react-redux";
 import {formValueSelector, change} from "redux-form";
 import {isEmpty, pickBy, isEqual} from "lodash";
@@ -22,10 +22,12 @@ class ResearchersCard extends React.PureComponent {
     directUseDocumentLoading: false,
     formResultRealizationLoading: false,
     staffRoleLoading: false,
+    rolesLoading: false,
+    rolesOptions: []
   };
   
-  onSubmit = values => {
-    const {photo, copyUdl, researcherClassObj, ...toSend} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
+    onSubmit = values => {
+    const {photo, copyUdl, researcherClassObj,roles, ...toSend} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
     const cube = {
       cubeSConst: 'cubeUsers',
       doConst: 'doUsers',
@@ -52,35 +54,76 @@ class ResearchersCard extends React.PureComponent {
     if (!isEmpty(researcherClassObj)) {
       objData.clsConst = researcherClassObj.researcherClass;
     }
-    return this.props.saveProps({cube, obj}, {values: toSend, oFiles: {photo: [photo], copyUdl: [copyUdl]}}, this.props.tofiConstants, objData);
+    if (roles) setRoles(this.props.initialValues.key.split('_')[1], roles.map(o => o.value).join(','));
+    return this.props.saveProps({cube, obj}, {
+      values: toSend,
+      oFiles: {photo: [photo], copyUdl: [copyUdl]}},
+      this.props.tofiConstants, objData);
   };
-  
-  loadOptions = c => {
-    return () => {
-      if(!this.props[c + 'Options']) {
-        this.setState({[c+'Loading']: true});
-        this.props.getPropVal(c)
-          .then(() => this.setState({[c+'Loading']: false}))
-          .catch(err => console.error(err))
-      }
+
+    handleTabChange = key => {
+        if(key === 'Status') {
+            this.loadUserRoles();
+        }
+    };
+
+    loadOptions = c => {
+        return () => {
+            if(!this.props[c + 'Options']) {
+                this.setState({[c+'Loading']: true});
+                this.props.getPropVal(c)
+                    .then(() => this.setState({[c+'Loading']: false}))
+                    .catch(err => console.error(err))
+            }
+        }
+    };
+
+    loadChilds = (c, props) => {
+        return () => {
+            if (!this.props[c + 'Options']) {
+                this.setState({[c+'Loading']: true});
+                this.props.getObjChildsByConst(c, props)
+                    .then(() => this.setState({[c+'Loading']: false}))
+                    .catch(err => console.error(err))
+            }
+        }
+    };
+
+    loadUserRoles = () => {
+        const key = this.props.initialValues.key;
+        if (key) {
+            getRolesUser(key.split('_')[1])
+                .then(res => this.setState({roles: res.data.map(o => ({ value: o.id, label: o.name[this.lng] }))}))
+                .catch(err => console.warn(err))
+        }
+    };
+
+    componentDidUpdate(prevProps) {
+        if(prevProps.initialValues != this.props.initialValues) {
+            this.loadUserRoles();
+        }
     }
-  };
-  loadChilds = (c, props) => {
-    return () => {
-      if (!this.props[c + 'Options']) {
-        this.setState({[c+'Loading']: true});
-        this.props.getObjChildsByConst(c, props)
-          .then(() => this.setState({[c+'Loading']: false}))
-          .catch(err => console.error(err))
-      }
-    }
-  };
+
+    loadRolesOptions = () => {
+        this.setState({rolesLoading: true});
+        getRoles()
+            .then(res => {
+                this.setState({rolesLoading: false, rolesOptions: res.data})
+            })
+            .catch(err => {
+                this.setState({rolesLoading: false});
+                console.error(err)
+            })
+    };
+
 
   render() {
     const {t, tofiConstants, initialValues, saveProps, onCreateObj} = this.props;
 
     return (
-      <AntTabs tabs={[
+      <AntTabs
+          onChange={this.handleTabChange}
+          tabs={[
         {
           tabKey: 'IDData',
           tabName: t('ID_DATA'),
@@ -99,28 +142,30 @@ class ResearchersCard extends React.PureComponent {
             objNationalityLoading={this.state.objNationalityLoading}
           />
         },
-        {
-          tabKey: 'Status',
-          tabName: t('STATUS'),
-          tabContent: <Status
-            tofiConstants={tofiConstants}
-            saveProps={saveProps}
-            onSubmit={this.onSubmit}
-            t={t}
-            user={this.props.user}
-            //user={{...this.props.user, privs: 'leader'}}
-            initialValues={initialValues}
-            loadOptions={this.loadOptions}
-            educationLoading={this.state.educationLoading}
-            educationOptions={this.props.educationOptions}
-            personAcademicTitleLoading={this.state.personAcademicTitleLoading}
-            personAcademicTitleOptions={this.props.personAcademicTitleOptions}
-            personAcademicDegreeLoading={this.state.personAcademicDegreeLoading}
-            personAcademicDegreeOptions={this.props.personAcademicDegreeOptions}
-            staffRoleLoading={this.state.staffRoleLoading}
-            staffRoleOptions={this.props.staffRoleOptions}
-          />
-        },
+              {
+                  tabKey: 'Status',
+                  tabName: t('STATUS'),
+                  tabContent: <Status
+                      tofiConstants={tofiConstants}
+                      saveProps={saveProps}
+                      onSubmit={this.onSubmit}
+                      t={t}
+                      user={this.props.user}
+                      initialValues={{...initialValues, roles: this.state.roles}}
+                      loadOptions={this.loadOptions}
+                      loadRolesOptions={this.loadRolesOptions}
+                      rolesLoading={this.state.rolesLoading}
+                      rolesOptions={this.state.rolesOptions}
+                      educationLoading={this.state.educationLoading}
+                      educationOptions={this.props.educationOptions}
+                      staffRoleLoading={this.state.staffRoleLoading}
+                      staffRoleOptions={this.props.staffRoleOptions}
+                      personAcademicTitleLoading={this.state.personAcademicTitleLoading}
+                      personAcademicTitleOptions={this.props.personAcademicTitleOptions}
+                      personAcademicDegreeLoading={this.state.personAcademicDegreeLoading}
+                      personAcademicDegreeOptions={this.props.personAcademicDegreeOptions}
+                  />
+              },
         // {
         //   tabKey: 'Contacts',
         //   tabName: t('CONTACTS'),
@@ -162,17 +207,17 @@ const selector = formValueSelector('signUpForm');
 function mapStateToProps(state) {
   const themeValue = selector(state, 'theme');
   return {
-    themeValue,
-    genderOptions: state.generalData.gender,
-    objNationalityOptions: state.generalData.objNationality,
-    educationOptions: state.generalData.education,
-    personAcademicDegreeOptions: state.generalData.personAcademicDegree,
-    personAcademicTitleOptions: state.generalData.personAcademicTitle,
-    staffRoleOptions: state.generalData.staffRole,
-    objStudyParentOptions: state.generalData.objStudyParent,
-    directUseDocumentOptions: state.generalData.directUseDocument,
-    formResultRealizationOptions: state.generalData.formResultRealization,
-    user: state.auth.user
+      themeValue,
+      genderOptions: state.generalData.gender,
+      objNationalityOptions: state.generalData.objNationality,
+      educationOptions: state.generalData.education,
+      personAcademicDegreeOptions: state.generalData.personAcademicDegree,
+      personAcademicTitleOptions: state.generalData.personAcademicTitle,
+      objStudyParentOptions: state.generalData.objStudyParent,
+      directUseDocumentOptions: state.generalData.directUseDocument,
+      formResultRealizationOptions: state.generalData.formResultRealization,
+      staffRoleOptions: state.generalData.staffRole,
+      user: state.auth.user
   }
 }
 

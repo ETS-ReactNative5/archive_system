@@ -115,7 +115,8 @@ class Status  extends React.Component {
 
     render() {
         this.lng = localStorage.getItem('i18nextLng');
-
+        console.log(this.props.initialValues)
+        debugger;
         const {personAcademicDegree, job, position, education, personAcademicTitle} = this.props.tofiConstants;
         const {
             handleSubmit, t, loadOptions, tofiConstants,
@@ -244,6 +245,7 @@ class Status  extends React.Component {
                 <Field
                     name="roles"
                     component={renderSelect}
+                    normalize={this.selectToRedux}
                     isMulti
                     label={t('ROLES')}
                     formItemLayout={{
