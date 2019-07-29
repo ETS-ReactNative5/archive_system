@@ -12,11 +12,19 @@ const oneLevelCopy = (object) => ({...object});
 export const parseForTableComplex = (cube, doConst, dpConst, dtConst, tofiConstants, arrConst, globalDate) => {
   var cubeData = cube;
   var dpComplex = cubeData['dp_' + tofiConstants[dpConst].id];
-  var dtId = 'dt_' + tofiConstants[dtConst].id;
+  var dtId = null;
+  if(!!dtConst){
+    dtId = 'dt_' + tofiConstants[dtConst].id;
+  }
   var cubeComplex = cubeData['cube'];
-  var parentObjs = cubeComplex.filter(el => el.parentDataPropVal == null && !!el.valueStr);
+  var parentObjs = cubeComplex.filter(el => cubeComplex.every(child=>child.idDataPropVal!==el.parentDataPropVal) && !!el.valueStr);
   var year = globalDate ? globalDate.slice(-4) : '';
-  var yearParnets = parentObjs.filter(el => el[dtId].startsWith(year));
+  var yearParnets;
+  if(!!dtId){
+    yearParnets = parentObjs.filter(el => el[dtId].startsWith(year));
+  }else{
+    yearParnets = parentObjs;
+  }
   var complexForTable = yearParnets.map(el => {
     var complexObj = {};
     complexObj.key = el.idDataPropVal;
@@ -1184,7 +1192,7 @@ export function onSaveCubeData3 ({cube, obj}, {values, complex, oFiles = {}, qFi
                 for (let item of value) {
                     let mode = ""
                     if (!!item.idDataPropVal && !!item.value) {
-                      continue
+                        mode = "upd"
 
                     } else {
                         if (!!item.value) {

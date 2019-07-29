@@ -368,6 +368,7 @@ class InquiryReqs extends React.Component {
                     width: '6%',
                     render: key =>  key,
                     sorter: (a, b) => parseInt(a.key.split('_')[1]) - parseInt(b.key.split('_')[1]),
+                    sortOrder: 'descend',
                     filterDropdown: (
                         <div className="custom-filter-dropdown">
                           <Input

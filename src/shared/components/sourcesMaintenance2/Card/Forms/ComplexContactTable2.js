@@ -353,7 +353,7 @@ class ComplexContactTable2 extends React.Component {
         const columns = [
             {
                 key: [this.props.tofiConstants['contactPersonsComplexNum'].id],
-                title: "#",
+                title: "№",
                 dataIndex: [this.props.tofiConstants['contactPersonsComplexNum'].id],
                 width: '5%',
                 render: (obj, rec, i) => obj[0] && obj[0].valueLng && obj[0].valueLng[this.lng],

@@ -52,6 +52,7 @@ class FMIndividualsForm extends Component {
       }
     }
   };
+
   componentDidMount() {
     /*[PERSON_SPECIALTY, PERSON_ACADEMIC_TITLE, PERSON_ACADEMIC_DEGREE, OWNER_STATUS].forEach(c => {
       this.loadOptions(c)()
@@ -86,6 +87,7 @@ class FMIndividualsForm extends Component {
       this.ownerAddressValue = {...this.props.initialValues.ownerAddress} || {kz: '', ru: '', en: ''};
     }
   }
+
   onSubmit = values => {
     const {accessLevel, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
     const cube = {
@@ -122,22 +124,96 @@ class FMIndividualsForm extends Component {
     );
   };
 
+
+    selectToRedux = (val, prevVal, obj, prevObj) => {
+        if (val !== undefined) {
+            if (val === null) {
+                let newValNull = {...prevVal};
+                newValNull.label = null;
+                newValNull.labelFull = null;
+                newValNull.value = null;
+                return newValNull;
+            } else {
+                let newVal = {...prevVal};
+                newVal.value = val.value;
+                newVal.label = val.label;
+                newVal.labelFull = val.label;
+                return newVal;
+            }
+        }
+    };
+
+    dateToRedux = (val, prev) => {
+        {
+            let coppyPrev = {...prev};
+
+            if (!!val) {
+
+                let newDate = val
+                if (!!coppyPrev.idDataPropVal) {
+                    coppyPrev.value = newDate;
+                    return coppyPrev;
+                } else {
+                    return {
+                        value: newDate
+                    };
+                }
+            } else {
+                if (!!coppyPrev.value) {
+                    coppyPrev.value = "";
+                    return coppyPrev;
+                } else {
+                    return {};
+                }
+            }
+        }
+    };
+
+    strToRedux = (val, prevVal, obj, prevObj, flag) => {
+        if (!!flag) {
+            val = val.replace(/[^\d;]/g, '')
+        }
+        var newVal = {...prevVal};
+        if (prevVal === null) {
+            let objVal = {
+                value: val,
+                valueLng: {kz: val},
+                valueLng: {ru: val},
+                valueLng: {en: val}
+            };
+            return objVal;
+        } else {
+            newVal.value = val;
+            newVal["valueLng"] = {kz: val, ru: val, en: val};
+
+            return newVal;
+        }
+    };
+
   render() {
     if(!this.props.tofiConstants) return null;
 
     this.lng = localStorage.getItem('i18nextLng');
     const { t, handleSubmit, reset, dirty, error, submitting, tofiConstants: {personLastName, personName, personPatronymic,
-          personAcademicDegree, personAcademicTitle, personSpecialty, personAddress, personPhone, personEmail,
-          ownerLastName, ownerName, ownerPatronymic, ownerStatus, ownerAddress, ownerPhone, ownerEmail},
-          ownerStatusOptions, personAcademicDegreeOptions, personSpecialtyOptions, personAcademicTitleOptions, accessLevelOptions } = this.props;
+          personAcademicDegree, personAcademicTitle, personSpecialty, personAddress, personPhone, personEmail}, personAcademicDegreeOptions, personSpecialtyOptions, personAcademicTitleOptions, accessLevelOptions } = this.props;
     const { lang, loading } = this.state;
     return (
       <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)} style={dirty ? {paddingBottom: '43px'} : {}}>
         {personLastName && <Field
           name="personLastName"
           component={renderInputLang}
-          format={value => (!!value ? value[lang.personLastName] : '')}
-          parse={value => { this.personLastNameValue[lang.personLastName] = value; return {...this.personLastNameValue} }}
+          format={value =>{ return (!!value ?value.valueLng[lang.personLastName] : '')}}
+          normalize={(val, prevVal, obj, prevObj) => {
+              let newVal = { ...prevVal };
+              newVal.value = val;
+              if (!!newVal.valueLng) {
+                  newVal.valueLng[lang.personLastName] = val;
+              } else {
+                  newVal["valueLng"] = { kz: "", en: "", ru: "" };
+                  newVal.valueLng[lang.personLastName] = val;
+              }
+              return newVal;
+          }}
           label={personLastName.name[this.lng]}
           formItemClass="with-lang"
           changeLang={this.changeLang}
@@ -153,8 +229,18 @@ class FMIndividualsForm extends Component {
         {personName && <Field
           name="personName"
           component={renderInputLang}
-          format={value => (!!value ? value[lang.personName] : '')}
-          parse={value => { this.personNameValue[lang.personName] = value; return {...this.personNameValue} }}
+          normalize={(val, prevVal, obj, prevObj) => {
+              let newVal = { ...prevVal };
+              newVal.value = val;
+              if (!!newVal.valueLng) {
+                  newVal.valueLng[lang.personName] = val;
+              } else {
+                  newVal["valueLng"] = { kz: "", en: "", ru: "" };
+                  newVal.valueLng[lang.personName] = val;
+              }
+              return newVal;
+          }}
+          format={value => (!!value ?value.valueLng[lang.personName] : '')}
           label={personName.name[this.lng]}
           formItemClass="with-lang"
           changeLang={this.changeLang}
@@ -170,8 +256,18 @@ class FMIndividualsForm extends Component {
         {personPatronymic && <Field
           name="personPatronymic"
           component={renderInputLang}
-          format={value => (!!value ? value[lang.personPatronymic] : '')}
-          parse={value => { this.personPatronymicValue[lang.personPatronymic] = value; return {...this.personPatronymicValue} }}
+          normalize={(val, prevVal, obj, prevObj) => {
+              let newVal = { ...prevVal };
+              newVal.value = val;
+              if (!!newVal.valueLng) {
+                  newVal.valueLng[lang.personPatronymic] = val;
+              } else {
+                  newVal["valueLng"] = { kz: "", en: "", ru: "" };
+                  newVal.valueLng[lang.personPatronymic] = val;
+              }
+              return newVal;
+          }}
+          format={value => (!!value ?value.valueLng[lang.personPatronymic] : '')}
           label={personPatronymic.name[this.lng]}
           formItemClass="with-lang"
           changeLang={this.changeLang}
@@ -185,6 +281,7 @@ class FMIndividualsForm extends Component {
         <Fields
           names={[ 'dateOfBirth', 'dateOfDeath' ]}
           component={renderDoubleDatePicker}
+          normalize={this.dateToRedux}
           label={t('LIFE')}
           format={null}
           formItemLayout={
@@ -197,6 +294,7 @@ class FMIndividualsForm extends Component {
         <Field
           name="accessLevel"
           component={ renderSelect }
+          normalize={this.selectToRedux}
           label={t('ACCESS_LEVEL')}
           formItemLayout={
             {
@@ -213,6 +311,7 @@ class FMIndividualsForm extends Component {
         {personAcademicDegree && <Field
           name="personAcademicDegree"
           component={ renderSelect }
+          normalize={this.selectToRedux}
           isSearchable={false}
           label={personAcademicDegree.name[this.lng]}
           formItemLayout={
@@ -224,13 +323,11 @@ class FMIndividualsForm extends Component {
           data={personAcademicDegreeOptions ? personAcademicDegreeOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : []}
           onMenuOpen={this.loadOptions(PERSON_ACADEMIC_DEGREE)}
           isLoading={loading.personAcademicDegreeLoading}
-          // loadOptions={this.getPersonAcademicDegreeOptions}
-          // validate={required}
-          // colon={true}
         />}
         {personAcademicTitle && <Field
           name="personAcademicTitle"
           component={ renderSelect }
+          normalize={this.selectToRedux}
           isSearchable={false}
           label={personAcademicTitle.name[this.lng]}
           formItemLayout={
@@ -266,8 +363,18 @@ class FMIndividualsForm extends Component {
         {personAddress && <Field
           name="personAddress"
           component={renderInputLang}
-          format={value => (!!value ? value[lang.personAddress] : '')}
-          parse={value => { this.personAddressValue[lang.personAddress] = value; return {...this.personAddressValue} }}
+          normalize={(val, prevVal, obj, prevObj) => {
+              let newVal = { ...prevVal };
+              newVal.value = val;
+              if (!!newVal.valueLng) {
+                  newVal.valueLng[lang.personAddress] = val;
+              } else {
+                  newVal["valueLng"] = { kz: "", en: "", ru: "" };
+                  newVal.valueLng[lang.personAddress] = val;
+              }
+              return newVal;
+          }}
+          format={value => (!!value ?value.valueLng[lang.personAddress] : '')}
           label={personAddress.name[this.lng]}
           formItemClass="with-lang"
           changeLang={this.changeLang}
@@ -281,6 +388,7 @@ class FMIndividualsForm extends Component {
         {personPhone && <Field
           name="personPhone"
           component={ renderInput }
+          normalize={this.strToRedux}
           label={personPhone.name[this.lng]}
           formItemLayout={
             {
@@ -289,114 +397,12 @@ class FMIndividualsForm extends Component {
             }
           }
           placeholder="+7 ("
-          normalize={normalizePhone}
         />}
         {personEmail && <Field
           name="personEmail"
           component={ renderInput }
+          normalize={this.strToRedux}
           label={personEmail.name[this.lng]}
-          formItemLayout={
-            {
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }
-          }
-        />}
-        <Form.Item style={{marginBottom: '5px'}}><h2>{t('OWNER_INFO_INDIVIDUAL')}</h2></Form.Item>
-        {ownerLastName && <Field
-          name="ownerLastName"
-          component={renderInputLang}
-          format={value => (!!value ? value[lang.ownerLastName] : '')}
-          parse={value => { this.ownerLastNameValue[lang.ownerLastName] = value; return {...this.ownerLastNameValue} }}
-          label={ownerLastName.name[this.lng]}
-          formItemClass="with-lang"
-          changeLang={this.changeLang}
-          formItemLayout={
-            {
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }
-          }
-        />}
-        {ownerName && <Field
-          name="ownerName"
-          component={renderInputLang}
-          format={value => (!!value ? value[lang.ownerName] : '')}
-          parse={value => { this.ownerNameValue[lang.ownerName] = value; return {...this.ownerNameValue} }}
-          label={ownerName.name[this.lng]}
-          formItemClass="with-lang"
-          changeLang={this.changeLang}
-          formItemLayout={
-            {
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }
-          }
-        />}
-        {ownerPatronymic && <Field
-          name="ownerPatronymic"
-          component={renderInputLang}
-          format={value => (!!value ? value[lang.ownerPatronymic] : '')}
-          parse={value => { this.ownerPatronymicValue[lang.ownerPatronymic] = value; return {...this.ownerPatronymicValue} }}
-          label={ownerPatronymic.name[this.lng]}
-          formItemClass="with-lang"
-          changeLang={this.changeLang}
-          formItemLayout={
-            {
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }
-          }
-        />}
-        {ownerStatus && <Field
-          name="ownerStatus"
-          component={ renderSelect }
-          isSearchable={false}
-          label={ownerStatus.name[this.lng]}
-          formItemLayout={
-            {
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }
-          }
-          data={ownerStatusOptions ? ownerStatusOptions.map(option => ({value: option.id, label: option.name[this.lng]})) : []}
-          onMenuOpen={this.loadOptions(OWNER_STATUS)}
-          isLoading={loading.ownerStatusLoading}
-          // validate={required}
-          // colon={true}
-        />}
-        {ownerAddress && <Field
-          name="ownerAddress"
-          component={renderInputLang}
-          format={value => (!!value ? value[lang.ownerAddress] : '')}
-          parse={value => { this.ownerAddressValue[lang.ownerAddress] = value; return {...this.ownerAddressValue} }}
-          label={ownerAddress.name[this.lng]}
-          formItemClass="with-lang"
-          changeLang={this.changeLang}
-          formItemLayout={
-            {
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }
-          }
-        />}
-        {ownerPhone && <Field
-          name="ownerPhone"
-          component={ renderInput }
-          label={ownerPhone.name[this.lng]}
-          formItemLayout={
-            {
-              labelCol: { span: 10 },
-              wrapperCol: { span: 14 }
-            }
-          }
-          placeholder="+7 ("
-          normalize={normalizePhone}
-        />}
-        {ownerEmail && <Field
-          name="ownerEmail"
-          component={ renderInput }
-          label={ownerEmail.name[this.lng]}
           formItemLayout={
             {
               labelCol: { span: 10 },

@@ -8,11 +8,12 @@ import {
     renderInputLang,
     renderSelect
 } from "../../../utils/form_components";
-import {requiredLabel, requiredLng} from "../../../utils/form_validations";
+import {requiredDate, requiredLabel, requiredLng} from "../../../utils/form_validations";
 import Row from "antd/es/grid/row";
 import Col from "antd/es/grid/col";
 import {isEqual, pickBy} from "lodash";
 import moment from 'moment/moment';
+import "./css/RenameFormFoundMaker.css"
 import {parseCube_new} from "../../../utils/cubeParser";
 import {
     CUBE_FOR_ORG_FUNDMAKER,
@@ -33,14 +34,16 @@ import {
     getObjChildsByConst,
     getPropVal,
     getPropValWithChilds,
-    getAllObjOfCls
+    getAllObjOfCls, getValuesOfObjsWithProps2
 } from "../../../actions/actions";
-
+import axios from "axios"
 
 class LiquidationFoundMaker extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
+            dataTable2:[],
+            dataTable:[],
             loading: {
                 orgRightReceiverLoading: false,
                 loadReceiver: '',
@@ -48,7 +51,7 @@ class LiquidationFoundMaker extends React.PureComponent {
         };
     }
 
-    onSubmit = values => {
+    onSubmit = async(values) => {
         const {doForFundAndIK, dpForFundAndIK} = this.props.tofiConstants;
         const {reasonFundmakerFile, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
         const cube = {
@@ -59,6 +62,28 @@ class LiquidationFoundMaker extends React.PureComponent {
         const obj = {
             clsConst: 'fundmakerOrg',
         };
+        await this.closeProps(rest)
+        if (rest.dateElimination){
+            rest.dateElimination.dend= moment(values.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+        }
+        if (rest.orgRightReceiver){
+            rest.orgRightReceiver.dend= moment(values.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+        }
+        if (rest.reasonFundmaker){
+            rest.reasonFundmaker.dend= moment(values.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+        }
+        if (!!reasonFundmakerFile){
+            for (let val of reasonFundmakerFile){
+                if (!!val.idDataPropVal){
+
+                }else {
+                    val.value.dEnd= moment(values.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                }
+            }
+        }
+
+
+
         if (!this.props.initialValues.key) {
             return this.props.onCreateObj(
                 {cube, obj},
@@ -67,87 +92,10 @@ class LiquidationFoundMaker extends React.PureComponent {
         }
         obj.doItem = this.props.initialValues.key;
         const objData = {};
-        // Сохраняем значения свойств fundNumber, fundmakerArchive (fundArchive для ИК), formOfAdmission, legalStatus, isActive для соответстующего источника комплектования, если хотя бы одно изменилось.
-        if (rest.orgRightReceiver) {
-            const filters = {
-                filterDOAnd: [
-                    {
-                        dimConst: 'doForFundAndIK',
-                        concatType: "and",
-                        conds: [
-                            {
-                                data: {
-                                    dimPropConst: 'dpForFundAndIK',
-                                    propConst: 'fundmakerOfIK',
-                                    valueRef: {id: `wa_${obj.doItem.split('_')[1]}`}
-                                }
-                            }
-                        ]
-                    }
-                ],
-                filterDTOr: [
-                    {
-                        dimConst: 'dtForFundAndIK',
-                        concatType: 'and',
-                        conds: [
-                            {
-                                ids: moment().startOf('year').format('YYYYMMDD') + moment().endOf('year').format('YYYYMMDD')
-                            }
-                        ]
-                    }
-                ],
-                filterDPAnd: [
-                    {
-                        dimConst: 'dpForFundAndIK',
-                        concatType: "and",
-                        conds: [
-                            {
-                                consts: 'fundmakerOfIK,formOfAdmission,orgRightReceiver,isActive'
-                            }
-                        ]
-                    }
-                ]
-            };
-            this.props.getCube('cubeForFundAndIK', JSON.stringify(filters), {customKey: 'cubeForFundAndIKSingle'})
-                .then(() => {
-                    const constArr = ['fundNumber', 'fundmakerOfIK', 'formOfAdmission', 'orgRightReceiver'];
-                    const parsedCube = parseCube_new(
-                        this.props.cubeForFundAndIKSingle['cube'],
-                        [],
-                        'dp',
-                        'do',
-                        this.props.cubeForFundAndIKSingle[`do_${doForFundAndIK.id}`],
-                        this.props.cubeForFundAndIKSingle[`dp_${dpForFundAndIK.id}`],
-                        `do_${doForFundAndIK.id}`,
-                        `dp_${dpForFundAndIK.id}`)[0];
-
-
-                    const cIK = {
-                        cube: {
-                            cubeSConst: 'cubeForFundAndIK',
-                            doConst: 'doForFundAndIK',
-                            dpConst: 'dpForFundAndIK',
-                            data: this.props.cubeForFundAndIKSingle
-                        },
-                        obj: {doItem: parsedCube.id}
-                    };
-                    const {orgRightReceiver} = rest;
-                    const vIK = {
-                        values: JSON.parse(JSON.stringify({
-                            orgRightReceiver,
-                            fundmakerOfIK: {
-                                value: obj.doItem.split('_')[1], dbeg: "1800-01-01",
-                                propConst: "fundmakerOfIK",
-                                isUniq: 1,
-                                periodDepend: 2,
-                                dend: "3333-12-31",
-                                idDataPropVal: parsedCube.props.find(el => el.prop == this.props.tofiConstants['fundmakerOfIK'].id) && parsedCube.props.find(el => el.prop == this.props.tofiConstants['fundmakerOfIK'].id).values.idDataPropVal
-                            }
-                        })),
-                    };
-                    // this.props.saveIKProps(cIK, vIK, this.props.tofiConstants, objData);
-                });
+        if (!!rest.dateElimination){
+            objData.dEnd=rest.dateElimination.value.format("YYYY-MM-DD")
         }
+
         rest.conditionOfFundmaker=[{
             value:this.props.tofiConstants["liquidation"].id
         }]
@@ -261,6 +209,359 @@ class LiquidationFoundMaker extends React.PureComponent {
 
         }
     };
+    componentDidMount() {
+
+        this.renderDataTable()
+        this.renderDataTable2()
+
+    }
+
+    renderDataTable2 = async () => {
+        const data = new FormData();
+        data.append('objId', String(this.props.initialValues.key.split('_')[1]));
+        data.append('propConsts', 'reasonFundmaker,reasonFundmakerFile,dateReorganization,orgIndustry,orgFunction,legalStatus,structureFundmaker,structure,orgRightReceiver,orgFunctionFundmaker,departmentalAccessory,conditionOfFundmaker');
+        data.append('allValues', String(1));
+
+        await getValuesOfObjsWithProps2(data).then(res => {
+            if (res.success === false && res.errors) {
+                for (let val of  res.errors) {
+                    message.error(val.text)
+                }
+                return false
+            }
+            if (!!res.data && !!res.data.owner) {
+                let newarr = [...res.data.owner]
+                for (let val of newarr) {
+                    let dateReorganization = !!res.data.dateReorganization && res.data.dateReorganization.find(el => val.verOwn === el.verOwn && !!el.val)
+                    if (!!dateReorganization) {
+                        val.dateReorganization = dateReorganization
+                    }
+                    let reasonFundmaker = !!res.data.reasonFundmaker && res.data.reasonFundmaker.find(el => val.verOwn === el.verOwn && !!el.val)
+                    if (!!reasonFundmaker) {
+                        val.reasonFundmaker = reasonFundmaker
+                    }
+                    let reasonFundmakerFile = !!res.data.reasonFundmakerFile && res.data.reasonFundmakerFile.find(el => val.verOwn === el.verOwn && !!el.val)
+                    if (!!reasonFundmakerFile) {
+                        val.reasonFundmakerFile = reasonFundmakerFile
+                    }
+                    let orgIndustry = !!res.data.orgIndustry && res.data.orgIndustry.filter(el => val.verOwn === el.verOwn && !!el.val)
+                    if (!!orgIndustry) {
+                        val.orgIndustry = orgIndustry
+                    }
+                    let legalStatus = !!res.data.legalStatus && res.data.legalStatus.find(el => val.verOwn === el.verOwn && !!el.val)
+                    if (!!legalStatus) {
+                        val.legalStatus = legalStatus
+                    }
+                    let structureFundmaker = !!res.data.structureFundmaker && res.data.structureFundmaker.find(el => val.verOwn === el.verOwn && !!el.val)
+                    if (!!structureFundmaker) {
+                        val.structureFundmaker = structureFundmaker
+                    }
+                    let structure = !!res.data.structure && res.data.structure.find(el => val.verOwn === el.verOwn && !!el.val)
+                    if (!!structure) {
+                        val.structure = structure
+                    }
+                    let orgRightReceiver = !!res.data.orgRightReceiver && res.data.orgRightReceiver.find(el => val.verOwn === el.verOwn && !!el.val)
+                    if (!!orgRightReceiver) {
+                        val.orgRightReceiver = orgRightReceiver
+                    }
+                    let orgFunctionFundmaker = !!res.data.orgFunctionFundmaker && res.data.orgFunctionFundmaker.find(el => val.verOwn === el.verOwn && !!el.val)
+                    if (!!orgFunctionFundmaker) {
+                        val.orgFunctionFundmaker = orgFunctionFundmaker
+                    }
+                    let orgFunction = !!res.data.orgFunction && res.data.orgFunction.find(el => val.verOwn === el.verOwn && !!el.val)
+                    if (!!orgFunction) {
+                        val.orgFunction = orgFunction
+                    }
+                    let departmentalAccessory = !!res.data.departmentalAccessory && res.data.departmentalAccessory.find(el => val.verOwn === el.verOwn && !!el.val)
+                    if (!!departmentalAccessory) {
+                        val.departmentalAccessory = departmentalAccessory
+                    }
+                    let conditionOfFundmaker = !!res.data.conditionOfFundmaker && res.data.conditionOfFundmaker.filter(el => val.verOwn === el.verOwn)
+                    if (!!conditionOfFundmaker) {
+                        val.conditionOfFundmaker = conditionOfFundmaker
+                    }
+                }
+                let rezulArr = []
+                let i = 1
+                for (let val of newarr) {
+                    if (!!val.conditionOfFundmaker) {
+                        for (let item of val.conditionOfFundmaker) {
+                            if (!!item.name && item.name.ru === "Реорганизация") {
+                                val.number = i
+                                i++
+                                rezulArr.push(val)
+                            }
+                        }
+                    }
+                }
+                this.setState({
+                    dataTable2: rezulArr
+                })
+            } else {
+                message.info("Нет данных")
+            }
+
+        }).catch(e => {
+            console.log(e)
+        })
+    }
+    renderDataTable = async () => {
+        const data = new FormData();
+        data.append('objId', String(this.props.initialValues.key.split('_')[1]));
+        data.append('propConsts', 'reasonFundmaker,reasonFundmakerFile,dateRename,conditionOfFundmaker');
+        data.append('allValues', String(1));
+
+        await getValuesOfObjsWithProps2(data).then(res => {
+            if (res.success === false && res.errors) {
+                for (let val of  res.errors) {
+                    message.error(val.text)
+                }
+                return false
+            }
+            if (!!res.data && !!res.data.owner) {
+                let newarr = [...res.data.owner]
+                for (let val of newarr) {
+                    let dateRename = !!res.data.dateRename && res.data.dateRename.find(el => val.verOwn === el.verOwn && !!el.val)
+                    if (!!dateRename) {
+                        val.dateRename = dateRename
+                    }
+                    let reasonFundmaker = !!res.data.reasonFundmaker && res.data.reasonFundmaker.find(el => val.verOwn === el.verOwn && !!el.val)
+                    if (!!reasonFundmaker) {
+                        val.reasonFundmaker = reasonFundmaker
+                    }
+                    let reasonFundmakerFile = !!res.data.reasonFundmakerFile && res.data.reasonFundmakerFile.find(el => val.verOwn === el.verOwn && !!el.val)
+                    if (!!reasonFundmakerFile) {
+                        val.reasonFundmakerFile = reasonFundmakerFile
+                    }
+                    let conditionOfFundmaker = !!res.data.conditionOfFundmaker && res.data.conditionOfFundmaker.filter(el => val.verOwn === el.verOwn)
+                    if (!!conditionOfFundmaker) {
+                        val.conditionOfFundmaker = conditionOfFundmaker
+                    }
+                }
+                let rezulArr = []
+                let i = 1
+                for (let val of newarr) {
+                    if (!!val.conditionOfFundmaker) {
+                        for (let item of val.conditionOfFundmaker) {
+                            if (!!item.name && item.name.ru === "Переименование") {
+                                val.number = i
+                                i++
+                                rezulArr.push(val)
+                            }
+                        }
+                    }
+                }
+                this.setState({
+                    dataTable: rezulArr
+                })
+            } else {
+                message.info("Нет данных")
+            }
+
+        }).catch(e => {
+            console.log(e)
+        })
+    }
+    closeProps = async (rest) => {
+        let dataOldProps = []
+        let oldpropsRename = this.state.dataTable.length > 0 ? this.state.dataTable[this.state.dataTable.length - 1] : ""
+        let dataTableRegin = this.state.dataTable2.length > 0 ? this.state.dataTable2[this.state.dataTable2.length - 1] : ""
+        if (!!oldpropsRename && !!oldpropsRename.dateRename) {
+            if (oldpropsRename.dateRename.dend === "3333-12-31") {
+                dataOldProps.push({
+                    idDataPropVal: String(oldpropsRename.dateRename.idDataPropVal),
+                    dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                })
+            }
+        }
+        if (!!dataTableRegin && !!dataTableRegin.dateReorganization) {
+            if (dataTableRegin.dateReorganization.dend === "3333-12-31") {
+                dataOldProps.push({
+                    idDataPropVal: String(dataTableRegin.dateReorganization.idDataPropVal),
+                    dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                })
+            }
+        }
+            if (!!dataTableRegin) {
+                if (!!dataTableRegin.orgRightReceiver) {
+                    if (dataTableRegin.orgRightReceiver.dend === "3333-12-31") {
+                        dataOldProps.push({
+                            idDataPropVal: String(dataTableRegin.orgRightReceiver.idDataPropVal),
+                            dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                        })
+                    }
+                }
+            }
+        if (!!dataTableRegin) {
+            if (!!dataTableRegin.orgIndustry) {
+                for (let val of dataTableRegin.orgIndustry) {
+                    if (val.dend === "3333-12-31") {
+                        dataOldProps.push({
+                            idDataPropVal: String(val.idDataPropVal),
+                            dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                        })
+                    }
+                }
+            }
+        }
+
+
+        if (!!oldpropsRename) {
+            if (!!oldpropsRename.conditionOfFundmaker) {
+                let findtobj = oldpropsRename.conditionOfFundmaker.find(el => !!el.name && el.name.ru === "Переименование")
+                if (findtobj.dend === "3333-12-31") {
+                    dataOldProps.push({
+                        idDataPropVal: String(findtobj.idDataPropVal),
+                        dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                    })
+                }
+            }
+        }
+        if (!!dataTableRegin) {
+            if (!!dataTableRegin.conditionOfFundmaker) {
+                let findtobj = dataTableRegin.conditionOfFundmaker.find(el => !!el.name && el.name.ru === "Реорганизация")
+
+                if (findtobj.dend === "3333-12-31") {
+                    dataOldProps.push({
+                        idDataPropVal: String(findtobj.idDataPropVal),
+                        dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                    })
+                }
+            }
+        }
+            if (!!dataTableRegin) {
+                if (!!dataTableRegin.legalStatus) {
+                    if (dataTableRegin.legalStatus.dend === "3333-12-31") {
+                        dataOldProps.push({
+                            idDataPropVal: String(dataTableRegin.legalStatus.idDataPropVal),
+                            dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                        })
+                    }
+                }
+            }
+
+            if (!!dataTableRegin) {
+                if (!!dataTableRegin.structureFundmaker) {
+                    if (dataTableRegin.structureFundmaker.dend === "3333-12-31") {
+                        dataOldProps.push({
+                            idDataPropVal: String(dataTableRegin.structureFundmaker.idDataPropVal),
+                            dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                        })
+                    }
+                }
+            }
+
+
+        if (!!dataTableRegin) {
+            if (!!dataTableRegin.structure) {
+                if (dataTableRegin.structure.dend === "3333-12-31") {
+                    dataOldProps.push({
+                        idDataPropVal: String(dataTableRegin.structure.idDataPropVal),
+                        dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                    })
+                }
+            }
+        }
+
+
+        if (!!dataTableRegin) {
+            if (!!dataTableRegin.orgFunction) {
+                if (dataTableRegin.orgFunction.dend === "3333-12-31") {
+                    dataOldProps.push({
+                        idDataPropVal: String(dataTableRegin.orgFunction.idDataPropVal),
+                        dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                    })
+                }
+            }
+        }
+
+
+            if (!!dataTableRegin) {
+                if (!!dataTableRegin.departmentalAccessory) {
+                    if (dataTableRegin.departmentalAccessory.dend === "3333-12-31") {
+                        dataOldProps.push({
+                            idDataPropVal: String(dataTableRegin.departmentalAccessory.idDataPropVal),
+                            dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                        })
+                    }
+                }
+            }
+
+
+            if (!!dataTableRegin) {
+                if (!!dataTableRegin.orgFunctionFundmaker) {
+                    if (dataTableRegin.orgFunctionFundmaker.dend === "3333-12-31") {
+                        dataOldProps.push({
+                            idDataPropVal: String(dataTableRegin.orgFunctionFundmaker.idDataPropVal),
+                            dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                        })
+                    }
+                }
+            }
+
+            if (!!oldpropsRename) {
+                if (!!oldpropsRename.reasonFundmaker) {
+                    if (oldpropsRename.reasonFundmaker.dend === "3333-12-31") {
+                        dataOldProps.push({
+                            idDataPropVal: String(oldpropsRename.reasonFundmaker.idDataPropVal),
+                            dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                        })
+                    }
+                }
+            }
+            if (!!dataTableRegin) {
+                if (!!dataTableRegin.reasonFundmaker) {
+                    if (dataTableRegin.reasonFundmaker.dend === "3333-12-31") {
+                        dataOldProps.push({
+                            idDataPropVal: String(dataTableRegin.reasonFundmaker.idDataPropVal),
+                            dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                        })
+                    }
+                }
+            }
+
+
+
+        if (!!oldpropsRename) {
+            if (!!oldpropsRename.reasonFundmakerFile) {
+                if (oldpropsRename.reasonFundmakerFile.dend === "3333-12-31") {
+                    dataOldProps.push({
+                        idDataPropVal: String(oldpropsRename.reasonFundmakerFile.idDataPropVal),
+                        dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                    })
+                }
+            }
+        }
+        if (!!dataTableRegin) {
+            if (!!dataTableRegin.reasonFundmakerFile) {
+                if (dataTableRegin.reasonFundmakerFile.dend === "3333-12-31") {
+                    dataOldProps.push({
+                        idDataPropVal: String(dataTableRegin.reasonFundmakerFile.idDataPropVal),
+                        dEnd: moment(rest.dateElimination.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                    })
+                }
+            }
+        }
+
+
+        if (dataOldProps.length !== 0) {
+
+            const fd2 = new FormData();
+            fd2.append('own', this.props.initialValues.key.split('_')[1]);
+            fd2.append('cubeSConst', "cubeForOrgFundmaker")
+            fd2.append('datas', JSON.stringify(dataOldProps))
+            await axios.post(`/${localStorage.getItem('i18nextLng')}/entity/changeValueOfDend`, fd2)
+                .then(res => {
+                    if (res.data.success === false && res.data.errors) {
+                        for (let val of  res.data.errors) {
+                            message.error(val.text)
+                        }
+                        return false
+                    }
+                })
+        }
+    }
+
 
     render(){
         if (!this.props.tofiConstants) return null;
@@ -268,7 +569,7 @@ class LiquidationFoundMaker extends React.PureComponent {
         const {lang, loading} = this.state;
         const {tofiConstants: {dateElimination,reasonFundmaker,orgRightReceiver}, t,orgRightReceiverOptions, handleSubmit, reset, dirty, error, submitting} = this.props;
         return(
-            <Form className="antForm-spaceBetween" onSubmit={handleSubmit(this.onSubmit)}
+            <Form className="antForm-spaceBetween btnFF" onSubmit={handleSubmit(this.onSubmit)}
                   style={dirty ? {paddingBottom: '43px'} : {}}>
                 {
                     dateElimination && <Field
@@ -278,6 +579,8 @@ class LiquidationFoundMaker extends React.PureComponent {
                         disabledDate={this.disabledStartDate}
                         label={dateElimination.name[lng]}
                         format={null}
+                        validate={requiredDate}
+                        colon={true}
                         formItemLayout={
                             {
                                 labelCol: {span: 10},

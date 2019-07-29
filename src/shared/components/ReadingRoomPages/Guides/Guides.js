@@ -186,7 +186,7 @@ class Guides extends React.Component {
             conds: [
               {
                 consts: "fundDbeg,fundDend,fundNumber,fundIndex,fundCategory,fundNumberOfCases,fundArchive," +
-                  "locationOfSupplementaryMaterials,accessDocument"
+                  "locationOfSupplementaryMaterials,accessDocument,fundBiographArcheographNote,fundHistoricalNote,invFile,fundAnnotationFile"
               }
             ]
           }

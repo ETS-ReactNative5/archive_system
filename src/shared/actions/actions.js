@@ -298,6 +298,10 @@ export const updObjVer = fd =>
 export const getObjList = fd =>
     axios.General.getObjList(fd)
 
+
+export const getObjChildss = fd =>
+    axios.General.getObjChilds(fd)
+
 export const getObjListNew = fd =>
     axios.General.getObjListNew(fd)
 
@@ -488,6 +492,8 @@ export const getObjVer_new = objId => {
 
 export const getValueOfMultiText = (objId, props) =>
     axios.General.getValueOfMultiText(objId, props);
+export const listValuesOfObjsWithProps = (objIds, propConsts) =>
+    axios.General.listValuesOfObjsWithProps(objIds, propConsts);
 
 export const getIdGetObj = (objId, dimObjConst) =>
     axios.General.getIdGetObj(objId, dimObjConst);

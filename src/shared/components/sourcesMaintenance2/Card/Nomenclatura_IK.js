@@ -127,6 +127,7 @@ class Nomenclatura_IK extends React.Component {
         <Spin spinning={this.state.loading}>
         <div><br/><br/>
             <NomenTable
+                rerender={this.buildComponent}
             listIdOfNomen={this.state.listIdOfNomen}
             t={t}
             selectedIK={this.props.selectedIK}

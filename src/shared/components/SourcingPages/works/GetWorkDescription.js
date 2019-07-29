@@ -46,11 +46,17 @@ class GetWorkDescription extends React.PureComponent {
         var mod = 'ins';
         if (!!this.state.multiTextDPV) {
             mod = 'upd'
+        };
+        let constant
+        if (this.props.typeWork ==="caseSearch"){
+            constant = "absenceCase"
+        }else {
+            constant="workDescription"
         }
-        ;
+
         dataToSend.push(
             {
-                propConst: 'workDescription',
+                propConst: constant,
                 vals: [
                     {
                         idDataPropVal: this.state.multiTextDPV,
@@ -75,7 +81,13 @@ class GetWorkDescription extends React.PureComponent {
         }
     };
     componentDidMount() {
-        getValueOfMultiText(String(this.props.initialValues.key.split('_')[1]), 'workDescription').then(
+        let constant
+        if (this.props.typeWork ==="caseSearch"){
+            constant = "absenceCase"
+        }else {
+            constant="workDescription"
+        }
+        getValueOfMultiText(String(this.props.initialValues.key.split('_')[1]), constant).then(
             res => {
                 !!res.data[0] && this.setState({
                     multiTextDPV: res.data[0].idDataPropVal,
@@ -91,9 +103,10 @@ class GetWorkDescription extends React.PureComponent {
     }
     render() {
         const {t} = this.props;
+        let lng =localStorage.getItem('i18nextLng')
         return (
             <div style={{width:'100%'}}>
-                <h2 className="fs12">Описание</h2>
+                <h2 className="fs12">{this.props.typeWork === "caseSearch"?this.props.tofiConstants["absenceCase"].name[lng]:"Описание"}</h2>
                 <div className="work-description p20">
                     <TextArea placeholder="Description" autosize={{minRows: 2}}
                               value={this.state.workDescription[this.state.lang]} onChange={this.onChange}

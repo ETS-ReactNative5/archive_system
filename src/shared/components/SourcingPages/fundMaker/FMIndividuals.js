@@ -7,14 +7,13 @@ import AntTable from '../../AntTable';
 import {isEmpty, isEqual, map} from 'lodash';
 import SiderCard_FMIndividuals from './SiderCard_FMIndividuals';
 import moment from 'moment';
-import {getPropMeta, onSaveCubeData, parseCube_new} from '../../../utils/cubeParser';
+import {getPropMeta, onSaveCubeData, parseCube_new, parseForTable} from '../../../utils/cubeParser';
 import {createObj, dFundMaker, dObj, getCube, getPropVal, insPropVal, updateCubeData} from '../../../actions/actions';
 import {
   CUBE_FOR_FUND_AND_IK, CUBE_FOR_LP_FUNDMAKER, PERSON_ACADEMIC_DEGREE, PERSON_ACADEMIC_TITLE, PERSON_SPECIALTY
 } from '../../../constants/tofiConstants';
 import {connect} from 'react-redux';
-
-/*eslint eqeqeq:0*/
+import {DatePicker,Checkbox} from "antd";
 class FMIndividuals extends React.PureComponent {
 
   constructor(props) {
@@ -26,12 +25,15 @@ class FMIndividuals extends React.PureComponent {
       loading: false,
       search: '',
       filter: {
+        dateIncludeOfIk: moment().format("DD-MM-YYYY"),
         personList: '',
         personAcademicDegree: [],
         personAcademicDegreeLoading: false,
         personAcademicTitle: [],
         personAcademicTitleLoading: false,
         personSpecialty: [],
+        fundArchive: [],
+        fundArchiveLoading: false,
         personSpecialtyLoading: false
       },
       selectedRow: null,
@@ -102,6 +104,9 @@ class FMIndividuals extends React.PureComponent {
   onPersonAcademicDegreeChange = s => {this.setState({filter: {...this.state.filter, personAcademicDegree: s}})};
   onPersonAcademicTitleChange = s => {this.setState({filter: {...this.state.filter, personAcademicTitle: s}})};
   onPersonSpecialtyChange = s => {this.setState({filter: {...this.state.filter, personSpecialty: s}})};
+  onFundArchiveChange = s => {
+        this.setState({ filter: { ...this.state.filter, fundArchive: s } });
+    };
 
   onCreateObj = async ({cube, obj}, v) => {
     let hideCreateObj;
@@ -181,6 +186,7 @@ class FMIndividuals extends React.PureComponent {
     const newData = this.state.data.filter(item => item.key !== key);
     this.setState({ data: newData });
   };
+
   renderTableData = (item, idx) => {
     const { personLastName, personName, personPatronymic,
       dateOfBirth, dateOfDeath, personAcademicDegree, personAcademicTitle, personSpecialty, personAddress, personPhone, personEmail,
@@ -210,24 +216,25 @@ class FMIndividuals extends React.PureComponent {
       personLaborOrgObj = item.props.find(element => element.prop == personLaborOrg.id),
       personLaborActivityObj = item.props.find(element => element.prop == personLaborActivity.id);
 
+    const constArr = ['personLastName','personName','ersonPatronymic','personAcademicDegree','dateIncludeOfIk','personList','personAcademicTitle','personSpecialty','personAddress','personPhone','personEmail',
+    'ownerLastName','ownerName','ownerPatronymic','ownerStatus','ownerAddress','ownerPhone','ownerEmail'];
     const accessLevelObj = this.props.accessLevelOptions.find(al => al.id === item.accessLevel);
-
     return {
       key: item.id,
       numb: idx + 1,
       accessLevel: accessLevelObj && {value: accessLevelObj.id, label: accessLevelObj.name[this.lng]},
       personList: !!item.name ? item.name : {kz: '', ru: '', en: ''},
-      personLastNameObj: !!personLastNameObj ? personLastNameObj.valueLng || '' : '',
-      personNameObj: !!personNameObj ? personNameObj.valueLng || '' : '',
-      personPatronymicObj: !!personPatronymicObj ? personPatronymicObj.valueLng || '' : '',
-      dateOfBirthObj: !!dateOfBirthObj && dateOfBirthObj.value ? moment(dateOfBirthObj.value, 'DD-MM-YYYY') : null,
-      dateOfDeathObj: !!dateOfDeathObj && dateOfDeathObj.value ? moment(dateOfDeathObj.value, 'DD-MM-YYYY') : null,
-      personAcademicDegree: !!personAcademicDegreeObj && personAcademicDegreeObj.refId ? {value: personAcademicDegreeObj.refId, label: personAcademicDegreeObj.value} : null,
-      personAcademicTitle: !!personAcademicTitleObj && personAcademicTitleObj.refId ? {value: personAcademicTitleObj.refId, label: personAcademicTitleObj.value} : null,
+      personLastNameObj: !!personLastNameObj && personLastNameObj.values ? personLastNameObj.values.valueLng || '' : '',
+      personNameObj: !!personNameObj && personNameObj.values ? personNameObj.values.valueLng || '' : '',
+      personPatronymicObj: !!personPatronymicObj && personPatronymicObj.values ? personPatronymicObj.values.value || '' : '',
+      dateOfBirthObj: !!dateOfBirthObj && dateOfBirthObj.values ? moment(dateOfBirthObj.values.value, 'DD-MM-YYYY') : null,
+      dateOfDeathObj: !!dateOfDeathObj && dateOfDeathObj.values ? moment(dateOfDeathObj.values.value, 'DD-MM-YYYY') : null,
+      personAcademicDegree: !!personAcademicDegreeObj && personAcademicDegreeObj.values ? {value: personAcademicDegreeObj.values.value, label: personAcademicDegreeObj.values.label} : null,
+      personAcademicTitle: !!personAcademicTitleObj && personAcademicTitleObj.values ? {value: personAcademicTitleObj.values.value, label: personAcademicTitleObj.values.label} : null,
       personSpecialty: !!personSpecialtyObj && personSpecialtyObj.values ? personSpecialtyObj.values : [],
-      personAddressObj: !!personAddressObj ? personAddressObj.valueLng || '' : '',
-      personPhone: !!personPhoneObj ? personPhoneObj.value || '' : '',
-      personEmail: !!personEmailObj ? personEmailObj.value || '' : '',
+      personAddressObj: !!personAddressObj && personAddressObj.values ? personAddressObj.values.valueLng || '' : ' ',
+      personPhone: !!personPhoneObj ? personPhoneObj.values || '' : '',
+      personEmail: !!personEmailObj ? personEmailObj.values || '' : '',
       ownerLastNameObj: !!ownerLastNameObj ? ownerLastNameObj.valueLng || '' : '',
       ownerNameObj: !!ownerNameObj ? ownerNameObj.valueLng || '' : '',
       ownerPatronymicObj: !!ownerPatronymicObj ? ownerPatronymicObj.valueLng || '' : '',
@@ -241,7 +248,56 @@ class FMIndividuals extends React.PureComponent {
       personLaborOrg: personLaborOrgObj && personLaborOrgObj.complexChildValues ? personLaborOrgObj.complexChildValues : {},
       personLaborActivity: personLaborActivityObj && personLaborActivityObj.values ? personLaborActivityObj.values : []
     }
+      const result = {
+          key: item.id,
+          numb: idx + 1,
+          shortName: item.name ? item.name : {kz: '', ru: '', en: ''},
+          name: item.fullName ? item.fullName : {kz: '', ru: '', en: ''},
+          dbeg: item.dbeg && moment(item.dbeg).isAfter('1800-01-01') ? moment(item.dbeg) : null,
+          dend: item.dend && moment(item.dend).isBefore('3333-12-31') ? moment(item.dend) : null,
+          accessLevel: accessLevelObj && {
+              value: accessLevelObj.id,
+              label: accessLevelObj.name[this.lng]
+          },
+      };
+      parseForTable(item.props, this.props.tofiConstants, result, constArr);
+      result.orgIndustry = result.orgIndustry && result.orgIndustry.length ?
+          result.orgIndustry.sort((a, b) => a.value > b.value)[result.orgIndustry.length - 1] :
+          null;
+      ['personLastName,personName,personPatronymic,personAcademicDegree,personList,personAcademicTitle,personSpecialty,personAddress,personPhone,personEmail,dateIncludeOfIk']
+          .forEach(c => {
+              result[c] = result[c + 'Lng']
+          });
+      return result;
   };
+
+    onFormOfAdateIncludeOfIkChange = (s, data) => {
+        if (s === null) {
+            return false
+        }
+        this.setState({
+            dateReport: moment(data).format("DD-MM-YYYY")
+        })
+        this.setState({filter: {...this.state.filter, dateIncludeOfIk: moment(data).format("DD-MM-YYYY")}})
+    };
+
+    showAllRender = (val) => {
+        if (val.target.checked === false) {
+            this.setState({
+                filter: {
+                    ...this.state.filter,
+                    dateIncludeOfIk: moment(this.state.dateReport).format("DD-MM-YYYY")
+                }
+            })
+        } else {
+            this.setState({
+                filter: {
+                    ...this.state.filter,
+                    dateIncludeOfIk: ""
+                }
+            })
+        }
+    }
 
   loadOptions = c => {
     return () => {
@@ -252,6 +308,23 @@ class FMIndividuals extends React.PureComponent {
       }
     }
   };
+    loadOptions2 = c => {
+        return () => {
+            if (!this.props[c + "Options"]) {
+                this.setState({
+                    filter: { ...this.state.filter, [c + "Loading"]: true }
+                });
+                this.props.getPropVal(c).then(() =>
+                    this.setState({
+                        filter: {
+                            ...this.state.filter,
+                            [c + "Loading"]: false
+                        }
+                    })
+                );
+            }
+        };
+    };
 
   openCard = () => {
     const accessLevelObj = this.props.accessLevelOptions.find(al => al.id === 1);
@@ -277,11 +350,30 @@ class FMIndividuals extends React.PureComponent {
     }})
   };
 
+    getFundsList = () => {
+        this.props.history.push({
+            pathname: `/archiveFund/fundsList`,
+            state: {
+                key: this.state.selectedRow.key.split("_")[1]
+            }
+        })
+    }
+
+    getTablelegalEntities = () => {
+        this.props.history.push({
+            pathname: `/sourcing/sourcesMaintenance2`,
+            state: {
+                key: this.state.selectedRow.key.split("_")[1]
+            }
+        })
+    }
+
   render() {
     const { t, tofiConstants, personAcademicDegreeOptions, personAcademicTitleOptions, personSpecialtyOptions } = this.props;
     const { filter, data } = this.state;
     if(isEmpty(tofiConstants)) return null;
     this.lng = localStorage.getItem('i18nextLng');
+      const {fundArchive}= this.props.tofiConstants;
 
     this.filteredData = data.map(this.renderTableData).filter(item => {
       return (
@@ -295,10 +387,34 @@ class FMIndividuals extends React.PureComponent {
     return (
       <div className="FMIndividuals">
         <div className="FMIndividuals__heading">
-          <div className="table-header">
-            <div className="table-header-btns">
+          <div className="table-header tubo">
+            <div className="table-header-btns" style={{justifyContent:"space-between !important"}}>
               <Button onClick={this.openCard}>{t('ADD')}</Button>
+                <Button onClick={this.getTablelegalEntities}
+                        disabled={this.state.selectedRow !== null ? false : true}>{this.props.t('SOURCING')}</Button>
+                <Button onClick={this.getFundsList}
+                        disabled={this.state.selectedRow !== null ? false : true}>{this.props.t('FUND')}</Button>
             </div>
+              <div className="label-select">
+                  <Select
+                      name="fundArchive"
+                      isMulti
+                      isSearchable={false}
+                      value={filter.fundArchive}
+                      onChange={this.onFundArchiveChange}
+                      isLoading={filter.fundArchiveLoading}
+                      options={
+                          this.props.fundArchiveOptions
+                              ? this.props.fundArchiveOptions.map(option => ({
+                                  value: option.id,
+                                  label: option.name[this.lng]
+                              }))
+                              : []
+                      }
+                      placeholder={fundArchive.name[this.lng]}
+                      onMenuOpen={this.loadOptions2("fundArchive")}
+                  />
+              </div>
             <div className="label-select">
               <Select
                 name="personAcademicDegree"
@@ -338,6 +454,14 @@ class FMIndividuals extends React.PureComponent {
                 placeholder={t('PERSON_SPECIALTY')}
               />
             </div>
+              <DatePicker
+                  name="periodType"
+                  onChange={this.onFormOfAdateIncludeOfIkChange}
+                  style={{width: 150}}
+                  value={moment(this.state.dateReport, "DD-MM-YYYY")}
+              />
+              <Checkbox style={{width: "8%"}}
+                        onChange={this.showAllRender}>Показать все</Checkbox>
           </div>
         </div>
         <div className="FMIndividuals__body">
@@ -431,6 +555,7 @@ class FMIndividuals extends React.PureComponent {
               onCreateObj={this.onCreateObj}
               cubeForLPFundmaker={this.props.cubeForLPFundmaker}
               recKey={this.state.selectedRow ? this.state.selectedRow.key : ''}
+              accessLevelOptions={this.props.accessLevelOptions}
             />
           </CSSTransition>
         </div>
@@ -444,7 +569,8 @@ function mapStateToProps(state) {
     personAcademicDegreeOptions: state.generalData[PERSON_ACADEMIC_DEGREE],
     personAcademicTitleOptions: state.generalData[PERSON_ACADEMIC_TITLE],
     personSpecialtyOptions: state.generalData[PERSON_SPECIALTY],
-    accessLevelOptions: state.generalData.accessLevel
+    accessLevelOptions: state.generalData.accessLevel,
+    fundArchiveOptions: state.generalData.fundArchive,
   }
 }
 

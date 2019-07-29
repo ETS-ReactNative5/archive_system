@@ -9,7 +9,8 @@ import {Link, Route, Switch} from 'react-router-dom';
 import {getCube, getObjByObjVal} from '../../actions/actions';
 
 import {isEmpty} from 'lodash';
-import  TablelegalEntities from "./TablelegalEntities"
+import  TablelegalEntities from "./TablelegalEntities";
+import EntitiesIndividuals from "./EnitiesIndividuals";
 // Главная страница (табы) пункта меню "источники комплектования"
 class Index extends React.PureComponent {
 
@@ -39,6 +40,7 @@ class Index extends React.PureComponent {
                         {
                             tabKey: 'individuals',
                             tabName: t('INDIVIDUALS'),
+                            tabContent:<EntitiesIndividuals {...this.props}/>
 
                         }
                     ]}

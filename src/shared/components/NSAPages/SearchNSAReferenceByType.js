@@ -243,7 +243,29 @@ class ClassificationInfo extends React.Component{
 
   onSave = () => {
     //this.props.onSave({fundToGuidbook: this.state.myValues}, {fundToGuidbook: this.props.myValues})
-    this.props.onSave({fundToGuidbook: this.state.myValues})
+      let data = {};
+
+      if (!!this.props.initialValues.surnameOriginator2){
+          let surnameOriginator2 = {...this.props.initialValues.surnameOriginator2}
+          surnameOriginator2.value=this.props.user.obj
+          data.surnameOriginator=surnameOriginator2
+      }else {
+          data.surnameOriginator={
+              value:this.props.user.obj
+          }
+      }
+      if (!!this.props.initialValues.lastChangeDateScheme.idDataPropVal){
+          let lastChangeDateScheme = {...this.props.initialValues.lastChangeDateScheme}
+          lastChangeDateScheme.value=moment()
+          data.lastChangeDateScheme=lastChangeDateScheme
+      }else {
+          data.lastChangeDateScheme={
+              value:moment()
+          }
+      }
+      data.fundToGuidbook=this.state.myValues
+
+      this.props.onSave(data);
   };
 
   render() {
@@ -338,5 +360,7 @@ class ClassificationInfo extends React.Component{
 export default connect(state => {
   return {
     csClassificationShem: state.cubes.csClassificationShem,
+      user: state.auth.user,
+
   }
 }, { getObjByProp, getAllObjOfCls })(ClassificationInfo);

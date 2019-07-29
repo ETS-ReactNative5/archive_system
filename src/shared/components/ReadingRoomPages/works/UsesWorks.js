@@ -558,13 +558,13 @@ class Works extends React.PureComponent {
                   dte: moment().format('YYYY-MM-DD')
                 },
               ];
-              General.setPropsToObj(
-                res.split('_')[1],
-                target.workRegCase.value,
-                props,
-                CUBE_FOR_WORKS,
-                DO_FOR_WORKS
-              );
+              // General.setPropsToObj(
+              //   res.split('_')[1],
+              //   target.workRegCase.value,
+              //   props,
+              //   CUBE_FOR_WORKS,
+              //   DO_FOR_WORKS
+              // );
 
               General.calcWorkAssignedToAndFund(
                 res.split('_')[1],
@@ -655,6 +655,25 @@ class Works extends React.PureComponent {
     });
     return result;
   };
+
+    renderTableFooter = () => {
+        const { t } = this.props;
+        return (
+            <div className="table-footer birthday">
+                <div className="data-length">
+                    <div className="label">
+                        <label htmlFor="">{t("COUNT_ITOG")}</label>
+                        <Input
+                            size="small"
+                            type="text"
+                            readOnly
+                            value={this.filteredData.length + " / " + this.state.data.length}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
   render() {
     const menu = (
@@ -926,11 +945,11 @@ class Works extends React.PureComponent {
               record.tookUser && record.tookUser.value === user.obj &&
               <div className="editable-row-operations">
                   <Button title="Разрешить" icon="check-circle" className='green-btn'
-                          disabled={record.workAssignedTo !== null ? record.workAssignedTo.value === this.props.user.obj?false:true:true}
+                          disabled={record.workAssignedTo !== null ?false:true}
 
                           onClick={this.addSpecialDate(record.key, 'acceptanceDate')}/>
                   <Button title="CANCEL" icon="close"
-                          disabled={record.workAssignedTo !== null ? record.workAssignedTo.value === this.props.user.obj?false:true:true}
+                          disabled={record.workAssignedTo !== null ? false:true}
                           onClick={this.addSpecialDate(record.key, 'notAccepted')} className='green-btn'/>
               </div>
           )
@@ -1096,7 +1115,8 @@ class Works extends React.PureComponent {
             </div>
           );
         },
-      }
+      },
+
     ];
 
     return (
@@ -1225,6 +1245,7 @@ class Works extends React.PureComponent {
                 columns={columns}
                 dataSource={this.filteredData}
                 changeSelectedRow={this.changeSelectedRow}
+                footer={this.renderTableFooter}
                 rowClassName={rec => {
                   if(rec.workStatusUses!=null){
                     let newClass=

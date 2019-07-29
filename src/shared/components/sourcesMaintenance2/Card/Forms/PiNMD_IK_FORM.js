@@ -19,17 +19,18 @@ class PiNMD_IK_FORM extends React.Component {
             editable: [],
             dataSource: [],
             tableData: [],
-            newFileArr: [],
-            newFile: [],
+            newFileArr: {},
+            newFile: {},
             oldTableData: [],
-            modalOpen: false
+            modalOpen: false,
+            editFile: {}
         };
     }
 
     handleChange = (e, idDataPropVal, c) => {
 
         let tableData = [...this.state.tableData];
-        let cell = tableData.find(el => el[this.props.tofiConstants[c].id].length>0&& el[this.props.tofiConstants[c].id][0].idDataPropVal == idDataPropVal);
+        let cell = tableData.find(el => el[this.props.tofiConstants[c].id].length > 0 && el[this.props.tofiConstants[c].id][0].idDataPropVal == idDataPropVal);
 
         cell[this.props.tofiConstants[c].id][0].value = e.target.value
         this.setState({
@@ -40,7 +41,7 @@ class PiNMD_IK_FORM extends React.Component {
         if (!!e) {
             let val = moment(e).format("DD-MM-YYYY")
             let tableData = [...this.state.tableData];
-            let cell = tableData.find(el => el[this.props.tofiConstants[c].id].length>0&& el[this.props.tofiConstants[c].id][0].idDataPropVal == idDataPropVal);
+            let cell = tableData.find(el => el[this.props.tofiConstants[c].id].length > 0 && el[this.props.tofiConstants[c].id][0].idDataPropVal == idDataPropVal);
             cell[this.props.tofiConstants[c].id][0].value = val
             this.setState({
                 tableData: tableData
@@ -50,9 +51,9 @@ class PiNMD_IK_FORM extends React.Component {
     handleChangeSelect = (e, idDataPropVal, c) => {
         if (!!e) {
             let tableData = [...this.state.tableData];
-            let cell = tableData.find(el => el[this.props.tofiConstants[c].id].length>0&& el[this.props.tofiConstants[c].id][0].idDataPropVal == idDataPropVal);
+            let cell = tableData.find(el => el[this.props.tofiConstants[c].id].length > 0 && el[this.props.tofiConstants[c].id][0].idDataPropVal == idDataPropVal);
 
-            cell[this.props.tofiConstants[c].id][0].label =e.label
+            cell[this.props.tofiConstants[c].id][0].label = e.label
             cell[this.props.tofiConstants[c].id][0].value = e.value;
             this.setState({
                 tableData: tableData
@@ -60,8 +61,8 @@ class PiNMD_IK_FORM extends React.Component {
         } else {
             let tableData = [...this.state.tableData];
             let cell = tableData.find(el => el[this.props.tofiConstants[c].id][0].idDataPropVal == idDataPropVal);
-            cell[this.props.tofiConstants[c].id][0].label =""
-            cell[this.props.tofiConstants[c].id][0].value =""
+            cell[this.props.tofiConstants[c].id][0].label = ""
+            cell[this.props.tofiConstants[c].id][0].value = ""
             this.setState({
                 tableData: tableData
             })
@@ -74,24 +75,23 @@ class PiNMD_IK_FORM extends React.Component {
             let typeFile = ''//key.name.ru.split(".")[1]
             getFileResolve(key.value.__file__id).then(res => {
 
-                getFile(key.value.__file__id).then(blob =>{
+                getFile(key.value.__file__id).then(blob => {
 
-                    if (res.data.type ==="pdf"){
+                    if (res.data.type === "pdf" || res.data.type === "docx") {
 
                         const url = URL.createObjectURL(new Blob([blob.data], {type: 'application/pdf'}));
                         this.setState({
                             modalOpen: true,
-                            file:  <iframe src={`${url}#toolbar=0`} frameBorder="0"/>
+                            file: <iframe src={`${url}#toolbar=0`} frameBorder="0"/>
                         })
                     }
-                    else{
+                    else {
                         const url = URL.createObjectURL(new Blob([blob.data]));
                         this.setState({
                             modalOpen: true,
                             file: <img src={`${url}#toolbar=0`}/>
                         })
                     }
-
 
 
                 })
@@ -125,128 +125,18 @@ class PiNMD_IK_FORM extends React.Component {
         this.setState({editable: editable});
     };
 
-    check = (obj, c) => {
+    check = (obj, c, i) => {
+        let hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
+
         let editable = {...this.state.editable};
         let oldTableData = [...this.state.oldTableData];
-        let cell = oldTableData.find(el => el[this.props.tofiConstants[c].id].length>0 && el[this.props.tofiConstants[c].id][0].idDataPropVal == obj.idDataPropVal);
-        if ( cell[this.props.tofiConstants[c].id][0] !== obj || c === "docFile" || c === "file3") {
-            let data = []
+        let datas = []
+        if (c === "docFile") {
+            let id = this.props.data[i].idDataPropVal
 
-
-            if (c === "file3") {
-                if (!!this.state.newFile[c]) {
-
-                    data = [
-                        {
-                            own: [{
-                                doConst: 'doForFundAndIK',
-                                doItem: String(this.props.selectedIK.id),
-                                isRel: "0",
-                                objData: {}
-                            }
-                            ],
-                            props: [
-                                {
-                                    propConst: c,
-                                    idDataPropVal: obj.idDataPropVal,
-                                    val: {
-                                        kz: `${this.props.selectedIK.id}_${uuid()}`,
-                                        ru: `${this.props.selectedIK.id}_${uuid()}`,
-                                        en: `${this.props.selectedIK.id}_${uuid()}`
-                                    },
-                                    typeProp: "317",
-                                    periodDepend: "2",
-                                    isUniq: "1",
-                                    mode: "upd",
-                                }
-                            ],
-
-
-                            periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
-                        }
-                    ];
-                    updateCubeData2(
-                        'cubeForFundAndIK',
-                        moment().format('YYYY-MM-DD'),
-                        JSON.stringify(data),
-                        {},
-                        {
-                            [`${c}`]: [this.state.newFile[c]]
-                        },
-                    ).then(res => {
-                        if (res.success == true) {
-                            message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'))
-                            this.props.updateCube()
-
-                        } else {
-                            message.error(res.errors[0].text)
-                        }
-
-                    })
-                }
-
-            }
-
-
-            if (c === "docFile") {
-                if (!!this.state.newFile[c]) {
-
-                    data = [
-                        {
-                            own: [{
-                                doConst: 'doForFundAndIK',
-                                doItem: String(this.props.selectedIK.id),
-                                isRel: "0",
-                                objData: {}
-                            }
-                            ],
-                            props: [
-                                {
-                                    propConst: c,
-                                    idDataPropVal: obj.idDataPropVal,
-                                    val: {
-                                        kz: `${this.props.selectedIK.id}_${uuid()}`,
-                                        ru: `${this.props.selectedIK.id}_${uuid()}`,
-                                        en: `${this.props.selectedIK.id}_${uuid()}`
-                                    },
-                                    typeProp: "317",
-                                    periodDepend: "2",
-                                    isUniq: "1",
-                                    mode: "upd",
-                                }
-                            ],
-
-
-                            periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
-                        }
-                    ];
-                    updateCubeData2(
-                        'cubeForFundAndIK',
-                        moment().format('YYYY-MM-DD'),
-                        JSON.stringify(data),
-                        {},
-                        {
-                            [`${c}`]: [this.state.newFile[c]]
-                        },
-                    ).then(res => {
-                        if (res.success == true) {
-                            message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'))
-                            this.props.updateCube()
-
-                        } else {
-                            message.error(res.errors[0].text)
-                        }
-
-                    })
-                }
-
-            }
-
-
-            if (c === "archiveInfoDate1") {
-
-
-                data = [
+            if (!!this.state.newFile[`docFile${i}`]) {
+                let prop = `docFile${i}`
+                datas = [
                     {
                         own: [{
                             doConst: 'doForFundAndIK',
@@ -257,112 +147,310 @@ class PiNMD_IK_FORM extends React.Component {
                         ],
                         props: [
                             {
-                                propConst: c,
-                                idDataPropVal: obj.idDataPropVal,
+                                propConst: "normMethDocs",
                                 val: {
-                                    kz: obj.value,
-                                    ru: obj.value,
-                                    en: obj.value
+                                    kz: `${this.props.selectedIK.id}_${uuid()}`,
+                                    ru: `${this.props.selectedIK.id}_${uuid()}`,
+                                    en: `${this.props.selectedIK.id}_${uuid()}`
                                 },
-                                typeProp: "315",
+                                typeProp: '71',
                                 periodDepend: "2",
-                                isUniq: "1",
+                                isUniq: "2",
+                                idDataPropVal: String(id),
                                 mode: "upd",
+                                child: [
+                                    {
+                                        propConst: c,
+                                        typeProp: "317",
+                                        periodDepend: "2",
+                                        isUniq: "1",
+                                        mode: "ins"
+                                    }
+                                ]
                             }
                         ],
-
-
                         periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
                     }
                 ];
                 updateCubeData2(
                     'cubeForFundAndIK',
                     moment().format('YYYY-MM-DD'),
-                    JSON.stringify(data),
+                    JSON.stringify(datas),
                     {},
-                    {}).then(res => res.success == true ? message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED')) : message.error(res.errors[0].text))
-            }
-
-            if (c === "normativeDocType") {
-                data = [
                     {
-                        own: [{
-                            doConst: 'doForFundAndIK',
-                            doItem: String(this.props.selectedIK.id),
-                            isRel: "0",
-                            objData: {}
-                        }
-                        ],
-                        props: [
-                            {
-                                propConst: c,
-                                idDataPropVal: obj.idDataPropVal,
-                                val: String(obj.value),
-                                typeProp: "11",
-                                periodDepend: "2",
-                                isUniq: "1",
-                                mode: "upd",
-                            }
-                        ],
-                        periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
+                        [`__Q__${c}`]: [this.state.newFile[`docFile${i}`]]
+                    },
+                ).then(res => {
+                    if (res.success == true) {
+                        hideLoading()
+                        message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'))
+                        this.props.updateCube()
+                        let obj = {...this.state.editFile}
+                        obj[prop] = false
+                        this.setState({
+                            editFile: obj,
+                            newFileArr: [],
+                            newFile: {}
+                        })
+                    } else {
+                        hideLoading()
+
+                        message.error(res.errors[0].text)
                     }
-                ];
-                updateCubeData2(
-                    'cubeForFundAndIK',
-                    moment().format('YYYY-MM-DD'),
-                    JSON.stringify(data),
-                    {},
-                    {}).then(res => res.success == true ? message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED')) : message.error(res.errors[0].text))
+
+                }).catch(e => {
+                    hideLoading()
+                    console.log(e)
+                })
+
             }
-
-            if (c === "archiveInfoDate2") {
-                data = [
-                    {
-                        own: [{
-                            doConst: 'doForFundAndIK',
-                            doItem: String(this.props.selectedIK.id),
-                            isRel: "0",
-                            objData: {}
-                        }
-                        ],
-                        props: [
-                            {
-                                propConst: c,
-                                idDataPropVal: obj.idDataPropVal,
-                                val: {
-                                    kz: obj.value,
-                                    ru: obj.value,
-                                    en: obj.value
-                                },
-                                typeProp: "315",
-                                periodDepend: "2",
-                                isUniq: "1",
-                                mode: "upd",
-                            }
-                        ],
-
-
-                        periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
-                    }
-                ];
-                updateCubeData2(
-                    'cubeForFundAndIK',
-                    moment().format('YYYY-MM-DD'),
-                    JSON.stringify(data),
-                    {},
-                    {}).then(res => res.success == true ? message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED')) : message.error(res.errors[0].text))
-            }
-
         }
+        else if ((c === "file3")) {
+            let id = this.props.data[i].idDataPropVal
+
+            if (!!this.state.newFile[`file3${i}`]) {
+                let prop = `file3${i}`
+                datas = [
+                    {
+                        own: [{
+                            doConst: 'doForFundAndIK',
+                            doItem: String(this.props.selectedIK.id),
+                            isRel: "0",
+                            objData: {}
+                        }
+                        ],
+                        props: [
+                            {
+                                propConst: "normMethDocs",
+                                val: {
+                                    kz: `${this.props.selectedIK.id}_${uuid()}`,
+                                    ru: `${this.props.selectedIK.id}_${uuid()}`,
+                                    en: `${this.props.selectedIK.id}_${uuid()}`
+                                },
+                                typeProp: '71',
+                                periodDepend: "2",
+                                isUniq: "2",
+                                idDataPropVal: String(id),
+                                mode: "upd",
+                                child: [
+                                    {
+                                        propConst: c,
+                                        typeProp: "317",
+                                        periodDepend: "2",
+                                        isUniq: "1",
+                                        mode: "ins"
+                                    }
+                                ]
+                            }
+                        ],
+                        periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
+                    }
+                ];
+                updateCubeData2(
+                    'cubeForFundAndIK',
+                    moment().format('YYYY-MM-DD'),
+                    JSON.stringify(datas),
+                    {},
+                    {
+                        [`__Q__${c}`]: [this.state.newFile[`file3${i}`]]
+                    },
+                ).then(res => {
+                    if (res.success == true) {
+                        hideLoading()
+
+                        message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'))
+                        this.props.updateCube()
+                        let obj = {...this.state.editFile}
+                        obj[prop] = false
+                        this.setState({
+                            editFile: obj,
+                            newFileArr: [],
+                            newFile: {}
+                        })
+                    } else {
+                        hideLoading()
+                        message.error(res.errors[0].text)
+                    }
+
+                }).catch(e => {
+                    hideLoading()
+                    console.log(e)
+                })
+
+            }
+        }
+
         else {
+            let cell = oldTableData.find(el => el[this.props.tofiConstants[c].id].length > 0 && el[this.props.tofiConstants[c].id][0].idDataPropVal == obj.idDataPropVal);
+            if (cell[this.props.tofiConstants[c].id][0] !== obj || c === "docFile" || c === "file3") {
+                let data = []
+                if (c === "archiveInfoDate1") {
+                    data = [
+                        {
+                            own: [{
+                                doConst: 'doForFundAndIK',
+                                doItem: String(this.props.selectedIK.id),
+                                isRel: "0",
+                                objData: {}
+                            }
+                            ],
+                            props: [
+                                {
+                                    propConst: c,
+                                    idDataPropVal: obj.idDataPropVal,
+                                    val: {
+                                        kz: obj.value,
+                                        ru: obj.value,
+                                        en: obj.value
+                                    },
+                                    typeProp: "315",
+                                    periodDepend: "2",
+                                    isUniq: "1",
+                                    mode: "upd",
+                                }
+                            ],
 
+
+                            periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
+                        }
+                    ];
+                    updateCubeData2(
+                        'cubeForFundAndIK',
+                        moment().format('YYYY-MM-DD'),
+                        JSON.stringify(data),
+                        {},
+                        {}).then(res => {
+                        if (res.success == true) {
+                            hideLoading()
+
+                            message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'))
+                            this.props.updateCube()
+                        } else {
+                            hideLoading()
+                            message.error(res.errors[0].text)
+                        }
+
+                    }).catch(e => {
+                        hideLoading()
+                        console.log(e)
+                    })
+
+                }
+
+                if (c === "normativeDocType") {
+                    data = [
+                        {
+                            own: [{
+                                doConst: 'doForFundAndIK',
+                                doItem: String(this.props.selectedIK.id),
+                                isRel: "0",
+                                objData: {}
+                            }
+                            ],
+                            props: [
+                                {
+                                    propConst: c,
+                                    idDataPropVal: obj.idDataPropVal,
+                                    val: String(obj.value),
+                                    typeProp: "11",
+                                    periodDepend: "2",
+                                    isUniq: "1",
+                                    mode: "upd",
+                                }
+                            ],
+                            periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
+                        }
+                    ];
+                    updateCubeData2(
+                        'cubeForFundAndIK',
+                        moment().format('YYYY-MM-DD'),
+                        JSON.stringify(data),
+                        {},
+                        {})
+                        .then(res => {
+                            if (res.success == true) {
+                                hideLoading()
+
+                                message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'))
+                                this.props.updateCube()
+                            } else {
+                                hideLoading()
+                                message.error(res.errors[0].text)
+                            }
+
+                        }).catch(e => {
+                        hideLoading()
+                        console.log(e)
+                    })
+
+                }
+
+                if (c === "archiveInfoDate2") {
+                    data = [
+                        {
+                            own: [{
+                                doConst: 'doForFundAndIK',
+                                doItem: String(this.props.selectedIK.id),
+                                isRel: "0",
+                                objData: {}
+                            }
+                            ],
+                            props: [
+                                {
+                                    propConst: c,
+                                    idDataPropVal: obj.idDataPropVal,
+                                    val: {
+                                        kz: obj.value,
+                                        ru: obj.value,
+                                        en: obj.value
+                                    },
+                                    typeProp: "315",
+                                    periodDepend: "2",
+                                    isUniq: "1",
+                                    mode: "upd",
+                                }
+                            ],
+
+
+                            periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
+                        }
+                    ];
+                    updateCubeData2(
+                        'cubeForFundAndIK',
+                        moment().format('YYYY-MM-DD'),
+                        JSON.stringify(data),
+                        {},
+                        {}).then(res => {
+                        if (res.success == true) {
+                            hideLoading()
+
+                            message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'))
+                            this.props.updateCube()
+                        } else {
+                            hideLoading()
+                            message.error(res.errors[0].text)
+                        }
+
+                    }).catch(e => {
+                        hideLoading()
+                        console.log(e)
+                    })
+
+                }
+
+            }
+            else {
+                hideLoading()
+
+            }
+            editable[obj.idDataPropVal] = false;
+
+            this.setState({editable: editable});
         }
-        editable[obj.idDataPropVal] = false;
-        this.setState({editable: editable});
+
     };
 
     componentDidMount() {
-
         this.setState({
             tableData: this.props.data,
             oldTableData: JSON.parse(JSON.stringify(this.props.data))
@@ -447,7 +535,7 @@ class PiNMD_IK_FORM extends React.Component {
     handleAdd = () => {
         const showLoad = message.loading('Сохранение', 0);
         var nextnumber = 1;
-        if (this.state.tableData.length > 0) {
+        if (!!this.state.tableData && this.state.tableData.length > 0) {
             var numbArr = [...this.state.tableData.map(el => {
                 return el[this.props.tofiConstants["numberNmd"].id][0].value
             })
@@ -458,7 +546,6 @@ class PiNMD_IK_FORM extends React.Component {
 
         }
 
-        console.log(nextnumber);
         var data = [
             {
                 own: [{
@@ -493,26 +580,16 @@ class PiNMD_IK_FORM extends React.Component {
                         },
                         {
                             propConst: "normativeDocType",
-                            val:String(1088),
+                            val: String(1088),
                             typeProp: "11",
                             periodDepend: "2",
                             isUniq: "1"
                         },
-                        {
-                            propConst: "docFile",
-                            val: {
-                                kz: 'Нет данных',
-                                ru: 'Нет данных',
-                                en: 'No data'
-                            },
-                            typeProp: "315",
-                            periodDepend: "2",
-                            isUniq: "1"
-                        },
+
                         {
                             propConst: "archiveInfoDate1",
                             val: {
-                                kz:"_",
+                                kz: "_",
                                 ru: "_",
                                 en: "_",
                             },
@@ -533,17 +610,7 @@ class PiNMD_IK_FORM extends React.Component {
                             periodDepend: "2",
                             isUniq: "1"
                         },
-                        {
-                            propConst: "file3",
-                            val: {
-                                kz: 'Нет данных',
-                                ru: 'Нет данных',
-                                en: 'No data'
-                            },
-                            typeProp: "315",
-                            periodDepend: "2",
-                            isUniq: "1"
-                        }
+
                     ]
                 },
                 ],
@@ -587,283 +654,321 @@ class PiNMD_IK_FORM extends React.Component {
         };
     };
     onChangeFile = (e, c, i) => {
-        let newFile = [...this.state.newFile];
+        let newFile = {...this.state.newFile};
         let newFileArr = [...this.state.newFileArr];
-        if (newFile.length !== 0) {
-            if (!!newFile[i]&& !!newFile[i][`${c}${i}`]) {
+        if (newFile) {
+            if (!!newFile[`${c}${i}`]) {
                 newFile[i][`${c}${i}`] = e.target.files[0]
             } else {
-                newFile.push({
+                newFile = {
                     [`${c}${i}`]: e.target.files[0]
-                })
+                }
             }
         }
-        else {
-            newFile.push({[`${c}${i}`]: e.target.files[0]})
-        }
 
-        if (newFileArr.length !== 0) {
-                if (!!newFileArr[i] && !!newFileArr[i][`${c}${i}`]) {
-                    newFileArr[i][`${c}${i}`] = e.target.files
-                } else {
-                    newFileArr.push({
-                        [`${c}${i}`]: e.target.files
-                    })
+
+        if (newFileArr) {
+            if (!!newFileArr[`${c}${i}`]) {
+                newFileArr[`${c}${i}`] = e.target.files
+            } else {
+                newFileArr = {
+                    [`${c}${i}`]: e.target.files
                 }
+            }
         } else {
-            newFileArr.push({[`${c}${i}`] : e.target.files})
+            newFileArr = {[`${c}${i}`]: e.target.files}
         }
         this.setState({
             newFileArr: newFileArr,
             newFile: newFile
         })
     }
+    editFile = (c) => {
+        let obj = {...this.state.editFile}
+        obj[c] = true
+        this.setState({
+            editFile: obj
+        })
+    }
+    delFile = async (obj) => {
+        const showLoad = message.loading('Удаление');
+
+        let res = await dFile(obj[0].value.__file__id, "cubeForFundAndIK");
+        if (!res.success) {
+            //  on fail stop here with message;
+            res.errors.forEach(err => {
+                message.error(err.text);
+            });
+            showLoad()
+
+        }
+        showLoad()
+        this.props.updateCube()
+
+    }
 
     render() {
         this.lng = localStorage.getItem("i18nextLng");
         const {value, editable} = this.state;
-        console.log(this.props.normativeDocTypeOptions)
         const {tableData} = this.state;
         const columns = [
             {
                 key: this.props.tofiConstants["numberNmd"].id,
-                title: '#',
+                title: '№',
                 dataIndex: this.props.tofiConstants["numberNmd"].id,
                 width: '5%',
-                render: (obj, rec, i) => {return obj.length>0 && obj[0].value },
-                sorter: (a, b) => { return a[this.props.tofiConstants["numberNmd"].id][0] && b[this.props.tofiConstants["numberNmd"].id][0] && parseInt(a[this.props.tofiConstants["numberNmd"].id][0].value) - parseInt(b[this.props.tofiConstants["numberNmd"].id][0].value)},
+                render: (obj, rec, i) => {
+                    return obj.length > 0 && obj[0].value
+                },
+                sorter: (a, b) => {
+                    return a[this.props.tofiConstants["numberNmd"].id][0] && b[this.props.tofiConstants["numberNmd"].id][0] && parseInt(a[this.props.tofiConstants["numberNmd"].id][0].value) - parseInt(b[this.props.tofiConstants["numberNmd"].id][0].value)
+                },
                 sortOrder: 'ascend'
-             },
+            },
             {
                 key: this.props.tofiConstants["normativeDocType"].id,
                 title: 'Вид ПиНМД',
                 width: '20%',
                 dataIndex: this.props.tofiConstants["normativeDocType"].id,
-                render: (obj, rec) => { return(
-                    <div className="editable-cell">
-                        {
-                            obj.length>0&& obj[0] && this.state.editable[obj[0].idDataPropVal] ?
-                                <div className="editable-cell-input-wrapper">
-                                    <Row>
-                                        <Col span={20}>
-                                    <Select
-                                        name="normativeDocType"
-                                        onChange={(e) => this.handleChangeSelect(e, obj[0].idDataPropVal, 'normativeDocType')}
-                                        onMenuOpen={this.loadChilds("normativeDocType")}
+                render: (obj, rec) => {
+                    return (
+                        <div className="editable-cell">
+                            {
+                                obj.length > 0 && obj[0] && this.state.editable[obj[0].idDataPropVal] ?
+                                    <div className="editable-cell-input-wrapper">
+                                        <Row>
+                                            <Col span={20}>
+                                                <Select
+                                                    name="normativeDocType"
+                                                    onChange={(e) => this.handleChangeSelect(e, obj[0].idDataPropVal, 'normativeDocType')}
+                                                    onMenuOpen={this.loadChilds("normativeDocType")}
 
-                                        options={
-                                            this.props.normativeDocTypeOptions
-                                                ? this.props.normativeDocTypeOptions.map(option => ({
-                                                    value: option.id,
-                                                    label: option.name[this.lng]
-                                                }))
-                                                : []
-                                        }
-                                    />
-                                        </Col>
-                                        <Col span={4} style={{textAlign:'right',paddingTop:'6px'}}>
+                                                    options={
+                                                        this.props.normativeDocTypeOptions
+                                                            ? this.props.normativeDocTypeOptions.map(option => ({
+                                                                value: option.id,
+                                                                label: option.name[this.lng]
+                                                            }))
+                                                            : []
+                                                    }
+                                                />
+                                            </Col>
+                                            <Col span={4} style={{textAlign: 'right', paddingTop: '6px'}}>
 
-                                    <Icon
-                                        type="check"
-                                        className="editable-cell-icon-check"
-                                        onClick={() => this.check(obj[0], 'normativeDocType')}
-                                    />
-                                        </Col>
-                                    </Row>
-                                </div>
-                                :
-                                <div className="editable-cell-text-wrapper">
-                                    {obj[0] ? obj[0].label  : ''}
-                                    <Icon
-                                        type="edit"
-                                        className="editable-cell-icon"
-                                        onClick={() => this.edit(obj[0].idDataPropVal)}
-                                    />
-                                </div>
+                                                <Icon
+                                                    type="check"
+                                                    className="editable-cell-icon-check"
+                                                    onClick={() => this.check(obj[0], 'normativeDocType')}
+                                                />
+                                            </Col>
+                                        </Row>
+                                    </div>
+                                    :
+                                    <div className="editable-cell-text-wrapper">
+                                        {obj[0] ? obj[0].label : ''}
+                                        <Icon
+                                            type="edit"
+                                            className="editable-cell-icon"
+                                            onClick={() => this.edit(obj[0].idDataPropVal)}
+                                        />
+                                    </div>
                             }
-                    </div>
-                )}
+                        </div>
+                    )
+                }
             },
             {
                 key: this.props.tofiConstants["docFile"].id,
                 title: 'Фаил документа',
                 dataIndex: this.props.tofiConstants["docFile"].id,
-                render: (obj, rec, i) => { return( <div className="editable-cell">
-                        {
-                            obj.length>0 && obj[0] && this.state.editable[obj[0].idDataPropVal] ?
-                                <div className="editable-cell-input-wrapper">
-                                    <Row>
-                                        <Col span={20}>
-                                    <label>
-                                        <input
-                                            type="file"
-                                            style={{display: 'none'}}
-                                            onChange={(e) => this.onChangeFile(e, "docFile", i)}/>
-                                        <span className='ant-btn ant-btn-primary'><Icon
-                                            type='upload'/>
+                render: (obj, rec, i) => {
+                    return ( <div className="editable-cell">
+                            {
+                                !!this.state.editFile[`docFile${i}`] ?
+                                    <div className="editable-cell-input-wrapper">
+                                        <Row>
+                                            <Col span={20}>
+                                                <label>
+                                                    <input
+                                                        type="file"
+                                                        style={{display: 'none'}}
+                                                        onChange={(e) => this.onChangeFile(e, "docFile", i)}/>
+                                                    <span className='ant-btn ant-btn-primary'><Icon
+                                                        type='upload'/>
                         <Badge className="badgeInputFile"
-                               count={this.state.newFileArr[i] && this.state.newFileArr[i][`docFile${i}`] && this.state.newFileArr[i][`docFile${i}`].length}>
+                               count={this.state.newFileArr && this.state.newFileArr[`docFile${i}`] && this.state.newFileArr[`docFile${i}`].length}>
                     </Badge>
                         <span>{this.props.t('UPLOAD_FILE')}</span></span>
-                                    </label>
-                                        </Col>
-                                        <Col span={4} style={{textAlign:'right',paddingTop:'6px'}}>
+                                                </label>
+                                            </Col>
+                                            <Col span={4} style={{textAlign: 'right', paddingTop: '6px'}}>
 
-                                        <Icon
-                                        type="check"
-                                        className="editable-cell-icon-check"
-                                        onClick={() => this.check(obj[0], 'docFile')}
-                                    />
-                                        </Col>
-                                    </Row>
-                                </div>
-                                :
-                                <div className="editable-cell-text-wrapper">
-                                    {obj.length>0 ?
-                                        <Button type="primary"
-                                                className="centerIcon"
-                                                icon="eye"
-                                                shape='circle'
-                                                style={{
-                                                    display: 'flex',
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center',
-                                                    marginRight: '10px'
-                                                }}
-                                                onClick={() => this.showFile(obj[0])}> </Button> : ""
-                                    }
-
-                                    <Icon
-                                        type="edit"
-                                        className="editable-cell-icon"
-                                        onClick={() => this.edit(obj[0].idDataPropVal)}
-                                    />
-                                </div>
-                        }
-                    </div>
-                )}
+                                                <Icon
+                                                    type="check"
+                                                    className="editable-cell-icon-check"
+                                                    onClick={() => this.check(obj[0], `docFile`, i)}
+                                                />
+                                            </Col>
+                                        </Row>
+                                    </div>
+                                    :
+                                    <div className="editable-cell-text-wrapper">
+                                        {obj.length > 0 ?
+                                            <Button type="primary"
+                                                    className="centerIcon"
+                                                    icon="eye"
+                                                    shape='circle'
+                                                    style={{
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        marginRight: '10px'
+                                                    }}
+                                                    onClick={() => this.showFile(obj[0])}> </Button> : ""
+                                        }
+                                        {obj.length > 0 ?
+                                            <Icon
+                                                type="delete"
+                                                style={{color: "red"}}
+                                                className="editable-cell-icon"
+                                                onClick={() => this.delFile(obj)}
+                                            /> :
+                                            <Icon
+                                                type="edit"
+                                                className="editable-cell-icon"
+                                                onClick={() => this.editFile(`docFile${i}`)}
+                                            />}
+                                    </div>
+                            }
+                        </div>
+                    )
+                }
             },
 
 
             {
-                key:this.props.tofiConstants["archiveInfoDate1"].id,
+                key: this.props.tofiConstants["archiveInfoDate1"].id,
                 title: 'Дата согласования',
                 dataIndex: this.props.tofiConstants["archiveInfoDate1"].id,
-                render: (obj, rec) => { return( <div className="editable-cell">
-                        {
-                            obj.length>0 &&  obj[0] && this.state.editable[obj[0].idDataPropVal] ?
-                                <div className="editable-cell-input-wrapper">
-                                    <Row>
-                                        <Col span={20}>
-                                    <DatePicker
-                                        format="DD-MM-YYYY"
-                                        value={obj[0].value !=="_"?  moment(obj[0].value, "DD-MM-YYYY"):""}
-                                        onChange={(e) => this.handleChangeDate(e, obj[0].idDataPropVal, 'archiveInfoDate1')}
-                                        onPressEnter={() => this.check(obj[0])}
-                                    />
-                                        </Col>
-                                        <Col span={4} style={{textAlign:'right',paddingTop:'6px'}}>
+                render: (obj, rec) => {
+                    return ( <div className="editable-cell">
+                            {
+                                obj.length > 0 && obj[0] && this.state.editable[obj[0].idDataPropVal] ?
+                                    <div className="editable-cell-input-wrapper">
+                                        <Row>
+                                            <Col span={20}>
+                                                <DatePicker
+                                                    format="DD-MM-YYYY"
+                                                    value={obj[0].value !== "_" ? moment(obj[0].value, "DD-MM-YYYY") : ""}
+                                                    onChange={(e) => this.handleChangeDate(e, obj[0].idDataPropVal, 'archiveInfoDate1')}
+                                                    onPressEnter={() => this.check(obj[0])}
+                                                />
+                                            </Col>
+                                            <Col span={4} style={{textAlign: 'right', paddingTop: '6px'}}>
 
+                                                <Icon
+                                                    type="check"
+                                                    className="editable-cell-icon-check"
+                                                    onClick={() => this.check(obj[0], 'archiveInfoDate1')}
+                                                />
+                                            </Col>
+                                        </Row>
+                                    </div>
+                                    :
+                                    <div className="editable-cell-text-wrapper">
+                                        {obj.length > 0 && obj[0] ? obj[0].value ? obj[0].value !== "_" ? obj[0].value : "" : '' : ''}
                                         <Icon
-                                        type="check"
-                                        className="editable-cell-icon-check"
-                                        onClick={() => this.check(obj[0], 'archiveInfoDate1')}
-                                    />
-                                        </Col>
-                                    </Row>
-                                </div>
-                                :
-                                <div className="editable-cell-text-wrapper">
-                                    {obj.length>0 && obj[0] ? obj[0].value ? obj[0].value!=="_"?obj[0].value:""  : '' : ''}
-                                    <Icon
-                                        type="edit"
-                                        className="editable-cell-icon"
-                                        onClick={() => this.edit(obj[0].idDataPropVal)}
-                                    />
-                                </div>
-                        }
-                    </div>
-                )}
+                                            type="edit"
+                                            className="editable-cell-icon"
+                                            onClick={() => this.edit(obj[0].idDataPropVal)}
+                                        />
+                                    </div>
+                            }
+                        </div>
+                    )
+                }
             },
             {
-                key:this.props.tofiConstants["archiveInfoDate2"].id,
+                key: this.props.tofiConstants["archiveInfoDate2"].id,
                 title: '№ протокола согласования',
 
                 dataIndex: this.props.tofiConstants["archiveInfoDate2"].id,
-                render: (obj, rec) => { return( <div className="editable-cell">
-                        {
+                render: (obj, rec) => {
+                    return ( <div className="editable-cell">
+                            {
 
-                            obj.length>0 &&  obj[0] && this.state.editable[obj[0].idDataPropVal] ?
-                                <div className="editable-cell-input-wrapper">
-                                    <Row>
-                                        <Col span={20}>
-                                    <Input
-                                        value={obj[0] ? obj[0].value ? obj[0].value: '' : ''}
-                                        onChange={(e) => this.handleChange(e, obj[0].idDataPropVal, 'archiveInfoDate2')}
-                                        onPressEnter={() => this.check(obj[0])}
-                                    />
-                                        </Col>
-                                        <Col span={4} style={{textAlign:'right',paddingTop:'6px'}}>
+                                obj.length > 0 && obj[0] && this.state.editable[obj[0].idDataPropVal] ?
+                                    <div className="editable-cell-input-wrapper">
+                                        <Row>
+                                            <Col span={20}>
+                                                <Input
+                                                    value={obj[0] ? obj[0].value ? obj[0].value : '' : ''}
+                                                    onChange={(e) => this.handleChange(e, obj[0].idDataPropVal, 'archiveInfoDate2')}
+                                                    onPressEnter={() => this.check(obj[0])}
+                                                />
+                                            </Col>
+                                            <Col span={4} style={{textAlign: 'right', paddingTop: '6px'}}>
 
+                                                <Icon
+                                                    type="check"
+                                                    className="editable-cell-icon-check"
+                                                    onClick={() => this.check(obj[0], 'archiveInfoDate2')}
+                                                />
+                                            </Col>
+                                        </Row>
+                                    </div>
+                                    :
+                                    <div className="editable-cell-text-wrapper">
+                                        {obj.length > 0 && obj[0] ? obj[0].value ? obj[0].value : '' : ''}
                                         <Icon
-                                        type="check"
-                                        className="editable-cell-icon-check"
-                                        onClick={() => this.check(obj[0], 'archiveInfoDate2')}
-                                    />
-                                        </Col>
-                                    </Row>
-                                </div>
-                                :
-                                <div className="editable-cell-text-wrapper">
-                                    {obj.length>0 && obj[0] ? obj[0].value ? obj[0].value : '' : ''}
-                                    <Icon
-                                        type="edit"
-                                        className="editable-cell-icon"
-                                        onClick={() => this.edit(obj[0].idDataPropVal)}
-                                    />
-                                </div>
-                        }
-                    </div>
-                )}
+                                            type="edit"
+                                            className="editable-cell-icon"
+                                            onClick={() => this.edit(obj[0].idDataPropVal)}
+                                        />
+                                    </div>
+                            }
+                        </div>
+                    )
+                }
 
             },
             {
-                key:  this.props.tofiConstants["file3"].id,
+                key: this.props.tofiConstants["file3"].id,
                 title: 'Фаил протокола',
                 dataIndex: this.props.tofiConstants["file3"].id,
-                render: (obj, rec) => ( <div className="editable-cell">
+                render: (obj, rec, i) => ( <div className="editable-cell">
                         {
 
-                           obj.length>0 && obj[0] && this.state.editable[obj[0].idDataPropVal] ?
+                            !!this.state.editFile[`file3${i}`] ?
                                 <div className="editable-cell-input-wrapper">
                                     <Row>
                                         <Col span={20}>
-                                    <label>
-                                        <input
-                                            type="file"
-                                            style={{display: 'none'}}
-                                            onChange={(e) => this.onChangeFile(e, "file3")}/>
-                                        <span className='ant-btn ant-btn-primary'><Icon
-                                            type='upload'/>
+                                            <label>
+                                                <input
+                                                    type="file"
+                                                    style={{display: 'none'}}
+                                                    onChange={(e) => this.onChangeFile(e, "file3", i)}/>
+                                                <span className='ant-btn ant-btn-primary'><Icon
+                                                    type='upload'/>
                         <Badge className="badgeInputFile"
-                               count={this.state.newFileArr["file3"] && this.state.newFileArr['file3'].length}>
+                               count={this.state.newFileArr && this.state.newFileArr[`file3${i}`] && this.state.newFileArr[`file3${i}`].length}>
                     </Badge>
                         <span>{this.props.t('UPLOAD_FILE')}</span></span>
-                                    </label>
+                                            </label>
                                         </Col>
-                                        <Col span={4} style={{textAlign:'right',paddingTop:'6px'}}>
+                                        <Col span={4} style={{textAlign: 'right', paddingTop: '6px'}}>
 
-                                        <Icon
-                                        type="check"
-                                        className="editable-cell-icon-check"
-                                        onClick={() => this.check(obj[0], 'file3')}
-                                    />
+                                            <Icon
+                                                type="check"
+                                                className="editable-cell-icon-check"
+                                                onClick={() => this.check(obj[0], `file3`, i)}
+                                            />
                                         </Col>
                                     </Row>
                                 </div>
                                 :
                                 <div className="editable-cell-text-wrapper">
-                                    {obj.length>0 ?
+                                    {obj.length > 0 ?
                                         <Button type="primary"
                                                 className="centerIcon"
                                                 icon="eye"
@@ -876,12 +981,18 @@ class PiNMD_IK_FORM extends React.Component {
                                                 }}
                                                 onClick={() => this.showFile(obj[0])}> </Button> : ""
                                     }
-
-                                    <Icon
-                                        type="edit"
-                                        className="editable-cell-icon"
-                                        onClick={() => this.edit(obj[0].idDataPropVal)}
-                                    />
+                                    {obj.length > 0 ?
+                                        <Icon
+                                            type="delete"
+                                            style={{color: "red"}}
+                                            className="editable-cell-icon"
+                                            onClick={() => this.delFile(obj)}
+                                        /> :
+                                        <Icon
+                                            type="edit"
+                                            className="editable-cell-icon"
+                                            onClick={() => this.editFile(`file3${i}`)}
+                                        />}
                                 </div>
                         }
                     </div>
@@ -909,7 +1020,8 @@ class PiNMD_IK_FORM extends React.Component {
             }];
         return (
             <div>
-                <Button type="primary" icon="plus-circle-o"  onClick={this.handleAdd} style={{marginTop: 40, marginBottom:10}}>Добавить</Button>
+                <Button type="primary" icon="plus-circle-o" onClick={this.handleAdd}
+                        style={{marginTop: 40, marginBottom: 10}}>Добавить</Button>
 
                 <Table className="tablepnd" bordered dataSource={tableData} columns={columns}/>
                 <Modal visible={this.state.modalOpen}

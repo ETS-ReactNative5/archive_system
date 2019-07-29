@@ -1,10 +1,13 @@
 .tablepnd .ant-table-body {
-    min-height: 500px; }
+  min-height: 500px; }
 
 .editable-cell-icon-check {
-    cursor: pointer;
-    color: black; }
+  cursor: pointer;
+  color: black; }
 
 .editable-cell-icon {
-    cursor: pointer;
-    color: black; }
+  cursor: pointer;
+  color: black; }
+
+.btnFF {
+  height: 75vh; }

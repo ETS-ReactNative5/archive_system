@@ -33,6 +33,7 @@ let AsyncSignupForm,
   AsyncArchiveFundRoutes,
   AsyncManagingRoutes,
   AsyncWorksRoutes,
+    ArchiveManagement,
   AsyncAdminRoutes;
 try {
   AsyncSignupForm = Loadable({
@@ -83,6 +84,10 @@ try {
     loader: () => import('../components/ManagingPages/ManagingRoutes'),
     loading: () => <Spin style={{ position: 'absolute', left: '50%', top: '50%', transform: "translateX(-50%)" }}/>
   });
+    ArchiveManagement = Loadable({
+        loader: () => import('../components/ManagingPages/ManagingRoutes'),
+        loading: () => <Spin style={{ position: 'absolute', left: '50%', top: '50%', transform: "translateX(-50%)" }}/>
+    });
   AsyncWorksRoutes = Loadable({
     loader: () => import('../components/WorksRoutes.js'),
     loading: () => <Spin style={{ position: 'absolute', left: '50%', top: '50%', transform: "translateX(-50%)" }}/>
@@ -149,13 +154,13 @@ class CollectionsLayout extends Component {
             path: '/sourcing/fundMaker',
             priv: 'fundmakers'
           },
-          {
-            name: t('SOURCE_ACQUISITION'), // Источники комплектования
-            path: '/sourcing/sourcesMaintenance',
-            priv: 'sourceacquisition'
-          },
+          // {
+          //   name: t('SOURCE_ACQUISITION'), // Источники комплектования
+          //   path: '/sourcing/sourcesMaintenance',
+          //   priv: 'sourceacquisition'
+          // },
             {
-                name: `${t('SOURCE_ACQUISITION')}2`, // Источники комплектования2
+                name: `${t('SOURCE_ACQUISITION')}`, // Источники комплектования2
                 path: '/sourcing/sourcesMaintenance2',
                 priv: 'sourceacquisition'
 
@@ -354,6 +359,11 @@ class CollectionsLayout extends Component {
             path: '/managing/thisreport',
               priv: 'control-report'
           },
+          {
+            name: t('STATE_ARCHIVE'), // Государственный архив
+            path: '/managing/archiveManagement',
+              priv: 'control-report'
+          }
 /*
           {
             name: t('CONTROL_WORK'), // Работы по управлению архивом
@@ -422,6 +432,7 @@ class CollectionsLayout extends Component {
               <Route path="/sourcing" render={props => user ? <AsyncSourcing2 {...props} /> : <Redirect to='/' />} />
               <Route path="/sourcing" render={props => user ? <Inventory {...props} /> : <Redirect to='/' />} />
               <Route path="/sourcing" render={props => user ? <StorageUnits {...props} /> : <Redirect to='/' />} />
+                <Route path="/managing" render={props => user ? <ArchiveManagement {...props} /> : <Redirect to='/' />} />
               <Route path="/sra" render={props => user ? <AsyncNSA tofiConstants={tofiConstants} {...props} /> : <Redirect to='/' />} />
               <Route path="/works" render={props => user ? <AsyncWorksRoutes tofiConstants={tofiConstants} {...props} /> : <Redirect to='/' />}/>
               <Route path="/users-roles" render={props => user ? <UsersRoles t={t} tofiConstants={tofiConstants} {...props} /> : <Redirect to='/' />}/>

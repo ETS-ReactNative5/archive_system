@@ -67,7 +67,10 @@ class FundMakerPage extends React.PureComponent {
             concatType: "and",
             conds: [
               {
-                consts: 'formOfAdmission,dateFormation,dateRename,liquidation,dateElimination,reasonFundmaker,departmentalAccessory,reasonFundmakerFile,legalStatus,orgRightReceiver,fundmakerArchive,orgIndustry,isActive'
+                consts: 'formOfAdmission,dateFormation,dateRename,dateReorganization,dateIncludeOfIk,conditionOfFundmaker,liquidation,dateElimination,reasonFundmaker,' +
+                'departmentalAccessory,reasonFundmakerFile,legalStatus,orgRightReceiver,fundmakerArchive,orgIndustry,isActive,idFundLisrKey,personLastName,personName,' +
+                'ersonPatronymic,personAcademicDegree,dateIncludeOfIk,personList,personAcademicTitle,personSpecialty,personAddress,personPhone,personEmail,ownerLastName,' +
+                'ownerName,ownerPatronymic,ownerStatus,ownerAddress,ownerPhone,ownerEmail'
               }
             ]
           }
@@ -115,7 +118,9 @@ class FundMakerPage extends React.PureComponent {
               cubeForLPFundmaker={cubeForLPFundmaker}
               tofiConstants={tofiConstants}
               globalDate={globalDate}
-              getCube={getCube}/>
+              getCube={getCube}
+              {...this.props}
+            />
           }
         ]}/>
       </div>

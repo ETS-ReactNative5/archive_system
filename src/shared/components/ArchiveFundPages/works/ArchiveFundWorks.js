@@ -22,23 +22,25 @@ import ArchiveFundWorksCard from './ArchiveFundWorksCard';
 import {isEmpty, isEqual, map, uniqBy} from 'lodash';
 import {
     CUBE_FOR_WORKS, WORK_PRIORITY, WORK_STATUS,
-    DO_FOR_WORKS, CHECKING_TYPE, DP_FOR_WORKS, CUBE_FOR_AF_CASE, DO_FOR_CASE
+    DO_FOR_WORKS, CHECKING_TYPE, DP_FOR_WORKS, CUBE_FOR_AF_CASE, DO_FOR_CASE, DO_FOR_INV, CUBE_FOR_AF_INV, DP_FOR_INV
 } from '../../../constants/tofiConstants';
 import {
     changeInvOC,
     createObj,
     dObj,
     getAllObjOfCls,
-    getCube,
+    getCube, getIdGetObj,
     getObjByProp,
     getPropVal,
     rabota1,
     rabotaAcc,
     rabotaExp,
+    listValuesOfObjsWithProps,
     updateCubeData
 } from '../../../actions/actions';
-import {getPropMeta, onSaveCubeData, parseCube_new} from '../../../utils/cubeParser';
+import {getPropMeta, onSaveCubeData, onSaveCubeData3, parseCube_new, parseForTable} from '../../../utils/cubeParser';
 import AntModal from '../../AntModal';
+import axios from "axios"
 
 /*eslint eqeqeq:0*/
 class ArchiveFundWorks extends React.PureComponent {
@@ -314,16 +316,31 @@ class ArchiveFundWorks extends React.PureComponent {
         this.props.getCube(CUBE_FOR_WORKS, JSON.stringify(this.filters)).then(this.getListOfWorks);
     };
 
+    renderTableFooter = () => {
+        const {t} = this.props;
+        return (
+            <div className="table-footer birthday">
+                <div className="data-length">
+                    <div className="label">
+                        <label htmlFor="">{t("COUNT_ITOG")}</label>
+                        <Input
+                            size="small"
+                            type="text"
+                            readOnly
+                            value={this.filteredData.length + " / " + this.state.data.length}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
-    componentDidUpdate(prevProps) {
+    async componentDidUpdate(prevProps) {
         if (isEmpty(this.props.tofiConstants)) return;
         const {tofiConstants: {doForWorks, dpForWorks}} = this.props;
         if (prevProps.works !== this.props.works) {
             try {
-                this.setState(
-                {
-                    loading: false,
-                    data: parseCube_new(
+                let parserCube = parseCube_new(
                     this.props.works['cube'],
                     [],
                     'dp',
@@ -332,14 +349,155 @@ class ArchiveFundWorks extends React.PureComponent {
                     this.props.works[`dp_${dpForWorks.id}`],
                     `do_${doForWorks.id}`,
                     `dp_${dpForWorks.id}`).map(this.renderTableData)
-                }
-                );
-            } catch(err) {
+                await this.setDataId(parserCube)
+
+            } catch (err) {
                 console.log(err);
                 this.setState({loading: false, data: []})
             }
         }
     }
+
+    setDataId=async(peserCube)=>{
+        this.lng = localStorage.getItem('i18nextLng');
+
+        let neObjId={
+            inv:[],
+            cases:[]
+        }
+        let neObjKey={
+            inv:[],
+            cases:[]
+        }
+        let i = 0
+        for (let val of peserCube){
+            if (!!val.workRegCase){
+                neObjId.cases.push(val.workRegCase.value)
+                neObjKey.cases.push({
+                    value:val.workRegCase.value,
+                    key:val.key,
+                    index:i
+                })
+            }else{
+                if (!!val.workRegInv){
+                    neObjId.inv.push(val.workRegInv.value)
+                    neObjKey.inv.push({
+                        value:val.workRegInv.value,
+                        key:val.key,
+                        index:i
+                    })
+                }
+            }
+            i++
+        }
+        let propses =  "archiveCipher,caseStorageMulti,rackMulti,sectionMulti,shelfMulti"
+        await listValuesOfObjsWithProps(neObjId.inv.join(","),propses).then(res=>{
+            if (res.success){
+                let data = {...res.data}
+
+                for(let val of neObjKey.inv ){
+                    let tp_ukz = {
+                        caseStorageMulti:[],
+                        rackMulti:[],
+                        sectionMulti:[],
+                        shelfMulti:[],
+
+                    }
+                    let el = data[val.value]
+                    if(!!el.archiveCipher.length>0){
+                        peserCube[val.index].archiveCipher=el.archiveCipher[0]
+                    }
+                    if(!!el.caseStorageMulti){
+                        for (let value of el.caseStorageMulti){
+                            tp_ukz.caseStorageMulti.push(!!value.name ? value.name[this.lng]:" ")
+                        }
+
+                    }
+                    if(!!el.rackMulti){
+                        for (let value of el.rackMulti){
+                            tp_ukz.rackMulti.push(!!value.name ? value.name[this.lng]:" ")
+                        }
+
+                    }
+                    if(!!el.sectionMulti){
+                        for (let value of el.sectionMulti){
+                            tp_ukz.sectionMulti.push(!!value.name ? value.name[this.lng]:" ")
+                        }
+
+                    }
+                    if(!!el.shelfMulti){
+                        for (let value of el.shelfMulti){
+                            tp_ukz.shelfMulti.push(!!value.name ? value.name[this.lng]:" ")
+                        }
+
+                    }
+                    peserCube[val.index].tp_ukz=`(${tp_ukz.caseStorageMulti.join(",")}),(${tp_ukz.rackMulti.join(",")}),(${tp_ukz.sectionMulti.join(",")}),(${tp_ukz.shelfMulti.join(",")})`
+
+                }
+            }
+
+        }).catch(e=>{
+            console.log(e)
+        })
+        let propses2 =  "archiveCipher,bunchCases,caseStorage,rack,section,shelf"
+
+        await listValuesOfObjsWithProps(neObjId.cases.join(","),propses2).then(res=>{
+            if (res.success){
+                let data = {...res.data}
+                for(let val of neObjKey.cases ){
+                    let tp_ukz = {
+                        bunchCases:"",
+                        caseStorage:"",
+                        rack:"",
+                        section:"",
+                        shelf:""
+
+                    }
+                    let el = data[val.value]
+                    if(!!el.archiveCipher.length>0){
+                        peserCube[val.index].archiveCipher=el.archiveCipher[0]
+                    }
+                    if(!!el.bunchCases){
+                        tp_ukz.bunchCases=!!el.bunchCases[0].name ? el.bunchCases[0].name[this.lng]:" "
+
+                    }
+                    if(!!el.caseStorage){
+                        tp_ukz.caseStorage=!!el.caseStorage[0].name ? el.caseStorage[0].name[this.lng]:" "
+
+                    }
+                    if(!!el.rack){
+                        tp_ukz.rack=!!el.rack[0].name ? el.rack[0].name[this.lng]:" "
+
+
+                    }
+                    if(!!el.section){
+                        tp_ukz.section=!!el.section[0].name ? el.section[0].name[this.lng]:" "
+
+
+                    }
+                    if(!!el.shelf){
+                        tp_ukz.shelf=!!el.shelf[0].name ? el.shelf[0].name[this.lng]:" "
+
+
+                    }
+                    peserCube[val.index].tp_ukz=`${tp_ukz.bunchCases},${tp_ukz.caseStorage},${tp_ukz.rack},${tp_ukz.section},${tp_ukz.shelf}`
+
+
+
+                }
+            }
+
+        }).catch(e=>{
+            console.log(e)
+        })
+        this.setState(
+            {
+                loading: false,
+                data: peserCube
+            }
+        );
+    }
+
 
     onChange = (pagination, filters, sorter) => {
         if (sorter.columnKey === "key") {
@@ -355,7 +513,7 @@ class ArchiveFundWorks extends React.PureComponent {
             if (!this.props[c + 'Options']) {
                 this.setState({[c + 'Loading']: true});
                 this.props.getPropVal(c)
-                .then(() => this.setState({[c + 'Loading']: false}))
+                    .then(() => this.setState({[c + 'Loading']: false}))
             }
         }
     };
@@ -365,7 +523,7 @@ class ArchiveFundWorks extends React.PureComponent {
                 if (!this.props[c + 'Options']) {
                     this.setState({[c + 'Loading']: true});
                     this.props.getPropVal(c)
-                    .then(() => this.setState({[c + 'Loading']: false}))
+                        .then(() => this.setState({[c + 'Loading']: false}))
                 }
             });
         }
@@ -413,7 +571,7 @@ class ArchiveFundWorks extends React.PureComponent {
                 if (!this.props[c + 'Options']) {
                     this.setState({[c + 'Loading']: true});
                     this.props.getAllObjOfCls(c, dte)
-                    .then(() => this.setState({[c + 'Loading']: false}))
+                        .then(() => this.setState({[c + 'Loading']: false}))
                 }
             });
         }
@@ -429,7 +587,7 @@ class ArchiveFundWorks extends React.PureComponent {
         const name = {};
         SYSTEM_LANG_ARRAY.forEach(lang => {
             name[lang] = (values.workType ? values.workType.label : '') + ' ' +
-            (workRegFund ? workRegFund.label : '')
+                (workRegFund ? workRegFund.label : '')
         });
         const obj = {
             name,
@@ -440,23 +598,23 @@ class ArchiveFundWorks extends React.PureComponent {
 
         const hideCreateObj = message.loading(this.props.t('CREATING_NEW_OBJECT'), 0);
         return createObj(cube, obj)
-        .then(res => {
-            hideCreateObj();
-            if (res.success) {
-                return this.onSaveCubeData2({
-                    ...values,
-                    childWorkFeature: String(this.props.tofiConstants.isActiveTrue.id)
-                }, res.data.idItemDO, {})
-            } else {
-                if (res.errors) {
-                    res.errors.forEach(err => {
-                        message.error(err.text)
-                    })
+            .then(res => {
+                hideCreateObj();
+                if (res.success) {
+                    return this.onSaveCubeData2({
+                        ...values,
+                        childWorkFeature: String(this.props.tofiConstants.isActiveTrue.id)
+                    }, res.data.idItemDO, {})
+                } else {
+                    if (res.errors) {
+                        res.errors.forEach(err => {
+                            message.error(err.text)
+                        })
+                    }
                 }
-            }
-        }).catch(err => {
-            console.error(err)
-        })
+            }).catch(err => {
+                console.error(err)
+            })
     };
     onSaveCubeData2 = async (values, doItemProp, objDataProp) => {
 
@@ -494,13 +652,13 @@ class ArchiveFundWorks extends React.PureComponent {
             }
             message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
             return this.props.getCube(CUBE_FOR_WORKS, JSON.stringify(this.filters))
-            .then(() => {
-                this.setState({loading: false, openCard: false});
-                return {success: true}
-            })
+                .then(() => {
+                    this.setState({loading: false, openCard: false});
+                    return {success: true}
+                })
 
 
-        } catch(e) {
+        } catch (e) {
             typeof hideLoading === 'function' && hideLoading();
             this.setState({loading: false});
             console.warn(e);
@@ -516,7 +674,7 @@ class ArchiveFundWorks extends React.PureComponent {
             const {selectedRow: {workType, workRegFund}} = this.state;
             SYSTEM_LANG_ARRAY.forEach(lang => {
                 name[lang] = (workType ? workType.label : '') + ' ' +
-                (workRegFund ? workRegFund.label : '')
+                    (workRegFund ? workRegFund.label : '')
             });
         }
         let datas = [];
@@ -553,32 +711,32 @@ class ArchiveFundWorks extends React.PureComponent {
                 }),
                 periods: [{periodType: '0', dbeg: '1800-01-01', dend: '3333-12-31'}]
             }];
-        } catch(err) {
+        } catch (err) {
             console.error(err);
             return Promise.reject();
         }
         const hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 30);
         return updateCubeData(CUBE_FOR_WORKS, moment().format('YYYY-MM-DD'), JSON.stringify(datas))
-        .then(res => {
-            hideLoading();
-            if (res.success) {
-                message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
-                this.setState({loading: true});
-                return this.props.getCube(CUBE_FOR_WORKS, JSON.stringify(this.filters))
-                .then(() => {
-                    this.setState({loading: false, openCard: false});
-                    return {success: true}
-                })
-            } else {
-                message.error(this.props.t('PROPS_UPDATING_ERROR'));
-                if (res.errors) {
-                    res.errors.forEach(err => {
-                        message.error(err.text);
-                    });
-                    return Promise.reject();
+            .then(res => {
+                hideLoading();
+                if (res.success) {
+                    message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+                    this.setState({loading: true});
+                    return this.props.getCube(CUBE_FOR_WORKS, JSON.stringify(this.filters))
+                        .then(() => {
+                            this.setState({loading: false, openCard: false});
+                            return {success: true}
+                        })
+                } else {
+                    message.error(this.props.t('PROPS_UPDATING_ERROR'));
+                    if (res.errors) {
+                        res.errors.forEach(err => {
+                            message.error(err.text);
+                        });
+                        return Promise.reject();
+                    }
                 }
-            }
-        })
+            })
     };
 
     onInputChange = e => {
@@ -597,9 +755,209 @@ class ArchiveFundWorks extends React.PureComponent {
             }
         })
     };
+    invFiundEdit = async (id, record) => {
+        const filters = {
+            filterDOAnd: [
+                {
+                    dimConst: DO_FOR_INV,
+                    concatType: "and",
+                    conds: [
+                        {
+                            ids: String(id)
+                        }
+                    ]
+                }
+            ],
+            filterDPAnd: [
+                {
+                    dimConst: 'dpForInv',
+                    concatType: "and",
+                    conds: [
+                        {
+                            consts:
+                                "invFund"
+                        }
+                    ]
+                }
+            ],
+        }
+        await this.props.getCube('CubeForAF_Inv', JSON.stringify(filters), {customKey: 'InvItem'}).then(() => "")
+            .catch(err => {
+                console.error(err);
+            })
+        const {doForInv, dpForInv} = this.props.tofiConstants;
+        let parserCube = parseCube_new(this.props.InvItem['cube'], [], 'dp', 'do', this.props.InvItem [`do_${doForInv.id}`], this.props.InvItem [`dp_${dpForInv.id}`], `do_${doForInv.id}`, `dp_${dpForInv.id}`).map(this.renderTableDataInv);
+        if (parserCube.length > 0) {
+            if (!!parserCube[0].invFund) {
+                let value = {
+                    invFund: {value: record}
+                }
+                let invFund = parserCube[0].invFund
+                const fd2 = new FormData();
+                fd2.append('own', parserCube[0].key.split('_')[1]);
+                fd2.append('cubeSConst', "CubeForAF_Inv")
+                fd2.append('datas', JSON.stringify([{
+                    idDataPropVal: invFund.idDataPropVal,
+                    dEnd: moment().add(-1, 'days').format("YYYY-MM-DD")
+                }]))
+                await axios.post(`/${localStorage.getItem('i18nextLng')}/entity/changeValueOfDend`, fd2)
+                    .then(res => {
+                        if (res.data.success === false && res.data.errors) {
+                            for (let val of  res.data.errors) {
+                                message.error(val.text)
+                            }
+                            return false
+                        }
+                        this.saveInvFund(value, parserCube[0].key)
 
+                    }).catch((e) => {
+                        console.log(e)
+                    })
+            }
+        }
+    };
+    editPropsCase = async (id, record) => {
+        const filters = {
+            filterDOAnd: [
+                {
+                    dimConst: "doForCase",
+                    concatType: "and",
+                    conds: [
+                        {
+                            ids: String(id)
+                        }
+                    ]
+                }
+            ],
+            filterDPAnd: [
+                {
+                    dimConst: 'dpForCase',
+                    concatType: "and",
+                    conds: [
+                        {
+                            consts:
+                                "fundFeature"
+                        }
+                    ]
+                }
+            ],
+        }
+        await this.props.getCube('CubeForAF_Case', JSON.stringify(filters), {customKey: 'CubeCase'}).then(() => "")
+            .catch(err => {
+                console.error(err);
+            })
+        const {doForCase, dpForCase} = this.props.tofiConstants;
+        let parserCube = parseCube_new(this.props.CubeCase['cube'], [], 'dp', 'do', this.props.CubeCase [`do_${doForCase.id}`], this.props.CubeCase [`dp_${dpForCase.id}`], `do_${doForCase.id}`, `dp_${dpForCase.id}`).map(this.renderTableDataInv);
+        if (parserCube.length > 0) {
+            if (!!parserCube[0].fundFeature) {
+                let val = parserCube[0].fundFeature
+                val.value = 1217
+                let value = {
+                    fundFeature:val
+                }
+                this.saveCasefundFeature(value, parserCube[0].key)
+
+            }else {
+                let value = {
+                    fundFeature:{value:1217}
+                }
+                this.saveCasefundFeature(value, parserCube[0].key)
+            }
+        }
+    }
+    saveInvFund = async (values, id) => {
+        let hideLoading
+
+        try {
+            const c = {
+                cube: {
+                    cubeSConst: CUBE_FOR_AF_INV,
+                    doConst: DO_FOR_INV,
+                    dpConst: DP_FOR_INV,
+                    data: this.props.InvItem
+                },
+                obj: {
+                    doItem: id
+                }
+            }
+
+            const v = {
+                values: values,
+                complex: "",
+                oFiles: {}
+            }
+            const objData = {}
+            const t = this.props.tofiConstants
+
+            hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
+            const resSave = await onSaveCubeData3(c, v, t, objData, "");
+            hideLoading();
+            if (!resSave.success) {
+                message.error(this.props.t('PROPS_UPDATING_ERROR'));
+                resSave.errors.forEach(err => {
+                    message.error(err.text)
+                });
+                return Promise.reject(resSave);
+            }
+            message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+        } catch (e) {
+            typeof hideLoading === 'function' && hideLoading();
+            console.warn(e);
+        }
+    }
+    saveCasefundFeature = async (values, id) => {
+        let hideLoading
+
+        try {
+            const c = {
+                cube: {
+                    cubeSConst: "CubeForAF_Case",
+                    doConst: "doForCase",
+                    dpConst: "dpForCase",
+                    data: this.props.CubeCase
+                },
+                obj: {
+                    doItem: id
+                }
+            }
+
+            const v = {
+                values: values,
+                complex: "",
+                oFiles: {}
+            }
+            const objData = {}
+            const t = this.props.tofiConstants
+
+            hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
+            const resSave = await onSaveCubeData3(c, v, t, objData, "");
+            hideLoading();
+            if (!resSave.success) {
+                message.error(this.props.t('PROPS_UPDATING_ERROR'));
+                resSave.errors.forEach(err => {
+                    message.error(err.text)
+                });
+                return Promise.reject(resSave);
+            }
+            message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+        } catch (e) {
+            typeof hideLoading === 'function' && hideLoading();
+            console.warn(e);
+        }
+    }
+    renderTableDataInv = (item, ids) => {
+        const constArr = ['invFund', "fundFeature"];
+        const result = {
+            key: item.id,
+            ids: ids + 1,
+            name: item.name,
+
+        };
+        parseForTable(item.props, this.props.tofiConstants, result, constArr);
+        return result;
+    }
     addSpecialDate = (key, name, stateRecord) => {
-        return e => {
+        return async (e) => {
             e.stopPropagation();
             const newData = this.state.data.slice();
             const target = newData.find(el => el.key === key);
@@ -611,9 +969,9 @@ class ArchiveFundWorks extends React.PureComponent {
                             workType: target.workType,
                             [name]: moment().format('YYYY-MM-DD'),
                         }, key, {})
-                        .catch(err => {
-                            console.error(err);
-                        })
+                            .catch(err => {
+                                console.error(err);
+                            })
                     }
                     else if (target.workType.workTypeClass === 'descriptionOfValuableDocs') {
                         this.setState({
@@ -628,64 +986,64 @@ class ArchiveFundWorks extends React.PureComponent {
                             [name]: moment().format('YYYY-MM-DD'),
                             intermediateResultDate: moment().format('YYYY-MM-DD')
                         }, key, {})
-                        .then(res => {
-                            if (res.success) {
-                                if (target.workType.value === this.props.tofiConstants.caseAvailabilityCheck.id) {
-                                    rabota1(key.split('_')[1])
-                                    .then(res => {
-                                        if (res.success) {
-                                            // const notAvailableList = this.state.data.filter(item => (item && item.workType && item.workType.workTypeClass == 'casesForTemporaryUse' && item.workStatusReg.value == this.props.tofiConstants.issued.id));
-                                            // const data = res.data.map(cs => ({...cs, temporaryUse: notAvailableList && notAvailableList.some(obj => obj.workRegCase.value == cs.id)}));
-                                            this.props.history.push({
-                                                pathname: `/archiveFund/works/checking/${target.workRegFund.value}_${target.workRegInv.value}`,
-                                                state: {
-                                                    workId: key,
-                                                    data: res.data,
-                                                    stateRecord
+                            .then(res => {
+                                if (res.success) {
+                                    if (target.workType.value === this.props.tofiConstants.caseAvailabilityCheck.id) {
+                                        rabota1(key.split('_')[1])
+                                            .then(res => {
+                                                if (res.success) {
+                                                    // const notAvailableList = this.state.data.filter(item => (item && item.workType && item.workType.workTypeClass == 'casesForTemporaryUse' && item.workStatusReg.value == this.props.tofiConstants.issued.id));
+                                                    // const data = res.data.map(cs => ({...cs, temporaryUse: notAvailableList && notAvailableList.some(obj => obj.workRegCase.value == cs.id)}));
+                                                    this.props.history.push({
+                                                        pathname: `/archiveFund/works/checking/${target.workRegFund.value}_${target.workRegInv.value}`,
+                                                        state: {
+                                                            workId: key,
+                                                            data: res.data,
+                                                            stateRecord
+                                                        }
+                                                    })
                                                 }
-                                            })
-                                        }
-                                        ;
-                                    }).catch(err => {
-                                        console.error(err)
-                                    });
-                                } else if (target.workType.value === this.props.tofiConstants.caseRegistration.id) {
-                                    rabotaAcc(key.split('_')[1])
-                                    .then(res => {
-                                        if (res.success) {
-                                            this.props.history.push({
-                                                pathname: `/archiveFund/works/accounting/${target.workRegFund.value}_${target.workRegInv ? target.workRegInv.value : ''}`,
-                                                state: {
-                                                    workId: key,
-                                                    data: res.data,
-                                                    stateRecord
+                                                ;
+                                            }).catch(err => {
+                                            console.error(err)
+                                        });
+                                    } else if (target.workType.value === this.props.tofiConstants.caseRegistration.id) {
+                                        rabotaAcc(key.split('_')[1])
+                                            .then(res => {
+                                                if (res.success) {
+                                                    this.props.history.push({
+                                                        pathname: `/archiveFund/works/accounting/${target.workRegFund.value}_${target.workRegInv ? target.workRegInv.value : ''}`,
+                                                        state: {
+                                                            workId: key,
+                                                            data: res.data,
+                                                            stateRecord
+                                                        }
+                                                    })
                                                 }
-                                            })
-                                        }
-                                        ;
-                                    }).catch(err => {
-                                        console.error(err);
-                                    })
-                                } else if (target.workType.value === this.props.tofiConstants.caseExamination.id) {
-                                    rabotaExp(key.split('_')[1])
-                                    .then(res => {
-                                        if (res.success) {
-                                            this.props.history.push({
-                                                pathname: `/archiveFund/works/expertize/${target.workRegFund.value}_${target.workRegInv ? target.workRegInv.value : ''}`,
-                                                state: {
-                                                    workId: key,
-                                                    data: res.data,
-                                                    stateRecord
+                                                ;
+                                            }).catch(err => {
+                                            console.error(err);
+                                        })
+                                    } else if (target.workType.value === this.props.tofiConstants.caseExamination.id) {
+                                        rabotaExp(key.split('_')[1])
+                                            .then(res => {
+                                                if (res.success) {
+                                                    this.props.history.push({
+                                                        pathname: `/archiveFund/works/expertize/${target.workRegFund.value}_${target.workRegInv ? target.workRegInv.value : ''}`,
+                                                        state: {
+                                                            workId: key,
+                                                            data: res.data,
+                                                            stateRecord
+                                                        }
+                                                    })
                                                 }
-                                            })
-                                        }
-                                        ;
-                                    }).catch(err => {
-                                        console.error(err);
-                                    })
+                                                ;
+                                            }).catch(err => {
+                                            console.error(err);
+                                        })
+                                    }
                                 }
-                            }
-                        }).catch(err => {
+                            }).catch(err => {
                             console.error(err)
                         })
                     } else {
@@ -694,62 +1052,62 @@ class ArchiveFundWorks extends React.PureComponent {
                             workType: target.workType,
                             [name]: moment().format('YYYY-MM-DD'),
                         }, key, {})
-                        .catch(err => {
-                            console.error(err);
-                        })
+                            .catch(err => {
+                                console.error(err);
+                            })
                     }
                 }
                 else if (name === 'workActualStartDateContinue') {
                     if (target.workType.value === this.props.tofiConstants.caseAvailabilityCheck.id) {
                         rabota1(key.split('_')[1])
-                        .then(res => {
-                            if (res.success) {
-                                this.props.history.push({
-                                    pathname: `/archiveFund/works/checking/${target.workRegFund.value}_${target.workRegInv.value}`,
-                                    state: {
-                                        workId: key,
-                                        data: res.data,
-                                        workIndexNumber: target.workIndexNumber,
-                                        stateRecord
-                                    }
-                                })
-                            }
-                            ;
-                        });
+                            .then(res => {
+                                if (res.success) {
+                                    this.props.history.push({
+                                        pathname: `/archiveFund/works/checking/${target.workRegFund.value}_${target.workRegInv.value}`,
+                                        state: {
+                                            workId: key,
+                                            data: res.data,
+                                            workIndexNumber: target.workIndexNumber,
+                                            stateRecord
+                                        }
+                                    })
+                                }
+                                ;
+                            });
                     } else if (target.workType.value === this.props.tofiConstants.caseRegistration.id) {
                         rabotaAcc(key.split('_')[1])
-                        .then(res => {
-                            if (res.success) {
-                                this.props.history.push({
-                                    pathname: `/archiveFund/works/accounting/${target.workRegFund.value}_${target.workRegInv ? target.workRegInv.value : ''}`,
-                                    state: {
-                                        workId: key,
-                                        data: res.data,
-                                        workIndexNumber: target.workIndexNumber,
-                                        stateRecord
-                                    }
-                                })
-                            }
-                            ;
-                        }).catch(err => {
+                            .then(res => {
+                                if (res.success) {
+                                    this.props.history.push({
+                                        pathname: `/archiveFund/works/accounting/${target.workRegFund.value}_${target.workRegInv ? target.workRegInv.value : ''}`,
+                                        state: {
+                                            workId: key,
+                                            data: res.data,
+                                            workIndexNumber: target.workIndexNumber,
+                                            stateRecord
+                                        }
+                                    })
+                                }
+                                ;
+                            }).catch(err => {
                             console.error(err);
                         })
                     } else if (target.workType.value === this.props.tofiConstants.caseExamination.id) {
                         rabotaExp(key.split('_')[1])
-                        .then(res => {
-                            if (res.success) {
-                                this.props.history.push({
-                                    pathname: `/archiveFund/works/expertize/${target.workRegFund.value}_${target.workRegInv ? target.workRegInv.value : ''}`,
-                                    state: {
-                                        workId: key,
-                                        data: res.data,
-                                        workIndexNumber: target.workIndexNumber,
-                                        stateRecord
-                                    }
-                                })
-                            }
-                            ;
-                        }).catch(err => {
+                            .then(res => {
+                                if (res.success) {
+                                    this.props.history.push({
+                                        pathname: `/archiveFund/works/expertize/${target.workRegFund.value}_${target.workRegInv ? target.workRegInv.value : ''}`,
+                                        state: {
+                                            workId: key,
+                                            data: res.data,
+                                            workIndexNumber: target.workIndexNumber,
+                                            stateRecord
+                                        }
+                                    })
+                                }
+                                ;
+                            }).catch(err => {
                             console.error(err);
                         })
                     }
@@ -797,6 +1155,21 @@ class ArchiveFundWorks extends React.PureComponent {
                     }
                 }
                 else if (name === 'acceptanceDate') {
+                    if (target.workType.workTypeClass === 'caseDisposal') {
+                        if (!!target.workRegCase) {
+                            await getIdGetObj(target.workRegCase.value, "doForCase").then(async (res) => {
+                                let idDimObj = res.data.idDimObj;
+                                await this.editPropsCase(idDimObj, target.workRegFund.value)
+                            })
+                        }
+
+                    }
+                    if (target.workType.workTypeClass === 'caseRegistration') {
+                        await getIdGetObj(target.workRegInv.value, DO_FOR_INV).then(async (res) => {
+                            let idDimObj = res.data.idDimObj;
+                            await this.invFiundEdit(idDimObj, target.workRegFund.value)
+                        })
+                    }
                     if (target.workType.workTypeClass === 'caseSearch') {
                         this.onSaveCubeData({
                             workStatusReg: {value: this.props.tofiConstants.found.id},
@@ -822,29 +1195,29 @@ class ArchiveFundWorks extends React.PureComponent {
                             workType: target.workType,
                             acceptanceDate: moment().format('YYYY-MM-DD')
                         }, key, {})
-                        .then(() => {
-                            var newTarget = {...target};
-                            delete newTarget.workRegFund.idDataPropVal;
-                            delete newTarget.workRegInv.idDataPropVal;
-                            delete newTarget.workRegCase.idDataPropVal;
-                            this.onCreateObj({
-                                parent: key.split('_')[1],
-                                workType: {
-                                    value: String(this.props.tofiConstants.caseDisposal.id),
-                                    workTypeClass: 'caseDisposal'
-                                },
-                                workStatusReg: {value: this.props.tofiConstants.appointmentProcess.id},
-                                workRegFund: target.workRegFund,
-                                workRegInv: target.workRegInv,
-                                workAuthor: {value: this.props.user.obj},
-                                workDate: moment().format('YYYY-MM-DD'),
-                                workRegCase: target.workRegCase,
-                                retirementReason: String(this.props.tofiConstants.noResults.id)
+                            .then(() => {
+                                var newTarget = {...target};
+                                delete newTarget.workRegFund.idDataPropVal;
+                                delete newTarget.workRegInv.idDataPropVal;
+                                delete newTarget.workRegCase.idDataPropVal;
+                                this.onCreateObj({
+                                    parent: key.split('_')[1],
+                                    workType: {
+                                        value: String(this.props.tofiConstants.caseDisposal.id),
+                                        workTypeClass: 'caseDisposal'
+                                    },
+                                    workStatusReg: {value: this.props.tofiConstants.appointmentProcess.id},
+                                    workRegFund: target.workRegFund,
+                                    workRegInv: target.workRegInv,
+                                    workAuthor: {value: this.props.user.obj},
+                                    workDate: moment().format('YYYY-MM-DD'),
+                                    workRegCase: target.workRegCase,
+                                    retirementReason: String(this.props.tofiConstants.noResults.id)
+                                })
                             })
-                        })
-                        .catch(err => {
-                            console.error(err);
-                        })
+                            .catch(err => {
+                                console.error(err);
+                            })
                     } else {
                         this.onSaveCubeData({
                             workStatusReg: {value: this.props.tofiConstants.notAccepted.id},
@@ -863,38 +1236,38 @@ class ArchiveFundWorks extends React.PureComponent {
     renderTableData = (item, idx) => {
         const workTypeClasses = ['caseRegistration', 'caseDisposal', 'descriptionOfValuableDocs', 'caseAvailabilityCheck', 'casesForTemporaryUse', 'caseExamination', 'processedCases', 'caseSearch'];
         const {
-            workPlannedEndDate,casesRecovery, workAuthor, workRegFund, workRegFundId, workRegInv, workIndexNumber, retirementReason,
+            workPlannedEndDate, casesRecovery, workAuthor, workRegFund, workRegFundId, workRegInv, workIndexNumber, retirementReason,
             workPriority, workDate, workAssignedTo, workPlannedStartDate, workActualStartDate, workRecipient,
             workActualEndDate, acceptanceDate, checkingType, dateNumberOrder, orderDirectorFile, dateAndNumberDeregistration, derigistrationFile, workRegCase, descriptionDamage, intermediateResultDate, deliveryPurpose, indexDamage
         } = this.props.tofiConstants;
 
         const workPlannedEndDateObj = item.props.find(element => element.prop == workPlannedEndDate.id),
-        indexDamageObj = item.props.find(element => element.prop == indexDamage.id),
-        descriptionDamageObj = item.props.find(element => element.prop == descriptionDamage.id),
-        workStatusRegObj = item.props.find(element => element.prop == this.props.tofiConstants[this.clsStatusMap[item.clsORtr]].id),
-        workAuthorObj = item.props.find(element => element.prop == workAuthor.id),
-        workPriorityObj = item.props.find(element => element.prop == workPriority.id),
-        workDateObj = item.props.find(element => element.prop == workDate.id),
-        workAssignedToObj = item.props.find(element => element.prop == workAssignedTo.id),
-        workRecipientObj = item.props.find(element => element.prop == workRecipient.id),
-        workPlannedStartDateObj = item.props.find(element => element.prop == workPlannedStartDate.id),
-        workActualStartDateObj = item.props.find(element => element.prop == workActualStartDate.id),
-        workActualEndDateObj = item.props.find(element => element.prop == workActualEndDate.id),
-        acceptanceDateObj = item.props.find(element => element.prop == acceptanceDate.id),
-        checkingTypeObj = item.props.find(element => element.prop == checkingType.id),
-        workRegFundObj = item.props.find(element => element.prop == workRegFund.id),
-        workRegInvObj = item.props.find(element => element.prop == workRegInv.id),
-        workRegCaseObj = item.props.find(element => element.prop == workRegCase.id),
-        intermediateResultDateObj = item.props.find(element => element.prop == intermediateResultDate.id),
-        workIndexNumberObj = item.props.find(element => element.prop == workIndexNumber.id),
-        retirementReasonObj = item.props.find(element => element.prop == retirementReason.id),
-        deliveryPurposeObj = item.props.find(element => element.prop == deliveryPurpose.id),
-        workTypeClass = workTypeClasses.find(cls => this.props.tofiConstants[cls].id == item.clsORtr),
-        dateNumberOrderObj = item.props.find(element => element.prop == dateNumberOrder.id),
-        orderDirectorFileObj = item.props.find(element => element.prop == orderDirectorFile.id),
-        dateAndNumberDeregistrationObj = item.props.find(element => element.prop == dateAndNumberDeregistration.id),
-        derigistrationFileObj = item.props.find(element => element.prop == derigistrationFile.id),
-        casesRecoveryObj = item.props.find(element => element.prop == casesRecovery.id);
+            indexDamageObj = item.props.find(element => element.prop == indexDamage.id),
+            descriptionDamageObj = item.props.find(element => element.prop == descriptionDamage.id),
+            workStatusRegObj = item.props.find(element => element.prop == this.props.tofiConstants[this.clsStatusMap[item.clsORtr]].id),
+            workAuthorObj = item.props.find(element => element.prop == workAuthor.id),
+            workPriorityObj = item.props.find(element => element.prop == workPriority.id),
+            workDateObj = item.props.find(element => element.prop == workDate.id),
+            workAssignedToObj = item.props.find(element => element.prop == workAssignedTo.id),
+            workRecipientObj = item.props.find(element => element.prop == workRecipient.id),
+            workPlannedStartDateObj = item.props.find(element => element.prop == workPlannedStartDate.id),
+            workActualStartDateObj = item.props.find(element => element.prop == workActualStartDate.id),
+            workActualEndDateObj = item.props.find(element => element.prop == workActualEndDate.id),
+            acceptanceDateObj = item.props.find(element => element.prop == acceptanceDate.id),
+            checkingTypeObj = item.props.find(element => element.prop == checkingType.id),
+            workRegFundObj = item.props.find(element => element.prop == workRegFund.id),
+            workRegInvObj = item.props.find(element => element.prop == workRegInv.id),
+            workRegCaseObj = item.props.find(element => element.prop == workRegCase.id),
+            intermediateResultDateObj = item.props.find(element => element.prop == intermediateResultDate.id),
+            workIndexNumberObj = item.props.find(element => element.prop == workIndexNumber.id),
+            retirementReasonObj = item.props.find(element => element.prop == retirementReason.id),
+            deliveryPurposeObj = item.props.find(element => element.prop == deliveryPurpose.id),
+            workTypeClass = workTypeClasses.find(cls => this.props.tofiConstants[cls].id == item.clsORtr),
+            dateNumberOrderObj = item.props.find(element => element.prop == dateNumberOrder.id),
+            orderDirectorFileObj = item.props.find(element => element.prop == orderDirectorFile.id),
+            dateAndNumberDeregistrationObj = item.props.find(element => element.prop == dateAndNumberDeregistration.id),
+            derigistrationFileObj = item.props.find(element => element.prop == derigistrationFile.id),
+            casesRecoveryObj = item.props.find(element => element.prop == casesRecovery.id);
         return {
             key: item.id,
             numb: idx + 1,
@@ -904,7 +1277,7 @@ class ArchiveFundWorks extends React.PureComponent {
                 label: this.props.tofiConstants[workTypeClass].name[this.lng],
                 workTypeClass
             } : null,
-            casesRecovery:casesRecoveryObj && casesRecoveryObj.values,
+            casesRecovery: casesRecoveryObj && casesRecoveryObj.values,
             dateNumberOrder: dateNumberOrderObj && dateNumberOrderObj.values,
             orderDirectorFile: orderDirectorFileObj && orderDirectorFileObj.values,
             dateAndNumberDeregistration: dateAndNumberDeregistrationObj && dateAndNumberDeregistrationObj.values,
@@ -945,10 +1318,10 @@ class ArchiveFundWorks extends React.PureComponent {
     };
 
     menu = (
-    <Menu>
-        <Menu.Item key="first">{this.props.t('REPORT_1')}</Menu.Item>
-        <Menu.Item key="second">{this.props.t('REPORT_2')}</Menu.Item>
-    </Menu>
+        <Menu>
+            <Menu.Item key="first">{this.props.t('REPORT_1')}</Menu.Item>
+            <Menu.Item key="second">{this.props.t('REPORT_2')}</Menu.Item>
+        </Menu>
     );
 
     showModal = () => {
@@ -960,32 +1333,32 @@ class ArchiveFundWorks extends React.PureComponent {
     };
     handleModalOk = () => {
         changeInvOC(this.state.selectedRow.workRegInv.value, this.state.workRegInvSelected.value)
-        .then(res => {
-            if (res.success) {
-                this.setState({
-                    modal: {
-                        visible: false
-                    }
-                });
-                return Promise.resolve();
-            } else {
-                res.errors && res.errors.forEach(error => {
-                    message.error(error.text);
-                });
-                return Promise.reject();
-            }
-        })
-        .then(() => {
-            this.onSaveCubeData({
-                workStatusReg: {value: this.props.tofiConstants.completed.id},
-                workType: {value: 1053, workTypeClass: "descriptionOfValuableDocs"},
-                workActualStartDate: moment().format('YYYY-MM-DD'),
-                workActualEndDate: moment().format('YYYY-MM-DD')
+            .then(res => {
+                if (res.success) {
+                    this.setState({
+                        modal: {
+                            visible: false
+                        }
+                    });
+                    return Promise.resolve();
+                } else {
+                    res.errors && res.errors.forEach(error => {
+                        message.error(error.text);
+                    });
+                    return Promise.reject();
+                }
             })
-        })
-        .catch(err => {
-            console.error(err)
-        })
+            .then(() => {
+                this.onSaveCubeData({
+                    workStatusReg: {value: this.props.tofiConstants.completed.id},
+                    workType: {value: 1053, workTypeClass: "descriptionOfValuableDocs"},
+                    workActualStartDate: moment().format('YYYY-MM-DD'),
+                    workActualEndDate: moment().format('YYYY-MM-DD')
+                })
+            })
+            .catch(err => {
+                console.error(err)
+            })
     };
     handleModalCancel = () => {
         this.setState({
@@ -994,44 +1367,45 @@ class ArchiveFundWorks extends React.PureComponent {
             }
         });
     };
-    buttonDis=(date,user)=>{
-        if ( !!user ) {
+    buttonDis = (date, user) => {
+        if (!!user) {
             if (!!date && user.value == this.props.user.obj) {
                 return false
             } else {
                 return true
             }
-        }else {
+        } else {
             return true
         }
     }
+
     render() {
         const menu = (
-        <Menu>
-            <Menu.Item>
-                <p className="work-date-option" onClick={this.onWeekDate}>Неделя </p>
-            </Menu.Item>
-            <Menu.Item>
-                <p className="work-date-option" onClick={this.onMonthThreeDate}>3
-                    месяца</p>
-            </Menu.Item>
-            <Menu.Item>
-                <p className="work-date-option"
-                   onClick={this.onMonthOneDate}>{moment().add(-1, "M").format("MMMM") } </p>
-            </Menu.Item>
-            <Menu.Item>
-                <p className="work-date-option"
-                   onClick={this.onMonthDate}>{moment().format("MMMM") } </p>
-            </Menu.Item>
-            <Menu.Item>
-                <p className="work-date-option" onClick={this.onYearDate}>Год</p>
-            </Menu.Item>
-            <Menu.Item>
-                <p className="work-date-option " onClick={this.showModalDate}>
-                    Указать период
-                </p>
-            </Menu.Item>
-        </Menu>
+            <Menu>
+                <Menu.Item>
+                    <p className="work-date-option" onClick={this.onWeekDate}>Неделя </p>
+                </Menu.Item>
+                <Menu.Item>
+                    <p className="work-date-option" onClick={this.onMonthThreeDate}>3
+                        месяца</p>
+                </Menu.Item>
+                <Menu.Item>
+                    <p className="work-date-option"
+                       onClick={this.onMonthOneDate}>{moment().add(-1, "M").format("MMMM")} </p>
+                </Menu.Item>
+                <Menu.Item>
+                    <p className="work-date-option"
+                       onClick={this.onMonthDate}>{moment().format("MMMM")} </p>
+                </Menu.Item>
+                <Menu.Item>
+                    <p className="work-date-option" onClick={this.onYearDate}>Год</p>
+                </Menu.Item>
+                <Menu.Item>
+                    <p className="work-date-option " onClick={this.showModalDate}>
+                        Указать период
+                    </p>
+                </Menu.Item>
+            </Menu>
         );
         const {
             search, loading, performer, status, priority, workPriorityLoading, staff,
@@ -1046,424 +1420,423 @@ class ArchiveFundWorks extends React.PureComponent {
 
         this.filteredData = data.filter(item => {
             return (
-            // item.numb === Number(search) ||
-            ( item.workType ? item.workType.label.toLowerCase().includes(search.workType.toLowerCase()) : search.workType === '' ) &&
-            ( item.key ? item.key.toLowerCase().includes(search.nameResearchers.toLowerCase()) : search.nameResearchers === '') &&
-            ( item.workRegFund ? String(item.workRegFund['value']).includes(search.workRegFundId.toLowerCase()) : search.workRegFundId === '') &&
-            ( item.workRegFund ? item.workRegFund.label.toLowerCase().includes(search.workRegFund.toLowerCase()) : search.workRegFund === '' ) &&
-            ( item.workRegInv ? item.workRegInv.label.toLowerCase().includes(search.workRegInv.toLowerCase()) : search.workRegInv === '' ) &&
-            ( priority.length === 0 || priority.some(p => (item.workPriority && p.value == item.workPriority.value)) ) &&
-            ( status.length === 0 || status.some(p => (item.workStatusReg && p.value == item.workStatusReg.value)) ) &&
-            ( performer.length === 0 || performer.some(p => (item.workAssignedTo && p.value == item.workAssignedTo.value)) ) &&
-            ( staff.length === 0 || staff.some(p => (item.workRecipient && p.value == item.workRecipient.value)) ) &&
-            ( !search.workPlannedStartDate.dbeg || ( item.workPlannedStartDate && item.workPlannedStartDate.isSameOrAfter(search.workPlannedStartDate.dbeg, 'day') )) &&
+                // item.numb === Number(search) ||
+                ( item.workType ? item.workType.label.toLowerCase().includes(search.workType.toLowerCase()) : search.workType === '' ) &&
+                ( item.key ? item.key.toLowerCase().includes(search.nameResearchers.toLowerCase()) : search.nameResearchers === '') &&
+                ( item.workRegFund ? String(item.workRegFund['value']).includes(search.workRegFundId.toLowerCase()) : search.workRegFundId === '') &&
+                ( item.workRegFund ? item.workRegFund.label.toLowerCase().includes(search.workRegFund.toLowerCase()) : search.workRegFund === '' ) &&
+                ( item.workRegInv ? item.workRegInv.label.toLowerCase().includes(search.workRegInv.toLowerCase()) : search.workRegInv === '' ) &&
+                ( priority.length === 0 || priority.some(p => (item.workPriority && p.value == item.workPriority.value)) ) &&
+                ( status.length === 0 || status.some(p => (item.workStatusReg && p.value == item.workStatusReg.value)) ) &&
+                ( performer.length === 0 || performer.some(p => (item.workAssignedTo && p.value == item.workAssignedTo.value)) ) &&
+                ( staff.length === 0 || staff.some(p => (item.workRecipient && p.value == item.workRecipient.value)) ) &&
+                ( !search.workPlannedStartDate.dbeg || ( item.workPlannedStartDate && item.workPlannedStartDate.isSameOrAfter(search.workPlannedStartDate.dbeg, 'day') )) &&
 
 
-            ( !search.workPlannedStartDate.dend || ( item.workPlannedStartDate && item.workPlannedStartDate.isSameOrBefore(search.workPlannedStartDate.dend, 'day') )) &&
-            ( !search.workPlannedEndDate.dbeg || ( item.workPlannedEndDate && item.workPlannedEndDate.isSameOrAfter(search.workPlannedEndDate.dbeg, 'day') )) &&
-            ( !search.workPlannedEndDate.dend || ( item.workPlannedEndDate && item.workPlannedEndDate.isSameOrBefore(search.workPlannedEndDate.dend, 'day') )) &&
-            ( !search.workActualStartDate.dbeg || ( item.workActualStartDate && item.workActualStartDate.isSameOrAfter(search.workActualStartDate.dbeg, 'day') )) &&
-            ( !search.workActualStartDate.dend || ( item.workActualStartDate && item.workActualStartDate.isSameOrBefore(search.workActualStartDate.dend, 'day') )) &&
-            ( !search.workActualEndDate.dbeg || ( item.workActualEndDate && item.workActualEndDate.isSameOrAfter(search.workActualEndDate.dbeg, 'day') )) &&
-            ( !search.workActualEndDate.dend || ( item.workActualEndDate && item.workActualEndDate.isSameOrAfter(search.workActualEndDate.dend, 'day') )) &&
-            ( !search.acceptanceDate.dbeg || ( item.acceptanceDate && item.acceptanceDate.isSameOrAfter(search.acceptanceDate.dbeg, 'day') )) &&
-            ( !search.acceptanceDate.dend || ( item.acceptanceDate && item.acceptanceDate.isSameOrBefore(search.acceptanceDate.dend, 'day') ))
+                ( !search.workPlannedStartDate.dend || ( item.workPlannedStartDate && item.workPlannedStartDate.isSameOrBefore(search.workPlannedStartDate.dend, 'day') )) &&
+                ( !search.workPlannedEndDate.dbeg || ( item.workPlannedEndDate && item.workPlannedEndDate.isSameOrAfter(search.workPlannedEndDate.dbeg, 'day') )) &&
+                ( !search.workPlannedEndDate.dend || ( item.workPlannedEndDate && item.workPlannedEndDate.isSameOrBefore(search.workPlannedEndDate.dend, 'day') )) &&
+                ( !search.workActualStartDate.dbeg || ( item.workActualStartDate && item.workActualStartDate.isSameOrAfter(search.workActualStartDate.dbeg, 'day') )) &&
+                ( !search.workActualStartDate.dend || ( item.workActualStartDate && item.workActualStartDate.isSameOrBefore(search.workActualStartDate.dend, 'day') )) &&
+                ( !search.workActualEndDate.dbeg || ( item.workActualEndDate && item.workActualEndDate.isSameOrAfter(search.workActualEndDate.dbeg, 'day') )) &&
+                ( !search.workActualEndDate.dend || ( item.workActualEndDate && item.workActualEndDate.isSameOrAfter(search.workActualEndDate.dend, 'day') )) &&
+                ( !search.acceptanceDate.dbeg || ( item.acceptanceDate && item.acceptanceDate.isSameOrAfter(search.acceptanceDate.dbeg, 'day') )) &&
+                ( !search.acceptanceDate.dend || ( item.acceptanceDate && item.acceptanceDate.isSameOrBefore(search.acceptanceDate.dend, 'day') ))
             )
         });
 
         return (
-        <div className="Works">
-            <Modal
-            title="Выбрать период"
-            visible={this.state.visible}
-            onOk={this.handleOk}
-            onCancel={this.handleCancel}
-            >
-                <span>С </span> <DatePicker onChange={(e) => {
-                if (e === null) {
-                    return false
-                }
-                this.setState({
-                    minValue: moment(e._d).format("YYYY-MM-DD")
-                })
-            }}/>
-                <span>До </span> <DatePicker DatePicker onChange={(e) => {
-                if (e === null) {
-                    return false
-                }
-                this.setState({
-                    maxValue: moment(e._d).format("YYYY-MM-DD")
-                })
-            }}/>
+            <div className="Works">
+                <Modal
+                    title="Выбрать период"
+                    visible={this.state.visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                >
+                    <span>С </span> <DatePicker onChange={(e) => {
+                    if (e === null) {
+                        return false
+                    }
+                    this.setState({
+                        minValue: moment(e._d).format("YYYY-MM-DD")
+                    })
+                }}/>
+                    <span>До </span> <DatePicker DatePicker onChange={(e) => {
+                    if (e === null) {
+                        return false
+                    }
+                    this.setState({
+                        maxValue: moment(e._d).format("YYYY-MM-DD")
+                    })
+                }}/>
 
-            </Modal>
-            <div className="title-works">
-                <h2>Работы по учету и хранению</h2>
-                <Dropdown overlay={menu} trigger={['click']}>
-                    <p className="ant-dropdown-link work-date">
-                        {this.state.nameFilter} <Icon type="down"/>
-                    </p>
-                </Dropdown>
-            </div>
-            <div className="Works__heading">
-                <div className="table-header">
-                    <Button onClick={this.openCard}>{this.props.t('ADD')}</Button>
-                    <div className="label-select">
-                        <Select
-                        name="priority"
-                        isMulti
-                        isSearchable={false}
-                        value={priority}
-                        onChange={this.onPriorityChange}
-                        isLoading={workPriorityLoading}
-                        options={this.props.workPriorityOptions ? this.props.workPriorityOptions.map(option => ({
-                            value: option.id,
-                            label: option.name[this.lng]
-                        })) : []}
-                        placeholder={t('PRIORITY')}
-                        onMenuOpen={this.loadOptions(WORK_PRIORITY)}
-                        />
-                    </div>
-                    <div className="label-select">
-                        <Select
-                        name="status"
-                        isMulti
-                        isSearchable={false}
-                        value={status}
-                        onChange={this.onStatusChange}
-                        isLoading={workStatusDeliveryLoading || workStatusAdmissionAndExpertiseLoading || workStatusSearchLoading}
-                        options={workStatusDeliveryOptions && workStatusAdmissionAndExpertiseOptions && workStatusSearchOptions ?
-                        uniqBy([...workStatusDeliveryOptions, ...workStatusAdmissionAndExpertiseOptions, ...workStatusSearchOptions], 'id')
-                        .map(option => ({
-                            value: option.id,
-                            label: option.name[this.lng]
-                        })) : []}
-                        placeholder={t('STATUS')}
-                        onMenuOpen={ this.loadOptionsArr(['workStatusDelivery', 'workStatusAdmissionAndExpertise', 'workStatusSearch']) }
-                        />
-                    </div>
-                    <div className="label-select">
-                        <SelectVirt
-                        name="performer"
-                        isMulti
-                        isSearchable
-                        // async
-                        isLoading={workAssignedToRegLoading}
-                        onMenuOpen={this.getAllObjOfCls(['workAssignedToReg'])}
-                        optionHeight={40}
-                        value={performer}
-                        onChange={this.onPerformerChange}
-                        options={this.props.workAssignedToRegOptions ? this.props.workAssignedToRegOptions.map(option => ({
-                            value: option.id,
-                            label: option.name[this.lng]
-                        })) : []}
-                        placeholder={t('PERFORMER')}
-                        />
-                    </div>
-                    <div className="label-select">
-                        <Select
-                        name="staff"
-                        isMulti
-                        value={staff}
-                        onChange={this.onStaffChange}
-                        isLoading={staffLoading}
-                        options={staffOptions ? staffOptions.map(option => ({
-                            value: option.id,
-                            label: option.name[this.lng]
-                        })) : []}
-                        placeholder={workRecipient.name[this.lng]}
-                        onMenuOpen={this.getAllObjOfCls(['staff'])}
-                        />
-                    </div>
-                    <div>
-                        <Button type="primary" onClick={() => {
-                            window.print();
-                        }}>Печать</Button>
-                    </div>
-                    {/*Временно отключен                        <div className="label-select">
+                </Modal>
+                <div className="title-works">
+                    <h2>Работы по учету и хранению</h2>
+                    <Dropdown overlay={menu} trigger={['click']}>
+                        <p className="ant-dropdown-link work-date">
+                            {this.state.nameFilter} <Icon type="down"/>
+                        </p>
+                    </Dropdown>
+                </div>
+                <div className="Works__heading">
+                    <div className="table-header">
+                        <Button onClick={this.openCard}>{this.props.t('ADD')}</Button>
+                        <div className="label-select">
+                            <Select
+                                name="priority"
+                                isMulti
+                                isSearchable={false}
+                                value={priority}
+                                onChange={this.onPriorityChange}
+                                isLoading={workPriorityLoading}
+                                options={this.props.workPriorityOptions ? this.props.workPriorityOptions.map(option => ({
+                                    value: option.id,
+                                    label: option.name[this.lng]
+                                })) : []}
+                                placeholder={t('PRIORITY')}
+                                onMenuOpen={this.loadOptions(WORK_PRIORITY)}
+                            />
+                        </div>
+                        <div className="label-select">
+                            <Select
+                                name="status"
+                                isMulti
+                                isSearchable={false}
+                                value={status}
+                                onChange={this.onStatusChange}
+                                isLoading={workStatusDeliveryLoading || workStatusAdmissionAndExpertiseLoading || workStatusSearchLoading}
+                                options={workStatusDeliveryOptions && workStatusAdmissionAndExpertiseOptions && workStatusSearchOptions ?
+                                    uniqBy([...workStatusDeliveryOptions, ...workStatusAdmissionAndExpertiseOptions, ...workStatusSearchOptions], 'id')
+                                        .map(option => ({
+                                            value: option.id,
+                                            label: option.name[this.lng]
+                                        })) : []}
+                                placeholder={t('STATUS')}
+                                onMenuOpen={this.loadOptionsArr(['workStatusDelivery', 'workStatusAdmissionAndExpertise', 'workStatusSearch'])}
+                            />
+                        </div>
+                        <div className="label-select">
+                            <SelectVirt
+                                name="performer"
+                                isMulti
+                                isSearchable
+                                // async
+                                isLoading={workAssignedToRegLoading}
+                                onMenuOpen={this.getAllObjOfCls(['workAssignedToReg'])}
+                                optionHeight={40}
+                                value={performer}
+                                onChange={this.onPerformerChange}
+                                options={this.props.workAssignedToRegOptions ? this.props.workAssignedToRegOptions.map(option => ({
+                                    value: option.id,
+                                    label: option.name[this.lng]
+                                })) : []}
+                                placeholder={t('PERFORMER')}
+                            />
+                        </div>
+                        <div className="label-select">
+                            <Select
+                                name="staff"
+                                isMulti
+                                value={staff}
+                                onChange={this.onStaffChange}
+                                isLoading={staffLoading}
+                                options={staffOptions ? staffOptions.map(option => ({
+                                    value: option.id,
+                                    label: option.name[this.lng]
+                                })) : []}
+                                placeholder={workRecipient.name[this.lng]}
+                                onMenuOpen={this.getAllObjOfCls(['staff'])}
+                            />
+                        </div>
+                        <div>
+                            <Button type="primary" onClick={() => {
+                                window.print();
+                            }}>Печать</Button>
+                        </div>
+                        {/*Временно отключен                        <div className="label-select">
                      <Dropdown overlay={this.menu} trigger={['click']}>
                      <Button style={{marginLeft: 8}}>
                      {this.props.t('REPORT')} <Icon type="printer"/>
                      </Button>
                      </Dropdown>
                      </div>*/}
+                    </div>
                 </div>
-            </div>
-            <div className="Works__body">
-                <AntTable
-                loading={loading}
-                onChange={this.onChange}
-                rowClassName={rec => {
-                    if (rec.workStatusReg != null) {
-                        let newClass =
-                        ['accepted', 'completed', 'returned'].some(c => tofiConstants[c].id == rec.workStatusReg.value) ? 'completed' :
-                        ['during', 'appointed', 'issued', 'requirementCreated', 'pending', 'appointmentProcess', 'needFor', 'found', 'created', 'allowed', 'denied'].some(c => tofiConstants[c].id == rec.workStatusReg.value) ? 'appointed' :
-                        ['notAccepted', 'notFound'].some(c => tofiConstants[c].id == rec.workStatusReg.value) ? 'danger' : '';
-                        let selectedRow = '';
-                        if (this.state.workStatusReg != null) {
-                            if (this.state.selectedRow.key == rec.key) {
-                                selectedRow = 'row-selected'
+                <div className="Works__body">
+                    <AntTable
+                        loading={loading}
+                        onChange={this.onChange}
+                        rowClassName={rec => {
+                            if (rec.workStatusReg != null) {
+                                let newClass =
+                                    ['accepted', 'completed', 'returned'].some(c => tofiConstants[c].id == rec.workStatusReg.value) ? 'completed' :
+                                        ['during', 'appointed', 'issued', 'requirementCreated', 'pending', 'appointmentProcess', 'needFor', 'found', 'created', 'allowed', 'denied'].some(c => tofiConstants[c].id == rec.workStatusReg.value) ? 'appointed' :
+                                            ['notAccepted', 'notFound'].some(c => tofiConstants[c].id == rec.workStatusReg.value) ? 'danger' : '';
+                                let selectedRow = '';
+                                if (this.state.workStatusReg != null) {
+                                    if (this.state.selectedRow.key == rec.key) {
+                                        selectedRow = 'row-selected'
+                                    }
+                                }
+                                return newClass + ' ' + selectedRow;
                             }
                         }
-                        return newClass + ' ' + selectedRow;
-                    }
-                }
-                }
-                columns={[
-                    {
-                        key: 'numb',
-                        title: '№',
-                        dataIndex: 'numb',
-                        width: '5%'
-                    },
-                    {
-                        key: 'key',
-                        title: t('ID'),
-                        dataIndex: 'key',
-                        width: '8%',
-                        render: key => key ? key.slice(5, 8) + '-' + key.slice(-4) : '',
-                        sortOrder: 'descend',
-                        sorter: (a, b) => parseInt(a.key.split('_')[1]) - parseInt(b.key.split('_')[1]),
-                        filterDropdown: (
-                        <div className="custom-filter-dropdown">
-                            <Input
-                            disabled={this.state.openCard}
-                            name="nameResearchers"
-                            suffix={search.nameResearchers && !this.state.openCard ?
-                            <Icon type="close-circle" data-name="nameResearchers"
-                                  onClick={this.emitEmpty}/> : null}
-                            ref={ele => this.nameResearchers = ele}
-                            placeholder="Поиск"
-                            value={search.nameResearchers}
-                            onChange={this.onInputChange}
-                            />
-                        </div>
-                        ),
-                        filterIcon: <Icon type="filter"
-                                          style={{color: search.nameResearchers ? '#ff9800' : '#aaa'}}/>,
-                        onFilterDropdownVisibleChange: (visible) => {
-                            this.setState({
-                                filterDropdownVisible: visible,
-                            }, () => this.nameResearchers.focus());
-                        },
-                    },
-                    {
-                        key: 'workType',
-                        title: t('WORK_TYPE'),
-                        dataIndex: 'workType',
-                        width: '16%',
-                        filterDropdown: (
-                        <div className="custom-filter-dropdown">
-                            <Input
-                            name="workType"
-                            suffix={search.workType ?
-                            <Icon type="close-circle" data-name="workType"
-                                  onClick={this.emitEmpty}/> : null}
-                            ref={ele => this.workType = ele}
-                            placeholder="Поиск"
-                            value={search.workType}
-                            onChange={this.onInputChange}
-                            />
-                        </div>
-                        ),
-                        filterIcon: <Icon type="filter"
-                                          style={{color: search.workType ? '#ff9800' : '#aaa'}}/>,
-                        onFilterDropdownVisibleChange: (visible) => {
-                            this.setState({
-                                filterDropdownVisible: visible,
-                            }, () => this.workType.focus());
-                        },
-                        render: text => text ? text.label : ''
-                    },
-                    {
-                        key: 'ArchiveChiper',
-                        title: 'Архивный шифр',
-                        dataIndex: 'key',
-                        width: '14%',
-                        render: key => {
-                            if (!!this.props.listCases && !!this.state.filteredlistWorks) {
-                                var refId = this.state.filteredlistWorks.find(item => item['do_' + this.props.tofiConstants['doForWorks'].id] == key);
-                                var result;
-                                refId ? result = this.props.listCases.cube.find(itemDelo => itemDelo['do_' + this.props.tofiConstants['doForCase'].id].split('_')[1] == [refId.idRef]) : result = 'Нет шифра';
-                                return result ? result.valueStr ? result.valueStr[this.lng] : 'Нет шифра' : 'Нет шифра';
-                            }
-
-
                         }
-                    },
-                    /*                  {
-                     key: 'workRegFund',
-                     title: workRegFund.name[this.lng],
-                     dataIndex: 'workRegFund',
-                     width: '9%',
-                     filterDropdown: (
-                     <div className="custom-filter-dropdown">
-                     <Input
-                     name="workRegFund"
-                     suffix={search.workRegFund ?
-                     <Icon type="close-circle" data-name="workRegFund"
-                     onClick={this.emitEmpty}/> : null}
-                     ref={ele => this.workRegFund = ele}
-                     placeholder="Поиск"
-                     value={search.workRegFund}
-                     onChange={this.onInputChange}
-                     />
-                     </div>
-                     ),
-                     filterIcon: <Icon type="filter"
-                     style={{color: search.workRegFund ? '#ff9800' : '#aaa'}}/>,
-                     onFilterDropdownVisibleChange: (visible) => {
-                     this.setState({
-                     filterDropdownVisible: visible,
-                     }, () => this.workRegFund.focus());
-                     },
-                     render: text => (text ? text.label : '')
-                     },
-                     {
-                     key: 'workRegInv',
-                     title: workRegInv.name[this.lng],
-                     dataIndex: 'workRegInv',
-                     width: '9%',
-                     filterDropdown: (
-                     <div className="custom-filter-dropdown">
-                     <Input
-                     name="workRegInv"
-                     suffix={search.workRegInv ?
-                     <Icon type="close-circle" data-name="workRegInv"
-                     onClick={this.emitEmpty}/> : null}
-                     ref={ele => this.workRegInv = ele}
-                     placeholder="Поиск"
-                     value={search.workRegInv}
-                     onChange={this.onInputChange}
-                     />
-                     </div>
-                     ),
-                     filterIcon: <Icon type="filter"
-                     style={{color: search.workRegInv ? '#ff9800' : '#aaa'}}/>,
-                     onFilterDropdownVisibleChange: (visible) => {
-                     this.setState({
-                     filterDropdownVisible: visible,
-                     }, () => this.workRegInv.focus());
-                     },
-                     render: text => (text ? text.label : '')
-                     },  */
-                    {
-                        key: 'tp_ukz',
-                        title: 'Топографический указатель',
-                        dataIndex: 'key',
-                        width: '7%',
-                        render: key => (key ? '-' : '')
-                    },
-                    {
-                        key: 'workAuthor',
-                        title: 'Инициатор работы',
-                        dataIndex: 'key',
-                        width: '10',
-                        render: key => {
+                        columns={[
+                            {
+                                key: 'numb',
+                                title: '№',
+                                dataIndex: 'numb',
+                                width: '5%'
+                            },
+                            {
+                                key: 'key',
+                                title: t('ID'),
+                                dataIndex: 'key',
+                                width: '8%',
+                                render: key => key ? key.slice(5, 8) + '-' + key.slice(-4) : '',
+                                sortOrder: 'descend',
+                                sorter: (a, b) => parseInt(a.key.split('_')[1]) - parseInt(b.key.split('_')[1]),
+                                filterDropdown: (
+                                    <div className="custom-filter-dropdown">
+                                        <Input
+                                            disabled={this.state.openCard}
+                                            name="nameResearchers"
+                                            suffix={search.nameResearchers && !this.state.openCard ?
+                                                <Icon type="close-circle" data-name="nameResearchers"
+                                                      onClick={this.emitEmpty}/> : null}
+                                            ref={ele => this.nameResearchers = ele}
+                                            placeholder="Поиск"
+                                            value={search.nameResearchers}
+                                            onChange={this.onInputChange}
+                                        />
+                                    </div>
+                                ),
+                                filterIcon: <Icon type="filter"
+                                                  style={{color: search.nameResearchers ? '#ff9800' : '#aaa'}}/>,
+                                onFilterDropdownVisibleChange: (visible) => {
+                                    this.setState({
+                                        filterDropdownVisible: visible,
+                                    }, () => this.nameResearchers.focus());
+                                },
+                            },
+                            {
+                                key: 'workType',
+                                title: t('WORK_TYPE'),
+                                dataIndex: 'workType',
+                                width: '16%',
+                                filterDropdown: (
+                                    <div className="custom-filter-dropdown">
+                                        <Input
+                                            name="workType"
+                                            suffix={search.workType ?
+                                                <Icon type="close-circle" data-name="workType"
+                                                      onClick={this.emitEmpty}/> : null}
+                                            ref={ele => this.workType = ele}
+                                            placeholder="Поиск"
+                                            value={search.workType}
+                                            onChange={this.onInputChange}
+                                        />
+                                    </div>
+                                ),
+                                filterIcon: <Icon type="filter"
+                                                  style={{color: search.workType ? '#ff9800' : '#aaa'}}/>,
+                                onFilterDropdownVisibleChange: (visible) => {
+                                    this.setState({
+                                        filterDropdownVisible: visible,
+                                    }, () => this.workType.focus());
+                                },
+                                render: text => text ? text.label : ''
+                            },
+                            {
+                                key: 'archiveCipher',
+                                title: 'Архивный шифр',
+                                dataIndex: 'archiveCipher',
+                                width: '10%',
+                                render: (obj) => {
+                                    return !!obj && !!obj.val && obj.val[this.lng]
+                                }
+                            },
+                            /*                  {
+                             key: 'workRegFund',
+                             title: workRegFund.name[this.lng],
+                             dataIndex: 'workRegFund',
+                             width: '9%',
+                             filterDropdown: (
+                             <div className="custom-filter-dropdown">
+                             <Input
+                             name="workRegFund"
+                             suffix={search.workRegFund ?
+                             <Icon type="close-circle" data-name="workRegFund"
+                             onClick={this.emitEmpty}/> : null}
+                             ref={ele => this.workRegFund = ele}
+                             placeholder="Поиск"
+                             value={search.workRegFund}
+                             onChange={this.onInputChange}
+                             />
+                             </div>
+                             ),
+                             filterIcon: <Icon type="filter"
+                             style={{color: search.workRegFund ? '#ff9800' : '#aaa'}}/>,
+                             onFilterDropdownVisibleChange: (visible) => {
+                             this.setState({
+                             filterDropdownVisible: visible,
+                             }, () => this.workRegFund.focus());
+                             },
+                             render: text => (text ? text.label : '')
+                             },
+                             {
+                             key: 'workRegInv',
+                             title: workRegInv.name[this.lng],
+                             dataIndex: 'workRegInv',
+                             width: '9%',
+                             filterDropdown: (
+                             <div className="custom-filter-dropdown">
+                             <Input
+                             name="workRegInv"
+                             suffix={search.workRegInv ?
+                             <Icon type="close-circle" data-name="workRegInv"
+                             onClick={this.emitEmpty}/> : null}
+                             ref={ele => this.workRegInv = ele}
+                             placeholder="Поиск"
+                             value={search.workRegInv}
+                             onChange={this.onInputChange}
+                             />
+                             </div>
+                             ),
+                             filterIcon: <Icon type="filter"
+                             style={{color: search.workRegInv ? '#ff9800' : '#aaa'}}/>,
+                             onFilterDropdownVisibleChange: (visible) => {
+                             this.setState({
+                             filterDropdownVisible: visible,
+                             }, () => this.workRegInv.focus());
+                             },
+                             render: text => (text ? text.label : '')
+                             },  */
+                            {
+                                key: 'tp_ukz',
+                                title: 'Топографический указатель',
+                                dataIndex: 'tp_ukz',
+                                width: '11%',
+                                render:(obj)=>{
+                                    if (obj==="( ),( ),( ),( )" || obj===" , , ,," ){
+                                        return""
+                                    }else {
+                                        return obj
+                                    }
+                                }
+                            },
+                            {
+                                key: 'workAuthor',
+                                title: 'Инициатор работы',
+                                dataIndex: 'key',
+                                width: '10',
+                                render: key => {
 
-                            let finds = this.state.data.find((item) => {
-                                return item.key === key
+                                    let finds = this.state.data.find((item) => {
+                                        return item.key === key
 
-                            })
-                            return finds.workAuthor.label
-                        }
-                    },
-                    {
-                        key: 'workPlannedStartDate',
-                        title: workPlannedStartDate.name[this.lng],
-                        dataIndex: 'workPlannedStartDate',
-                        width: '8%',
-                        filterDropdown: (
-                        <div className="custom-filter-dropdown">
-                            <div className="flex">
-                                <DatePicker
-                                format="DD-MM-YYYY"
-                                value={this.state.search.workPlannedStartDate.dbeg}
-                                style={{marginRight: '16px'}}
-                                showToday={false}
-                                onChange={this.onDateChange('workPlannedStartDate', 'dbeg')}
-                                />
-                                <DatePicker
-                                format="DD-MM-YYYY"
-                                value={this.state.search.workPlannedStartDate.dend}
-                                showToday={false}
-                                onChange={this.onDateChange('workPlannedStartDate', 'dend')}
-                                />
-                            </div>
-                        </div>
-                        ),
-                        filterIcon: <Icon type="filter"
-                                          style={{color: (search.workPlannedStartDate.dbeg || search.workPlannedStartDate.dend) ? '#ff9800' : '#aaa'}}/>,
-                        render: text => (text ? text.format('DD-MM-YYYY') : '')
-                    },
-                    {
-                        key: 'workPlannedEndDate',
-                        title: workPlannedEndDate.name[this.lng],
-                        dataIndex: 'workPlannedEndDate',
-                        width: '7%',
-                        filterDropdown: (
-                        <div className="custom-filter-dropdown">
-                            <div className="flex">
-                                <DatePicker
-                                format="DD-MM-YYYY"
-                                value={this.state.search.workPlannedEndDate.dbeg}
-                                style={{marginRight: '16px'}}
-                                showToday={false}
-                                onChange={this.onDateChange('workPlannedEndDate', 'dbeg')}
-                                />
-                                <DatePicker
-                                format="DD-MM-YYYY"
-                                value={this.state.search.workPlannedEndDate.dend}
-                                showToday={false}
-                                onChange={this.onDateChange('workPlannedEndDate', 'dend')}
-                                />
-                            </div>
-                        </div>
-                        ),
-                        filterIcon: <Icon type="filter"
-                                          style={{color: (search.workPlannedEndDate.dbeg || search.workPlannedEndDate.dend) ? '#ff9800' : '#aaa'}}/>,
-                        render: text => (text ? text.format('DD-MM-YYYY') : '')
-                    },
-                    {
-                        key: 'workActualStartDate',
-                        title: workActualStartDate.name[this.lng],
-                        dataIndex: 'workActualStartDate',
-                        width: '8%',
-                        filterDropdown: (
-                        <div className="custom-filter-dropdown">
-                            <div className="flex">
-                                <DatePicker
-                                format="DD-MM-YYYY"
-                                value={this.state.search.workActualStartDate.dbeg}
-                                style={{marginRight: '16px'}}
-                                showToday={false}
-                                onChange={this.onDateChange('workActualStartDate', 'dbeg')}
-                                />
-                                <DatePicker
-                                format="DD-MM-YYYY"
-                                value={this.state.search.workActualStartDate.dend}
-                                showToday={false}
-                                onChange={this.onDateChange('workActualStartDate', 'dend')}
-                                />
-                            </div>
-                        </div>
-                        ),
-                        filterIcon: <Icon type="filter"
-                                          style={{color: (search.workActualStartDate.dbeg || search.workActualStartDate.dend) ? '#ff9800' : '#aaa'}}/>,
-                        render: (text, record) => {
-                            return (
-                            text ?
-                            <div className="editable-cell-text-wrapper">
-                                { record.intermediateResultDate ?
-                                <Button title={t('CONTINUE')}
-                                        icon="forward"
-                                        disabled={!!record.workAssignedTo?  this.props.user.obj != record.workAssignedTo.value:true}
+                                    })
+                                    return finds.workAuthor.label
+                                }
+                            },
+                            {
+                                key: 'workPlannedStartDate',
+                                title: workPlannedStartDate.name[this.lng],
+                                dataIndex: 'workPlannedStartDate',
+                                width: '8%',
+                                filterDropdown: (
+                                    <div className="custom-filter-dropdown">
+                                        <div className="flex">
+                                            <DatePicker
+                                                format="DD-MM-YYYY"
+                                                value={this.state.search.workPlannedStartDate.dbeg}
+                                                style={{marginRight: '16px'}}
+                                                showToday={false}
+                                                onChange={this.onDateChange('workPlannedStartDate', 'dbeg')}
+                                            />
+                                            <DatePicker
+                                                format="DD-MM-YYYY"
+                                                value={this.state.search.workPlannedStartDate.dend}
+                                                showToday={false}
+                                                onChange={this.onDateChange('workPlannedStartDate', 'dend')}
+                                            />
+                                        </div>
+                                    </div>
+                                ),
+                                filterIcon: <Icon type="filter"
+                                                  style={{color: (search.workPlannedStartDate.dbeg || search.workPlannedStartDate.dend) ? '#ff9800' : '#aaa'}}/>,
+                                render: text => (text ? text.format('DD-MM-YYYY') : '')
+                            },
+                            {
+                                key: 'workPlannedEndDate',
+                                title: workPlannedEndDate.name[this.lng],
+                                dataIndex: 'workPlannedEndDate',
+                                width: '7%',
+                                filterDropdown: (
+                                    <div className="custom-filter-dropdown">
+                                        <div className="flex">
+                                            <DatePicker
+                                                format="DD-MM-YYYY"
+                                                value={this.state.search.workPlannedEndDate.dbeg}
+                                                style={{marginRight: '16px'}}
+                                                showToday={false}
+                                                onChange={this.onDateChange('workPlannedEndDate', 'dbeg')}
+                                            />
+                                            <DatePicker
+                                                format="DD-MM-YYYY"
+                                                value={this.state.search.workPlannedEndDate.dend}
+                                                showToday={false}
+                                                onChange={this.onDateChange('workPlannedEndDate', 'dend')}
+                                            />
+                                        </div>
+                                    </div>
+                                ),
+                                filterIcon: <Icon type="filter"
+                                                  style={{color: (search.workPlannedEndDate.dbeg || search.workPlannedEndDate.dend) ? '#ff9800' : '#aaa'}}/>,
+                                render: text => (text ? text.format('DD-MM-YYYY') : '')
+                            },
+                            {
+                                key: 'workActualStartDate',
+                                title: workActualStartDate.name[this.lng],
+                                dataIndex: 'workActualStartDate',
+                                width: '8%',
+                                filterDropdown: (
+                                    <div className="custom-filter-dropdown">
+                                        <div className="flex">
+                                            <DatePicker
+                                                format="DD-MM-YYYY"
+                                                value={this.state.search.workActualStartDate.dbeg}
+                                                style={{marginRight: '16px'}}
+                                                showToday={false}
+                                                onChange={this.onDateChange('workActualStartDate', 'dbeg')}
+                                            />
+                                            <DatePicker
+                                                format="DD-MM-YYYY"
+                                                value={this.state.search.workActualStartDate.dend}
+                                                showToday={false}
+                                                onChange={this.onDateChange('workActualStartDate', 'dend')}
+                                            />
+                                        </div>
+                                    </div>
+                                ),
+                                filterIcon: <Icon type="filter"
+                                                  style={{color: (search.workActualStartDate.dbeg || search.workActualStartDate.dend) ? '#ff9800' : '#aaa'}}/>,
+                                render: (text, record) => {
+                                    return (
+                                        text ?
+                                            <div className="editable-cell-text-wrapper">
+                                                {record.intermediateResultDate ?
+                                                    <Button title={t('CONTINUE')}
+                                                            icon="forward"
+                                                            disabled={!!record.workAssignedTo ? this.props.user.obj != record.workAssignedTo.value : true}
 
-                                        onClick={this.addSpecialDate(record.key, 'workActualStartDateContinue', record)}
-                                        className='green-btn'
-                                /> :
-                                text.format('DD-MM-YYYY') || ' ' }
-                                {/*<Popconfirm title={this.props.t('CONFIRM_REMOVE')} onConfirm={() =>
+                                                            onClick={this.addSpecialDate(record.key, 'workActualStartDateContinue', record)}
+                                                            className='green-btn'
+                                                    /> :
+                                                    text.format('DD-MM-YYYY') || ' '}
+                                                {/*<Popconfirm title={this.props.t('CONFIRM_REMOVE')} onConfirm={() =>
                                  this.onSaveCubeData({workStatusReg: {value: this.props.tofiConstants.appointed.id}, workType: record.workType, workActualStartDate: {mode: "del"}}, record.key, {})
                                  }>
                                  <Icon
@@ -1472,53 +1845,53 @@ class ArchiveFundWorks extends React.PureComponent {
                                  onClick={this.stopPropagation}
                                  />
                                  </Popconfirm>*/}
-                            </div>
-                            :
-                            <div className="editable-row-operations">
-                                <Button
-                                title={record.workType.workTypeClass === 'casesForTemporaryUse' ? t("ISSUED") : t("START")}
-                                disabled={!!record.workAssignedTo ? this.props.user.obj != record.workAssignedTo.value:true}
-                                icon={record.workType.workTypeClass === 'casesForTemporaryUse' ? "reload" : "play-circle"}
-                                onClick={this.addSpecialDate(record.key, 'workActualStartDate', record)}
-                                className='green-btn'
-                                />
-                                {/*<Button title="CANCEL" icon="close" onClick={this.addSpecialDate(record.key, 'workActualStartDate', 'red')} className='green-btn'/>*/}
-                            </div>
-                            )
-                        }
-                    },
-                    {
-                        key: 'workActualEndDate',
-                        title: workActualEndDate.name[this.lng],
-                        dataIndex: 'workActualEndDate',
-                        width: '8%',
-                        filterDropdown: (
-                        <div className="custom-filter-dropdown">
-                            <div className="flex">
-                                <DatePicker
-                                format="DD-MM-YYYY"
-                                value={this.state.search.workActualEndDate.dbeg}
-                                style={{marginRight: '16px'}}
-                                showToday={false}
-                                onChange={this.onDateChange('workActualEndDate', 'dbeg')}
-                                />
-                                <DatePicker
-                                format="DD-MM-YYYY"
-                                value={this.state.search.workActualEndDate.dend}
-                                showToday={false}
-                                onChange={this.onDateChange('workActualEndDate', 'dend')}
-                                />
-                            </div>
-                        </div>
-                        ),
-                        filterIcon: <Icon type="filter"
-                                          style={{color: (search.workActualEndDate.dbeg || search.workActualEndDate.dend) ? '#ff9800' : '#aaa'}}/>,
-                        render: (text, record) => {
-                            return (
-                            text ?
-                            <div className="editable-cell-text-wrapper">
-                                {text.format('DD-MM-YYYY') || ' '}
-                                {/*<Popconfirm title={this.props.t('CONFIRM_REMOVE')} onConfirm={() =>
+                                            </div>
+                                            :
+                                            <div className="editable-row-operations">
+                                                <Button
+                                                    title={record.workType.workTypeClass === 'casesForTemporaryUse' ? t("ISSUED") : t("START")}
+                                                    disabled={!!record.workAssignedTo ? this.props.user.obj != record.workAssignedTo.value : true}
+                                                    icon={record.workType.workTypeClass === 'casesForTemporaryUse' ? "reload" : "play-circle"}
+                                                    onClick={this.addSpecialDate(record.key, 'workActualStartDate', record)}
+                                                    className='green-btn'
+                                                />
+                                                {/*<Button title="CANCEL" icon="close" onClick={this.addSpecialDate(record.key, 'workActualStartDate', 'red')} className='green-btn'/>*/}
+                                            </div>
+                                    )
+                                }
+                            },
+                            {
+                                key: 'workActualEndDate',
+                                title: workActualEndDate.name[this.lng],
+                                dataIndex: 'workActualEndDate',
+                                width: '8%',
+                                filterDropdown: (
+                                    <div className="custom-filter-dropdown">
+                                        <div className="flex">
+                                            <DatePicker
+                                                format="DD-MM-YYYY"
+                                                value={this.state.search.workActualEndDate.dbeg}
+                                                style={{marginRight: '16px'}}
+                                                showToday={false}
+                                                onChange={this.onDateChange('workActualEndDate', 'dbeg')}
+                                            />
+                                            <DatePicker
+                                                format="DD-MM-YYYY"
+                                                value={this.state.search.workActualEndDate.dend}
+                                                showToday={false}
+                                                onChange={this.onDateChange('workActualEndDate', 'dend')}
+                                            />
+                                        </div>
+                                    </div>
+                                ),
+                                filterIcon: <Icon type="filter"
+                                                  style={{color: (search.workActualEndDate.dbeg || search.workActualEndDate.dend) ? '#ff9800' : '#aaa'}}/>,
+                                render: (text, record) => {
+                                    return (
+                                        text ?
+                                            <div className="editable-cell-text-wrapper">
+                                                {text.format('DD-MM-YYYY') || ' '}
+                                                {/*<Popconfirm title={this.props.t('CONFIRM_REMOVE')} onConfirm={() =>
                                  this.onSaveCubeData({workStatusReg: {value: this.props.tofiConstants.during.id}, workType: record.workType, workActualEndDate: {mode: "del"}}, record.key, {})
                                  }>
                                  <Icon
@@ -1527,94 +1900,94 @@ class ArchiveFundWorks extends React.PureComponent {
                                  onClick={this.stopPropagation}
                                  />
                                  </Popconfirm>*/}
-                            </div>
-                            :
-                            <div className="editable-row-operations">
-                                {record.workType &&
-                                !['caseRegistration', 'caseAvailabilityCheck', 'caseExamination', 'descriptionOfValuableDocs'].includes(record.workType.workTypeClass) &&
-                                <Button
-                                title={record.workType.workTypeClass === 'casesForTemporaryUse' ? t("GET_BACK") : t("COMPLETE")}
-                                icon={record.workType.workTypeClass === 'casesForTemporaryUse' ? "sync" : "poweroff"}
-                                disabled={  this.buttonDis(record.workActualStartDate, record.workAssignedTo)  }
-                                onClick={this.addSpecialDate(record.key, 'workActualEndDate', record)}
-                                className='green-btn'
-                                />}
-                                {/*<Button title="CANCEL" icon="close" onClick={this.addSpecialDate(record.key, 'workActualEndDate')} className='green-btn'/>*/}
-                            </div>
-                            )
-                        }
-                    },
-                    {
-                        key: 'acceptanceDate',
-                        title: acceptanceDate.name[this.lng],
-                        dataIndex: 'acceptanceDate',
-                        width: '9%',
-                        filterDropdown: (
-                        <div className="custom-filter-dropdown">
-                            <div className="flex">
-                                <DatePicker
-                                format="DD-MM-YYYY"
-                                value={this.state.search.acceptanceDate.dbeg}
-                                style={{marginRight: '16px'}}
-                                showToday={false}
-                                onChange={this.onDateChange('acceptanceDate', 'dbeg')}
-                                />
-                                <DatePicker
-                                format="DD-MM-YYYY"
-                                value={this.state.search.acceptanceDate.dend}
-                                showToday={false}
-                                onChange={this.onDateChange('acceptanceDate', 'dend')}
-                                />
-                            </div>
-                        </div>
-                        ),
-                        filterIcon: <Icon type="filter"
-                                          style={{color: (search.acceptanceDate.dbeg || search.acceptanceDate.dend) ? '#ff9800' : '#aaa'}}/>,
-                        render: (text, record) => {
-                            return (
-                            text ?
-                            <div className="editable-cell-text-wrapper">
+                                            </div>
+                                            :
+                                            <div className="editable-row-operations">
+                                                {record.workType &&
+                                                !['caseRegistration', 'caseAvailabilityCheck', 'caseExamination', 'descriptionOfValuableDocs'].includes(record.workType.workTypeClass) &&
+                                                <Button
+                                                    title={record.workType.workTypeClass === 'casesForTemporaryUse' ? t("GET_BACK") : t("COMPLETE")}
+                                                    icon={record.workType.workTypeClass === 'casesForTemporaryUse' ? "sync" : "poweroff"}
+                                                    disabled={this.buttonDis(record.workActualStartDate, record.workAssignedTo)}
+                                                    onClick={this.addSpecialDate(record.key, 'workActualEndDate', record)}
+                                                    className='green-btn'
+                                                />}
+                                                {/*<Button title="CANCEL" icon="close" onClick={this.addSpecialDate(record.key, 'workActualEndDate')} className='green-btn'/>*/}
+                                            </div>
+                                    )
+                                }
+                            },
+                            {
+                                key: 'acceptanceDate',
+                                title: acceptanceDate.name[this.lng],
+                                dataIndex: 'acceptanceDate',
+                                width: '9%',
+                                filterDropdown: (
+                                    <div className="custom-filter-dropdown">
+                                        <div className="flex">
+                                            <DatePicker
+                                                format="DD-MM-YYYY"
+                                                value={this.state.search.acceptanceDate.dbeg}
+                                                style={{marginRight: '16px'}}
+                                                showToday={false}
+                                                onChange={this.onDateChange('acceptanceDate', 'dbeg')}
+                                            />
+                                            <DatePicker
+                                                format="DD-MM-YYYY"
+                                                value={this.state.search.acceptanceDate.dend}
+                                                showToday={false}
+                                                onChange={this.onDateChange('acceptanceDate', 'dend')}
+                                            />
+                                        </div>
+                                    </div>
+                                ),
+                                filterIcon: <Icon type="filter"
+                                                  style={{color: (search.acceptanceDate.dbeg || search.acceptanceDate.dend) ? '#ff9800' : '#aaa'}}/>,
+                                render: (text, record) => {
+                                    return (
+                                        text ?
+                                            <div className="editable-cell-text-wrapper">
                                                 <span
-                                                style={record.workStatusReg && (record.workStatusReg.value == this.props.tofiConstants.accepted.id || record.workStatusReg.value == this.props.tofiConstants.found.id) ? {color: 'green'} : {color: 'red'}}>{text.format('DD-MM-YYYY') || ' '}</span>
-                                <Popconfirm title={this.props.t('CONFIRM_REMOVE')}
-                                            onConfirm={() =>
-                                            this.onSaveCubeData({
-                                                workStatusReg: {value: this.props.tofiConstants.completed.id},
-                                                workType: record.workType,
-                                                acceptanceDate: {mode: "del"}
-                                            }, record.key, {})
-                                            }>
-                                    <Icon
-                                    type="close-circle"
-                                    className="editable-cell-icon"
-                                    onClick={this.stopPropagation}
-                                    />
-                                </Popconfirm>
-                            </div>
-                            :
-                            record.workType.workTypeClass !== 'casesForTemporaryUse' &&
-                            <div className="editable-row-operations">
-                                <Button disabled={!record.workActualEndDate}
-                                        title={record.workType.workTypeClass === 'caseSearch' ? t('FOUND') : t("ACCEPT")}
-                                        icon="check-circle" className='green-btn'
-                                        onClick={this.addSpecialDate(record.key, 'acceptanceDate', record)}/>
-                                <Button disabled={!record.workActualEndDate}
-                                        title={record.workType.workTypeClass === 'caseSearch' ? t('NOT_FOUND') : t("DECLINE")}
-                                        icon="close"
-                                        onClick={this.addSpecialDate(record.key, 'notAccepted', record)}
-                                        className='green-btn'/>
-                            </div>
-                            )
-                        }
-                    },
-                    {
-                        key: 'action',
-                        title: 'x',
-                        dataIndex: 'action',
-                        width: '5%',
-                        render: (text, record) => {
-                            return (
-                            <div className="editable-row-operations">
+                                                    style={record.workStatusReg && (record.workStatusReg.value == this.props.tofiConstants.accepted.id || record.workStatusReg.value == this.props.tofiConstants.found.id) ? {color: 'green'} : {color: 'red'}}>{text.format('DD-MM-YYYY') || ' '}</span>
+                                                <Popconfirm title={this.props.t('CONFIRM_REMOVE')}
+                                                            onConfirm={() =>
+                                                                this.onSaveCubeData({
+                                                                    workStatusReg: {value: this.props.tofiConstants.completed.id},
+                                                                    workType: record.workType,
+                                                                    acceptanceDate: {mode: "del"}
+                                                                }, record.key, {})
+                                                            }>
+                                                    <Icon
+                                                        type="close-circle"
+                                                        className="editable-cell-icon"
+                                                        onClick={this.stopPropagation}
+                                                    />
+                                                </Popconfirm>
+                                            </div>
+                                            :
+                                            record.workType.workTypeClass !== 'casesForTemporaryUse' &&
+                                            <div className="editable-row-operations">
+                                                <Button disabled={!record.workActualEndDate}
+                                                        title={record.workType.workTypeClass === 'caseSearch' ? t('FOUND') : t("ACCEPT")}
+                                                        icon="check-circle" className='green-btn'
+                                                        onClick={this.addSpecialDate(record.key, 'acceptanceDate', record)}/>
+                                                <Button disabled={!record.workActualEndDate}
+                                                        title={record.workType.workTypeClass === 'caseSearch' ? t('NOT_FOUND') : t("DECLINE")}
+                                                        icon="close"
+                                                        onClick={this.addSpecialDate(record.key, 'notAccepted', record)}
+                                                        className='green-btn'/>
+                                            </div>
+                                    )
+                                }
+                            },
+                            {
+                                key: 'action',
+                                title: 'x',
+                                dataIndex: 'action',
+                                width: '5%',
+                                render: (text, record) => {
+                                    return (
+                                        <div className="editable-row-operations">
                       <span>
                         <Popconfirm title={this.props.t('CONFIRM_REMOVE')}
                                     onConfirm={() => {
@@ -1624,15 +1997,15 @@ class ArchiveFundWorks extends React.PureComponent {
                                         fd.append("objId", record.key.split('_')[1]);
                                         const hideLoading = message.loading(this.props.t('REMOVING'), 30);
                                         dObj(fd)
-                                        .then(res => {
-                                            hideLoading();
-                                            if (res.success) {
-                                                message.success(this.props.t('SUCCESSFULLY_REMOVED'));
-                                                this.getCubeAct()
-                                            } else {
-                                                throw res
-                                            }
-                                        }).catch(err => {
+                                            .then(res => {
+                                                hideLoading();
+                                                if (res.success) {
+                                                    message.success(this.props.t('SUCCESSFULLY_REMOVED'));
+                                                    this.getCubeAct()
+                                                } else {
+                                                    throw res
+                                                }
+                                            }).catch(err => {
                                             console.log(err);
                                             message.error(this.props.t('REMOVING_ERROR'))
                                         })
@@ -1643,78 +2016,79 @@ class ArchiveFundWorks extends React.PureComponent {
                                   className='green-btn yellow-bg'/>
                         </Popconfirm>
                       </span>
-                            </div>
-                            );
-                        },
-                    }
-                ]}
-                dataSource={this.filteredData}
-                changeSelectedRow={this.changeSelectedRow}
-                openedBy="Works"
-                // size="small"
-                />
-                <CSSTransition
-                in={this.state.openCard}
-                timeout={300}
-                classNames="card"
-                unmountOnExit
-                >
-                    <SiderCard
-                    closer={<Button type='danger' onClick={this.closeCard} shape="circle"
-                                    icon="arrow-right"/>}
+                                        </div>
+                                    );
+                                },
+                            }
+                        ]}
+                        dataSource={this.filteredData}
+                        changeSelectedRow={this.changeSelectedRow}
+                        footer={this.renderTableFooter}
+                        openedBy="Works"
+                        // size="small"
+                    />
+                    <CSSTransition
+                        in={this.state.openCard}
+                        timeout={300}
+                        classNames="card"
+                        unmountOnExit
                     >
-                        <ArchiveFundWorksCard
-                        t={t}
-                        tofiConstants={tofiConstants}
-                        initialValues={this.state.initialValues}
-                        onCreateObj={this.onCreateObj}
-                        onSaveCubeData={this.onSaveCubeData2}
-                        clsFirstStatusMap={this.clsFirstStatusMap}
-                        />
-                    </SiderCard>
-                </CSSTransition>
-            </div>
-            <AntModal
-            visible={this.state.modal.visible}
-            width={400}
-            title={this.state.selectedRow && this.state.selectedRow.workRegFund && this.state.selectedRow.workRegFund.label}
-            onCancel={this.handleModalCancel}
-            onOk={this.handleModalOk}
-            >
-                <SelectVirt
-                name="inventories"
-                isSearchable
-                // isLoading={workRegInvLoading}
-                onMenuOpen={() => {
-                    const fd = new FormData();
-                    fd.append('clsConsts', 'invList');
-                    fd.append('propConst', 'invFund');
-                    fd.append('withProps', 'invNumber,invType');
-                    fd.append('value', this.state.selectedRow.workRegFund.value);
-                    getObjByProp(fd)
-                    .then(res => {
-                        if (res.success) {
-                            this.setState({workRegInvOptions: res.data})
-                        } else {
-                            throw res
+                        <SiderCard
+                            closer={<Button type='danger' onClick={this.closeCard} shape="circle"
+                                            icon="arrow-right"/>}
+                        >
+                            <ArchiveFundWorksCard
+                                t={t}
+                                tofiConstants={tofiConstants}
+                                initialValues={this.state.initialValues}
+                                onCreateObj={this.onCreateObj}
+                                onSaveCubeData={this.onSaveCubeData2}
+                                clsFirstStatusMap={this.clsFirstStatusMap}
+                            />
+                        </SiderCard>
+                    </CSSTransition>
+                </div>
+                <AntModal
+                    visible={this.state.modal.visible}
+                    width={400}
+                    title={this.state.selectedRow && this.state.selectedRow.workRegFund && this.state.selectedRow.workRegFund.label}
+                    onCancel={this.handleModalCancel}
+                    onOk={this.handleModalOk}
+                >
+                    <SelectVirt
+                        name="inventories"
+                        isSearchable
+                        // isLoading={workRegInvLoading}
+                        onMenuOpen={() => {
+                            const fd = new FormData();
+                            fd.append('clsConsts', 'invList');
+                            fd.append('propConst', 'invFund');
+                            fd.append('withProps', 'invNumber,invType');
+                            fd.append('value', this.state.selectedRow.workRegFund.value);
+                            getObjByProp(fd)
+                                .then(res => {
+                                    if (res.success) {
+                                        this.setState({workRegInvOptions: res.data})
+                                    } else {
+                                        throw res
+                                    }
+                                }).catch(err => console.error(err))
+                        }}
+                        optionHeight={40}
+                        value={this.state.workRegInvSelected}
+                        onChange={this.onWorkRegInvChange}
+                        options={this.state.selectedRow && this.state.workRegInvOptions.length !== 0 ?
+                            this.state.workRegInvOptions
+                                .filter(obj => (obj.invType && obj.invType.idRef === this.props.tofiConstants.invOCD.id && obj.id !== this.state.selectedRow.workRegInv.value))
+                                .map(option => ({
+                                    value: option.id,
+                                    label: `${option.invNumber[this.lng]} - ${option.name[this.lng]}`
+                                })) :
+                            []
                         }
-                    }).catch(err => console.error(err))
-                }}
-                optionHeight={40}
-                value={this.state.workRegInvSelected}
-                onChange={this.onWorkRegInvChange}
-                options={this.state.selectedRow && this.state.workRegInvOptions.length !== 0 ?
-                this.state.workRegInvOptions
-                .filter(obj => (obj.invType && obj.invType.idRef === this.props.tofiConstants.invOCD.id && obj.id !== this.state.selectedRow.workRegInv.value))
-                .map(option => ({
-                    value: option.id,
-                    label: `${option.invNumber[this.lng]} - ${option.name[this.lng]}`
-                })) :
-                []
-                }
-                />
-            </AntModal>
-        </div>
+                    />
+                </AntModal>
+            </div>
         );
     }
 }
@@ -1723,6 +2097,8 @@ function mapStateToProps(state) {
     return {
         tofiConstants: state.generalData.tofiConstants,
         works: state.cubes[CUBE_FOR_WORKS],
+        InvItem: state.cubes.InvItem,
+        CubeCase: state.cubes.CubeCase,
         workPriorityOptions: state.generalData[WORK_PRIORITY],
         workStatusDeliveryOptions: state.generalData.workStatusDelivery,
         workStatusAdmissionAndExpertiseOptions: state.generalData.workStatusAdmissionAndExpertise,

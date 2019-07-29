@@ -83,6 +83,7 @@ class ReadingRoom extends React.Component {
           <FundsInGuide
             loadingTable={loadingTable}
             changeSelectedRowChild={this.changeSelectedRowChild}
+            initialValues={this.props.initialValues}
             t={this.props.t}
           />
         );

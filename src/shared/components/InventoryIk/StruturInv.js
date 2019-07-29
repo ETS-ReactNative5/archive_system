@@ -220,7 +220,7 @@ class StruturInv extends React.Component {
             case 'newSubSection': {
                 let parent = '';
                 if (inputVariant === 'newSection') {
-                    parent = selectedRow ? selectedRow.key : initialValues.key;
+                    parent = initialValues.key;
                 }
                 if (inputVariant === 'newSubSection') {
                     parent = selectedRowKey;

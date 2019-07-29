@@ -126,7 +126,11 @@ export const Cube = {
             fileArr && fileArr.forEach((file, idx) => {
                 // --- Азамат, добавил кодирование имени файла для правильного сохранения / восстановления
                 file && !key.startsWith('__Q__') && fd.append(`files_${key}_${idx + 1}`, file, encodeURI(file.name));
+                file && file.dBeg && !key.startsWith('__Q__') && fd.append(`files_${key}_${idx + 1}_dBeg`, file.dBeg);
+                file && file.dEnd && !key.startsWith('__Q__') && fd.append(`files_${key}_${idx + 1}_dEnd`, file.dEnd);
                 file && key.startsWith('__Q__') && fd.append(`filesQ_${key.split('__Q__')[1]}_${idx + 1}`, file, encodeURI(file.name));
+                file  && file.dBeg && key.startsWith('__Q__') && fd.append(`filesQ_${key.split('__Q__')[1]}_${idx + 1}_dBeg`, file.dBeg);
+                file  && file.dEnd && key.startsWith('__Q__') && fd.append(`filesQ_${key.split('__Q__')[1]}_${idx + 1}_dEnd`, file.dEnd);
             });
         });
         return axios.post(`/${localStorage.getItem('i18nextLng')}/cube/saveCubeData3`, fd)
@@ -281,6 +285,9 @@ export const General = {
   getObjList: fd =>
     axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjList`, fd)
       .then(res => res.data),
+    getObjChilds: fd =>
+        axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getObjChilds`, fd)
+            .then(res => res.data),
   // Добавить новую версию объекта
   addObjVer: fd =>
     axios.post(`/${localStorage.getItem('i18nextLng')}/entity/addObjVer`, fd)
@@ -332,6 +339,15 @@ export const General = {
     return axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getValueOfMultiText`, fd)
       .then(res => res.data)
   },
+
+    listValuesOfObjsWithProps: (objIds, propConsts) => {
+        const fd = new FormData();
+        fd.append('objIds', String(objIds));
+        fd.append('propConsts', propConsts);
+        return axios.post(`/${localStorage.getItem('i18nextLng')}/entity/listValuesOfObjsWithProps`, fd)
+            .then(res => res.data)
+    },
+
     getIdGetObj: (objId, dimObjConst) => {
         const fd = new FormData();
         fd.append('objId', String(objId));

@@ -7,6 +7,7 @@ import axios from 'axios';
 import {parseCube_new, parseForTable} from "../../../utils/cubeParser";
 import SearchDescription from "./SearchDescription";
 import GetWorkDescription from "../../SourcingPages/works/GetWorkDescription";
+import TableComplex from "./tableComplex/Index"
 
 const TextArea = Input.TextArea;
 const RadioButton = Radio.Button;
@@ -429,6 +430,7 @@ class WorkDescription extends React.PureComponent {
 
 
     render() {
+
         this.lng = localStorage.getItem('i18nextLng');
         const {t} = this.props;
         return (
@@ -436,9 +438,18 @@ class WorkDescription extends React.PureComponent {
             <div className="work-description p20">
                 <GetWorkDescription
                 t={t}
+                typeWork={this.props.initialValues.workType.workTypeClass}
                 initialValues={this.props.initialValues}
+                tofiConstants={this.props.tofiConstants}
                 />
             </div>
+            {this.props.initialValues.workType.workTypeClass == 'caseSearch' &&
+            <TableComplex
+                t={t}
+                tofiConstants={this.props.tofiConstants}
+                initialValues={this.props.initialValues}
+            />
+            }
             {this.props.initialValues.workType.workTypeClass == 'caseSearch' &&
             <SearchDescription
             t={t}
@@ -509,6 +520,7 @@ class WorkDescription extends React.PureComponent {
                 <PrintAct
                 tofiConstants={this.props.tofiConstants}
                 initialValues={this.props.initialValues}
+                t={t}
                 workId={this.props.initialValues.key}
                 type={this.state.type}
                 actNumber={this.state.actNumber}

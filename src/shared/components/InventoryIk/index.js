@@ -105,7 +105,7 @@ class TablelegalEntities extends React.Component {
             })
     };
 
-    onSaveCubeData = async ({approvalProtocol, invFile, agreement2Protocol, agreementProtocol, ...values}, doItemProp, objDataProp) => {
+    onSaveCubeData = async ({approvalProtocol, invFile,documentFile, agreement2Protocol, agreementProtocol, ...values}, doItemProp, objDataProp) => {
         let hideLoading
         const filters = {
             filterDOAnd: [
@@ -144,6 +144,7 @@ class TablelegalEntities extends React.Component {
                     agreementProtocol: agreementProtocol,
                     approvalProtocol: approvalProtocol,
                     invFile: invFile,
+                    documentFile:documentFile,
                     agreement2Protocol: agreement2Protocol
                 }
             }
@@ -305,7 +306,7 @@ class TablelegalEntities extends React.Component {
 
     renderTableDataInv = (item ,ids) => {
         const constArr = ['invNumber', 'invDates', 'invType', 'invStorage', 'fundNumberOfCases', "caseStorageMulti", "rackMulti", "sectionMulti", "shelfMulti", 'fundNumberOfCasesWithFiles',
-            'documentType', 'fundFeature', 'invCaseSystem','invDeadline','invAgreementNumber', 'invApprovalDate2',"invAgreement2Date", 'invApprovalDate1', 'invAgreement2Date',
+            'documentType', 'fundFeature',"documentFile", 'invCaseSystem','invDeadline','invAgreementNumber', 'invApprovalDate2',"invAgreement2Date", 'invApprovalDate1', 'invAgreement2Date',
             'invAgreementDate', 'agreementProtocol', 'agreement2Protocol', 'approvalProtocol', "invFile", 'invCont'];
 
         const accessLevelObj = this.props.accessLevelOptions.find(al => al.id === item.accessLevel);
@@ -545,6 +546,25 @@ class TablelegalEntities extends React.Component {
             }
         }
     }
+    sendCreateWorks=()=>{
+        const fd = new FormData();
+        fd.append('idInv', this.state.selectedRow.key.split('_')[1]);
+        axios.post(`/${localStorage.getItem('i18nextLng')}/rabotaUchet/toArhiveStorage`, fd)
+            .then(res => {
+                if (res.data.success === false && res.data.errors) {
+                    for (let val of  res.data.errors) {
+                        message.error(val.text)
+                    }
+                    return false
+                }else {
+                    message.success("Успешно")
+
+                }
+            })
+
+
+
+    }
     render() {
         const {t, tofiConstants, legalStatusOptions, fundmakerArchiveOptions, orgIndustryOptions, formOfAdmissionOptions} = this.props;
         const {legalStatus, fundmakerArchive, orgIndustry, formOfAdmission, invNumber,invAgreement2Date,invApprovalDate2, invDates, invList, invType, documentType, fundNumberOfCases, fundNumberOfCasesWithFiles} = tofiConstants;
@@ -606,8 +626,14 @@ class TablelegalEntities extends React.Component {
                                         }
                                     })
                                 }}>{t('ADD')}</Button>
-                        </div>
+                            <Button
+                                disabled={!this.state.selectedRow}
+                                onClick={this.sendCreateWorks}
+                            >
+                                Передать на государственное хранение
 
+                            </Button>
+                        </div>
 
                         <div className="label-select">
                             <Select
@@ -808,7 +834,7 @@ class TablelegalEntities extends React.Component {
                                                                                     data: {
                                                                                         dimPropConst:'dpForInv',
                                                                                         propConst:'invFund',
-                                                                                        valueRef: {id: String(this.state.filter.ikName.value)}
+                                                                                        valueRef: {id: String(this.state.filter.ikName.value?this.state.filter.ikName.value:this.state.ikKey)}
                                                                                     }
                                                                                 }
                                                                             ]

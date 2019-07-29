@@ -288,7 +288,6 @@ class MainInfoFundMaker extends Component {
         ru: '',
         en: ''
     };
-
     componentDidUpdate(prevProps) {
         if (prevProps.initialValues !== this.props.initialValues) {
             this.shortNameValue = {...this.props.initialValues.shortName} || {
@@ -321,11 +320,10 @@ class MainInfoFundMaker extends Component {
                 ru: '',
                 en: ''
             };
-
         }
     }
 
-    onSubmit = values => {
+    onSubmit = async(values) => {
 
         const {doForFundAndIK, dpForFundAndIK} = this.props.tofiConstants;
         const {shortName, name, dbeg, dend, orgFunctionFundmaker, structureFundmaker, accessLevel, orgFunction, structure, reasonFundmakerFile, ...rest} = pickBy(values, (val, key) => !isEqual(val, this.props.initialValues[key]));
@@ -376,32 +374,21 @@ class MainInfoFundMaker extends Component {
                         ]
                     }
                 ],
-                filterDTOr: [
-                    {
-                        dimConst: 'dtForFundAndIK',
-                        concatType: 'and',
-                        conds: [
-                            {
-                                ids: moment().startOf('year').format('YYYYMMDD') + moment().endOf('year').format('YYYYMMDD')
-                            }
-                        ]
-                    }
-                ],
+
                 filterDPAnd: [
                     {
                         dimConst: 'dpForFundAndIK',
                         concatType: "and",
                         conds: [
                             {
-                                consts: 'fundNumber,fundmakerOfIK,formOfAdmission,legalStatus,isActive,orgIndustry'
+                                consts: 'orgIndustry,legalStatus'
                             }
                         ]
                     }
                 ]
             };
-            this.props.getCube('cubeForFundAndIK', JSON.stringify(filters), {customKey: 'cubeForFundAndIKSingle'})
+           await this.props.getCube('cubeForFundAndIK', JSON.stringify(filters), {customKey: 'cubeForFundAndIKSingle'})
                 .then(() => {
-                    const constArr = ['fundNumber', 'fundmakerOfIK', 'formOfAdmission', 'legalStatus', 'isActive', 'orgIndustry'];
                     const parsedCube = parseCube_new(
                         this.props.cubeForFundAndIKSingle['cube'],
                         [],
@@ -410,8 +397,7 @@ class MainInfoFundMaker extends Component {
                         this.props.cubeForFundAndIKSingle[`do_${doForFundAndIK.id}`],
                         this.props.cubeForFundAndIKSingle[`dp_${dpForFundAndIK.id}`],
                         `do_${doForFundAndIK.id}`,
-                        `dp_${dpForFundAndIK.id}`)[0];
-
+                        `dp_${dpForFundAndIK.id}`).map(this.renderTableDataIk)[0];
 
                     const cIK = {
                         cube: {
@@ -420,32 +406,28 @@ class MainInfoFundMaker extends Component {
                             dpConst: 'dpForFundAndIK',
                             data: this.props.cubeForFundAndIKSingle
                         },
-                        obj: {doItem: parsedCube.id}
+                        obj: {doItem: parsedCube.key}
                     };
-                    const {fundNumber, fundmakerArchive, formOfAdmission, legalStatus, isActive, orgIndustry} = rest;
+                    const { legalStatus, orgIndustry} = rest;
+                    let legalStatus2
+                    if (!!parsedCube.legalStatus){
+                        legalStatus2= legalStatus
+                        legalStatus2.idDataPropVal=parsedCube.legalStatus.idDataPropVal
+                    }else {
+                        if (!!legalStatus.idDataPropVal){
+                            legalStatus2= legalStatus
+                            legalStatus2.idDataPropVal=""
+                        }else {
+                            legalStatus2= legalStatus
+                        }
+                    }
                     const vIK = {
                         values: JSON.parse(JSON.stringify({
-                            fundNumber: {
-                                value: rest.fundNumber && rest.fundNumber.value,
-                                propConst: "fundNumber",
-                                idDataPropVal: parsedCube.props.find(el => el.prop == this.props.tofiConstants['fundNumber'].id) && parsedCube.props.find(el => el.prop == this.props.tofiConstants['fundNumber'].id).values.idDataPropVal
-                            },
-                            formOfAdmission,
-                            legalStatus,
-                            isActive,
+                            legalStatus:legalStatus2,
                             orgIndustry,
-                            fundmakerOfIK: {
-                                value: obj.doItem.split('_')[1], dbeg: "1800-01-01",
-                                propConst: "fundmakerOfIK",
-                                isUniq: 1,
-                                periodDepend: 2,
-                                dend: "3333-12-31",
-                                idDataPropVal: parsedCube.props.find(el => el.prop == this.props.tofiConstants['fundmakerOfIK'].id) && parsedCube.props.find(el => el.prop == this.props.tofiConstants['fundmakerOfIK'].id).values.idDataPropVal
-                            }
                         })),
                     };
                     //console.log('vIK ', vIK);
-
                     this.props.saveIKProps(cIK, vIK, this.props.tofiConstants, objData);
                 });
         }
@@ -462,6 +444,18 @@ class MainInfoFundMaker extends Component {
             objData
         );
     };
+    renderTableDataIk = (item, ids) => {
+        const constArr = ['orgIndustry', 'legalStatus'];
+        const result = {
+            key: item.id,
+            ids: ids + 1,
+            name: item.name,
+            fullName: item.fullName
+
+        };
+        parseForTable(item.props, this.props.tofiConstants, result, constArr);
+        return result;
+    }
 
     saveMultiText = (value, key) => {
         const dataToSend = [];
@@ -500,7 +494,6 @@ class MainInfoFundMaker extends Component {
 
     render() {
         if (!this.props.tofiConstants) return null;
-        console.log(this.props.initialValues)
         const lng = localStorage.getItem('i18nextLng');
         const {
             tofiConstants: {
@@ -642,7 +635,7 @@ class MainInfoFundMaker extends Component {
                         value: option.id,
                         label: option.name[lng]
                     })) : []}
-                    onMenuOpen={this.loadOptions(LEGAL_STATUS)}
+                    onMenuOpen={this.loadOptions("legalStatus")}
                     isLoading={loading.legalStatusLoading}
                     validate={requiredLabel}
                     colon={true}

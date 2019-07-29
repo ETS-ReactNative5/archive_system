@@ -17,6 +17,8 @@ class DamageWorks extends React.Component {
                             initialValues={this.props.initialValues}
                             idDimObjCase={this.props.idDimObjCase}
                             header="Неисправимые повреждения"
+                            t={this.props.t}
+
                             tofiConstants={this.props.tofiConstants} date={false}/>
         </div>
         )

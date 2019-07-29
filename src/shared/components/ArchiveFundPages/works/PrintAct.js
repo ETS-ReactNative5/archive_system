@@ -26,37 +26,39 @@ class PrintAct extends React.Component {
     }
 
     getActType = typeAct => {
+
         const {
             workId,
             tofiConstants,
             initialValues,
             type,
-            actNumber
+            actNumber,
+            t
         } = this.props;
         switch(typeAct) {
             case 'damage':
-                return (<DamageAct workId={workId} tofiConstants={tofiConstants}
+                return (<DamageAct t={t} workId={workId} tofiConstants={tofiConstants}
                                    initialValues={initialValues} type={type} actNumber={actNumber}/>);
             case 'irrDamage':
-                return (<IrrDamageAct workId={workId} tofiConstants={tofiConstants}
+                return (<IrrDamageAct t={t} workId={workId} tofiConstants={tofiConstants}
                                       initialValues={initialValues} type={type}  actNumber={actNumber}/>);
             case 'lightToDestroy':
-                return (<LightToDestroy workId={workId} tofiConstants={tofiConstants}
+                return (<LightToDestroy t={t} workId={workId} tofiConstants={tofiConstants}
                                       initialValues={initialValues} type={type}  actNumber={actNumber}/>);
             case 'CrashedAct':
-                return (<CrashedAct workId={workId} tofiConstants={tofiConstants}
+                return (<CrashedAct t={t} workId={workId} tofiConstants={tofiConstants}
                                         initialValues={initialValues} type={type}  actNumber={actNumber}/>);
             case 'TransferAct':
-                return (<TransferAct workId={workId} tofiConstants={tofiConstants}
+                return (<TransferAct t={t} workId={workId} tofiConstants={tofiConstants}
                                     initialValues={initialValues} type={type}  actNumber={actNumber}/>);
             case 'TransferLPAct':
-                return (<TransferLPAct workId={workId} tofiConstants={tofiConstants}
+                return (<TransferLPAct t={t} workId={workId} tofiConstants={tofiConstants}
                                      initialValues={initialValues} type={type}  actNumber={actNumber}/>)
             case 'GiveToAct':
-                return (<GiveToAct workId={workId} tofiConstants={tofiConstants}
+                return (<GiveToAct t={t} workId={workId} tofiConstants={tofiConstants}
                                        initialValues={initialValues} type={type}  actNumber={actNumber}/>)
             case 'SearchAct':
-                return (<SearchAct workId={workId} tofiConstants={tofiConstants}
+                return (<SearchAct t={t} workId={workId} tofiConstants={tofiConstants}
                                    initialValues={initialValues} type={type}  actNumber={actNumber}/>)
 
 

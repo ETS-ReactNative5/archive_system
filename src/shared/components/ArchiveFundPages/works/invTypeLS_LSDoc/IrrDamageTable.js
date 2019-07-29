@@ -56,7 +56,7 @@ class IrrDamageTable extends React.Component {
 
 
     renderTableData = (item,idx) => {
-        const constArr = ['fundNumber', 'descriptionDamage', 'irreparableDamage', 'noStorageReasonCase'];
+        const constArr = ['fundNumber', 'descriptionDamage', 'irreparableDamage',"noStorageCase", 'noStorageReasonCase'];
         const result = {
             key: item.id,
             idx: idx +1
@@ -259,7 +259,7 @@ class IrrDamageTable extends React.Component {
                     concatType: "and",
                     conds: [
                         {
-                            consts: "fundNumber,descriptionDamage,irreparableDamage,noStorageReasonCase"
+                            consts: "fundNumber,descriptionDamage,irreparableDamage,noStorageCase,noStorageReasonCase"
                         }
                     ]
                 }
@@ -302,7 +302,6 @@ class IrrDamageTable extends React.Component {
             var cubeReasonName = tableData[0].noStorageReasonCase && tableData[0].noStorageReasonCase.label;
             var idDpvReason = tableData[0].noStorageReasonCase && tableData[0].noStorageReasonCase.idDataPropVal;
             var idDpvNoStorageCase = tableData[0].noStorageCase ? tableData[0].noStorageCase.idDataPropVal : null;
-
             this.setState({
                 currReason: cubeReasonName,
                 newSelectReason: cubeReason,
@@ -456,7 +455,10 @@ class IrrDamageTable extends React.Component {
 
         updateCubeData2('CubeForAF_Case', '', JSON.stringify(datas)).then(res => {
             if (res.success == true) {
+                message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+
                 this.buildComponent()
+
             }
         });
 

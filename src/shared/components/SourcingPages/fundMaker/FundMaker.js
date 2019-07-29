@@ -290,8 +290,8 @@ class FundMaker extends React.PureComponent {
     }
 
     renderTableData = (item, idx) => {
-        const constArr = ['legalStatus', 'orgRightReceiver', 'dateFormation', 'dateElimination', 'reasonFundmakerFile', 'departmentalAccessory', 'reasonFundmaker', 'formOfAdmission', 'orgIndustry', 'fundmakerArchive',
-            'isActive', 'orgAddress', 'orgPhone',"dateRename", 'orgFax', 'orgEmail', 'orgFormationDoc',"liquidation", 'orgReorganizationDoc', 'orgLiquidationDoc',
+        const constArr = ['legalStatus', 'orgRightReceiver',"conditionOfFundmaker", 'dateFormation', 'dateElimination', 'reasonFundmakerFile', 'departmentalAccessory', 'reasonFundmaker', 'formOfAdmission', 'orgIndustry', 'fundmakerArchive',
+            'isActive', 'orgAddress', 'orgPhone',"dateRename","dateReorganization", 'orgFax', 'orgEmail', 'orgFormationDoc',"liquidation", 'orgReorganizationDoc', 'orgLiquidationDoc',
             'leaderFIO', 'leaderPosition', 'leaderPhone', 'depLeaderFIO', 'depLeaderPosition', 'depLeaderPhone', 'responsibleFIO', 'responsiblePosition', 'responsiblePhone',
             'responsibleAppointmentDate', 'archiveLeaderFIO', 'archiveLeaderPosition', 'archiveLeaderPhone', 'archiveLeaderAppointmentDate', 'subordination', 'jurisdiction',
             'commissionLeaderFIO', 'commissionLeaderPosition', 'commissionLeaderPhone', 'contractNumber', 'orgDocType', 'orgFunction', 'structure', 'fundNumber', 'corresOrg', 'corresOrgFile', 'letterDetails', 'fundmakerOfIK'];
@@ -460,6 +460,23 @@ class FundMaker extends React.PureComponent {
             console.warn(e);
         }
     };
+    saveIKProps3 = async (c, v, t, objData) => {
+        try {
+            const resSaveIK = await onSaveCubeData3(c, v, t, objData);
+            if (!resSaveIK.success) {
+                message.error(this.props.t('PROPS_UPDATING_ERROR'));
+                resSaveIK.errors.forEach(err => {
+                    message.error(err.text)
+                });
+                return Promise.reject(resSaveIK);
+            }
+            message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+        }
+        catch (e) {
+            console.warn(e);
+        }
+    };
+
 
     saveProps = async (c, v, t, objData) => {
 
@@ -522,22 +539,22 @@ class FundMaker extends React.PureComponent {
             }
             message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
             // Перезагружаем куб фондообразователей, если изменились названия и 5 свойств фондообразователя.
-            // if ((objData && (objData.name || objData.fullName || objData.dbeg || objData.dend || objData.accessLevel)) ||
-            //     v.values.fundmakerArchive || v.values.formOfAdmission || v.values.legalStatus || v.values.isActive || v.values.orgIndustry) {
-            //     this.setState({loading: true, openCard: false});
-            //     await this.props.loadOrgFundmaker();
-            //     this.setState({loading: false,});
-            // }
-            //
-            // this.setState({
-            //     openCard:false,
-            //     loading:true
-            // })
-            // await this.props.loadOrgFundmaker()
-            // this.setState({
-            //     openCard:false,
-            //     loading:false
-            // })
+            if ((objData && (objData.name || objData.fullName || objData.dbeg || objData.dend || objData.accessLevel)) ||
+                v.values.fundmakerArchive || v.values.formOfAdmission || v.values.legalStatus || v.values.isActive || v.values.orgIndustry) {
+                this.setState({loading: true, openCard: false});
+                await this.props.loadOrgFundmaker();
+                this.setState({loading: false,});
+            }
+
+            this.setState({
+                openCard:false,
+                loading:true
+            })
+            await this.props.loadOrgFundmaker()
+            this.setState({
+                openCard:false,
+                loading:false
+            })
             return resSaveFM;
         }
         catch (e) {
@@ -709,6 +726,7 @@ class FundMaker extends React.PureComponent {
                                                  saveProps={this.saveProps}
                                                  saveProps3={this.saveProps3}
                                                  saveIKProps={this.saveIKProps}
+                                                 saveIKProps3={this.saveIKProps3}
                                                  onCreateObj={this.onCreateObj}
                                                  loadOrgFundmaker={this.props.loadOrgFundmaker}
                                                  cubeForOrgFundmakerSingle={this.props.cubeForOrgFundmakerSingle}

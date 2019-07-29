@@ -12,6 +12,10 @@
   min-width: 900px !important;
 }
 
+.margin0-15{
+  margin: 0 5px;
+}
+
 .borderGroup {
   border: 1px solid #e4e4e4;
   padding: 5px 10px;
@@ -51,6 +55,7 @@
 
   .ant-modal-content {
     height: 95vh;
+    overflow-y: scroll;
   }
 }
 
@@ -1137,6 +1142,11 @@
 ;
 }
 
+.birthday{
+    display: flex;
+    justify-content: flex-end !important;
+
+}
 /////////////////////////////ArchiveFundWorks//////////////////////////
 
 .EditCardCases {

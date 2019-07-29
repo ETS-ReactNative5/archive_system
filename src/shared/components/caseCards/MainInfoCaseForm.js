@@ -21,7 +21,10 @@ import {
   DP_FOR_CASE
 } from "../../constants/tofiConstants";
 import { SYSTEM_LANG_ARRAY } from "../../constants/constants";
-import { getObjChildsByConst,getCube,getObjListNew, getPropVal } from "../../actions/actions";
+import {
+    getObjChildsByConst, getCube, getObjListNew, getObjList, getPropVal,
+    getObjChildss
+} from "../../actions/actions";
 import { requiredLng } from "./../../utils/form_validations";
 import {parseCube_new, parseForTable} from "../../utils/cubeParser";
 
@@ -163,8 +166,8 @@ class MainInfoCaseForm extends Component {
     loadOptionsGet = async(c, id) => {
         const fd = new FormData();
         fd.append('parent', this.props.keyInvFund.split('_')[1]);
-        fd.append('clsConsts', 'structuralSubdivisionList');
-        const res = await getObjListNew(fd);
+        fd.append('clsConst',c);
+        const res = await getObjChildss(fd);
         if (!res.success) {
             res.errors.forEach(err => {
                 message.error(err.text);
@@ -663,7 +666,6 @@ class MainInfoCaseForm extends Component {
       }
     } = this.props;
     return (
-
       <Form
         className="antForm-spaceBetween"
         onSubmit={handleSubmit(this.onSubmit)}
@@ -679,6 +681,8 @@ class MainInfoCaseForm extends Component {
               labelCol: { span: 10 },
               wrapperCol: { span: 14 }
             }}
+            validate={requiredLng}
+            colon={true}
           />
         )}
         {fundIndex &&
@@ -779,8 +783,8 @@ class MainInfoCaseForm extends Component {
                 labelCol: { span: 10 },
                 wrapperCol: { span: 14 }
               }}
-              // colon
-              // validate={requiredDate}
+              colon
+              validate={requiredDate}
             />
           )}
         {caseDend &&
@@ -871,7 +875,7 @@ class MainInfoCaseForm extends Component {
                   }))
                 : []
             }
-            onMenuOpen={()=>this.loadOptionsGet("caseStructuralSubdivision")}
+            onMenuOpen={()=>this.loadOptionsGet("structuralSubdivisionList")}
           />
         )}
         {caseNotes && (
@@ -1002,7 +1006,7 @@ class MainInfoCaseForm extends Component {
                   }))
                 : []
             }
-            onMenuOpen={()=>this.loadOptionsGet(["bunchCases"])}
+            onMenuOpen={()=>this.loadOptionsGet("clsBunch")}
             // validate={requiredLabel}
             // colon={true}
           />
@@ -1150,8 +1154,8 @@ class MainInfoCaseForm extends Component {
                 : []
             }
             onMenuOpen={this.loadOptions(["fundFeature"])}
-            // validate={requiredLabel}
-            // colon={true}
+            validate={requiredLabel}
+            colon={true}
           />
         )}
         {caseDateOfDeposit && (

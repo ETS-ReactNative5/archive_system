@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
 import {getAct1, getCube, getIdGetObj} from "../../../../actions/actions";
-import {Button, Col, Row} from "antd";
+import {Button, Col, Row, Select} from "antd";
 import ReactDOMServer from 'react-dom/server';
-
+import ReactToPrint from "react-to-print";
+const { Option } = Select;
 
 
 class DamageAct extends React.Component {
@@ -24,6 +25,7 @@ class DamageAct extends React.Component {
         disinfestation: '0',
         restoration: '0',
         binding: '0',
+        page: 'ru',
         restorationOfFadingTexts: '0',
         irreparablyDamaged: '0',
         hasNotInInv: '0',
@@ -59,6 +61,14 @@ class DamageAct extends React.Component {
 
     }
 
+    onChangeLng = (value) => {debugger
+        if(value !== this.state.page){
+            this.setState({
+                page: value
+            });
+        }
+    }
+
     toPrint=(printThis)=>{
         const htmlString = ReactDOMServer.renderToString(printThis);
         var win = window.open();
@@ -72,145 +82,374 @@ class DamageAct extends React.Component {
     };
 
 
-    printContent=()=>{
-        return(<div>
-            <h2 className="text-center" style={{textAlign:"center"}}>
-                Акт проверки наличия и состояния архивных
-                документов {this.state.fundArchive}</h2>
-            <Row>
-                <Col span={24} className="text-center" style={{textAlign:"center"}}><span
-                style={{textDecoration:"underline"}}>{this.state.fundArchive}</span><br/>(Название
-                    архива)</Col>
-            </Row>
-            <Row>
-                <h1 className="text-center upp-case" style={{textAlign:"center",textTransform:"uppercase"}}>Акт</h1>
-            </Row>
-            <Row>
-                <Col style={{width:"50%",float:"left"}}> <span
-                style={{textDecoration:"underline"}}>{this.props.initialValues.workActualEndDate.value} </span> № <span style={{textDecoration:"underline"}}> {this.props.actNumber}</span> <br/>(Дата)</Col>
-                <Col style={{width:"41.6%",float:"right"}}>Утверждаю<br/>Директор<br/></Col>
-            </Row>
-            <Row style={{clear:"both"}}>
-                <Col style={{width:"41.6%",float:"right"}}>
-                    <span style={{textDecoration:"underline"}}>{this.state.fundArchive}</span><br/>(Название
-                    архива)</Col>
-            </Row>
-            <Row style={{clear:"both"}}>
-                <Col style={{width:"41.6%",float:"right"}}>_________________________<br/>Подпись Расшифровка
-                    подписи</Col>
-            </Row>
-            <Row style={{clear:"both"}}>
-                <Col style={{width:"41.6%",float:"right"}}>Дата: </Col>
-            </Row>             <br/>
-            <Row>
-                <h2 className="text-center">Проверки наличия и состояния архивных
-                    документов</h2>
-            </Row>
-            <Row>
-                <Col col={8}>Фонд № <span
-                 style={{textDecoration:"underline"}}>{this.state.fundNumber}</span></Col>
-            </Row>
-            <Row>
-                <Col col={24}>
-                    Название фонда<br/>
-                    <span  style={{textDecoration:"underline"}}>{this.props.initialValues.workRegFund.label}</span>
-                </Col>
-            </Row>
-            <Row>
-                <Col col={24}>
-                    № описей
-                    <span  style={{textDecoration:"underline"}}>{this.state.invNumber}</span>
-                </Col>
-            </Row>
-            <Row>
-                <Col col={24}>
-                    Проверка проводилась с <span style={{textDecoration:"underline"}}> {this.state.startDate} </span> по <span style={{textDecoration:"underline"}}> {this.state.endDate} </span>
-                </Col>
-            </Row>
-            <strong>1. Числится по описям <span  style={{textDecoration:"underline"}}>{this.state.invCount}</span> ед.хр.<br/></strong>
-            <strong>2. Не оказалось в наличии <span  style={{textDecoration:"underline"}}>{this.state.cntCaseNotA}</span> ед.хр.<br/></strong>
-            <strong>3. Имеется в наличии по данному фонду</strong>
-            <Row>
-                <Col col={24}>
-                    (Включенных в описи) <span
-                 style={{textDecoration:"underline"}}>{this.state.invCount - this.state.cntCaseNotA}</span> ед.хр.
-                </Col>
-            </Row>
-            <strong>Из них требующих:</strong>
-            <Row>
-                <Col col={24}>
-                    а) Дезинфекция <span
-                 style={{textDecoration:"underline"}}>{!!this.state.disinfection ? this.state.disinfection:'0'}</span> ед.хр.
-                </Col>
-                <Col col={24}>
-                    б) Дезинсекция <span
-                 style={{textDecoration:"underline"}}>{!!this.state.disinfestation ? this.state.disinfestation:'0'}</span> ед.хр.
-                </Col>
-                <Col col={24}>
-                    в) Реставрация <span  style={{textDecoration:"underline"}}>{!!this.state.restoration ? this.state.restoration:'0'} ед.хр.</span>
-                </Col>
-                <Col col={24}>
-                    г) Переплета или подшивки <span
-                 style={{textDecoration:"underline"}}>{!!this.state.binding ? this.state.binding:'0'} ед.хр.</span>
-                </Col>
-                <Col col={24}>
-                    д) Восстановление затухающих
-                    текстов <span
-                 style={{textDecoration:"underline"}}>{!!this.state.restorationOfFadingTexts  ? this.state.restorationOfFadingTexts:'0'} ед.хр. </span>
-                </Col>
-                <Col col={24}>
-                    е) Неисправимо поврежденных <span
-                 style={{textDecoration:"underline"}}>{!!this.state.irreparablyDamaged  ? this.state.irreparablyDamaged:'0'} ед.хр.</span>
-                </Col>
-            </Row>
-            <Row>
-                <Col col={24}>
-                    <strong>  4. Имеется не включенных в описи: <span
-                    style={{textDecoration:"underline"}}>{this.state.cntAdded }</span>     </strong>
-                </Col>
-            </Row>
-            <Row>
-                <Col col={24}>
-                    <strong>   5. Итого по данному фонду (включенных и невключенных в описи)
-                    имеющихся в
-                    наличии: <span
-                        style={{textDecoration:"underline"}}>{this.state.caseInInv}</span> ед.хр.    </strong>
-                </Col>
-            </Row>
-            <h3><br/>Характеристика условий их хранения.</h3>
-            <Row>
-                <Col col={24}>
-                    ____________________________________________________________<br/>
-                    ____________________________________________________________<br/>
-                    ____________________________________________________________<br/>
-                </Col>
-            </Row>
-            <h3 style={{}}>Проверку производили</h3>
-            <Row>
-                <Col col={24}>{this.props.initialValues.workAssignedTo.label}</Col>
-
-            </Row>
-            <h3>Согласовано</h3>
-            <Row>
-                <Col col={24}>{this.props.initialValues.workAuthor.label}</Col>
-            </Row>
-            <Row>
-                <Col col={24}>Дата: {this.props.initialValues.workActualEndDate.value}</Col>
-            </Row>
-        </div>)
-    };
-
     render() {
         const {t, tofiConstants, initialValues, workId} = this.props;
         return (
         <div className="act_print">
-            <Button type='primary' onClick={()=> this.toPrint(this.printContent())}>Распечатать</Button>
-            {this.printContent()}
+            <Select
+                style={{width:"8%", marginRight: '7px'}}
+                name="fundmakerArchiveYear"
+                isSearchable={false}
+                onChange={this.onChangeLng}
+                defaultValue={this.state.page}
+            >
+                <Option value='ru' selected={true}>Ru</Option>
+                <Option value='kz'>Kz</Option>
+            </Select>
+            <ReactToPrint
+                trigger={() => <Button type='primary'>Распечатать</Button>}
+                content={() => this.componentRef}
+            />
+            {this.state.page === 'ru' ? (
+                <PrintContent {...this.props} {...this.state} ref={el => (this.componentRef = el)}/>
+            ) : (
+                <PrintContentKaz {...this.props} {...this.state} ref={el => (this.componentRef = el)}/>
+            )
+            }
         </div>
 
         )
     }
 }
+
+class PrintContent extends React.Component{
+    render(){
+        return(<div style={{padding: '40px 40px 40px 70px'}}>
+            <Row>
+                <Col style={{width: "47%", float: "left"}}> <span
+                >{this.props.fundArchive} </span>
+                </Col>
+                <Col style={{width: "43%", float: "right"}}>Утверждаю<br/><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(наименование должности, фамилия,
+                        инициалы руководителя архива )</small></p><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(подпись руководителя архива )</small></p><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(дата )</small></p>
+                </Col>
+            </Row><br/><br/>
+            <h1 style={{textAlign: "center"}}>Акт проверки наличия и состояния архивных документов </h1>
+            <Row style={{textAlign: "center"}}>__________ № __________</Row>
+            <Row style={{textAlign: "right"}}><Col style={{width: "45%", float: "left"}}>(дата)</Col></Row><br/>
+
+            <Row gutter={8}>
+                <Col span={22}>Архивный фонд  № {this.props.fundNumber}</Col>
+            </Row>
+            <Row>
+                <Col col={24}>
+                    Название архивного фонда
+                    <span  style={{}}> {this.props.initialValues.workRegFund.label}</span>
+                </Col>
+            </Row>
+            <Row gutter={8}>
+                <Col span={24}>
+                    Номера описей {this.props.invNumber}
+                </Col>
+            </Row>
+            <Row>
+                <Col col={24}>
+                    Проверка проводилась с <span style={{textDecoration:"underline"}}> {this.props.startDate} </span> по <span style={{textDecoration:"underline"}}> {this.props.endDate} </span>
+                    <p>Проверкой установлено:</p>
+                </Col>
+            </Row>
+            <Row gutter={8}><strong>
+                <Col span={6}>1. Числится по описям</Col>
+                <Col span={8}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{this.props.invCount}</p> <p style={{textAlign: 'center'}}><small>(количество)</small></p> </Col>
+                <Col span={5}>единиц хранения<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={6}>2. Не оказалось в наличии</Col>
+                <Col span={8}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{this.props.cntCaseNotA}</p> <p style={{textAlign: 'center'}}><small>(количество)</small></p> </Col>
+                <Col span={4}>единиц хранения<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={9}>3. Имеется в наличии по данному фонду (включенных в описи)</Col>
+                <Col span={5}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{this.props.invCount - this.props.cntCaseNotA}</p><p style={{textAlign: 'center'}}></p> </Col>
+                <Col span={2}>единиц хранения<br/> </Col>
+                <Col span={24}>из них требующих:<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={4}>1) дезинфекции</Col>
+                <Col span={10}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{!!this.props.disinfection ? this.props.disinfection:'0'}</p><p style={{textAlign: 'center'}}><small>(количество)</small></p> </Col>
+                <Col span={4}>единиц хранения<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={4}>2) дезинсекции</Col>
+                <Col span={10}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{!!this.props.disinfestation ? this.props.disinfestation:'0'}</p><p style={{textAlign: 'center'}}><small>(количество)</small></p> </Col>
+                <Col span={4}>единиц хранения<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={4}>3) реставрации</Col>
+                <Col span={10}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{!!this.props.restoration ? this.props.restoration:'0'}</p><p style={{textAlign: 'center'}}><small>(количество)</small></p> </Col>
+                <Col span={4}>единиц хранения<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={6}>4) переплета или подшивки</Col>
+                <Col span={8}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{!!this.props.binding ? this.props.binding:'0'}</p><p style={{textAlign: 'center'}}><small>(количество)</small></p> </Col>
+                <Col span={4}>единиц хранения<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={9}>5) восстановление затухающих
+                    текстов</Col>
+                <Col span={5}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{!!this.props.restorationOfFadingTexts  ? this.props.restorationOfFadingTexts:'0'}</p><p style={{textAlign: 'center'}}><small>(количество)</small></p> </Col>
+                <Col span={4}>единиц хранения<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={8}>6) неисправимо поврежденных</Col>
+                <Col span={6}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{!!this.props.irreparablyDamaged  ? this.props.irreparablyDamaged:'0'}</p><p style={{textAlign: 'center'}}><small>(количество)</small></p> </Col>
+                <Col span={4}>единиц хранения<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={16}>7) _______________________________________________________________</Col>
+            </strong>
+            </Row>
+            <Row gutter={8}><strong>
+                <Col span={16}>8) _______________________________________________________________</Col>
+            </strong>
+            </Row>
+            <Row gutter={8}><strong>
+                <Col span={16}>9) _______________________________________________________________</Col>
+            </strong>
+            </Row>
+            <Row gutter={8}><strong>
+                <Col span={16}>10) _______________________________________________________________</Col>
+            </strong>
+            </Row>
+            <Row gutter={8}><strong>
+                <Col span={16}>11) _______________________________________________________________</Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={9}>4. Имеется не включенных в описи:</Col>
+                <Col span={8}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{this.props.cntAdded }</p><p style={{textAlign: 'center'}}><small>(количество)</small></p> </Col>
+                <Col span={4}>единиц хранения<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row>
+                <Col col={24}>
+                    <strong>5. Итого по данному фонду (включенных и невключенных в описи)
+                        имеющихся в
+                        наличии: <span
+                            style={{textDecoration:"underline"}}> {this.props.caseInInv}</span> единиц хранения    </strong>
+                </Col>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={24}>6. Характеристика условий их хранения.<br/>Отрицательные явления в состоянии и условиях хранения</Col>
+                <Col col={24}>
+                    ____________________________________________________________<br/>
+                    ____________________________________________________________<br/>
+                </Col>
+            </strong>
+            </Row><br/><br/><br/><br/><br/>
+            <p style={{}}>Проверку производили:</p>
+            <Row><br/>
+                <Col span={15}>
+                    <p style={{borderBottom: '1px solid black'}}></p><p style={{textAlign: 'center'}}><small>(наименование должности, фамилия, инициалы, подпись лица проводившего проверку)</small></p>
+                </Col>
+            </Row>
+            <p>Согласовано:</p>
+            <Row><br/>
+                <Col span={15}>
+                    <p style={{borderBottom: '1px solid black'}}></p><p style={{textAlign: 'center'}}><small>(наименование должности, фамилия, инициалы, подпись заведующего отдела (архивохранилищем) )</small></p>
+                </Col>
+            </Row>
+
+            <Row>
+                <Col col={24}>Дата: {this.props.initialValues.workActualEndDate.value}</Col>
+            </Row>
+        </div>)
+    }
+};
+
+class PrintContentKaz extends React.Component{
+    render(){
+        return(<div style={{padding: '40px 40px 40px 70px'}}>
+            <Row>
+                <Col style={{width: "47%", float: "left"}}> <span
+                >{this.props.fundArchive} </span>
+                </Col>
+                <Col style={{width: "43%", float: "right"}}>Бекітемін<br/><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(архив басшысы лауазымының атауы,
+                        тегі, аты-жөні )</small></p><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(ұйым басшысының қолтаңбасы)</small></p><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(күні )</small></p>
+                </Col>
+            </Row><br/><br/>
+            <h1 style={{textAlign: "center"}}>Архивтік құжаттардың бар-жоғын және жай-күйін тексеру актісі </h1>
+            <Row style={{textAlign: "center"}}>__________ № __________</Row>
+            <Row style={{textAlign: "right"}}><Col style={{width: "45%", float: "left"}}>(күні)</Col></Row><br/>
+
+            <Row gutter={8}>
+                <Col span={22}> № {this.props.fundNumber} архив қоры</Col>
+            </Row>
+            <Row>
+                <Col col={24}>
+                    Архив қорының атауы
+                    <span  style={{}}> {this.props.initialValues.workRegFund.label}</span>
+                </Col>
+            </Row>
+            <Row gutter={8}>
+                <Col span={24}>
+                    Тізімдемелердің нөмірлері  {this.props.invNumber}
+                </Col>
+            </Row>
+            <Row>
+                <Col col={24}>
+                    Тексеру   <span style={{textDecoration:"underline"}}> {this.props.startDate} </span> - <span style={{textDecoration:"underline"}}> {this.props.endDate} аралығында жүргізілді.</span>
+                    <p>Тексеру барысында мыналар анықталды:</p>
+                </Col>
+            </Row>
+            <Row gutter={8}><strong>
+                <Col span={6}>1. Тізімдеме бойынша </Col>
+                <Col span={8}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{this.props.invCount}</p> <p style={{textAlign: 'center'}}><small>(саны)</small></p> </Col>
+                <Col span={5}>сақтау бірлігі бар.<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={6}>2. Бар болмағаны </Col>
+                <Col span={8}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{this.props.cntCaseNotA}</p> <p style={{textAlign: 'center'}}><small>(саны)</small></p> </Col>
+                <Col span={4}>сақтау бірлігі<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={9}>3. Осы архивтік қор бойынша бар:
+                    (тізімдемеге енгізілген)
+                </Col>
+                <Col span={5}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{this.props.invCount - this.props.cntCaseNotA}</p><p style={{textAlign: 'center'}}></p> </Col>
+                <Col span={2}>сақтау бірлігі<br/> </Col>
+                <Col span={24}>оның ішінде мыналарды талап ететіндер:<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={4}>1) дезинфекцияны </Col>
+                <Col span={10}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{!!this.props.disinfection ? this.props.disinfection:'0'}</p><p style={{textAlign: 'center'}}><small>(саны)</small></p> </Col>
+                <Col span={4}>сақтау бірлігі<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={4}>2) дезинсекцияны</Col>
+                <Col span={10}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{!!this.props.disinfestation ? this.props.disinfestation:'0'}</p><p style={{textAlign: 'center'}}><small>(саны)</small></p> </Col>
+                <Col span={4}>сақтау бірлігі<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={4}>3) реставрациялауды </Col>
+                <Col span={10}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{!!this.props.restoration ? this.props.restoration:'0'}</p><p style={{textAlign: 'center'}}><small>(саны)</small></p> </Col>
+                <Col span={4}>сақтау бірлігі<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={6}>4) түптеу немесе тігуді </Col>
+                <Col span={8}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{!!this.props.binding ? this.props.binding:'0'}</p><p style={{textAlign: 'center'}}><small>(саны)</small></p> </Col>
+                <Col span={4}>сақтау бірлігі<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={9}>5) өше бастаған мәтіндерді қалпына келтіруді </Col>
+                <Col span={5}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{!!this.props.restorationOfFadingTexts  ? this.props.restorationOfFadingTexts:'0'}</p><p style={{textAlign: 'center'}}><small>(саны)</small></p> </Col>
+                <Col span={4}>сақтау бірлігі<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={8}>6) түзетуге келмейтін зақымданған </Col>
+                <Col span={6}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{!!this.props.irreparablyDamaged  ? this.props.irreparablyDamaged:'0'}</p><p style={{textAlign: 'center'}}><small>(саны)</small></p> </Col>
+                <Col span={4}>сақтау бірлігі<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={16}>7) _______________________________________________________________</Col>
+            </strong>
+            </Row><br/>
+            <Row gutter={8}><strong>
+                <Col span={16}>8) _______________________________________________________________</Col>
+            </strong>
+            </Row>
+            <Row gutter={8}><strong>
+                <Col span={16}>9) _______________________________________________________________</Col>
+            </strong>
+            </Row>
+            <Row gutter={8}><strong>
+                <Col span={16}>10) _______________________________________________________________</Col>
+            </strong>
+            </Row>
+            <Row gutter={8}><strong>
+                <Col span={16}>11) _______________________________________________________________</Col>
+            </strong>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={9}>4. Тізімдемеге енгізілмегендері:</Col>
+                <Col span={8}><p style={{borderBottom: '1px solid black',textAlign: 'center'}}>{this.props.cntAdded }</p><p style={{textAlign: 'center'}}><small>(саны)</small></p> </Col>
+                <Col span={4}>сақтау бірлігі<br/> </Col>
+            </strong>
+            </Row>
+
+            <Row>
+                <Col col={24}>
+                    <strong>5. Осы архивтік қор бойынша (тізімдемеге енген және енбеген),
+                        қолда бары:
+                        <span
+                            style={{textDecoration:"underline"}}> {this.props.caseInInv}</span> сақтау бірлігі    </strong>
+                </Col>
+            </Row>
+
+            <Row gutter={8}><strong>
+                <Col span={24}>6. Оларды сақтау шартының сипаттамасы.<br/>
+                    Сақтау жағдайы мен шартындағы теріс құбылыстар.
+                </Col>
+                <Col col={24}>
+                    ____________________________________________________________<br/>
+                    ____________________________________________________________<br/>
+                </Col>
+            </strong>
+            </Row><br/><br/><br/><br/><br/>
+            <p style={{}}>Тексеруді жүргізген:</p>
+            <Row><br/>
+                <Col span={15}>
+                    <p style={{borderBottom: '1px solid black'}}></p><p style={{textAlign: 'center'}}><small>(тексеруді жүргізген тұлға лауазымының атауы, тегі, аты-жөні, қолтаңбасы)</small></p>
+                </Col>
+            </Row>
+            <p>Келісілді:</p>
+            <Row><br/>
+                <Col span={15}>
+                    <p style={{borderBottom: '1px solid black'}}></p><p style={{textAlign: 'center'}}><small>(бөлім (архив қоймасы) меңгерушісі лауазымының атауы, тегі, аты-жөні, қолтаңбасы )</small></p>
+                </Col>
+            </Row>
+
+            <Row>
+                <Col col={24}>Kүні: {this.props.initialValues.workActualEndDate.value}</Col>
+            </Row>
+        </div>)
+    }
+};
 
 
 export default DamageAct;

@@ -5,7 +5,8 @@ import {Icon, Input, Modal, Tabs, Form} from "antd";
 import axios from 'axios';
 import {parseCube_new, parseForTable} from "../../../utils/cubeParser";
 import AntTable from "../../AntTable";
-import {getCube} from "../../../actions/actions";
+import { reduxForm, Field } from 'redux-form';
+import {getCube, getPropVal} from "../../../actions/actions";
 import {getObjVer_new} from '../../../actions/actions';
 import {
     CUBE_FOR_AF_INV,
@@ -14,6 +15,8 @@ import {
 } from "../../../constants/tofiConstants";
 
 import FundInfoModal from "./FundInfoModal";
+import {renderFileUploadBtn, renderInputLang, renderSelect, renderTextareaLang} from "../../../utils/form_components";
+import CompositionFundFude from "./CompositionFundFude";
 /*import TextArea from "antd/es/input/TextArea.d";*/
 const { TextArea } = Input;
 const formItemLayout = {
@@ -27,7 +30,7 @@ const formItemLayout = {
     },
 };
 const TabPane = Tabs.TabPane;
-class FundsInGuide extends React.Component {
+class FundsInGuide extends React.PureComponent {
     constructor(props) {
         super(props);
 
@@ -47,6 +50,9 @@ class FundsInGuide extends React.Component {
             modalPersonAddress: '',
             modalAccessDocument: '',
             modalAnnotationContentOfDocument: '',
+            modalFundBiographArcheographNoteMulti:'',
+            modalFundHistoricalNoteMulti:'',
+            modalInvMulti:'',
             modalVersionsName: [],
             modalVersionsNameFund: [],
             fundNumberOfUpr:'',
@@ -62,7 +68,14 @@ class FundsInGuide extends React.Component {
             fundNumberOfMicrofilms:'',
             aboutFundMakerLoading:false,
             aboutFundLoading:false,
-            countLoading:false
+            countLoading:false,
+            initialValuesW:{},
+            lang: {
+                annotationContentOfDocument: this.lng,
+                invMulti: this.lng,
+                fundHistoricalNoteMulti: this.lng,
+                fundBiographArcheographNoteMulti:this.lng,
+            }
         }
     }
 
@@ -95,11 +108,12 @@ class FundsInGuide extends React.Component {
     };
 
     getExtraInfoFund = async (idRec) => {
-
+        let obj = this.state.data.find(el=> el.key === idRec  )
         this.setState({
             aboutFundMakerLoading:true,
             aboutFundLoading:true,
             countLoading:true,
+            initialValuesW:obj
         });
       this.showModalFund();
     //    this.setState({loading: true});
@@ -119,27 +133,15 @@ class FundsInGuide extends React.Component {
         await this.props.getCube('cubeForFundAndIK', JSON.stringify(fundFilter), {customKey: 'singleExtraInfoFund'});
         var dpFund = this.props.singleExtraInfoFund['dp_' + this.props.tofiConstants['dpForFundAndIK'].id];
         var dpCube = this.props.singleExtraInfoFund['cube'];
-
-
         /*Собираем данные для модального окна*/
-
-
-
-
         var accessDocumentProp = dpFund.find(item => item.prop == this.props.tofiConstants.accessDocument.id);
         var accessDocumentVal = dpCube.find(item => (item['dp_' + this.props.tofiConstants['dpForFundAndIK'].id]) == accessDocumentProp.id);
         accessDocumentVal = accessDocumentVal ? accessDocumentVal.name ? accessDocumentVal.name[this.lng] : '' : '';
-
-
-
-
         this.setState({
             loading: false,
             modalTitle: this.props.singleExtraInfoFund['do_' + this.props.tofiConstants['doForFundAndIK'].id]['0'].fullName[this.lng],
             modalAccessDocument:accessDocumentVal,
-
         });
-
         var fdIdRec = new FormData();
         fdIdRec.append('fundId', idRec);
         axios.post(`/${localStorage.getItem('i18nextLng')}/entity/extractInfoMaker`, fdIdRec).then(response => {
@@ -158,26 +160,29 @@ class FundsInGuide extends React.Component {
             }
             )
             ): '';
-
-
             this.setState({
                 aboutFundMakerLoading:false,
                 modalVersionsName: listItems,
             })
         });
-
         var fdIdRecMultiText = new FormData();
         fdIdRecMultiText.append('obj', idRec.split('_')[1]);
-        fdIdRecMultiText.append('propConsts', 'annotationContentOfDocument');
-        axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getValueOfMultiText`, fdIdRecMultiText).then(response => {
-            response.data.data[0] ?
+        fdIdRecMultiText.append('propConsts', 'annotationContentOfDocument,fundBiographArcheographNoteMulti,fundHistoricalNoteMulti,invMulti');
+        axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getValueOfMultiText`, fdIdRecMultiText).then(response => {debugger;
+            response.data.data ?
             this.setState({
-                modalAnnotationContentOfDocument:response.data.data[0].valueMultiStr[this.lng]
+                modalAnnotationContentOfDocument:response.data.data[1] ? response.data.data[1].valueMultiStr[this.lng]:'',
+                modalInvMulti:response.data.data[2] ? response.data.data[2].valueMultiStr[this.lng]:'',
+                modalFundHistoricalNoteMulti:response.data.data[0] ? response.data.data[0].valueMultiStr[this.lng]:'',
+                modalFundBiographArcheographNoteMulti:response.data.data[3] ? response.data.data[3].valueMultiStr[this.lng]:''
+
             }) :  this.setState({
-                modalAnnotationContentOfDocument:''
+                modalAnnotationContentOfDocument:'',
+                modalInvMulti:'',
+                modalFundHistoricalNoteMulti:'',
+                modalFundBiographArcheographNoteMulti:''
             })
         });
-
         axios.get(`/${localStorage.getItem('i18nextLng')}/obj/getVer?obj=${idRec.split('_')[1]}`)
         .then(response=>{
             var listItemsFund=[];
@@ -194,15 +199,11 @@ class FundsInGuide extends React.Component {
             }
             )
             ): '';
-
             this.setState({
                 aboutFundLoading:false,
                 modalVersionsNameFund: listItemsFund,
             })
         });
-
-
-
         var fdGetCountFund = new FormData();
         fdGetCountFund.append('fundId', idRec.split('_')[1]);
         axios.post(`/${localStorage.getItem('i18nextLng')}/archiveFund/calcCountDocsOfFund`, fdGetCountFund).then(response => {
@@ -218,49 +219,44 @@ class FundsInGuide extends React.Component {
 
                })
            }
-
            this.setState({
                countLoading:false,
                mapedCountCases:mapedCountCases
            })
         });
-
-
         var fdGetArchiveByFond = new FormData();
         fdGetArchiveByFond.append('idFund', idRec.split('_')[1]);
         axios.post(`/${localStorage.getItem('i18nextLng')}/entity/getArchiveByFund`, fdGetArchiveByFond).then(response => {
             var data=response.data.data;
             this.setState({
                 modalPersonAddress: data.personAddress[localStorage.getItem('i18nextLng')],
-                modalFundArchive: data.fullName[localStorage.getItem('i18nextLng')],
+                modalFundArchive: data.fullName[localStorage.getItem('i18nextLng')]
             })
         });
-
-
-
     };
 
     populate = () => {
         if (isEmpty(this.props.tofiConstants)) return;
         const {funds, tofiConstants: {doForFundAndIK, dpForFundAndIK}} = this.props;
+        let parserCube= parseCube_new(
+            funds["cube"],
+            [],
+            "dp",
+            "do",
+            funds[`do_${doForFundAndIK.id}`],
+            funds[`dp_${dpForFundAndIK.id}`],
+            `do_${doForFundAndIK.id}`,
+            `dp_${dpForFundAndIK.id}`
+        ).map(this.renderTableData)
         this.setState({
-            data: parseCube_new(
-                funds["cube"],
-                [],
-                "dp",
-                "do",
-                funds[`do_${doForFundAndIK.id}`],
-                funds[`dp_${dpForFundAndIK.id}`],
-                `do_${doForFundAndIK.id}`,
-                `dp_${dpForFundAndIK.id}`
-            ).map(this.renderTableData)
+            data: parserCube
         })
     };
 
     renderTableData = item => {
 
-        const constArr = ['fundDbeg', 'fundDend', 'fundNumber', 'fundIndex', 'fundCategory', 'fundNumberOfCases',
-            'fundArchive', 'locationOfSupplementaryMaterials', 'accessDocument'];
+        const constArr = ['fundDbeg', 'fundDend', 'fundNumber', 'locationOfSupplementaryMaterials','fundIndex', 'fundCategory', 'fundNumberOfCases','fundBiographArcheographNote','fundHistoricalNote','invFile','fundAnnotationFile',
+            'fundArchive', 'accessDocument'];
         const result = {
             key: item.id,
             name: item.name ? item.name : {kz: '', ru: '', en: ''}
@@ -327,13 +323,13 @@ class FundsInGuide extends React.Component {
         });
     };
 
-  showAboutFundInfo = () => {
-    //
-  };
 
     render() {
-        const {data, modalShow, selectedFund, search} = this.state;
-        const {t, tofiConstants: {fundNumber,personAddress,annotationContentOfDocument,microfilmsDoc,microformDoc,lpDoc,macReadDoc,LSDoc,photoDoc,phonoDoc,movieDoc,uprDoc,videoDoc,uprNTD,legalStatus,fundDbeg,fundDend,fundHistoricalNoteMulti, fundNumberOfCases,fundArchive,accessDocument}} = this.props;
+        const {data, modalShow, selectedFund, search, lang} = this.state;
+        if(isEmpty(this.props.tofiConstants)) return null;
+        const {t} = this.props;
+        const {fundNumber,personAddress,annotationContentOfDocument,microfilmsDoc,microformDoc,lpDoc,macReadDoc,LSDoc,photoDoc,phonoDoc,movieDoc,uprDoc,videoDoc,
+            uprNTD,legalStatus,fundDbeg,fundDend,fundHistoricalNoteMulti, fundNumberOfCases,fundArchive,accessDocument}=this.props.tofiConstants;
         this.lng = localStorage.getItem('i18nextLng');
 
         this.filteredData = data.filter(item => {
@@ -647,17 +643,16 @@ class FundsInGuide extends React.Component {
                                 ]
                             }
                             />
-
-
-
                         </TabPane>
 
                         <TabPane tab="Состав и содержание" key="3">
-                            <Form>
-                                <Form.Item {...formItemLayout} label={annotationContentOfDocument.name[this.lng]}>
-                                    <TextArea disabled value={this.state.modalAnnotationContentOfDocument} />
-                                </Form.Item>
-                            </Form>
+                           <CompositionFundFude
+                               modalAnnotationContentOfDocument={this.state.modalAnnotationContentOfDocument}
+                               modalFundBiographArcheographNoteMulti={this.state.modalFundBiographArcheographNoteMulti}
+                               modalFundHistoricalNoteMulti={this.state.modalFundHistoricalNoteMulti}
+                               modalInvMulti={this.state.modalInvMulti}
+                               initialValues={this.state.initialValuesW}
+                           />
                         </TabPane>
                     </Tabs>
                 </Modal>
@@ -665,13 +660,11 @@ class FundsInGuide extends React.Component {
         );
     }
 }
-
-function mapStateToProps(state) {
+export default connect(state => {
     return {
         funds: state.cubes[CUBE_FOR_FUND_AND_IK],
         tofiConstants: state.generalData.tofiConstants,
         singleExtraInfoFund:state.cubes.singleExtraInfoFund
-    };
-}
 
-export default connect(mapStateToProps, {getCube})(FundsInGuide);
+    }
+}, { getPropVal,getCube })(reduxForm({ form: 'FundsInGuide', enableReinitialize: true })(FundsInGuide));

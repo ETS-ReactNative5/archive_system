@@ -56,5 +56,6 @@
   "ACQUISITION_REPORTS": "Отчеты по комплектованию",
   "STORAGE_REPORTS": "Отчеты по учету и хранению",
   "STATUS":"Статус",
-  "INVENTORY": "Описи"
+  "INVENTORY": "Описи",
+  "STATE_ARCHIVE": "Государственный архив"
 }

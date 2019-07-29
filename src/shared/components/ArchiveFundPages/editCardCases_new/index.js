@@ -495,16 +495,36 @@ class EditCardCases extends React.Component {
                                 title: t('ELECTRONIC_CONTENT'),
                                 dataIndex: 'documentFile',
                                 width: '8%',
-                                render: vals => vals && vals.length !== 0 &&
-                                    <Button
-                                        title={t('SHOW_FILES')}
-                                        icon="paper-clip"
-                                        className='green-btn'
-                                        onClick={e => {
-                                            e.stopPropagation();
-                                            this.setState({openModal: true, viewerList: vals});
-                                        }}
-                                    />,
+                                render: (vals) => {
+                                    if ( !!vals && vals.length !== 0){
+                                        let newArr = vals.sort((a,b)=>{
+                                            let ax = [], bx = [];
+
+                                            a.value.name.replace(/(\d+)|(\D+)/g, function(_, $1, $2) { ax.push([$1 || Infinity, $2 || ""]) });
+                                            b.value.name.replace(/(\d+)|(\D+)/g, function(_, $1, $2) { bx.push([$1 || Infinity, $2 || ""]) });
+
+                                            while(ax.length && bx.length) {
+                                                let an = ax.shift();
+                                                let bn = bx.shift();
+                                                let nn = (an[0] - bn[0]) || an[1].localeCompare(bn[1]);
+                                                if(nn) return nn;
+                                            }
+
+                                            return ax.length - bx.length;
+                                        })
+                                        return( <Button
+                                                title={t('SHOW_FILES')}
+                                                icon="paper-clip"
+                                                className='green-btn'
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    this.setState({openModal: true, viewerList: newArr});
+                                                }}
+                                            />
+                                        )
+                                    }
+
+                                }
                             }
                         ]}
                         openedBy="Cases"

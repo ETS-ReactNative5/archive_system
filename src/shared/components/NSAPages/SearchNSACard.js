@@ -60,7 +60,8 @@ class FundsListCard extends React.Component {
               initialValues={dataRec}
               onSave2={onSave2}
               closeCard={closeCard}
-
+              onSave={onSave}
+              initialValues2={initialValues}
               annotationContentOfDocument={annotationContentOfDocument}
               invMulti={invMulti} 
               fundHistoricalNoteMulti={fundHistoricalNoteMulti}
@@ -88,6 +89,7 @@ class FundsListCard extends React.Component {
               tofiConstants={tofiConstants}
               record={record}
               onSave={onSave}
+              initialValues={initialValues}
               dataRec={dataRec}
               fundCaseFlags={fundCaseFlags}
               withIdDPV = {this.props.withIdDPV}
@@ -114,6 +116,8 @@ class FundsListCard extends React.Component {
               myType={'vidGuidebook'}
               nameToHead={record.fundList}
               onSave={onSave}
+              initialValues={initialValues}
+
               withIdDPV = {this.props.withIdDPV}
             />
           },

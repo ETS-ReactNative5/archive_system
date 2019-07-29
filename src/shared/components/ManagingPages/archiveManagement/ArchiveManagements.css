@@ -1,0 +1,17 @@
+.inpt {
+  margin: 7px;
+  color: rgba(0, 0, 0, 0.85); }
+
+.inptLbl {
+  margin-left: 430px;
+  width: 8.4%; }
+
+.ant-form-item-label label {
+  color: rgba(0, 0, 0, 0.85);
+  margin: 20px 0 0 7px; }
+
+.inpt-cnt {
+  margin-bottom: 12px; }
+
+.btn-archive {
+  margin-left: 15px; }

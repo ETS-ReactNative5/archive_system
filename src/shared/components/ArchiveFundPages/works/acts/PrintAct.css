@@ -1,0 +1,8 @@
+.tbltoprint {
+  /*border: 1px solid black;*/
+  border-spacing: 0;
+  border-collapse: collapse; }
+
+.tbltoprint td {
+  border: 1px solid #636161;
+  padding: 2px; }

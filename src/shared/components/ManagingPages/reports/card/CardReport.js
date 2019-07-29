@@ -107,12 +107,13 @@ class CardReport_invTypeDigital_uprDoc extends Component {
 
   render() {
       const { t, tofiConstants, saveProps,dateReport, initialValues,periodType, keyInv, invType,docType } = this.props;
+      this.lng = localStorage.getItem("i18nextLng");
     return <Spin spinning={this.state.loading}>
         <AntTabs
       tabs={[
         {
           tabKey: 'mainInfo',
-            tabName: t('MAIN_INFO'),
+          tabName:initialValues.name[this.lng],
           tabContent: <MainInfoReportForm
               initialValues={initialValues}
               tofiConstants={tofiConstants}

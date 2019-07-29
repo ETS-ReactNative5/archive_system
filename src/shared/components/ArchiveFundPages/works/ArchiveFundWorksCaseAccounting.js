@@ -4,12 +4,21 @@ import {Link} from 'react-router-dom';
 import {differenceWith, isEmpty, isEqual, pickBy} from 'lodash';
 import AntModal from '../../AntModal';
 import {addDerivativeWorksAcc, getValuesOfObjsWithProps, updateCubeData} from '../../../actions/actions';
-import {CUBE_FOR_WORKS, DO_FOR_WORKS} from '../../../constants/tofiConstants';
+import {
+    CUBE_FOR_AF_CASE, CUBE_FOR_WORKS, DO_FOR_CASE, DO_FOR_WORKS,
+    DP_FOR_CASE
+} from '../../../constants/tofiConstants';
 import moment from 'moment';
 import {CSSTransition} from "react-transition-group";
 import SiderCard from "../../SiderCard";
 import CardCase_invTypeLS_LSDoc from "./invTypeLS_LSDoc/CardCase_invTypeLS_LSDocWorks";
-
+import {
+    onSaveCubeData,
+    getPropMeta,
+    parseCube_new,
+    parseForTable
+} from '../../../utils/cubeParser';
+import connect from "react-redux/es/connect/connect";
 /*eslint eqeqeq:0*/
 class ArchiveFundWorksCaseAccounting extends React.PureComponent {
 
@@ -97,7 +106,7 @@ class ArchiveFundWorksCaseAccounting extends React.PureComponent {
           <Breadcrumb.Item>
             <b>{this.props.tofiConstants.caseRegistration.name[this.lng]}
               <span style={{fontSize: '13px'}}>&#8594;</span>
-              {this.props.t('FUND_NUMB')}: {this.state.workRegFundNumber + this.state.workRegFundIndex}, {this.props.t('INV_NUMB')}: {this.state.workRegInvNumber}</b>
+              {this.props.t('FUND_NUMB')}: { this.state.workRegFundIndex}, {this.props.t('INV_NUMB')}: {this.state.workRegInvNumber}</b>
           </Breadcrumb.Item>
         </Breadcrumb>
       </div>
@@ -132,15 +141,14 @@ class ArchiveFundWorksCaseAccounting extends React.PureComponent {
   componentDidMount() {
     if(this.props.location && this.props.location.state && this.props.location.state.data) {
       this.setState({ data: this.props.location.state.data.map(this.renderTableData) });
-
       const fd = new FormData();
-      const datas = [{objs: `${this.props.match.params.fund.split('_')[0]}`, propConsts: "caseNumber,fundIndex"}, {objs: `${this.props.match.params.fund.split('_')[1]}`, propConsts: "invNumber"}];
+      const datas = [{objs: `${this.props.match.params.fund.split('_')[0]}`, propConsts: "caseNumber,fundNumber"}, {objs: `${this.props.match.params.fund.split('_')[1]}`, propConsts: "invNumber"}];
       fd.append('datas', JSON.stringify(datas));
       getValuesOfObjsWithProps(fd)
         .then(res => {
           if(res.success) {
             const workRegFundNumber = res.data.find(obj => obj.id == this.props.match.params.fund.split('_')[0]).caseNumber[this.lng];
-            const workRegFundIndex = res.data.find(obj => obj.id == this.props.match.params.fund.split('_')[0]).fundIndex[this.lng];
+            const workRegFundIndex = res.data.find(obj => obj.id == this.props.match.params.fund.split('_')[0]).fundNumber[this.lng];
             const workRegInvNumber = res.data.find(obj => obj.id == this.props.match.params.fund.split('_')[1]).invNumber[this.lng];
             this.setState({workRegFundNumber, workRegFundIndex, workRegInvNumber})
           }
@@ -179,6 +187,38 @@ class ArchiveFundWorksCaseAccounting extends React.PureComponent {
             selectedWorks:this.props.location.state.stateRecord
         })
 
+    }
+    saveProps = async (c, v, t = this.props.tofiConstants, objData, key) => {
+        let hideLoading;
+        try {
+            if (!c.cube) c.cube = {
+                cubeSConst: CUBE_FOR_AF_CASE,
+                doConst: DO_FOR_CASE,
+                dpConst: DP_FOR_CASE,
+            };
+            if (!c.cube.data) c.cube.data = this.props.CubeForAF_Case;
+            c["obj"] = {
+                doItem: key
+            }
+            hideLoading = message.loading(this.props.t('UPDATING_PROPS'), 0);
+            const resSave = await onSaveCubeData(c, v, t, objData);
+            hideLoading();
+            if (!resSave.success) {
+                message.error(this.props.t('PROPS_UPDATING_ERROR'));
+                resSave.errors.forEach(err => {
+                    message.error(err.text)
+                });
+                return Promise.reject(resSave);
+            }
+            message.success(this.props.t('PROPS_SUCCESSFULLY_UPDATED'));
+            this.setState({loading: true, openCard: false});
+            return resSave;
+        }
+        catch(e) {
+            typeof hideLoading === 'function' && hideLoading();
+            this.setState({loading: false});
+            console.warn(e);
+        }
     }
 
   render() {
@@ -334,4 +374,13 @@ class ArchiveFundWorksCaseAccounting extends React.PureComponent {
   }
 }
 
-export default ArchiveFundWorksCaseAccounting;
+function mapStateToProps(state) {
+    return {
+        CubeForAF_Case: state.cubes[CUBE_FOR_AF_CASE],
+
+    }
+}
+
+export default connect(mapStateToProps, {})(ArchiveFundWorksCaseAccounting)
+
+

@@ -44,13 +44,18 @@
   "ARCHIVE_ADMINISTRATION": "Administration",
   "USERS": "Users",
   "USER_ROLES": "User roles",
+  "ARCHIVALCIPHER": "Archive code",
+  "TITLE": "Header",
+  "DEADLINES": "End dates",
+  "CHOOSECASES": "Order",
   "ALL_WORKS": "Archival works",
   "PROFILE": "My profile",
   "EXIT": "Exit",
   "SAVE": "Save",
+  "CANCEL":"Cancel",
   "ACQUISITION_REPORTS": "Acquisition reports",
   "STORAGE_REPORTS": "Storage reports",
-  "INVENTORY": "Inventory"
-
-
+  "STATUS":"Status",
+  "INVENTORY": "Inventory",
+  "STATE_ARCHIVE": "State archive"
 }

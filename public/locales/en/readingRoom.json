@@ -11,11 +11,12 @@
   "CASE_NUMB":"Case №",
   "FUNDNUMB": "Fund №",
   "INV_NUMB":"INV №",
-  "ID":"id",
+  "ID":"Identifier",
   "TITLE": "Title",
   "ORG_HISTORY": "Organization history",
   "FUNDANNOTATION": "Annotation",
   "ANNOTATIONS": "Annotation",
+  "DEADLINE": "End dates",
   "CHOOSECASES": "Select cases",
   "DOCUMENTORIGIN": "Origin of the documents",
   "ARCHIVALCIPHER": "Archive cipher",
@@ -23,6 +24,8 @@
   "STORAGEUNIT": "Storage units",
   "DOCUMENTS": "Documents",
   "DEADLINES": "Extreme dates",
+  "FUNDORG": "Organization fund",
+  "FUNDOLP": "Personal origin",
   "FUND_ABOUT": "About fund",
   "FUND_MAKER_ABOUT": "About funder",
   "COMPOSOTION_CONTENT": "Composition and content",
@@ -69,8 +72,11 @@
   "NATIONALITY": "Country",
   "NAME_ORGANIZATION": "Organization name",
   "HELP":"Help text",
-  "PRESS_YES_NO": "������� ������� ������ ��������� ��� ��������",
-  "PRESS_START": "first press the start button",
+  "SAVE": "Save",
+  "CANCEL":"Cancel",
+  "STATUS":"Status",
+  "PRESS_YES_NO": "First, click Allow or Deny button",
+  "PRESS_START": "First press the start button",
   "ELECTRONIC_IMAGE": "Electronic image",
   "SHOW_FILES": "Show content",
   "COUNT_FUNDS": "Count of funds:",
@@ -87,14 +93,11 @@
   "ORDER_PAGE_END": "Page bottom of order",
   "REASONS_FOR_REFUSAL": "Reasons for refusal",
   "WORK_CLASS": "Work class",
+  "NUMB_OF_IK": "No fund found",
   "INFO_FOR_FUND": "Info about fund",
-  "FUND_VERSIONS":"Все переименования фонда с указанием крайних дат",
-  "ABOUT_FUNMAKER":"О фондообразователе",
-  "ABOUT_FUND":"О фонде",
-  "REFERENCE":"Справка",
-  "FUNDMAKER_HISTORY":"История фондообразователя"
-
-
-
-
+  "FUND_VERSIONS":"All fund renames with extreme dates",
+  "ABOUT_FUNMAKER":"About the founder",
+  "ABOUT_FUND":"About the fund",
+  "REFERENCE":"Help",
+  "FUNDMAKER_HISTORY":"History of the founder"
 }

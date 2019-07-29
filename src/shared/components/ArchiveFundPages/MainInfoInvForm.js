@@ -216,7 +216,7 @@ class MainInfoFundForm extends React.Component {
 
     }}
 
-    strToRedux = (val, prevVal, obj, prevObj) => {
+    strToRedux = (val, prevVal, obj, prevObj) => {debugger;
         var newVal = {...prevVal};
         if (prevVal === null) {
             let objVal = {
@@ -333,7 +333,7 @@ class MainInfoFundForm extends React.Component {
             t, handleSubmit, reset, dirty, error, submitting, fundFeatureOptions, caseStorageMultiOptions, rackMultiOptions, sectionMultiOptions, shelfMultiOptions,
             documentTypeOptions, invTypeOptions, accessLevelOptions, invCaseSystemOptions,
             tofiConstants: {
-                invNumber, invDates, invCaseSystem, documentType, invType, invApprovalDate2, invApprovalDate1,
+                invNumber,copyQuantity, invDates, invCaseSystem, documentType, invType, invApprovalDate2, invApprovalDate1,
                 invTypeValue, invAgreement2Date, fundFeature, invAgreementDate, invTypePerm, invFile, invStorage, invCont,
                 agreementProtocol, agreement2Protocol, approvalProtocol, caseStorageMulti, rackMulti, sectionMulti, shelfMulti
             }
@@ -463,6 +463,18 @@ class MainInfoFundForm extends React.Component {
 
                      colon={true}
                      required={requiredArr}
+                />}
+                {copyQuantity && <Field
+                    name='copyQuantity'
+                    normalize={this.strToRedux}
+                    component={renderInput}
+                    label={copyQuantity.name[this.lng]}
+                    formItemLayout={
+                        {
+                            labelCol: {span: 10},
+                            wrapperCol: {span: 14}
+                        }
+                    }
                 />}
                 {fundFeature && <Field
                     name="fundFeature"
@@ -680,7 +692,7 @@ class MainInfoFundForm extends React.Component {
                         }
                     }
                 />}
-                {invStorage && <Field
+                {/*invStorage && <Field
                     name='invStorage'
                     component={renderInput}
                     disabled
@@ -692,7 +704,7 @@ class MainInfoFundForm extends React.Component {
                             wrapperCol: {span: 14}
                         }
                     }
-                />}
+                />*/}
                 {dirty && <Form.Item className="ant-form-btns">
                     <Button className="signup-form__btn" type="primary" htmlType="submit" disabled={submitting}>
                         {submitting ? t('LOADING...') : t('SAVE')}

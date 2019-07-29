@@ -444,11 +444,7 @@ class TablelegalEntities extends React.Component {
                                 ),
                                 filterIcon: <Icon type="filter"
                                                   style={{color: filter.name ? '#ff9800' : '#aaa'}}/>,
-                                onFilterDropdownVisibleChange: (visible) => {
-                                    this.setState({
-                                        filterDropdownVisible: visible,
-                                    }, () => this.name.focus());
-                                },
+
                             },
                             {
                                 width: '20%',
@@ -500,7 +496,7 @@ class TablelegalEntities extends React.Component {
                                            type="danger"
                                            onClick={() => this.setState({openCard: false})}
                                            shape="circle"
-                                           style={{left: 0, top: 20}}
+                                           
                                            icon="arrow-right"
                                        />
                                    }

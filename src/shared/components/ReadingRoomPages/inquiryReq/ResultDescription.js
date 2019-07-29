@@ -3,7 +3,7 @@ import { Field, reduxForm } from 'redux-form';
 import {Button, Form, message} from "antd";
 import {renderFileUploadBtn, renderTextareaLang} from "../../../utils/form_components";
 import {isEqual, pickBy} from "lodash";
-import {makeUrlForDownloadByRequestId, getCube, getWorkIdByRequestId, getValuesOfObjsWithProps} from "../../../actions/actions";
+import {makeUrlForDownloadByRequestId, getCube, getWorkIdByRequestId, getValuesOfObjsWithProps2} from "../../../actions/actions";
 import {CUBE_FOR_WORKS, DO_FOR_WORKS, DP_FOR_WORKS} from '../../../constants/tofiConstants';
 import { parseCube_new, parseForTable } from '../../../utils/cubeParser';
 import { getObjByProp, getFile, dFile } from '../../../actions/actions.js';
@@ -71,7 +71,7 @@ class ResultDescription extends React.PureComponent {
     let formData = new FormData();
     formData.append("objId", key);
     formData.append("propConsts", "resultDescription, resultResearch, resultResearchStatus");
-    let result = await getValuesOfObjsWithProps(formData);
+    let result = await getValuesOfObjsWithProps2(formData);
     if (!result.success) {
       console.error("Данные о результатах работы не найдены");
       return;

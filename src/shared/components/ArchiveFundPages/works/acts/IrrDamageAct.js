@@ -1,11 +1,14 @@
 import React from 'react';
-import {Button, Col, Row} from "antd";
+import {Button, Col, Row, Select} from "antd";
 import AntTable from "../../../AntTable";
 import axios from "axios";
 import {getAct1, getIdGetObj} from "../../../../actions/actions";
 import moment from "moment";
 import {parseCube_new, parseForTable} from "../../../../utils/cubeParser";
 import ReactDOMServer from 'react-dom/server';
+import ReactToPrint from "react-to-print";
+import './PrintAct.css';
+const { Option } = Select;
 
 class IrrDamageAct extends React.Component {
     state = {
@@ -21,14 +24,16 @@ class IrrDamageAct extends React.Component {
         caseAvailabilityCheck: 'state caseAvailabilityCheck',
         caseStorageMulti: 'state caseStorageMulti',
         total: 'state total',
+        page: 'ru',
+        tableData: [],
         loading: true,
         columns: [{
-            title: 'п/п №',
+            title: 'Порядковый номер',
             dataIndex: 'idx',
             key: 'idx',
             width: '5%'
         }, {
-            title: 'Заголовок ед. хр.',
+            title: 'Заголовок единиц хранения',
             dataIndex: 'name',
             key: 'name',
             width: '20%'
@@ -51,7 +56,7 @@ class IrrDamageAct extends React.Component {
             render: obj => obj && obj.value,
             width: '13%'
         }, {
-            title: 'К какому фонду относится (новый шифр)',
+            title: 'К какому архивному  фонду относится (новый шифр)',
             dataIndex: 'workRegFund',
             key: 'workRegFund',
             width: '15%'
@@ -60,92 +65,46 @@ class IrrDamageAct extends React.Component {
             dataIndex: 'description',
             key: 'description',
             width: '15%'
+        }],
+        columnsKaz: [{
+            title: 'Реттік нөмірі',
+            dataIndex: 'idx',
+            key: 'idx',
+            width: '5%'
+        }, {
+            title: 'Сақтау бірлігінің тақырыбы',
+            dataIndex: 'name',
+            key: 'name',
+            width: '20%'
+        }, {
+            title: 'Шифр(бар болған жағдайда)',
+            dataIndex: 'archiveCipher',
+            key: 'archiveCipher',
+            render: obj => obj && obj.value,
+            width: '17%'
+        }, {
+            title: 'Соңғы даталары',
+            dataIndex: 'date',
+            key: 'date',
+            render: (obj, rec) => rec.caseDbeg && rec.caseDend ? [rec.caseDbeg.value + ' - ' + rec.caseDend.value] : '',
+            width: '15%'
+        }, {
+            title: 'Парақтар саны (дыбысталу уақыты, метражы)',
+            dataIndex: 'caseNumberOfPages',
+            key: 'caseNumberOfPages',
+            render: obj => obj && obj.value,
+            width: '13%'
+        }, {
+            title: 'Қай архив қорына жатады(жаңа шифр)',
+            dataIndex: 'workRegFund',
+            key: 'workRegFund',
+            width: '15%'
+        }, {
+            title: 'Ескертпе',
+            dataIndex: 'description',
+            key: 'description',
+            width: '15%'
         }]
-    };
-
-    printContent = () => {
-        return (<div>
-            <h2 className="text-center" style={{textAlign: "center"}}>
-                Акт об обнаружении архивных документов</h2>
-            <Row>
-                <Col span={24} className="text-center" style={{textAlign: "center"}}><span
-                style={{textDecoration: "underline"}}>{this.state.fundArchive}</span><br/>(Название
-                    архива)</Col>
-            </Row>
-            <Row>
-                <h1 className="text-center upp-case"
-                    style={{textAlign: "center", textTransform: "uppercase"}}>Акт</h1>
-            </Row>
-            <Row>
-                <Col style={{width: "50%", float: "left"}}> <span
-                style={{textDecoration: "underline"}}>{this.props.initialValues.workActualEndDate.value} </span>№
-                    <span
-                    style={{textDecoration: "underline"}}> {this.props.actNumber}</span>
-                    <br/>(Дата)</Col>
-                <Col style={{width: "41.6%", float: "right"}}>Утверждаю<br/>Директор<br/></Col>
-            </Row>
-            <Row style={{clear: "both"}}>
-                <Col style={{width: "41.6%", float: "right"}}>
-                    <span
-                    style={{textDecoration: "underline"}}>{this.state.fundArchive}</span><br/>(Название
-                    архива)</Col>
-            </Row>
-            <Row style={{clear: "both"}}>
-                <Col
-                style={{width: "41.6%", float: "right"}}>_________________________<br/>Подпись
-                    Расшифровка
-                    подписи</Col>
-            </Row>
-            <Row style={{clear: "both"}}>
-                <Col style={{width: "41.6%", float: "right"}}>Дата: </Col>
-            </Row> <br/>
-            <h2 style={{textAlign: "center"}}>Об обнаружении архивных документов</h2>
-            <Row style={{clear: "both"}}>
-                <Col style={{width: "100%"}}>
-                    В ходе работы<br/>
-                    <span
-                    style={{textDecoration: "underline"}}> {this.state.caseAvailabilityCheck} </span>
-                    было обнаружено</Col>
-            </Row>
-            <Row>
-                <Col style={{width: "100%", textAlign: "center"}}>
-            <span style={{textDecoration: "underline"}}>
-                {this.state.fundNumber}, {this.state.caseStorageMulti}
-            </span> <br/>(в фонде, хранилище, рабочем помещении)
-                </Col>
-            </Row>
-            <AntTable pagination={false} loading={this.state.loading}
-                      dataSource={this.state.tableData} columns={this.state.columns}/>
-            <hr/>
-            <Row>
-                <Col style={{float: "left", width: "33%"}}>Итого обнаружено </Col><Col
-            style={{
-                float: "left",
-                width: "33%",
-                textAlign: "center"
-            }}> {this.state.total} </Col><Col
-            style={{float: "left", width: "33%"}}>ед.хр.</Col>
-                <Col style={{width: "100%", textAlign: "center"}}><span
-                style={{textDecoration: "underline"}}></span>(цифрами и
-                    прописью)</Col>
-
-            </Row>
-            <br/>
-
-            <h3><br/>Изменения в учетные документы внесены</h3>
-            <Row>
-                <Col col={24}>{this.props.initialValues.workAssignedTo.label}</Col>
-            </Row>
-
-            <h3>Проверку производили</h3>
-            <Row>
-                <Col col={24}>{this.props.initialValues.workAuthor.label}</Col>
-            </Row>
-            <Row>
-                <Col
-                col={24}>Дата: {this.props.initialValues.workActualEndDate.value}</Col>
-            </Row>
-        </div>)
     };
 
     toPrint = (printThis) => {
@@ -245,20 +204,240 @@ class IrrDamageAct extends React.Component {
 
     }
 
+    onChangeLng = (value) => {debugger
+        if(value !== this.state.page){
+            this.setState({
+                page: value
+            });
+        }
+    }
+
     render() {
         const {t, tofiConstants, initialValues, workId} = this.props;
         var fundName = initialValues.workRegFund.labelFull;
         return (
 
         <div className="act_print">
-            <Button type='primary' onClick={() => this.toPrint(this.printContent())}>Распечатать</Button>
-            {this.printContent()}
+            <Select
+                style={{width:"8%", marginRight: '7px'}}
+                name="fundmakerArchiveYear"
+                isSearchable={false}
+                onChange={this.onChangeLng}
+                defaultValue={this.state.page}
+            >
+                <Option value='ru' selected={true}>Ru</Option>
+                <Option value='kz'>Kz</Option>
+            </Select>
+            <ReactToPrint
+                trigger={() => <Button type='primary'>Распечатать</Button>}
+                content={() => this.componentRef}
+            />
+            {this.state.page === 'ru' ? (
+                <PrintContent {...this.props} {...this.state} ref={el => (this.componentRef = el)}/>
+            ) : (
+                <PrintContentKaz {...this.props} {...this.state} ref={el => (this.componentRef = el)}/>
+            )
+            }
         </div>
         )
     }
 
 
 }
+
+class PrintContent extends React.Component{
+    render(){
+        let i = 0;      let j = 0;
+        return (<div style={{padding: '40px 40px 40px 70px'}}>
+            <Row>
+                <Col style={{width: "47%", float: "left"}}> <span
+                >{this.props.fundArchive} </span>
+                </Col>
+                <Col style={{width: "43%", float: "right"}}>Утверждаю<br/><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(наименование должности, фамилия,
+                        инициалы руководителя архива )</small></p><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(подпись руководителя архива )</small></p><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(дата )</small></p>
+                </Col>
+            </Row><br/><br/>
+            <h1 style={{textAlign: "center"}}>Акт об обнаружении архивных документов</h1>
+            <Row style={{textAlign: "center"}}>__________ № __________</Row>
+            <Row style={{textAlign: "right"}}><Col style={{width: "45%", float: "left"}}>(дата)</Col></Row><br/>
+            <Row style={{clear: "both"}}>
+                <Col style={{width: "100%"}}>
+                    В ходе
+                    <span
+                        style={{textDecoration: "underline"}}> {this.props.caseAvailabilityCheck} </span>
+                    было обнаружено <span style={{}}>
+                {this.props.fundNumber}, {this.props.caseStorageMulti}
+            </span> </Col>
+            </Row><br/>
+            {/*<AntTable pagination={false} loading={this.props.loading}*/}
+            {/*          dataSource={this.props.tableData} columns={this.props.columns} className='prntTbl'/>*/}
+            <table className="tbltoprint" width="100%">
+                <thead>
+                <tr>
+                    {
+                        this.props.columns.map((el) => {
+                            return(
+                                <td style={{textAlign: 'center'}}><b>{el.title}</b></td>
+                            );
+                        })
+                    }
+                </tr>
+                <tr>
+                    {
+                        this.props.columns.map((el) => {
+                            j++;
+                            return(
+                                <td style={{textAlign: 'center'}}>{j}</td>
+                            );
+                        })
+                    }
+                </tr>
+                </thead>
+                <tbody>
+                {
+                    this.props.tableData.length > 0 ? (
+                        this.props.tableData.map((el) => {
+                            let lng = localStorage.getItem('i18nextLng');
+
+                            return(
+                                <tr>
+                                    <td>{el.idx}</td>
+                                    <td>{!!el.name ? el.name : ''}</td>
+                                    <td>{!!el.archiveCipher ? el.archiveCipher.value : ''}</td>
+                                    <td>{!!el.caseDbeg ? el.caseDbeg.value + ' : ' + el.caseDend.value : ''}</td>
+                                    <td>{!!el.caseNumberOfPages ? el.caseNumberOfPages.value : ''}</td>
+                                    <td>{!!el.workRegFund ? el.workRegFund : ''}</td>
+                                    <td>{!!el.description ? el.description : ''}</td>
+                                </tr>
+                            );
+                        })
+                    ) : (<tr><td colSpan='7' style={{textAlign: 'center'}}>нет данных</td></tr>)
+
+
+                }
+                </tbody>
+            </table><br/>
+
+            <Row>
+                <Col style={{float: "left", width: "33%"}}>Итого обнаружено {this.props.total} единиц хранения.</Col>
+
+            </Row>
+            <br/>
+            <Row>
+                <Col col={24}>{this.props.initialValues.workAssignedTo.label}</Col>
+            </Row>
+            <p><br/>Изменения в учетные документы по результатам описания внесены.</p>
+
+            <Row>
+                <Col col={24}>{this.props.initialValues.workAuthor.label}</Col>
+            </Row>
+            <Row>
+                <Col
+                    col={24}>Дата: {this.props.initialValues.workActualEndDate.value}</Col>
+            </Row>
+        </div>)
+    }
+};
+
+class PrintContentKaz extends React.Component{
+    render(){
+        let i = 0;      let j = 0;
+        return (<div style={{padding: '40px 40px 40px 70px'}}>
+            <Row>
+                <Col style={{width: "47%", float: "left"}}> <span
+                >{this.props.fundArchive} </span>
+                </Col>
+                <Col style={{width: "43%", float: "right"}}>Бекітемін<br/><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(архив басшысы лауазымының атауы,
+                        тегі, аты-жөні)</small></p><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(архив басшысының қолтаңбасы)</small></p><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(күні)</small></p>
+                </Col>
+            </Row><br/><br/>
+            <h1 style={{textAlign: "center"}}>Архивтік құжаттардың табылғаны туралы акті</h1>
+            <Row style={{textAlign: "center"}}>__________ № __________</Row>
+            <Row style={{textAlign: "right"}}><Col style={{width: "45%", float: "left"}}>(күні)</Col></Row><br/>
+            <Row style={{clear: "both"}}>
+                <Col style={{width: "100%"}}>
+                    <span
+                        style={{textDecoration: "underline"}}> {this.props.caseAvailabilityCheck} барысында  </span>
+                    <span style={{}}>
+                {this.props.fundNumber}, {this.props.caseStorageMulti}
+            </span> анықталды</Col>
+            </Row><br/>
+            {/*<AntTable pagination={false} loading={this.props.loading}*/}
+            {/*          dataSource={this.props.tableData} columns={this.props.columns} className='prntTbl'/>*/}
+            <table className="tbltoprint" width="100%">
+                <thead>
+                <tr>
+                    {
+                        this.props.columnsKaz.map((el) => {
+                            return(
+                                <td style={{textAlign: 'center'}}><b>{el.title}</b></td>
+                            );
+                        })
+                    }
+                </tr>
+                <tr>
+                    {
+                        this.props.columnsKaz.map((el) => {
+                            j++;
+                            return(
+                                <td style={{textAlign: 'center'}}>{j}</td>
+                            );
+                        })
+                    }
+                </tr>
+                </thead>
+                <tbody>
+                {
+                    this.props.tableData.length > 0 ? (
+                        this.props.tableData.map((el) => {
+                            let lng = localStorage.getItem('i18nextLng');
+
+                            return(
+                                <tr>
+                                    <td>{el.idx}</td>
+                                    <td>{!!el.name ? el.name : ''}</td>
+                                    <td>{!!el.archiveCipher ? el.archiveCipher.value : ''}</td>
+                                    <td>{!!el.caseDbeg ? el.caseDbeg.value + ' : ' + el.caseDend.value : ''}</td>
+                                    <td>{!!el.caseNumberOfPages ? el.caseNumberOfPages.value : ''}</td>
+                                    <td>{!!el.workRegFund ? el.workRegFund : ''}</td>
+                                    <td>{!!el.description ? el.description : ''}</td>
+                                </tr>
+                            );
+                        })
+                    ) : (<tr><td colSpan='7' style={{textAlign: 'center'}}>мәліметтер жоқ</td></tr>)
+
+
+                }
+                </tbody>
+            </table><br/>
+
+            <Row>
+                <Col style={{float: "left", width: "33%"}}>жиыны  {this.props.total} сақтау бірлігі анықталды.</Col>
+
+            </Row>
+            <br/>
+            <Row>
+                <Col col={24}>{this.props.initialValues.workAssignedTo.label}</Col>
+            </Row>
+            <p><br/>Сипаттау нәтижесі бойынша есепке алу құжаттарына өзгерістер енгізілді.</p>
+
+            <Row>
+                <Col col={24}>{this.props.initialValues.workAuthor.label}</Col>
+            </Row>
+            <Row>
+                <Col
+                    col={24}>Күні: {this.props.initialValues.workActualEndDate.value}</Col>
+            </Row>
+        </div>)
+    }
+};
+
 
 
 export default IrrDamageAct;

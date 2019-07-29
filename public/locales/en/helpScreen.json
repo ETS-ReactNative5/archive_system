@@ -4,7 +4,7 @@
   "HOWTOSIGNUP": "How to register in the system",
   "HOWTOORDERCASES": "How to order cases online",
   "HOWTOVIEWORDERS": "How to view orders",
-  "HOWTOSIGNUP_ANSWER":"Для регистрации в системе пользователю необходимо заполнить форму регистрации. Нажмите кнопку «Регистрация». Заполните идентификационные данные и нажмите кнопку «Зарегистрироваться».",
-  "HOWTOORDERCASES_ANSWER":"Дела заказываются в пункте меню «Использование»-> «Читальный зал». В читальном зале отображаются все архивные справочники. Необходимо выбрать нужное дело из списка и нажать на кнопку «Заказать».",
-  "HOWTOVIEWORDERS_ANSWER":"Просмотр статусов заказанных дел осуществляется в пункте меню «Использование»-> «Личный кабинет исследователя». На экране появляется многостраничный перечень всех требований и обращений текущего пользователя. Предоставляется возможность: 1) просмотра статуса и атрибутов заказа   2) описания причин отказа  3) заказ копии документов"
+  "HOWTOSIGNUP_ANSWER":"To register in the system, the user must fill out a registration form. Click «Register». Fill in the identification data and click the «Register».",
+  "HOWTOORDERCASES_ANSWER":"Cases are ordered in the menu item «Use»-> «Reading room». All archive directories are displayed in the reading room. You need to select the desired case from the list and click on the «Order».",
+  "HOWTOVIEWORDERS_ANSWER":"View the status of the ordered cases is carried out in the menu item «Use»-> «A personal account of the researcher». A multi-page list of all requirements and requests of the current user appears on the screen. The opportunity is provided: 1) view order status and attributes;  2) describe the reasons for the refusal;  3) ordering a copy of documents."
 }

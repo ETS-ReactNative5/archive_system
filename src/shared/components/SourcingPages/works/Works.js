@@ -471,7 +471,24 @@ class Works extends React.PureComponent {
       </span>
         </div>
     );
-
+    renderTableFooter = () => {
+        const { t } = this.props;
+        return (
+            <div className="table-footer birthday">
+                <div className="data-length">
+                    <div className="label">
+                        <label htmlFor="">{t("COUNT_ITOG")}</label>
+                        <Input
+                            size="small"
+                            type="text"
+                            readOnly
+                            value={this.filteredData.length + " / " + this.state.data.length}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    };
     render() {
         const menu = (
             <Menu>
@@ -626,6 +643,7 @@ class Works extends React.PureComponent {
                     <AntTable
                         loading={loading}
                         onChange={this.onChange}
+                        footer={this.renderTableFooter}
                         rowClassName={rec => {
                             if (rec.workStatusSource != null) {
                                 let newClass =

@@ -495,6 +495,25 @@ class NSAWorks extends React.PureComponent {
         });
     };
 
+    renderTableFooter = () => {
+        const { t } = this.props;
+        return (
+            <div className="table-footer birthday">
+                <div className="data-length">
+                    <div className="label">
+                        <label htmlFor="">{t("COUNT_ITOG")}</label>
+                        <Input
+                            size="small"
+                            type="text"
+                            readOnly
+                            value={this.filteredData.length + " / " + this.state.data.length}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     render() {
         const menu = (
             <Menu>
@@ -993,6 +1012,7 @@ class NSAWorks extends React.PureComponent {
                         dataSource={this.filteredData}
                         changeSelectedRow={this.changeSelectedRow}
                         openedBy="Works"
+                        footer={this.renderTableFooter}
                         // size="small"
                     />
                     <CSSTransition

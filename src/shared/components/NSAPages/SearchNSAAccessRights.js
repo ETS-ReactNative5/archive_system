@@ -16,6 +16,7 @@ import connect from "react-redux/es/connect/connect";
 import {getAllObjOfCls, getObjByObjVal, getPropVal} from "../../actions/actions";
 import TextArea from 'antd/lib/input/TextArea';
 import SelectVirt from '../SelectVirt';
+import moment from "moment";
 
 const FormItem = Form.Item;
 
@@ -126,6 +127,25 @@ class ClassificationInfo extends React.Component{
           data.locationOfSupplementaryMaterials = this.state.dataRec.locationOfSupplementaryMaterials ;
       }
 
+        if (!!this.props.initialValues.surnameOriginator2){
+            let surnameOriginator2 = {...this.props.initialValues.surnameOriginator2}
+            surnameOriginator2.value=this.props.user.obj
+            data.surnameOriginator=surnameOriginator2
+        }else {
+            data.surnameOriginator={
+                value:this.props.user.obj
+            }
+        }
+        if (!!this.props.initialValues.lastChangeDateScheme.idDataPropVal){
+            let lastChangeDateScheme = {...this.props.initialValues.lastChangeDateScheme}
+            lastChangeDateScheme.value=moment()
+            data.lastChangeDateScheme=lastChangeDateScheme
+        }else {
+            data.lastChangeDateScheme={
+                value:moment()
+            }
+        }
+
     this.props.onSave(data);
   };
 
@@ -231,5 +251,6 @@ class ClassificationInfo extends React.Component{
 export default connect(state => {
   return {
     accessDocumentOptions: state.generalData.accessDocument,
+      user: state.auth.user,
   }
 }, { getPropVal })(ClassificationInfo);

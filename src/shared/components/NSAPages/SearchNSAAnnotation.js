@@ -247,11 +247,29 @@ class SearchNSAAnnotation extends React.Component{
     } else {
 
     }
-    
+
+      let data = {};
+      if (!!this.props.initialValues2.surnameOriginator2){
+          let surnameOriginator2 = {...this.props.initialValues2.surnameOriginator2}
+          surnameOriginator2.value=this.props.user.obj
+          data.surnameOriginator=surnameOriginator2
+      }else {
+          data.surnameOriginator={
+              value:this.props.user.obj
+          }
+      }
+      if (!!this.props.initialValues2.lastChangeDateScheme.idDataPropVal){
+          let lastChangeDateScheme = {...this.props.initialValues2.lastChangeDateScheme}
+          lastChangeDateScheme.value=moment()
+          data.lastChangeDateScheme=lastChangeDateScheme
+      }else {
+          data.lastChangeDateScheme={
+              value:moment()
+          }
+      }
+      this.props.onSave(data);
     this.setState({flagSave: false});
     if (this.state.flagSaveFile === false) return;
-
-    let data = {};
     if (!isEqual(this.state.fundAnnotationFile, this.props.dataRec.fundAnnotationFile)) {
       data.fundAnnotationFile = this.state.fundAnnotationFile;
     };
@@ -482,6 +500,7 @@ class SearchNSAAnnotation extends React.Component{
 
 export default connect(state => {
   return {
+      user: state.auth.user,
 
   }
 }, { getPropVal })(reduxForm({ form: 'SearchNSAAnnotation', enableReinitialize: true })(SearchNSAAnnotation));

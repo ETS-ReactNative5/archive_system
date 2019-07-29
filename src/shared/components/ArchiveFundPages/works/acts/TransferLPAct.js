@@ -28,7 +28,6 @@ class TransferLPAct extends React.Component {
         nacladDate: '',
         cntCase:'0',
         nacladNumb: '',
-        savedList: '0',
         orgName: '',
         loading: true,
         savedList: '',

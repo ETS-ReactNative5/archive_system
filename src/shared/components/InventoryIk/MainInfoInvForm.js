@@ -140,18 +140,18 @@ class MainInfoFundForm extends React.Component {
     taggedSelectToRedux = (val, prevVal) => {
         if (!!val) {
             if (val.length > 0) {
-                let coppyPrevVal = [...prevVal]
+                let coppyPrevVal = prevVal !== undefined?  [...prevVal]:[]
                 let coppyVal = [...val]
                 let newArr = [];
                 let i;
-
-
                 let arrState = this.state.optionMultiSelect
+                // debugger
                 if (coppyPrevVal.length > 0) {
-                    for (i = 0; i < coppyPrevVal.length; i++) {
+                    for (let i = 0; i < coppyPrevVal.length; i++) {
                         if (coppyPrevVal[i].value === undefined) continue
                         if (coppyPrevVal[i].value.idDataPropVal !== undefined) {
                             let findePrevVal = this.state.optionMultiSelect.find((el) => el.value.idDataPropVal === coppyPrevVal[i].value.idDataPropVal)
+
                             if (findePrevVal === undefined) {
                                 arrState.push(coppyPrevVal[i])
                             }
@@ -160,13 +160,14 @@ class MainInfoFundForm extends React.Component {
                     }
 
                 }
-
                 for (let i = 0; i < coppyVal.length; i++) {
+
                     if (coppyVal[i].value === undefined) {
                         // let selectArr = this.state.optionMultiSelect;
                         let selectArr = arrState;
                         let findVal = selectArr.find((el) => el.value.value === coppyVal[i])
                         if (findVal !== undefined) {
+
                             newArr.push(findVal)
                         } else {
                             newArr.push({
@@ -176,11 +177,15 @@ class MainInfoFundForm extends React.Component {
                         }
                     }
                 }
+
+
                 if (coppyPrevVal.length > 0) {
                     this.setState({
                         optionMultiSelect: arrState
                     })
                 }
+
+
                 for (i = 0; i < coppyPrevVal.length; i++) {
                     let value = coppyPrevVal[i].value.value;
                     if (coppyVal.indexOf(value) == -1){
@@ -192,6 +197,7 @@ class MainInfoFundForm extends React.Component {
                     return index === self.indexOf(elem);
                 })
                 return newArr2
+
             } else {
                 return []
             }
@@ -339,6 +345,7 @@ class MainInfoFundForm extends React.Component {
             t, handleSubmit, reset, dirty, error, submitting, fundFeatureOptions, caseStorageMultiOptions, rackMultiOptions, sectionMultiOptions, shelfMultiOptions,
             documentTypeOptions, invTypeOptions, accessLevelOptions, invCaseSystemOptions,
             tofiConstants: {
+                documentFile,
                 invNumber, invDates, invCaseSystem, documentType, invType,  invApprovalDate1,
                 invTypeValue, invAgreement2Date,invDeadline,invAgreementNumber, fundFeature, invAgreementDate, invTypePerm, invFile, invStorage, invCont,
                 agreementProtocol,fundNumberOfCases, agreement2Protocol, approvalProtocol,invApprovalDate2, caseStorageMulti, rackMulti, sectionMulti, shelfMulti
@@ -658,6 +665,21 @@ class MainInfoFundForm extends React.Component {
                         }
                     }
                 />}
+                {documentFile && <Field
+                name='documentFile'
+                component={renderFileUploadBtn}
+                normalize={this.fileToRedux}
+                cubeSConst='CubeForAF_Inv'
+                disabled={this.props.initialValues.fundFeature.value === this.props.tofiConstants.included.id}
+
+                label={documentFile.name[this.lng]}
+                formItemLayout={
+                    {
+                        labelCol: {span: 10},
+                        wrapperCol: {span: 14}
+                    }
+                }
+            />}
 
 
                 {dirty && <Form.Item className="ant-form-btns">

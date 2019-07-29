@@ -148,7 +148,7 @@ class StorageUnits extends React.Component {
         const filtersCase = {
             filterDOAnd: [
                 {
-                    dimConst: "doForCase2",
+                    dimConst: "doForCase",
                     concatType: "and",
                     conds: [
                         {
@@ -164,7 +164,7 @@ class StorageUnits extends React.Component {
             ],
             filterDPAnd: [
                 {
-                    dimConst: "dpForCase2",
+                    dimConst: "dpForCase",
                     concatType: "and",
                     conds: [
                         {
@@ -176,7 +176,7 @@ class StorageUnits extends React.Component {
 
         };
         this.setState({loading: true});
-        this.props.getCube("CubeForAF_Case2", JSON.stringify(filtersCase))
+        this.props.getCube("CubeForAF_Case", JSON.stringify(filtersCase))
             .then(() => this.setState({loading: false, objInv:ids}))
             .catch(err => {
                 console.error(err);
@@ -223,19 +223,19 @@ class StorageUnits extends React.Component {
     componentWillUpdate(nextProps) {
         if (isEmpty(this.props.tofiConstants)) return;
 
-        if (this.props.CubeForAF_Case2 !== nextProps.CubeForAF_Case2) {
-            const {doForCase2, dpForCase2} = nextProps.tofiConstants;
+        if (this.props.CubeForAF_Case!== nextProps.CubeForAF_Case) {
+            const {doForCase, dpForCase} = nextProps.tofiConstants;
             this.setState(
                 {
                     loading: false,
                     data: parseCube_new(
-                        nextProps.CubeForAF_Case2['cube'],
+                        nextProps.CubeForAF_Case['cube'],
                         [],
                         'dp',
                         'do',
-                        nextProps.CubeForAF_Case2[`do_${doForCase2.id}`],
-                        nextProps.CubeForAF_Case2[`dp_${dpForCase2.id}`],
-                        `do_${doForCase2.id}`, `dp_${dpForCase2.id}`).map(this.renderTableData)
+                        nextProps.CubeForAF_Case[`do_${doForCase.id}`],
+                        nextProps.CubeForAF_Case[`dp_${dpForCase.id}`],
+                        `do_${doForCase.id}`, `dp_${dpForCase.id}`).map(this.renderTableData)
                 }
             );
         }
@@ -351,12 +351,12 @@ class StorageUnits extends React.Component {
     };
     onCreateObj = ({name, documentFile, ...values}) => {
         const cube = {
-            cubeSConst: "CubeForAF_Case2"
+            cubeSConst: "CubeForAF_Case"
         };
         const obj = {
             name: name,
             fullName: name,
-            clsConst: 'caseList2',
+            clsConst: 'caseList',
 
         };
         let newVal = {
@@ -386,11 +386,11 @@ class StorageUnits extends React.Component {
         let hideLoading;
         try {
             if (!c.cube) c.cube = {
-                cubeSConst: "CubeForAF_Case2",
-                doConst: "doForCase2",
-                dpConst: "dpForCase2"
+                cubeSConst: "CubeForAF_Case",
+                doConst: "doForCase",
+                dpConst: "dpForCase"
             };
-            if (!c.cube.data) c.cube.data = this.props.CubeForAF_Case2;
+            if (!c.cube.data) c.cube.data = this.props.CubeForAF_Case;
             c["obj"] = {
                 doItem: key
             }
@@ -418,10 +418,10 @@ class StorageUnits extends React.Component {
     };
     refreshRecord = (values) => {
         const cube = {
-            cubeSConst: 'CubeForAF_Case2',
-            doConst: 'doForCase2',
-            dpConst: 'dpForCase2',
-            data: this.props.CubeForAF_Case2
+            cubeSConst: 'CubeForAF_Case',
+            doConst: 'doForCase',
+            dpConst: 'dpForCase',
+            data: this.props.CubeForAF_Case
         };
         const obj = {
             doItem: this.state.selectedRow.key
@@ -495,6 +495,9 @@ class StorageUnits extends React.Component {
 
         return (
             <div className="EditCardCases">
+                <div className="title">
+                    <h2> {t("STORAGEUNIT")}</h2>
+                </div>
                 <div className="table-header">
                    <Button disabled={this.props.tofiConstants["userOfIK"].id !== this.props.user.cls} onClick={this.addCase}>{t('ADD')}</Button>
                     <div className="label-select">
@@ -613,8 +616,8 @@ class StorageUnits extends React.Component {
                                         <div className="editable-row-operations" style={{display: 'flex'}}>
                                             <Popconfirm title={this.props.t('CONFIRM_REMOVE')} onConfirm={() => {
                                                 const fd = new FormData();
-                                                fd.append("cubeSConst", "CubeForAF_Case2");
-                                                fd.append("dimObjConst", "dpForCase2");
+                                                fd.append("cubeSConst", "CubeForAF_Case");
+                                                fd.append("dimObjConst", "dpForCase");
                                                 fd.append("objId", record.key.split('_')[1]);
                                                 const hideLoading = message.loading(this.props.t('REMOVING'), 30);
                                                 dObj(fd)
@@ -697,7 +700,7 @@ class StorageUnits extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        CubeForAF_Case2: state.cubes["CubeForAF_Case2"],
+        CubeForAF_Case: state.cubes["CubeForAF_Case"],
         user: state.auth.user,
         orgSourceCube: state.cubes.orgSourceCube,
         InvItem: state.cubes.InvItem,

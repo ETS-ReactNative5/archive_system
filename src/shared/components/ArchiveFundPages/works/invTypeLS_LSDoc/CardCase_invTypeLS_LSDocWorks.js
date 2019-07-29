@@ -350,6 +350,8 @@ class CardCase_invTypeLS_LSDoc extends Component {
                                 tofiConstants={tofiConstants}
                                 initialValues={initialValues}
                                 stateRecord={stateRecord}
+                                t={t}
+
                             />
                         }
                     ]}

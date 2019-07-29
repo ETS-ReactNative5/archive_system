@@ -23,9 +23,21 @@ class Chat_FundMaker extends React.PureComponent {
         newFile: '',
         newLetter: '',
         newFileArr: '',
-        loading: false
+        loading: false,
+        openCard: false,
+        filter: {
+            name: '',
+            letterDetails: ''
+
+        },
     };
 
+    changeSelectedRow = rec => {
+        this.setState({
+            selectedRow: rec,
+            openCard: true
+        });
+    };
     onChange = (pagination, filters, sorter) => {
         if(sorter.columnKey === "letterDetails") {
             this.setState({sortState: !this.state.sortState});
@@ -128,20 +140,20 @@ class Chat_FundMaker extends React.PureComponent {
             });
             var dpForOrgFM = this.props.tofiConstants['dpForFundAndIK'].id;
             var doForOrgFM = this.props.tofiConstants['doForFundAndIK'].id;
-            var corresOrgId = this.state.cubeChat['dp_' + dpForOrgFM].find(obj => obj.prop == this.props.tofiConstants['corresOrg'].id).id;
-            var cubeChat = this.state.cubeChat;
+            var corresOrgId = res.data['dp_' + dpForOrgFM].find(obj => obj.prop == this.props.tofiConstants['corresOrg'].id).id;
+            var cubeChat = res.data;
             var cpxCorresID = cubeChat.cube.filter(el => el['dp_' + dpForOrgFM] == corresOrgId);
             var newData = cpxCorresID.map(el => {
-                var corresOrgFileProp = this.state.cubeChat['dp_' + dpForOrgFM].find(obj => obj.prop == this.props.tofiConstants['corresOrgFile'].id).id;
-                var letterDetailsProp = this.state.cubeChat['dp_' + dpForOrgFM].find(obj => obj.prop == this.props.tofiConstants['letterDetails'].id).id;
+                var corresOrgFileProp =res.data['dp_' + dpForOrgFM].find(obj => obj.prop == this.props.tofiConstants['corresOrgFile'].id).id;
+                var letterDetailsProp = res.data['dp_' + dpForOrgFM].find(obj => obj.prop == this.props.tofiConstants['letterDetails'].id).id;
                 return {
                     key: el.idDataPropVal,
                     doObj: el['do_' + doForOrgFM],
-                    corresOrgFile: !!this.state.cubeChat.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == corresOrgFileProp) &&
-                    !!this.state.cubeChat.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == corresOrgFileProp).valueFile &&
-                    this.state.cubeChat.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == corresOrgFileProp).valueFile['ru'],
-                    letterDetails: !!this.state.cubeChat.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == letterDetailsProp).valueStr &&
-                    this.state.cubeChat.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == letterDetailsProp).valueStr['ru'],
+                    corresOrgFile: !!res.data.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == corresOrgFileProp) &&
+                    !!res.data.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == corresOrgFileProp).valueFile &&
+                    res.data.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == corresOrgFileProp).valueFile['ru'],
+                    letterDetails: !!res.data.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == letterDetailsProp).valueStr &&
+                    res.data.cube.find(obj => obj.parentDataPropVal == el.idDataPropVal && obj['dp_' + dpForOrgFM] == letterDetailsProp).valueStr['ru'],
                     idName: !!el.valueStr && el.valueStr['ru']
                 }
             });
@@ -370,20 +382,35 @@ class Chat_FundMaker extends React.PureComponent {
             this.setState({data: newData});
         }
     }
+    onInputChange = e => {
+        this.setState({
+            filter: {
+                ...this.state.filter,
+                ["letterDetails"]: e.target.value
+            }
+        })
+    };
 
 
     render() {
+        const { filter} = this.state;
         const {tofiConstants: {corresOrgFile, letterDetails}} = this.props;
         this.lng = localStorage.getItem('i18nextLng');
+        if (!!this.state.data){
+        this.filteredData = this.state.data.filter(item => {
+            return (
+                (!!filter.letterDetails ? item.letterDetails && String(item.letterDetails).toLowerCase().includes(String(filter.letterDetails).toLowerCase()):true)
+            )
+        });}
         return (
         <div>
 
             <Spin spinning={this.state.loading}>
                 <Table
-                bordered
-                onChange={this.onChange}
-                columns={[
-                    {
+                    bordered
+                    onChange={this.onChange}
+                    columns={[
+                        {
                         key: 'letterDetails',
                         title: letterDetails.name[this.lng],
                         dataIndex: 'letterDetails',
@@ -394,6 +421,20 @@ class Chat_FundMaker extends React.PureComponent {
                             a.key - b.key
                         },
                         sortOrder: 'descend',
+                        filterDropdown: (
+                            <div className="custom-filter-dropdown">
+                                <Input
+                                    name="name"
+                                    suffix={filter.letterDetails  ?
+                                        <Icon type="close-circle" data-name="name"
+                                              onClick={this.emitEmpty}/> : null}
+                                    placeholder="Поиск"
+                                    onChange={this.onInputChange}
+                                />
+                            </div>
+                        ),
+                        filterIcon: <Icon type="filter"
+                                          style={{color: filter.letterDetails ? '#ff9800' : '#aaa'}}/>,
                     },
                     {
                         key: 'corresOrgFile',
@@ -445,15 +486,15 @@ class Chat_FundMaker extends React.PureComponent {
                         },
                     }
                 ]}
-                dataSource={this.state.data}
+                dataSource={this.filteredData}
                 size='small'
                 footer={this.renderTableHeader}
                 pagination={false}
                 scroll={{y: '100%'}}
                 onRowClick={this.onRowClick}
                 rowClassName={record => this.state.selectedRow && this.state.selectedRow.key === record.key ? 'row-selected' : ''}
-                style={{marginLeft: '5px'}}
-                />;
+                style={{marginLeft: '5px', marginTop: 40}}
+                />
             </Spin>
 
             <Modal visible={this.state.modalOpen}

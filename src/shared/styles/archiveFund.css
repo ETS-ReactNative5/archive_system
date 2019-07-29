@@ -6,6 +6,9 @@
 .minW900px {
   min-width: 900px !important; }
 
+.margin0-15 {
+  margin: 0 5px; }
+
 .borderGroup {
   border: 1px solid #e4e4e4;
   padding: 5px 10px; }
@@ -38,6 +41,7 @@
   left: 5%; }
   .w80 .ant-modal-content {
     height: 95vh; }
+    overflow-y: scroll; }
 
 .antForm-spaceBetween .ant-form-item-label {
   text-align: left;
@@ -709,6 +713,10 @@
     justify-content: flex-end; }
     .WorksChecking .table-footer button {
       margin-left: 8px; }
+
+.birthday {
+  display: flex;
+  justify-content: flex-end !important; }
 
 .EditCardCases {
   flex: 1;

@@ -3,13 +3,15 @@ import {
     getAct1, getCube, getIdGetObj,
     getValueOfMultiText
 } from "../../../../actions/actions";
-import {Button, Col, Row} from "antd";
+import {Button, Col, Row, Select} from "antd";
 import moment from "moment";
 import ReactDOMServer from 'react-dom/server';
 import AntTable from "../../../AntTable";
 import {parseCube_new, parseForTable} from "../../../../utils/cubeParser";
 import axios from 'axios';
-
+import ReactToPrint from "react-to-print";
+import './PrintAct.css';
+const { Option } = Select;
 
 class SearchAct extends React.Component {
 
@@ -27,8 +29,9 @@ class SearchAct extends React.Component {
         endDate: 'state endDate',
         invCount: '0',
         caseInInv: '0',
+        page: 'ru',
         columns: [{
-            title: 'п/п №',
+            title: 'Порядковый номер',
             dataIndex: 'idx',
             key: 'idx',
             width: '5%',
@@ -41,13 +44,13 @@ class SearchAct extends React.Component {
             key: 'workRegInv',
             width: '8%'
         }, {
-            title: 'Номер ед.хр.',
+            title: 'Номер единицы хранения',
             dataIndex: 'caseNumber',
             key: 'caseNumber',
             width: '8%',
             render: caseNumber => caseNumber && caseNumber.value
         }, {
-            title: 'Заголовок повреждений ед.хр.',
+            title: 'Заголовок единиц хранения',
             dataIndex: 'caseName',
             key: 'caseName',
             width: '24%',
@@ -68,6 +71,51 @@ class SearchAct extends React.Component {
             ,
             {
                 title: 'Предпологаемые причины отсутсвия',
+                dataIndex: 'absenceCase',
+                key: 'absenceCase',
+                width: '20%'
+            }],
+        columnsKaz: [{
+            title: 'Реттік нөмірі',
+            dataIndex: 'idx',
+            key: 'idx',
+            width: '5%',
+            render: (obj, rec, i) => {
+                return i + 1;
+            }
+        }, {
+            title: 'Тізімдеменің нөмірі',
+            dataIndex: 'workRegInv',
+            key: 'workRegInv',
+            width: '8%'
+        }, {
+            title: 'Сақтау бірлігінің нөмірі',
+            dataIndex: 'caseNumber',
+            key: 'caseNumber',
+            width: '8%',
+            render: caseNumber => caseNumber && caseNumber.value
+        }, {
+            title: 'Сақтау бірлігінің тақырыбы',
+            dataIndex: 'caseName',
+            key: 'caseName',
+            width: '24%',
+            render: (obj, rec) => rec.name
+        }, {
+            title: 'Соңғы даталары',
+            dataIndex: 'invDates',
+            key: 'invDates',
+            width: '15%',
+            render: (text, rec) => [rec.caseDbeg.value + ' - ' + rec.caseDend.value]
+        }, {
+            title: 'Парақтар саны (дыбысталу уақыты, метражы)',
+            dataIndex: 'caseNumberOfPages',
+            key: 'caseNumberOfPages',
+            width: '10%',
+            render: obj => obj && obj.value
+        }
+            ,
+            {
+                title: 'Жоқ болуының болжамды себептері',
                 dataIndex: 'absenceCase',
                 key: 'absenceCase',
                 width: '20%'
@@ -176,6 +224,14 @@ class SearchAct extends React.Component {
 
     }
 
+    onChangeLng = (value) => {debugger
+        if(value !== this.state.page){
+            this.setState({
+                page: value
+            });
+        }
+    }
+
     toPrint = (printThis) => {
         const htmlString = ReactDOMServer.renderToString(printThis);
         var win = window.open();
@@ -188,115 +244,30 @@ class SearchAct extends React.Component {
         win.close();
     };
 
-
-    printContent = () => {
-        return (<div>
-            <Row>
-                <Col span={24} className="text-center" style={{textAlign: "center"}}><span
-                style={{textDecoration: "underline"}}>{this.state.fundArchive}</span><br/>(Название
-                    архива)</Col>
-            </Row>
-            <Row>
-                <h1 className="text-center upp-case"
-                    style={{textAlign: "center", textTransform: "uppercase"}}>Акт</h1>
-            </Row>
-            <Row>
-                <Col style={{width: "50%", float: "left"}}> <span
-                style={{textDecoration: "underline"}}>{this.props.initialValues.workActualEndDate.value} </span>
-                    № <span
-                    style={{textDecoration: "underline"}}> {this.props.actNumber}</span>
-                    <br/>(Дата)</Col>
-                <Col style={{width: "41.6%", float: "right"}}>Утверждаю<br/>Директор<br/></Col>
-            </Row>
-            <Row style={{clear: "both"}}>
-                <Col style={{width: "41.6%", float: "right"}}>
-                    <span
-                    style={{textDecoration: "underline"}}>{this.state.fundArchive}</span><br/>(Название
-                    архива)</Col>
-            </Row>
-            <Row style={{clear: "both"}}>
-                <Col
-                style={{width: "41.6%", float: "right"}}>_________________________<br/>Подпись
-                    Расшифровка
-                    подписи</Col>
-            </Row>
-            <Row style={{clear: "both"}}>
-                <Col style={{width: "41.6%", float: "right"}}>Дата: </Col>
-            </Row> <br/>
-            <Row className="text-center">
-                <h2 className="text-center">О не обнаружении документов, пути розыска
-                    которых исчерпаны</h2>
-            </Row>
-            <Row>
-                <Col col={24}>Фонт № <span
-                style={{textDecoration: "underline"}}>{this.state.fundNumber}</span></Col>
-            </Row>
-            <br/>
-            <Row>
-                <Col col={24}>
-                    В результате розыска дел установлено отстутсвие
-                    в фонде перечисленных ниже документов. Предпринятые архивом меры по
-                    розыску положительных результатов не дали, в связи с чем, считаем
-                    возможным снять с учета:
-               </Col>
-            </Row>
-            <AntTable pagination={false} dataSource={this.state.tableData} loading={false}
-                      columns={this.state.columns}/>
-            <Row>Содержание утраченных документов может быть частично восполнено
-                следующими делами:{this.state.tableData[0] && this.state.tableData[0].casesRecovery.map(el=>el.value).join(',') }</Row>
-
-            <Row>
-                Заведующий отделом <br/>
-                Подпись Расшифровка подписи
-            </Row>
-
-            <Row>
-                Заведующий хранилищем <br/>
-                Подпись Расшифровка подписи
-            </Row>
-
-            <Row>
-                Главный хранитель <br/>
-                Подпись Расшифровка подписи
-            </Row>
-
-
-            <Row>
-                ________ _________________ <br/>
-                (№ и дата разрешения уполномоченного органа и соответсвующего местного
-                исполнительного органа на снятие с учета необнаруженинных документов, пути
-                розыска которых исчерпаны)
-            </Row>
-
-
-            <Row>
-                ________ _________________ <br/>
-                (№ и дата приказа директора архива о снятии с учета необнаруженных
-                архивных документов, пути розыска которых ичерпаны)
-            </Row>
-
-
-            <h3 style={{}}>Изменения в учетные документы внесены</h3>
-            <Row>
-                <Col col={24}>{this.props.initialValues.workAssignedTo.label}</Col>
-
-            </Row>
-            <Row>
-                <Col
-                col={24}>Дата: {this.props.initialValues.workActualEndDate.value}</Col>
-            </Row>
-        </div>)
-    };
-
     render() {
         const {t, tofiConstants, initialValues, workId} = this.props;
         return (
         <div className="act_print">
-            <Button type='primary' onClick={() => this.toPrint(this.printContent())}>Распечатать</Button>
-            <h2 className="text-center" style={{textAlign: "center"}}>
-                Акт о не обнаружении документов, пути розыска которых
-                исчерпаны {this.state.fundArchive}</h2>
-            {this.printContent()}
+            <Select
+                style={{width:"8%", marginRight: '7px'}}
+                name="fundmakerArchiveYear"
+                isSearchable={false}
+                onChange={this.onChangeLng}
+                defaultValue={this.state.page}
+            >
+                <Option value='ru' selected={true}>Ru</Option>
+                <Option value='kz'>Kz</Option>
+            </Select>
+            <ReactToPrint
+                trigger={() => <Button type='primary'>Распечатать</Button>}
+                content={() => this.componentRef}
+            />
+            {this.state.page === 'ru' ? (
+                <PrintContent {...this.props} {...this.state} ref={el => (this.componentRef = el)}/>
+            ) : (
+                <PrintContentKaz {...this.props} {...this.state} ref={el => (this.componentRef = el)}/>
+            )
+            }
 
         </div>
 
@@ -304,5 +275,261 @@ class SearchAct extends React.Component {
     }
 }
 
+class PrintContent extends React.Component{
+    render(){
+        let i = 0;      let j = 0;
+        return (<div style={{padding: '40px 40px 40px 70px'}}>
+            <Row>
+                <Col style={{width: "47%", float: "left"}}> <span
+                >{this.props.fundArchive} </span>
+                </Col>
+                <Col style={{width: "43%", float: "right"}}>Утверждаю<br/><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(наименование должности, фамилия,
+                        инициалы руководителя архива )</small></p><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(подпись руководителя архива )</small></p><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(дата )</small></p>
+                </Col>
+            </Row><br/><br/>
+            <h1 style={{textAlign: "center"}}>Акт о необнаружении документов, пути розыска которых исчерпаны</h1>
+            <Row style={{textAlign: "center"}}>__________ № __________</Row>
+            <Row style={{textAlign: "right"}}><Col style={{width: "45%", float: "left"}}>(дата)</Col></Row><br/>
+            <Row style={{}}>Архивный фонд №  <span
+            >{this.props.fundNumber}</span></Row>
+            <Row>
+                <Col col={24}>
+                    В результате розыска дел установлено отстутсвие
+                    в фонде перечисленных ниже документов. Предпринятые архивом меры по
+                    розыску положительных результатов не дали, в связи с чем, считаем
+                    возможным снять с учета:
+                </Col>
+            </Row><br/>
+            {/*<AntTable pagination={false} dataSource={this.props.tableData} loading={false}*/}
+            {/*          columns={this.props.columns} className='prntTbl'/>*/}
+            <table className="tbltoprint" width="100%">
+                <thead>
+                <tr>
+                    {
+                        this.props.columns.map((el) => {
+                            return(
+                                <td><b>{el.title}</b></td>
+                            );
+                        })
+                    }
+                </tr>
+                <tr>
+                    {
+                        this.props.columns.map((el) => {
+                            j++;
+                            return(
+                                <td style={{textAlign: 'center'}}>{j}</td>
+                            );
+                        })
+                    }
+                </tr>
+                </thead>
+                <tbody>
+                {
+                    this.props.tableData.length > 0 ? (
+                        this.props.tableData.map((el) => {
+                            let lng = localStorage.getItem('i18nextLng');
+                            i++;
+                            console.log(el);
+                            return(
+                                <tr>
+                                    <td>{i}</td>
+                                    <td>{!!el.workRegInv ? el.workRegInv : ''}</td>
+                                    <td>{!!el.caseNumber ? el.caseNumber.value : ''}</td>
+                                    <td>{!!el.name ? el.name : ''}</td>
+                                    <td>{!!el.caseDbeg ? el.caseDbeg.value + ' : ' + el.caseDend.value : ''}</td>
+                                    <td>{!!el.caseNumberOfPages ? el.caseNumberOfPages.value : ''}</td>
+                                    <td>{!!el.absenceCase ? el.absenceCase : ''}</td>
+                                </tr>
+                            );
+                        })
+                    ) : (<tr><td colSpan='7' style={{textAlign: 'center'}}>нет данных</td></tr>)
+
+                }
+                </tbody>
+            </table><br/>
+            <Row>
+                Итого {this.props.total} единиц хранения.
+            </Row>
+            <Row>Содержание утраченных документов может быть частично восполнено
+                следующими делами:{this.props.tableData[0] && this.props.tableData[0].casesRecovery && this.props.tableData[0].casesRecovery.map(el=>el.value).join(',') }</Row>
+            <Row><br/>
+                <Col span={11}>
+                    <p style={{borderBottom: '1px solid black'}}></p><p style={{textAlign: 'center'}}><small>(фамилия, инициалы, подпись заведующего отделом)</small></p>
+                </Col>
+            </Row><br/>
+            <Row>
+                <Col span={11}>
+                    <p style={{borderBottom: '1px solid black'}}></p><p style={{textAlign: 'center'}}><small>(фамилия, инициалы, подпись заведующего хранилищем)</small></p>
+                </Col>
+            </Row><br/>
+            <Row>
+                <Col span={11}>
+                    <p style={{borderBottom: '1px solid black'}}></p><p style={{textAlign: 'center'}}><small>(фамилия, инициалы, подпись главного хранителя фондов)</small></p>
+                </Col>
+            </Row>
+
+
+            <Row>
+                ________ _________________ <br/>
+                (номер и дата разрешения уполномоченного органа
+                и соответствующего местного исполнительного
+                органа на снятие с учета необнаруженных
+                документов, пути розыска которых исчерпаны
+                )
+            </Row>
+
+
+            <Row>
+                ________ _________________ <br/>
+                (номер и дата приказа директора архива
+                о снятии с учета необнаруженных
+                архивных документов,
+                пути розыска которых исчерпаны
+                )
+            </Row>
+
+
+            <p style={{}}>Изменения в учетные документы внесены.</p>
+            <Row>
+                <Col col={24}>{this.props.initialValues.workAssignedTo.label}</Col>
+
+            </Row>
+            <Row>
+                <Col
+                    col={24}>Дата: {this.props.initialValues.workActualEndDate.value}</Col>
+            </Row>
+        </div>)
+    }
+};
+
+class PrintContentKaz extends React.Component{
+    render(){
+        let i = 0;      let j = 0;
+        return (<div style={{padding: '40px 40px 40px 70px'}}>
+            <Row>
+                <Col style={{width: "47%", float: "left"}}> <span
+                >{this.props.fundArchive} </span>
+                </Col>
+                <Col style={{width: "43%", float: "right"}}>Бекітемін<br/><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(архив басшысы лауазымының атауы,
+                        тегі, аты-жөні
+                        )</small></p><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(архив басшысының қолтаңбасы )</small></p><br/>
+                    <p style={{borderBottom: '1px solid black',textAlign: 'center'}}></p><p style={{textAlign: 'center'}}><small>(күні )</small></p>
+                </Col>
+            </Row><br/><br/>
+            <h1 style={{textAlign: "center"}}>Іздеу жолдары таусылған құжаттардың табылмағаны туралы акті</h1>
+            <Row style={{textAlign: "center"}}>__________ № __________</Row>
+            <Row style={{textAlign: "right"}}><Col style={{width: "45%", float: "left"}}>(күні)</Col></Row><br/>
+            <Row style={{}}>№  <span
+            >{this.props.fundNumber} архив қоры</span></Row>
+            <Row>
+                <Col col={24}>
+                    Іздеу жолдары нәтижесінде төменде аталған құжаттардың архивтік қорда жоқ екені анықталды. Архивтің іздеу шаралары оң нәтиже бермеді, осыған орай есептен алуға болады деп есептейміз
+                </Col>
+            </Row><br/>
+            {/*<AntTable pagination={false} dataSource={this.props.tableData} loading={false}*/}
+            {/*          columns={this.props.columns} className='prntTbl'/>*/}
+            <table className="tbltoprint" width="100%">
+                <thead>
+                <tr>
+                    {
+                        this.props.columnsKaz.map((el) => {
+                            return(
+                                <td><b>{el.title}</b></td>
+                            );
+                        })
+                    }
+                </tr>
+                <tr>
+                    {
+                        this.props.columnsKaz.map((el) => {
+                            j++;
+                            return(
+                                <td style={{textAlign: 'center'}}>{j}</td>
+                            );
+                        })
+                    }
+                </tr>
+                </thead>
+                <tbody>
+                {
+                    this.props.tableData.length > 0 ? (
+                        this.props.tableData.map((el) => {
+                            let lng = localStorage.getItem('i18nextLng');
+                            i++;
+                            console.log(el);
+                            return(
+                                <tr>
+                                    <td>{i}</td>
+                                    <td>{!!el.workRegInv ? el.workRegInv : ''}</td>
+                                    <td>{!!el.caseNumber ? el.caseNumber.value : ''}</td>
+                                    <td>{!!el.name ? el.name : ''}</td>
+                                    <td>{!!el.caseDbeg ? el.caseDbeg.value + ' : ' + el.caseDend.value : ''}</td>
+                                    <td>{!!el.caseNumberOfPages ? el.caseNumberOfPages.value : ''}</td>
+                                    <td>{!!el.absenceCase ? el.absenceCase : ''}</td>
+                                </tr>
+                            );
+                        })
+                    ) : (<tr><td colSpan='7' style={{textAlign: 'center'}}>мәліметтер жоқ</td></tr>)
+
+                }
+                </tbody>
+            </table><br/>
+            <Row>
+                Жиыны {this.props.total} сақтау бірлігі.
+            </Row>
+            <Row>Жоғалған құжаттардың мазмұны мынадай істермен ішінара толықтырылуы мүмкін:{this.props.tableData[0] && this.props.tableData[0].casesRecovery && this.props.tableData[0].casesRecovery.map(el=>el.value).join(',') }</Row>
+            <Row><br/>
+                <Col span={11}>
+                    <p style={{borderBottom: '1px solid black'}}></p><p style={{textAlign: 'center'}}><small>(бөлім меңгерушісінің тегі, аты-жөні, қолтаңбасы)</small></p>
+                </Col>
+            </Row><br/>
+            <Row>
+                <Col span={11}>
+                    <p style={{borderBottom: '1px solid black'}}></p><p style={{textAlign: 'center'}}><small>(архив қоймасы меңгерушісінің тегі, аты-жөні, қолтаңбасы)</small></p>
+                </Col>
+            </Row><br/>
+            <Row>
+                <Col span={11}>
+                    <p style={{borderBottom: '1px solid black'}}></p><p style={{textAlign: 'center'}}><small>(бас қор сақтаушысының тегі, аты-жөні, қолтаңбасы)</small></p>
+                </Col>
+            </Row>
+
+
+            <Row>
+                ________ _________________ <br/>
+                (уәкілетті органның және тиісті жергілікті атқарушы
+                органның іздеу жолдары аяқталған табылмаған құжаттарды
+                есептен шығаруға рұқсатының нөмірі және күні
+                )
+            </Row>
+
+
+            <Row>
+                ________ _________________ <br/>
+                (іздеу жолдары аяқталған, табылмаған архивтік
+                құжаттарды есептен шығару туралы архив
+                директоры бұйрығының нөмірі және күні
+                )
+            </Row>
+
+
+            <p style={{}}>Есепке алу құжаттарына өзгерістер енгізілді.</p>
+            <Row>
+                <Col col={24}>{this.props.initialValues.workAssignedTo.label}</Col>
+
+            </Row>
+            <Row>
+                <Col
+                    col={24}>Күні: {this.props.initialValues.workActualEndDate.value}</Col>
+            </Row>
+        </div>)
+    }
+};
 
 export default SearchAct;

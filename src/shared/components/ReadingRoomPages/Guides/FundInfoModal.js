@@ -174,7 +174,7 @@ class FundInfoModal extends React.Component {
                         rows="10"
                         type="text"
                         value={''}
-                        readOnly={true}
+                        readOnly={false}
                         title={''}
                       />
                     </div>

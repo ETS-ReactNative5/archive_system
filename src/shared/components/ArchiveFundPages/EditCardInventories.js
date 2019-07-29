@@ -308,7 +308,7 @@ class EditCardInventories extends Component {
     };
 
     renderTableData = item => {
-        const constArr = ['invNumber', 'invDates', 'invType', 'invStorage', 'fundNumberOfCases', "caseStorageMulti", "rackMulti", "sectionMulti", "shelfMulti", 'fundNumberOfCasesWithFiles',
+        const constArr = ['invNumber', 'invDates', 'copyQuantity', 'invType', 'invStorage', 'fundNumberOfCases', "caseStorageMulti", "rackMulti", "sectionMulti", "shelfMulti", 'fundNumberOfCasesWithFiles',
             'documentType', 'fundFeature', 'invCaseSystem', 'invApprovalDate2', 'invApprovalDate1', 'invAgreement2Date',
             'invAgreementDate', 'agreementProtocol', 'agreement2Protocol', 'approvalProtocol',"invFile", 'invCont'];
 

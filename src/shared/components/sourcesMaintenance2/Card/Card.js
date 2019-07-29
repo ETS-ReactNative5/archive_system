@@ -21,7 +21,7 @@ import Contact_IK from "./Contact_IK";
 import Chat_FundMaker from "../../SourcingPages/fundMaker/Chat_FundMaker";
 import StorageOptions_IK from "./StorageOptions_IK";
 import Nomenclatura_IK from "./Nomenclatura_IK";
-
+import Size from "./Size"
 class Card extends Component {
     state = {
         dataoption: {},
@@ -32,8 +32,10 @@ class Card extends Component {
     };
 
 
+
     render() {
         const {t, tofiConstants, saveProps, initialValues,dateIncludeOfIk} = this.props;
+        const lng = localStorage.getItem('i18nextLng');
         return <Spin spinning={this.state.loading}>
             <AntTabs
             tabs={[
@@ -49,7 +51,7 @@ class Card extends Component {
                 },
                 {
                     tabKey: 'Contact',
-                    tabName: 'Контакт',
+                    tabName: t('CONTACTS'),
                     tabContent: <Contact_IK
                     t={t}
                     selectedIK={initialValues}
@@ -74,6 +76,16 @@ class Card extends Component {
                     tofiConstants={tofiConstants}
                     dateIncludeOfIk={dateIncludeOfIk}
                     />
+                },
+                {
+                    tabKey: 'Size',
+                    tabName:t("SIZE"),
+                    tabContent:<Size
+                            t={t}
+                            selectedIK={initialValues}
+                            tofiConstants={tofiConstants}
+                            dateIncludeOfIk={dateIncludeOfIk}
+                        />
                 },
                 {
                     tabKey: 'Chat',

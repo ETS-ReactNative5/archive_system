@@ -606,6 +606,7 @@ class SearchNSA extends Component {
             fundBiographArcheographNoteMulti:fundBiographArcheographNoteMultiObj && fundBiographArcheographNoteMultiObj.values ? fundBiographArcheographNoteMultiObj.values : [],
             fundHistoricalNote:fundHistoricalNoteObj && fundHistoricalNoteObj.values ? fundHistoricalNoteObj.values : [],
             surnameOriginator: surnameOriginatorObj && surnameOriginatorObj.values ? surnameOriginatorObj.values.label : "" ,
+            surnameOriginator2: surnameOriginatorObj && surnameOriginatorObj.values ? surnameOriginatorObj.values : "" ,
         }
     };
 

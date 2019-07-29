@@ -189,7 +189,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
                 <Breadcrumb.Item>
                     <b>{this.props.tofiConstants.caseAvailabilityCheck.name[this.lng]}
                         <span style={{fontSize: '13px',}}>&#8594;</span>
-                        {this.props.t('FUND_NUMB')}: {this.state.workRegFundNumber + this.state.workRegFundIndex}, {this.props.t('INV_NUMB')}: {this.state.workRegInvNumber}
+                        {this.props.t('FUND_NUMB')}: {this.state.workRegFundIndex}, {this.props.t('INV_NUMB')}: {this.state.workRegInvNumber}
                     </b>
                 </Breadcrumb.Item>
             </Breadcrumb>
@@ -231,7 +231,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
             const fd = new FormData();
             const datas = [{
                 objs: `${this.props.match.params.fund.split('_')[0]}`,
-                propConsts: "caseNumber,fundIndex"
+                propConsts: "caseNumber,fundNumber"
             }, {
                 objs: `${this.props.match.params.fund.split('_')[1]}`,
                 propConsts: "invNumber"
@@ -241,7 +241,7 @@ class ArchiveFundWorksChecking extends React.PureComponent {
             .then(res => {
                 if (res.success) {
                     const workRegFundNumber = res.data.find(obj => obj.id == this.props.match.params.fund.split('_')[0]).caseNumber[this.lng];
-                    const workRegFundIndex = res.data.find(obj => obj.id == this.props.match.params.fund.split('_')[0]).fundIndex[this.lng];
+                    const workRegFundIndex = res.data.find(obj => obj.id == this.props.match.params.fund.split('_')[0]).fundNumber[this.lng];
                     const workRegInvNumber = res.data.find(obj => obj.id == this.props.match.params.fund.split('_')[1]).invNumber[this.lng];
                     this.setState({workRegFundNumber, workRegFundIndex, workRegInvNumber})
                 }

@@ -1,11 +1,13 @@
 import React, {useRef} from 'react';
 import {getAct1, getCube, getIdGetObj} from "../../../../actions/actions";
-import {Button, Col, Row} from "antd";
+import {Button, Col, Row, Select} from "antd";
 import ReactDOMServer from 'react-dom/server';
 import AntTable from "../../../AntTable";
 import {parseCube_new, parseForTable} from "../../../../utils/cubeParser";
 import axios from 'axios';
-
+import ReactToPrint from "react-to-print";
+import './PrintAct.css';
+const { Option } = Select;
 
 class GiveToAct extends React.Component {
 
@@ -22,10 +24,13 @@ class GiveToAct extends React.Component {
         endDate: 'state endDate',
         invCount: '0',
         caseInInv: '0',
+        page: 'ru',
         disinfection: '0',
         disinfestation: '0',
         restoration: '0',
         binding: '0',
+        columns: [],
+        tableData: [],
         restorationOfFadingTexts: '0',
         irreparablyDamaged: '0',
         hasNotInInv: '0',
@@ -59,20 +64,19 @@ class GiveToAct extends React.Component {
                 endDate: data.workActualEndDate,
                 invNumber: data.invNumber,
                 cntCase: data.cntCase,
-                cntAdded: data.cntAdded,
                 columns: [{
-                    title: 'Опись №',
+                    title: 'Опись №___',
                     dataIndex: 'idx',
                     key: 'idx',
                     width: '5%',
                 }, {
-                    title: 'Ед.хр. №',
+                    title: 'Единица хранения № __',
                     dataIndex: 'caseNumber',
                     key: 'caseNumber',
                     width: '8',
                     render: caseNumber => caseNumber && caseNumber.value
                 }, {
-                    title: 'Заголовок ед.хр.',
+                    title: 'Заголовок единицы хранения',
                     dataIndex: 'caseName',
                     key: 'caseName',
                     width: '32%',
@@ -156,6 +160,14 @@ class GiveToAct extends React.Component {
 
     }
 
+    onChangeLng = (value) => {debugger
+        if(value !== this.state.page){
+            this.setState({
+                page: value
+            });
+        }
+    }
+
     toPrint = (printThis) => {
         const htmlString = ReactDOMServer.renderToString(printThis);
         var win = window.open();
@@ -168,133 +180,282 @@ class GiveToAct extends React.Component {
         win.close();
     };
 
-
-    printContent = () => {
-        return (<div>
-
-            <Row>
-                <Col span={24} className="text-center" style={{textAlign: "center"}}><span
-                style={{textDecoration: "underline"}}>{this.state.fundArchive}</span><br/>(Название
-                    архива)</Col>
-            </Row>
-            <Row>
-                <h1 className="text-center upp-case"
-                    style={{textAlign: "center", textTransform: "uppercase"}}>Акт</h1>
-            </Row>
-            <Row>
-                <Col style={{width: "50%", float: "left"}}> <span
-                style={{textDecoration: "underline"}}>{this.props.initialValues.workActualStartDate.value} </span>
-                    № <span
-                    style={{textDecoration: "underline"}}> {this.props.actNumber}</span>
-                    <br/>(Дата)</Col>
-                <Col style={{width: "41.6%", float: "right"}}>Утверждаю<br/>Директор<br/></Col>
-            </Row>
-            <Row style={{clear: "both"}}>
-                <Col style={{width: "41.6%", float: "right"}}>
-                    <span
-                    style={{textDecoration: "underline"}}>{this.state.fundArchive}</span><br/>(Название
-                    архива)</Col>
-            </Row>
-            <Row style={{clear: "both"}}>
-                <Col
-                style={{width: "41.6%", float: "right"}}>_________________________<br/>Подпись
-                    Расшифровка
-                    подписи</Col>
-            </Row>
-            <Row style={{clear: "both"}}>
-                <Col style={{width: "41.6%", float: "right"}}>Дата: </Col>
-            </Row> <br/>
-            <Row>
-                <h2 className="text-center">о выдаче архивных документов во временное
-                    пользование</h2>
-            </Row>
-
-            <Row>
-                _____________________________________________________________<br/>
-                <p style={{textAlign: 'center'}}>(наименование организации) </p>
-
-            </Row>
-            <Row>
-                _____________________________________________________________<br/>
-                <p style={{textAlign: 'center'}}>(почтовый индекс, адрес, телефон)</p>
-                <p>Основание: _______________________________________________</p>
-
-            </Row>
-            <Row>
-
-                <p>Для какой цели выдаются документы:<br/>
-                    _________________________________________________________</p>
-                <p style={{textAlign: 'center'}}>(наименование, номер) </p>
-            </Row>
-
-            <AntTable columns={this.state.columns} dataSource={this.state.tableData}>
-
-            </AntTable>
-
-            Всего выдается _________________ (_______________) ед.хр. (общим количеством
-            листов, временем звучания, метражом) на срок _______________________
-            <p>Документвы выданы в упорядоченном состоянии.</p>
-            <p>Получатель обязуется не предоставлять документы, полученные во временное
-                пользование, для просмотра, прослушивания или использования другим
-                организациям и посторонним лицам, не выдавать по ним копий, выписок и
-                справок, не производить изъятия каких-либо частей из выданных документов,
-                не публиковать документы без разрешения архива.</p>
-            <p>Получатель предупрежден об отвественности по закону в случае утраты или
-                повреждения выданных документов</p>
-
-            <p>Документы сдал<br/></p>
-            <Row>
-                <Col col={24}>Наименование должности работника Подпись Расшифровка подписи<br/>Дата<br/><br/>Руководитель
-                    архива Подпись Расшифровка подписи<br/>Печать архива<br/>Дата</Col>
-            </Row>
-            <br/>
-            <p>Документы принял<br/></p>
-            <Row>
-                <Col col={24}>Наименование должности работника организации-получателя
-                    Подпись Расшифровка подписи<br/>Дата<br/><br/>Руководитель
-                    организации-получателя Подпись Расшифровка подписи<br/>Печать
-                    организации-получателя<br/>Дата</Col>
-            </Row>
-            ____________________________________________________________<br/>
-            ____________________________________________________________<br/>
-
-
-            <h3 style={{}}> Документы сдал</h3>
-
-            <Row>
-                <Col col={24}>Наименование должности работника организации<br/> Подпись
-                    Расшифровка подписи<br/>Дата<br/></Col>
-            </Row>
-            <Row>
-                <Col col={24}>Руководитель организации<br/> Подпись Расшифровка
-                    подписи<br/>Печать организации-получателя <br/>Дата</Col>
-                <Col col={24}>Руководитель организации Подпись Расшифровка подписи<br/>Печать
-                    организации-получателя<br/>Дата</Col>
-            </Row>
-            <h3 style={{}}> Документы принял</h3>
-            <Row>
-                <Col col={24}>Наименование должности работника архива<br/> Подпись
-                    Расшифровка подписи<br/>Дата<br/><br/>Руководитель архива<br/> Подпись
-                    Расшифровка подписи<br/>Печать архива</Col>
-            </Row>
-        </div>)
-    };
-
-    render() {
+    render()
+        {
         const {t, tofiConstants, initialValues, workId} = this.props;
         return (
         <div className="act_print">
-
-            <Button type='primary' onClick={() => this.toPrint(this.printContent())}>Распечатать</Button>
-            <h2 className="text-center" style={{textAlign: "center"}}>
-                Акт о выдаче архивных документов во временное
-                пользование {this.state.fundArchive}</h2>
-            {this.printContent()}
+            <Select
+                style={{width:"8%", marginRight: '7px'}}
+                name="fundmakerArchiveYear"
+                isSearchable={false}
+                onChange={this.onChangeLng}
+                defaultValue={this.state.page}
+            >
+                <Option value='ru' selected={true}>Ru</Option>
+                <Option value='kz'>Kz</Option>
+            </Select>
+            <ReactToPrint
+                trigger={() => <Button type='primary'>Распечатать</Button>}
+                content={() => this.componentRef}
+            />
+            {this.state.page === 'ru' ? (
+                <PrintContent {...this.props} {...this.state} ref={el => (this.componentRef = el)}/>
+            ) : (
+                <PrintContentKaz {...this.props} {...this.state} ref={el => (this.componentRef = el)}/>
+            )
+            }
         </div>
 
         )
     }
 }
+
+class PrintContent extends React.Component{
+    render(){
+        let i = 0;      let j = 0;
+        return (<div style={{padding: '40px 40px 40px 70px'}}>
+            <Row>
+                <Col style={{width: "47%", float: "left"}}> <span
+                >{this.props.fundArchive} </span>
+                </Col>
+            </Row><br/><br/>
+            <h1 style={{textAlign: "center"}}>Акт о выдаче архивных документов во временное пользование</h1>
+            <Row style={{textAlign: "center"}}>__________ № __________</Row>
+            <Row style={{textAlign: "right"}}><Col style={{width: "45%", float: "left"}}>(дата)</Col></Row><br/>
+
+            <Row>
+                <p>Основание: ________________________________________________________________________</p>
+
+            </Row><br/>
+            <Row>
+
+                <p>Для какой цели выдаются документы:
+                    ____________________________________________________________________________</p>
+            </Row><br/>
+            <Row>
+
+                <p>Выдаются следующие единицы хранения из архивного фонда
+                    _________________________________</p>
+            </Row>
+            <Row style={{textAlign: "right"}}><Col style={{width: "54%", float: "left"}}>(название, номер)</Col></Row><br/>
+
+            {/*<div className='ntprnt'><AntTable pagination={false} columns={this.props.columns} dataSource={this.props.tableData}  /></div>*/}
+            <table className="tbltoprint" width="100%">
+                <thead>
+                <tr>
+                    {
+                        this.props.columns.map((el) => {
+                            return(
+                                <td><b>{el.title}</b></td>
+                            );
+                        })
+                    }
+                </tr>
+                </thead>
+                <tbody>
+                {
+                    this.props.tableData.length > 0 ? (
+                        this.props.tableData.map((el) => {
+                            let lng = localStorage.getItem('i18nextLng');
+
+                            return(
+                                <tr>
+                                    <td>{el.idx}</td>
+                                    <td>{!!el.caseNumber ? el.caseNumber.value : ''}</td>
+                                    <td>{!!el.name ? el.name : ''}</td>
+                                    <td>{!!el.caseNumberOfPages ? el.caseNumberOfPages.value : ''}</td>
+                                    <td>{!!el.caseNotes ? el.caseNotes[lng] : ''}</td>
+                                </tr>
+                            );
+                        })
+                    ) : (<tr><td colSpan='5' style={{textAlign: 'center'}}>нет данных</td></tr>)
+
+
+                }
+                </tbody>
+            </table><br/><br/>
+
+
+            Всего выдается ____________________ единиц хранения (общим количеством листов,
+            временем звучания, метражом), срок возвращения дел, документов ____________________________.<br/>
+            Условия временного пользования лицом, получающим дела, документы во временное пользование:
+            <br/>1) дела, документы, полученные во временное пользование должны быть в упорядоченном состоянии, подшитыми, в обложках, с пронумерованными листами и заверительными надписями;
+            <br/>2) дела, документы, полученные во временное пользование не предоставляются для использования посторонним лицам, не выдаются по ним копии, выписки и справки, не производится изъятие каких-либо частей из выданных документов, не публикуются документы без разрешения организации, выдавшей дела;
+            <br/>3) дела, документы, полученные во временное пользование возвращаются в ведомственный (частный) архив организации в срок, указанный в акте.
+            <br/>Лицо, получающее дела, документы предупрежден об ответственности в случае уничтожения документов Национального архивного фонда в соответствии со статьей 509 Кодекса Республики Казахстан «Об административных правонарушениях» от 5 июля  2014 года.
+            <br/><Row><br/>
+                <Col span={18}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(наименование должности, фамилия, инициалы, подпись лица, выдавшего дела, документы
+                    во временное пользование
+                    )</small></p>
+                </Col>
+            </Row>
+            <Row><br/>
+                <Col span={8}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(дата выдачи дел, документов)</small></p>
+                </Col>
+            </Row>
+            <Row><br/>
+                <Col span={18}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(наименование должности, фамилия, инициалы, подпись лица, получившего дела, документы
+                    во временное пользование
+                    )</small></p>
+                </Col>
+            </Row>
+            <Row><br/>
+                <Col span={8}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(дата принятия дел, документов)</small></p>
+                </Col>
+            </Row><br/>
+            <p>Дела, документы возвращены в полном объеме, в упорядоченном состоянии, подшитые и в обложках.</p>
+            <Row><br/>
+                <Col span={18}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(наименование должности, фамилия, инициалы, подпись лица, сдавшего дела, документы)</small></p>
+                </Col>
+            </Row>
+            <Row><br/>
+                <Col span={8}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(дата сдачи дел, документов)</small></p>
+                </Col>
+            </Row>
+            <Row><br/>
+                <Col span={18}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(наименование должности, фамилия, инициалы, подпись лица, принявшего дела, документы)</small></p>
+                </Col>
+            </Row>
+            <Row><br/>
+                <Col span={8}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(дата принятия дел, документов)</small></p>
+                </Col>
+            </Row>
+
+        </div>)
+    }
+};
+
+class PrintContentKaz extends React.Component{
+    render(){
+        let i = 0;      let j = 0;
+        return (<div style={{padding: '40px 40px 40px 70px'}}>
+            <Row>
+                <Col style={{width: "47%", float: "left"}}> <span
+                >{this.props.fundArchive} </span>
+                </Col>
+            </Row><br/><br/>
+            <h1 style={{textAlign: "center"}}>Архивтік құжаттарды уақытша пайдалануға беру туралы акті</h1>
+            <Row style={{textAlign: "center"}}>__________ № __________</Row>
+            <Row style={{textAlign: "right"}}><Col style={{width: "45%", float: "left"}}>(күні)</Col></Row><br/>
+
+            <Row>
+                <p>Негіздеме : ________________________________________________________________________</p>
+
+            </Row><br/>
+            <Row>
+
+                <p>Құжаттар қандай мақсат үшін беріледі ____________________________________________________________________________ архивтік қордан мынадай сақтау бірліктері беріледі </p>
+            </Row><br/>
+
+            {/*<Row style={{textAlign: "right"}}><Col style={{width: "54%", float: "left"}}>(название, номер)</Col></Row><br/>*/}
+
+            {/*<div className='ntprnt'><AntTable pagination={false} columns={this.props.columns} dataSource={this.props.tableData}  /></div>*/}
+            <table className="tbltoprint" width="100%">
+                <thead>
+                <tr>
+                    {
+                        this.props.columns.map((el) => {
+                            return(
+                                <td><b>{el.title}</b></td>
+                            );
+                        })
+                    }
+                </tr>
+                </thead>
+                <tbody>
+                {
+                    this.props.tableData.length > 0 ? (
+                        this.props.tableData.map((el) => {
+                            let lng = localStorage.getItem('i18nextLng');
+
+                            return(
+                                <tr>
+                                    <td>{el.idx}</td>
+                                    <td>{!!el.caseNumber ? el.caseNumber.value : ''}</td>
+                                    <td>{!!el.name ? el.name : ''}</td>
+                                    <td>{!!el.caseNumberOfPages ? el.caseNumberOfPages.value : ''}</td>
+                                    <td>{!!el.caseNotes ? el.caseNotes[lng] : ''}</td>
+                                </tr>
+                            );
+                        })
+                    ) : (<tr><td colSpan='5' style={{textAlign: 'center'}}>мәліметтер жоқ</td></tr>)
+
+
+                }
+                </tbody>
+            </table><br/><br/>
+
+
+            Барлығы _____________________  сақтау бірлігі (жалпы парақтардың санымен, дыбысталу
+            уақытымен, метражымен) беріледі, істерді құжаттарды қайтару  мерзімі ________________________.
+            <br/>
+            Істерді, құжаттарды уақытша пайдалануға алушы тұлғаның уақытша пайдалану шарттары:
+            <br/>1) уақытша пайдалануға алынған істер, құжаттар реттелген, тігілген, тысталған, парақтары нөмірленген және куәландыру жазбасымен болуы тиіс.
+            <br/>2) уақытша пайдалануға алынған істер, құжаттар пайдалану үшін өзге тұлғаларға берілмейді, олар бойынша көшірмелер, үзінділер мен анықтамалар берілмейді, берілген құжаттардың қандайда бір бөліктері алынбайды, істерді берген ұйымның рұқсатынсыз құжаттар жарияланбайды.
+            <br/>3) уақытша пайдалануға алынған істер, құжаттар ведомстволық (жеке) архивке актіде көрсетілген мерзімде қайтарылады.
+            <br/>Істерді, құжаттар уақытша пайдалануға алған тұлға «Әкімшілік құқық бұзушылықтар туралы» Қазақстан Республикасының 2014 жылғы 5 шілдедегі Кодексінің 509-бабына сәйкес Ұлттық архив қорының құжаттарын жою жағдайындағы жауапкершілік туралы ескертілді.
+            <br/><Row><br/>
+            <Col span={18}>
+                <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(істерді, құжаттарды уақытша пайдалануға берген тұлға лауазымының атауы,
+                тегі, аты-жөні, қолтаңбасы
+                )</small></p>
+            </Col>
+        </Row>
+            <Row><br/>
+                <Col span={8}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(істер, құжаттар берілген күн)</small></p>
+                </Col>
+            </Row>
+            <Row><br/>
+                <Col span={18}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(істерді, құжаттарды уақытша пайдалануға алған тұлға лауазымының атауы,
+                    тегі, аты-жөні, қолтаңбасы
+                    )</small></p>
+                </Col>
+            </Row>
+            <Row><br/>
+                <Col span={8}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(істер, құжаттар алынған күн)</small></p>
+                </Col>
+            </Row><br/>
+            <p>Істер, құжаттар толық көлемде, реттелген, тігілген және  тысталған қалпында қайтарылды.</p>
+            <Row><br/>
+                <Col span={18}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(істерді, құжаттарды тапсырған тұлға лауазымының атауы,
+                    тегі, аты-жөні, қолтаңбасы
+                    )</small></p>
+                </Col>
+            </Row>
+            <Row><br/>
+                <Col span={8}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(істер, құжаттар тапсырылған күн)</small></p>
+                </Col>
+            </Row>
+            <Row><br/>
+                <Col span={18}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(істерді, құжаттарды қабылдаған тұлға лауазымының атауы,
+                    тегі, аты-жөні, қолтаңбасы
+                    )</small></p>
+                </Col>
+            </Row>
+            <Row><br/>
+                <Col span={8}>
+                    <p style={{borderBottom: '1px solid black'}}>{this.props.zavOtdel}</p><p style={{textAlign: 'center'}}><small>(істер, құжаттар қабылданған күн)</small></p>
+                </Col>
+            </Row>
+
+        </div>)
+    }
+};
 
 
 export default GiveToAct;

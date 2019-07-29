@@ -612,8 +612,8 @@ class CasesInInventory extends React.Component {
         this.filteredData = newSprtData.filter(item => {
             return (
                 item.name[this.lng].toLowerCase().includes(search.name.toLowerCase()) &&
-                String(item.caseDbeg.value).toLowerCase().includes(String(search.caseDbeg).toLowerCase()) &&
-                String(item.caseDend.value).toLowerCase().includes(String(search.caseDend).toLowerCase()) &&
+                !!item.caseDbeg && String(item.caseDbeg.value).toLowerCase().includes(String(search.caseDbeg).toLowerCase()) &&
+                !!item.caseDend &&  String(item.caseDend.value).toLowerCase().includes(String(search.caseDend).toLowerCase()) &&
                 item.fundNumber.value.toLowerCase().includes(search.fundNumber.toLowerCase())
 
             )

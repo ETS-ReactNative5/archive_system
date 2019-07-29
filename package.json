@@ -65,6 +65,6 @@
     "test": "react-app-rewired test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://192.168.1.20:7373",
+  "proxy": "http://176.110.126.68:8866",
   "homepage": "/archive-taraz/client"
 }
